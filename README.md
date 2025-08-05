@@ -15,11 +15,6 @@
 
 ### 👨‍💻 About Me
 
-- 🔭 I’m currently working on **[Your-Project-Name]** - a project about [briefly describe your project].
-- 🌱 I’m currently learning **[Technology-You-Are-Learning]**.
-- 👯 I’m looking to collaborate on **open-source projects** related to [Your-Interests, e.g., Web Development, AI].
-- 🤔 I’m looking for help with **[A-Challenge-You-Face, e.g., advanced React hooks]**.
-- 💬 Ask me about **[Topics-You-Know-Well, e.g., Python, JavaScript, or REST APIs]**.
 - 📫 How to reach me: **[your-email@example.com]**
 - ⚡ Fun fact: **[A-Fun-Fact-About-You]**
 
