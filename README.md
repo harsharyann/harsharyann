@@ -1,64 +1,73 @@
-<p align="center">
-  <img src="https://i.imgur.com/E16iA4k.gif" alt="Neon Coding Banner">
-</p>
+# Welcome to your Lovable project
 
-<h1 align="center">Hi there, I'm Harsh 👋</h1>
-<h3 align="center">A [Your-Specialization] Developer from India</h3>
+## Project info
 
-<p align="center">
-  <a href="https://github.com/ryo-ma/github-profile-trophy">
-    <img src="https://github-profile-trophy.vercel.app/?username=YOUR_USERNAME&theme=dracula&column=7"/>
-  </a>
-</p>
+**URL**: https://lovable.dev/projects/af1db0b0-8c9b-4a45-b218-29216fb6fd3d
 
----
+## How can I edit this code?
 
-### 👨‍💻 About Me
+There are several ways of editing your application.
 
-- 📫 How to reach me: **[your-email@example.com]**
-- ⚡ Fun fact: **[A-Fun-Fact-About-You]**
+**Use Lovable**
 
----
+Simply visit the [Lovable Project](https://lovable.dev/projects/af1db0b0-8c9b-4a45-b218-29216fb6fd3d) and start prompting.
 
-### 🛠️ My Tech Stack
+Changes made via Lovable will be committed automatically to this repo.
 
-*This is a great place to showcase your skills. Replace the icons with the ones you use. Find more icons at [skillicons.dev](https://skillicons.dev/)*
+**Use your preferred IDE**
 
-<p align="center">
-  <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=js,html,css,react,nodejs,express,mongodb,python,flask,git" />
-  </a>
-</p>
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
----
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-### 📊 My GitHub Stats
+Follow these steps:
 
-*These stats will update automatically! Just replace **`YOUR_USERNAME`** with your actual GitHub username.*
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
 
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=YOUR_USERNAME&show_icons=true&theme=tokyonight" alt="Harsh's GitHub Stats" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=YOUR_USERNAME&layout=compact&theme=tokyonight" alt="Top Languages" />
-</p>
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
 
-<p align="center"> 
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=YOUR_USERNAME&theme=tokyonight" alt="GitHub Streak" />
-</p>
+# Step 3: Install the necessary dependencies.
+npm i
 
----
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
+```
 
-### 🔗 Connect with Me
+**Edit a file directly in GitHub**
 
-*Don't forget to add your personal links here!*
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-<p align="center">
-  <a href="https://linkedin.com/in/YOUR_LINKEDIN_USERNAME" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
-  </a>
-  <a href="https://twitter.com/YOUR_TWITTER_USERNAME" target="_blank">
-    <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter"/>
-  </a>
-  <a href="https://[YOUR-PORTFOLIO-WEBSITE].com" target="_blank">
-    <img src="https://img.shields.io/badge/Portfolio-D14836?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Portfolio"/>
-  </a>
-</p>
+**Use GitHub Codespaces**
+
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
+
+## What technologies are used for this project?
+
+This project is built with:
+
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
+
+## How can I deploy this project?
+
+Simply open [Lovable](https://lovable.dev/projects/af1db0b0-8c9b-4a45-b218-29216fb6fd3d) and click on Share -> Publish.
+
+## Can I connect a custom domain to my Lovable project?
+
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
