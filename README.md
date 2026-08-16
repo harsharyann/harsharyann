@@ -1,85 +1,91 @@
 <div align="center">
 
-# Hi there, I'm Harsh 👋
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:6C63FF,100:00D9FF&height=180&section=header&text=Harsh%20Aryan&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=AI/ML%20%7C%20Data%20Engineering&descAlignY=58&descSize=18" />
 
-### 🎓 AI/ML & Data Engineering Student
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=1000&color=00D9FF&center=true&vCenter=true&width=440&lines=Building+ML+models+that+actually+work;Turning+messy+data+into+pipelines;Student+%7C+AI%2FML+%2B+Data+Engineering" />
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&pause=1000&color=6C63FF&center=true&vCenter=true&width=500&lines=Learning+Machine+Learning+%F0%9F%A4%96;Exploring+Data+Engineering+%F0%9F%9A%80;Building+Cool+Projects+%F0%9F%92%BB;Always+Curious+%F0%9F%94%8D" alt="Typing SVG" />
+<br>
+
+<img src="https://img.shields.io/badge/📍_Status-Learning_%26_Building-6C63FF?style=for-the-badge&labelColor=0D1117" />
 
 </div>
 
----
+<br>
 
-### 🚀 About Me
+## ⚡ Stack
 
-- 🔭 Currently studying **AI/ML** and **Data Engineering**
-- 🌱 Learning new tools in data pipelines, ML models & analytics
-- 💡 Interested in turning raw data into meaningful insights
-- 📫 Reach me via LinkedIn or email below
-- ⚡ Fun fact: I love solving problems with data!
+<div align="center">
 
----
+<img src="https://skillicons.dev/icons?i=python,tensorflow,pytorch,sklearn,postgres,mysql,git,docker,linux,vscode&theme=dark" />
 
-### 🛠️ Tech Stack
+</div>
 
-<p align="left">
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" />
-  <img src="https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white" />
-  <img src="https://img.shields.io/badge/Scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" />
-  <img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" />
-  <img src="https://img.shields.io/badge/Apache%20Spark-E25A1C?style=for-the-badge&logo=apachespark&logoColor=white" />
-  <img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white" />
-  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" />
-</p>
+<br>
 
----
+<table>
+<tr>
+<td width="50%" valign="top">
 
 ### 📊 GitHub Stats
 
-<div align="center">
+<img width="100%" src="https://github-readme-stats.vercel.app/api?username=harsharyann&show_icons=true&theme=tokyonight&hide_border=true&bg_color=0D1117&title_color=00D9FF&icon_color=6C63FF&text_color=c9d1d9" />
 
-<img height="165" src="https://github-readme-stats.vercel.app/api?username=harsharyann&show_icons=true&theme=tokyonight&hide_border=true&bg_color=0D1117" />
-<img height="165" src="https://github-readme-stats.vercel.app/api/top-langs/?username=harsharyann&layout=compact&theme=tokyonight&hide_border=true&bg_color=0D1117" />
+</td>
+<td width="50%" valign="top">
 
-</div>
+### 🔥 Streak
 
-<div align="center">
+<img width="100%" src="https://github-readme-streak-stats.herokuapp.com/?user=harsharyann&theme=tokyonight&hide_border=true&background=0D1117&ring=00D9FF&fire=6C63FF&currStreakLabel=00D9FF" />
 
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=harsharyann&theme=tokyonight&hide_border=true&background=0D1117" />
-
-</div>
-
----
-
-### 📈 Activity Graph
-
-<div align="center">
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=harsharyann&theme=tokyo-night&hide_border=true&bg_color=0D1117" width="100%" />
-</div>
-
----
-
-### 🌐 Connect with Me
-
-<p align="left">
-  <a href="https://www.linkedin.com/in/YOUR-LINKEDIN-ID" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
-  </a>
-  <a href="mailto:YOUR-EMAIL@example.com">
-    <img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" />
-  </a>
-  <a href="https://twitter.com/YOUR-TWITTER-ID" target="_blank">
-    <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" />
-  </a>
-</p>
-
----
+</td>
+</tr>
+</table>
 
 <div align="center">
 
-![Profile Views](https://komarev.com/ghpvc/?username=harsharyann&color=6C63FF&style=flat-square&label=Profile+Views)
+### 🏆 Trophies
+
+<img src="https://github-profile-trophy.vercel.app/?username=harsharyann&theme=tokyonight&no-frame=true&no-bg=true&margin-w=8&row=1&column=6" />
 
 </div>
+
+<br>
+
+<div align="center">
+
+### 📈 Contribution Graph
+
+<img width="100%" src="https://github-readme-activity-graph.vercel.app/graph?username=harsharyann&theme=tokyo-night&hide_border=true&bg_color=0D1117&color=00D9FF&line=6C63FF&point=ffffff" />
+
+</div>
+
+<br>
+
+<div align="center">
+
+### 🐍 Contribution Snake
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/harsharyann/harsharyann/output/github-contribution-grid-snake-dark.svg" />
+  <img alt="snake animation" src="https://raw.githubusercontent.com/harsharyann/harsharyann/output/github-contribution-grid-snake.svg" width="100%" />
+</picture>
+
+</div>
+
+<br>
+
+<div align="center">
+
+### 🌐 Connect
+
+<a href="https://www.linkedin.com/in/YOUR-LINKEDIN-ID" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" /></a>
+<a href="mailto:YOUR-EMAIL@example.com"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" /></a>
+<a href="https://twitter.com/YOUR-TWITTER-ID" target="_blank"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" /></a>
+
+<br><br>
+
+![Profile Views](https://komarev.com/ghpvc/?username=harsharyann&color=00D9FF&style=for-the-badge&label=PROFILE+VIEWS)
+
+</div>
+
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:00D9FF,100:6C63FF&height=100&section=footer" />
