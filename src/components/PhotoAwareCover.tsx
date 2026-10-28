@@ -8,6 +8,8 @@ import {
   MapPin,
   GraduationCap,
   Sliders,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { PortfolioSettings } from "@/data/portfolioSettings";
 import { portfolioData } from "@/data/portfolioData";
@@ -234,30 +236,29 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
     }
   };
 
-  // Re-detect if media changes dynamically
+  // Re-detect if media changes dynamically (for images)
   useEffect(() => {
-    if (typeof window !== "undefined" && !isVideo) {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = mediaUrl;
-      img.onload = () => {
-        const ratio = img.naturalWidth / img.naturalHeight;
-        let orientation: "portrait" | "landscape" | "square" = "portrait";
-        if (ratio > 1.05) orientation = "landscape";
-        else orientation = "portrait";
+    if (typeof window === "undefined" || isVideo) return;
 
-        setMetrics({
-          width: img.naturalWidth,
-          height: img.naturalHeight,
-          aspectRatio: ratio,
-          orientation,
-        });
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = mediaUrl;
+    img.onload = () => {
+      const ratio = img.naturalWidth / img.naturalHeight;
+      const orientation: "portrait" | "landscape" | "square" =
+        ratio > 1.05 ? "landscape" : "portrait";
 
-        const extracted = extractPaletteFromImage(img);
-        setPalette(extracted);
-        setIsLoaded(true);
-      };
-    }
+      setMetrics({
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+        aspectRatio: ratio,
+        orientation,
+      });
+
+      const extracted = extractPaletteFromImage(img);
+      setPalette(extracted);
+      setIsLoaded(true);
+    };
   }, [mediaUrl, isVideo]);
 
   const isPortrait = metrics.orientation === "portrait" && !isVideo;
@@ -298,229 +299,6 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
     </div>
   );
 
-  // =========================================================================
-  // CASE 1: FULLSCREEN CINEMA COVER FOR LANDSCAPE & VIDEO
-  // =========================================================================
-  if (!isPortrait) {
-    return (
-      <div
-        onWheel={handleWheel}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className={`relative w-full min-h-screen flex flex-col justify-between items-center bg-[#060709] text-[#f5f3ef] selection:bg-[#e5c07b] selection:text-stone-950 font-sans select-none overflow-hidden transition-all duration-700 ease-out ${
-          isNavigating
-            ? "opacity-0 -translate-y-6 scale-[0.98]"
-            : "opacity-100 translate-y-0 scale-100"
-        }`}
-      >
-        {/* Fullscreen Master Cover Photo/Video Layer */}
-        <div
-          ref={coverContainerRef}
-          onClick={handleOpenAbout}
-          className="absolute inset-0 z-0 cursor-pointer overflow-hidden"
-        >
-          {/* Ambient blurred backdrop if contain mode */}
-          {settings.coverImageFit === "contain" && (
-            isVideo ? (
-              <video
-                key={`ambient-${mediaUrl}`}
-                src={mediaUrl}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover filter blur-3xl scale-110 opacity-35 brightness-75 pointer-events-none"
-              />
-            ) : (
-              <img
-                src={mediaUrl}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover filter blur-3xl scale-110 opacity-35 brightness-75 pointer-events-none"
-              />
-            )
-          )}
-
-          {/* Master Full-bleed Media (Photo or Looping Video) */}
-          {isVideo ? (
-            <video
-              key={`master-${mediaUrl}`}
-              src={mediaUrl}
-              autoPlay
-              loop
-              muted
-              playsInline
-              style={{
-                objectFit: settings.coverImageFit || "cover",
-                objectPosition:
-                  settings.coverImagePosition === "top"
-                    ? "center top"
-                    : settings.coverImagePosition === "bottom"
-                    ? "center bottom"
-                    : "center center",
-              }}
-              className="w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98]"
-            />
-          ) : (
-            <img
-              ref={imgRef}
-              src={mediaUrl}
-              alt={settings.name}
-              onLoad={handleImageLoad}
-              style={{
-                objectFit: settings.coverImageFit || "cover",
-                objectPosition:
-                  settings.coverImagePosition === "top"
-                    ? "center top"
-                    : settings.coverImagePosition === "bottom"
-                    ? "center bottom"
-                    : "center center",
-              }}
-              className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98] transition-all duration-700 ${
-                isLoaded ? "opacity-100 scale-100" : "opacity-95 scale-[1.01]"
-              }`}
-            />
-          )}
-
-          {/* Film Grain Texture */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-screen"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-            }}
-          />
-
-          {/* Dynamic Ambient Lighting Bloom */}
-          <div
-            className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] sm:w-[1100px] h-[500px] rounded-full blur-[140px] pointer-events-none opacity-40 transition-all duration-1000"
-            style={{
-              background: `radial-gradient(ellipse at center, ${palette.ambientGlow} 0%, transparent 70%)`,
-            }}
-          />
-
-          {/* Top Subtle Vignette */}
-          <div className="absolute top-0 inset-x-0 h-36 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none" />
-
-          {/* Bottom Rich Cinema Scrim */}
-          <div className="absolute bottom-0 inset-x-0 h-[80%] sm:h-[70%] md:h-[65%] bg-gradient-to-t from-[#060709] via-[#060709]/85 via-45% to-transparent pointer-events-none" />
-
-          {/* Subtle Edge Vignette */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(6,7,9,0.75)_100%)] pointer-events-none" />
-        </div>
-
-        {/* Top Header Bar Over Cover */}
-        <header className="relative z-20 w-full px-6 sm:px-12 pt-6 sm:pt-8 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span
-              style={{ backgroundColor: palette.primaryAccent }}
-              className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_8px_currentColor]"
-            />
-            {settings.showName !== false && (
-              <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-white/80 font-bold">
-                {settings.name}
-              </span>
-            )}
-          </div>
-
-          {/* Admin Studio Link */}
-          <Link
-            href="/admin"
-            title="Open Admin Studio"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/20 bg-white/[0.06] hover:bg-white/15 text-stone-300 hover:text-white font-mono text-[10px] uppercase tracking-widest backdrop-blur-md transition-all cursor-pointer shadow-sm active:scale-95"
-          >
-            <Sliders className="w-3 h-3 text-[#e5c07b]" />
-            <span>ADMIN</span>
-          </Link>
-        </header>
-
-        {/* Clean Breathing Space */}
-        <div className="my-auto pointer-events-none" />
-
-        {/* Bottom Integrated Editorial Overlay */}
-        <div className="relative z-20 w-full max-w-5xl mx-auto px-6 sm:px-10 pb-6 sm:pb-8 flex flex-col items-center text-center space-y-3.5 sm:space-y-4">
-          {/* Big Headline Name */}
-          {settings.showName !== false && (
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-editorial font-black uppercase text-[#f5f3ef] tracking-[0.14em] leading-[0.92] drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)]">
-              {settings.name}
-            </h1>
-          )}
-
-          {/* Role Subtitle */}
-          {settings.showRole !== false && (
-            <p className="text-sm sm:text-base md:text-lg font-sans text-stone-200/95 font-light tracking-wider drop-shadow-md">
-              {settings.role || settings.subrole}
-            </p>
-          )}
-
-          {/* Metadata Row (Location & What/Where) */}
-          {(settings.showLocation !== false || settings.showWhereAndWhat !== false) && (
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs font-mono text-stone-300 tracking-wider drop-shadow-md">
-              {settings.showLocation !== false && settings.location && (
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-[#e5c07b]" />
-                  <span>{settings.location}</span>
-                </div>
-              )}
-
-              {settings.showLocation !== false &&
-                settings.showWhereAndWhat !== false &&
-                settings.location &&
-                settings.whereAndWhat && (
-                  <span className="text-white/30 hidden sm:inline">&bull;</span>
-                )}
-
-              {settings.showWhereAndWhat !== false && settings.whereAndWhat && (
-                <div className="flex items-center gap-1.5 max-w-xl text-center">
-                  <GraduationCap className="w-3.5 h-3.5 text-[#e5c07b] shrink-0" />
-                  <span className="text-[11px] leading-relaxed">
-                    {settings.whereAndWhat}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Minimalist Statement Quote */}
-          {settings.showStatement !== false && settings.statement && (
-            <blockquote className="text-xs sm:text-sm md:text-base font-editorial italic text-stone-200/90 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-              &ldquo;{settings.statement}&rdquo;
-            </blockquote>
-          )}
-
-          {/* Social Links */}
-          {settings.showSocialLinks !== false && (
-            <div className="pt-2 sm:pt-3">
-              {renderSocialLinks()}
-            </div>
-          )}
-
-          {/* Scroll to Explore Hint + Admin Link */}
-          <div className="flex items-center gap-3 pt-1 text-[10px] font-mono tracking-[0.25em] text-stone-400">
-            <div
-              onClick={handleOpenAbout}
-              className="hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1.5"
-            >
-              <span>SCROLL TO EXPLORE</span>
-              <span className="animate-bounce">&darr;</span>
-            </div>
-            <span className="text-stone-600">&bull;</span>
-            <Link
-              href="/admin"
-              className="hover:text-[#e5c07b] uppercase transition-colors"
-            >
-              ADMIN ↗
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // =========================================================================
-  // CASE 2: EDITORIAL BOOK SPREAD FOR PORTRAIT IMAGES
-  // =========================================================================
   return (
     <div
       onWheel={handleWheel}
@@ -528,13 +306,21 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
       onTouchMove={handleTouchMove}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={`relative w-full min-h-screen flex flex-col justify-between items-center py-6 sm:py-8 px-4 sm:px-8 bg-[#060709] text-[#f5f3ef] selection:bg-[#e5c07b] selection:text-stone-950 font-sans select-none overflow-hidden transition-all duration-700 ease-out ${
+      className={`relative w-full min-h-[100dvh] h-[100dvh] flex flex-col justify-between items-center bg-[#060709] text-[#f5f3ef] selection:bg-[#e5c07b] selection:text-stone-950 font-sans select-none overflow-hidden transition-all duration-700 ease-out ${
         isNavigating
           ? "opacity-0 -translate-y-6 scale-[0.98]"
           : "opacity-100 translate-y-0 scale-100"
       }`}
     >
-      {/* 1. Subtle Analog Film Grain Texture */}
+      {/* 1. Master Background Atmosphere (Adaptive Ambient Mesh) */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0 transition-all duration-1000 ease-out"
+        style={{
+          background: `radial-gradient(circle at 50% 45%, ${palette.ambientGlow} 0%, ${palette.ambientGlowSubtle} 32%, rgba(6, 7, 9, 0.95) 75%, #060709 100%)`,
+        }}
+      />
+
+      {/* 2. Analog Film Grain Texture */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-screen z-0"
         style={{
@@ -542,65 +328,232 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
         }}
       />
 
-      {/* 2. Dynamic Glassmorphic Ambient Mesh */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0 transition-all duration-1000 ease-out"
-        style={{
-          background: `radial-gradient(circle at 50% 46%, ${palette.ambientGlow} 0%, ${palette.ambientGlowSubtle} 32%, rgba(6, 7, 9, 0.94) 70%, #060709 100%)`,
-        }}
-      />
+      {/* 3. Top Master Header Bar (Responsive for all screens) */}
+      <header className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-4 sm:pt-6 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span
+            style={{ backgroundColor: palette.primaryAccent }}
+            className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_8px_currentColor]"
+          />
+          {settings.showName !== false && (
+            <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] sm:tracking-[0.25em] text-white/80 font-bold truncate max-w-[180px] sm:max-w-none">
+              {settings.name}
+            </span>
+          )}
+        </div>
 
-      {/* 3. Dual-Orb Breathing Ambient Aurora */}
-      <div
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[900px] h-[420px] rounded-full blur-[130px] pointer-events-none transition-all duration-1000 opacity-70 z-0"
-        style={{
-          background: `radial-gradient(ellipse at center, ${palette.ambientGlow} 0%, transparent 72%)`,
-        }}
-      />
+        {/* Admin Studio Pill Link */}
+        <Link
+          href="/admin"
+          title="Open Admin Studio"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/20 bg-white/[0.06] hover:bg-white/15 text-stone-300 hover:text-white font-mono text-[9px] sm:text-[10px] uppercase tracking-widest backdrop-blur-md transition-all cursor-pointer shadow-sm active:scale-95"
+        >
+          <Sliders className="w-3 h-3 text-[#e5c07b]" />
+          <span>ADMIN</span>
+        </Link>
+      </header>
 
-      {/* 4. MAIN PORTRAIT HERO SPREAD */}
-      <div className="relative z-10 my-auto w-full max-w-7xl flex items-center justify-center py-4">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
-          {/* LEFT COLUMN: Physical Magazine / Book Cover (5 Cols) */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div
-              ref={coverContainerRef}
-              onClick={handleOpenAbout}
-              style={{
-                transform: `translate3d(${magnetic.x}px, ${magnetic.y}px, 0)`,
-                boxShadow: `0 35px 85px rgba(0,0,0,0.9), 0 0 50px ${palette.ambientGlowSubtle}, inset 0 1px 1px rgba(255,255,255,0.25), 3px 0 0 #1c1d24, 4px 0 0 #0f1014, 6px 1px 0 #282a33, 7px 1px 0 #121317, 9px 2px 0 #20222a, 10px 2px 0 #090a0d`,
-                aspectRatio: metrics.aspectRatio || 0.72,
-              }}
-              className="relative w-full max-w-[290px] sm:max-w-[340px] md:max-w-[380px] lg:max-w-[400px] max-h-[66vh] sm:max-h-[70vh] bg-[#0b0c10]/80 backdrop-blur-xl border border-white/20 rounded-[2px] overflow-hidden cursor-pointer group transition-all duration-500 ease-out"
-            >
-              {/* Specular Glass Sheen Across Top Edge */}
-              <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none z-20" />
-
-              {/* Glossy Spotlight Light Reflection */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden z-20">
-                <div className="absolute -inset-full bg-gradient-to-tr from-transparent via-white/12 to-transparent -rotate-45 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
-              </div>
-
-              {/* Media: Photo or Video */}
-              {isVideo ? (
+      {/* 4. MAIN HERO CONTENT AREA */}
+      {!isPortrait ? (
+        /* =========================================================================
+           MODE A: FULLSCREEN CINEMA COVER (FOR LANDSCAPE PHOTOS & VIDEOS)
+           Flawless on MacBook, Laptop, iPad, and zero cut-off on Phones!
+           ========================================================================= */
+        <>
+          {/* Full-bleed media layer */}
+          <div
+            ref={coverContainerRef}
+            onClick={handleOpenAbout}
+            className="absolute inset-0 z-0 cursor-pointer overflow-hidden"
+          >
+            {/* Ambient blurred backdrop if contain mode */}
+            {settings.coverImageFit === "contain" && (
+              isVideo ? (
                 <video
+                  key={`ambient-${mediaUrl}`}
                   src={mediaUrl}
                   autoPlay
                   loop
                   muted
                   playsInline
-                  style={{
-                    objectFit: settings.coverImageFit || "cover",
-                    objectPosition:
-                      settings.coverImagePosition === "top"
-                        ? "center top"
-                        : settings.coverImagePosition === "bottom"
-                        ? "center bottom"
-                        : "center center",
-                  }}
-                  className="w-full h-full object-cover filter contrast-[1.03] saturate-[1.06] brightness-[0.99]"
+                  className="absolute inset-0 w-full h-full object-cover filter blur-3xl scale-110 opacity-35 brightness-75 pointer-events-none"
                 />
               ) : (
+                <img
+                  src={mediaUrl}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover filter blur-3xl scale-110 opacity-35 brightness-75 pointer-events-none"
+                />
+              )
+            )}
+
+            {/* Master Media Layer */}
+            {isVideo ? (
+              <video
+                key={`master-${mediaUrl}`}
+                src={mediaUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                style={{
+                  objectFit: settings.coverImageFit || "cover",
+                  objectPosition:
+                    settings.coverImagePosition === "top"
+                      ? "center top"
+                      : settings.coverImagePosition === "bottom"
+                      ? "center bottom"
+                      : "center center",
+                }}
+                className="w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98]"
+              />
+            ) : (
+              <img
+                ref={imgRef}
+                src={mediaUrl}
+                alt={settings.name}
+                onLoad={handleImageLoad}
+                style={{
+                  objectFit: settings.coverImageFit || "cover",
+                  objectPosition:
+                    settings.coverImagePosition === "top"
+                      ? "center top"
+                      : settings.coverImagePosition === "bottom"
+                      ? "center bottom"
+                      : "center center",
+                }}
+                className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98] transition-all duration-700 ${
+                  isLoaded ? "opacity-100 scale-100" : "opacity-95 scale-[1.01]"
+                }`}
+              />
+            )}
+
+            {/* Top Subtle Vignette */}
+            <div className="absolute top-0 inset-x-0 h-28 sm:h-36 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none" />
+
+            {/* Bottom Rich Cinema Scrim (Prevents any text clipping or contrast loss) */}
+            <div className="absolute bottom-0 inset-x-0 h-[85%] sm:h-[75%] md:h-[65%] bg-gradient-to-t from-[#060709] via-[#060709]/85 via-45% to-transparent pointer-events-none" />
+
+            {/* Edge Radial Vignette */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(6,7,9,0.75)_100%)] pointer-events-none" />
+          </div>
+
+          {/* Clean Breathing Space */}
+          <div className="my-auto pointer-events-none" />
+
+          {/* Bottom Integrated Editorial Overlay (MOBILE-OPTIMIZED WITH ZERO CLIPPING) */}
+          <div className="relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-8 md:px-10 pb-4 sm:pb-6 flex flex-col items-center text-center space-y-2 sm:space-y-3.5">
+            {/* Display Name */}
+            {settings.showName !== false && (
+              <h1 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-editorial font-black uppercase text-[#f5f3ef] tracking-[0.1em] sm:tracking-[0.14em] leading-[0.95] drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)] max-w-full break-words">
+                {settings.name}
+              </h1>
+            )}
+
+            {/* Current Role */}
+            {settings.showRole !== false && (
+              <p className="text-xs sm:text-sm md:text-base lg:text-lg font-sans text-stone-200/90 font-light tracking-wide max-w-xl truncate sm:whitespace-normal drop-shadow-md">
+                {settings.role || settings.subrole}
+              </p>
+            )}
+
+            {/* Location & Academic Focus Metadata */}
+            {(settings.showLocation !== false || settings.showWhereAndWhat !== false) && (
+              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] sm:text-xs font-mono text-stone-300/90 tracking-wider drop-shadow-md">
+                {settings.showLocation !== false && settings.location && (
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-3 h-3 text-[#e5c07b]" />
+                    <span>{settings.location}</span>
+                  </div>
+                )}
+
+                {settings.showLocation !== false &&
+                  settings.showWhereAndWhat !== false &&
+                  settings.location &&
+                  settings.whereAndWhat && (
+                    <span className="text-white/30 hidden sm:inline">&bull;</span>
+                  )}
+
+                {settings.showWhereAndWhat !== false && settings.whereAndWhat && (
+                  <div className="flex items-center gap-1.5 max-w-md sm:max-w-xl text-center">
+                    <GraduationCap className="w-3.5 h-3.5 text-[#e5c07b] shrink-0" />
+                    <span className="text-[10px] sm:text-[11px] leading-relaxed truncate sm:whitespace-normal">
+                      {settings.whereAndWhat}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Statement Quote */}
+            {settings.showStatement !== false && settings.statement && (
+              <blockquote className="text-[11px] sm:text-xs md:text-sm font-editorial italic text-stone-200/85 max-w-xl mx-auto leading-relaxed drop-shadow-md line-clamp-2 sm:line-clamp-none">
+                &ldquo;{settings.statement}&rdquo;
+              </blockquote>
+            )}
+
+            {/* Social Links */}
+            {settings.showSocialLinks !== false && (
+              <div className="pt-1">
+                {renderSocialLinks()}
+              </div>
+            )}
+
+            {/* Scroll Explore Hint + Admin Link */}
+            <div className="flex items-center gap-3 pt-0.5 text-[9px] sm:text-[10px] font-mono tracking-[0.2em] sm:tracking-[0.25em] text-stone-400">
+              <div
+                onClick={handleOpenAbout}
+                className="hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1.5"
+              >
+                <span>SCROLL TO EXPLORE</span>
+                <span className="animate-bounce">&darr;</span>
+              </div>
+              <span className="text-stone-600">&bull;</span>
+              <Link
+                href="/admin"
+                className="hover:text-[#e5c07b] uppercase transition-colors"
+              >
+                ADMIN ↗
+              </Link>
+            </div>
+          </div>
+        </>
+      ) : (
+        /* =========================================================================
+           MODE B: LUXURY COLLECTOR'S MONOGRAPH SPREAD (FOR PORTRAIT PHOTOS)
+           High-fashion physical book on Desktop/iPad + Full-screen Vertical on Phone!
+           ========================================================================= */
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-12 my-auto flex items-center justify-center py-2 sm:py-4">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 xl:gap-16 items-center">
+            {/* LEFT COLUMN: Luxury Collector's Monograph Book Cover (5 Cols) */}
+            <div className="lg:col-span-5 flex justify-center lg:justify-end">
+              <div
+                ref={coverContainerRef}
+                onClick={handleOpenAbout}
+                style={{
+                  transform: `translate3d(${magnetic.x}px, ${magnetic.y}px, 0)`,
+                  boxShadow: `0 35px 90px rgba(0,0,0,0.95), 0 0 60px ${palette.ambientGlowSubtle}, inset 0 1px 1px rgba(255,255,255,0.25), 3px 0 0 #1c1d24, 5px 1px 0 #0f1014, 7px 1px 0 #282a33, 9px 2px 0 #121317, 11px 2px 0 #20222a, 13px 3px 0 #090a0d`,
+                  aspectRatio: metrics.aspectRatio || 0.72,
+                }}
+                className="relative w-full max-w-[240px] sm:max-w-[300px] md:max-w-[340px] lg:max-w-[380px] max-h-[48vh] sm:max-h-[58vh] lg:max-h-[68vh] bg-[#0b0c10]/85 backdrop-blur-xl border border-white/20 rounded-[3px] overflow-hidden cursor-pointer group transition-all duration-500 ease-out hover:scale-[1.01]"
+              >
+                {/* Specular Edge Highlights */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none z-20" />
+
+                {/* Glossy Diagonal Light Sweep Reflection */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden z-20">
+                  <div className="absolute -inset-full bg-gradient-to-tr from-transparent via-white/14 to-transparent -rotate-45 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
+                </div>
+
+                {/* Gold Edition Badge in Top Left */}
+                <div className="absolute top-2.5 left-3.5 z-20 pointer-events-none">
+                  <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#e5c07b] font-black drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                    FOLIO &bull; 01
+                  </span>
+                </div>
+
+                {/* Cover Photograph */}
                 <img
                   ref={imgRef}
                   src={mediaUrl}
@@ -615,78 +568,96 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
                         ? "center bottom"
                         : "center center",
                   }}
-                  className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.99] transition-all duration-500 group-hover:scale-[1.015] ${
+                  className={`w-full h-full filter contrast-[1.04] saturate-[1.06] brightness-[0.99] transition-all duration-500 group-hover:scale-[1.015] ${
                     isLoaded ? "opacity-100" : "opacity-95"
                   }`}
                 />
-              )}
 
-              {/* Magazine Spine Fold (Left Edge) */}
-              <div className="absolute top-0 bottom-0 left-0 w-3.5 bg-gradient-to-r from-black/65 via-black/25 to-transparent pointer-events-none z-10" />
-              <div className="absolute top-0 bottom-0 left-[2px] w-[1px] bg-white/25 pointer-events-none z-10" />
+                {/* Realistic Book Spine (Left Edge with Leatherette Crease) */}
+                <div className="absolute top-0 bottom-0 left-0 w-4 bg-gradient-to-r from-black/80 via-black/35 to-transparent pointer-events-none z-10" />
+                <div className="absolute top-0 bottom-0 left-[2.5px] w-[1px] bg-amber-400/35 pointer-events-none z-10" />
 
-              {/* Right Edge Inner Shadow */}
-              <div className="absolute top-0 bottom-0 right-0 w-2 bg-gradient-to-l from-black/40 to-transparent pointer-events-none z-10" />
-            </div>
-          </div>
-
-          {/* RIGHT COLUMN: Minimalist Editorial Typography (7 Cols) */}
-          <div className="lg:col-span-7 space-y-5 text-center lg:text-left max-w-xl mx-auto lg:mx-0">
-            {/* Big Headline Name */}
-            {settings.showName !== false && (
-              <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-editorial font-black uppercase text-[#f5f3ef] tracking-[0.14em] leading-[0.94] drop-shadow-lg">
-                {settings.name}
-              </h1>
-            )}
-
-            {/* Current Role */}
-            {settings.showRole !== false && (
-              <p className="text-base sm:text-xl font-sans text-stone-300 font-light tracking-wide">
-                {settings.role || settings.subrole}
-              </p>
-            )}
-
-            {/* Thin Hairline Divider */}
-            <div className="w-20 h-[1.5px] bg-[#e5c07b]/40 mx-auto lg:mx-0" />
-
-            {/* Minimalist Statement */}
-            {settings.showStatement !== false && settings.statement && (
-              <blockquote className="text-base sm:text-lg md:text-xl font-editorial italic text-stone-200/90 leading-relaxed">
-                &ldquo;{settings.statement}&rdquo;
-              </blockquote>
-            )}
-
-            {/* Metadata (Location & Academic Focus) */}
-            <div className="space-y-2 text-center lg:text-left pt-1">
-              {settings.showLocation !== false && settings.location && (
-                <div className="flex items-center justify-center lg:justify-start gap-2 text-xs font-mono text-stone-300">
-                  <MapPin className="w-3.5 h-3.5 text-[#e5c07b]" />
-                  <span>{settings.location}</span>
-                </div>
-              )}
-
-              {settings.showWhereAndWhat !== false && settings.whereAndWhat && (
-                <div className="flex items-start justify-center lg:justify-start gap-2.5 text-xs font-mono text-stone-400 max-w-md">
-                  <GraduationCap className="w-3.5 h-3.5 text-[#e5c07b] shrink-0 mt-0.5" />
-                  <span className="text-[11px] leading-relaxed">
-                    {settings.whereAndWhat}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Social Links */}
-            {settings.showSocialLinks !== false && (
-              <div className="pt-2 flex justify-center lg:justify-start">
-                {renderSocialLinks()}
+                {/* Right Edge Multi-Page Stack Depth */}
+                <div className="absolute top-0 bottom-0 right-0 w-2.5 bg-gradient-to-l from-black/50 to-transparent pointer-events-none z-10" />
               </div>
-            )}
+            </div>
+
+            {/* RIGHT COLUMN: Museum-Grade Monograph Typography (7 Cols) */}
+            <div className="lg:col-span-7 space-y-3 sm:space-y-4 md:space-y-5 text-center lg:text-left max-w-xl mx-auto lg:mx-0">
+              {/* Monograph Series Tag */}
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-[10px] sm:text-xs font-mono uppercase tracking-[0.25em] text-[#e5c07b] font-bold">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>EDITORIAL MONOGRAPH // ISSUE 01</span>
+              </div>
+
+              {/* Big Headline Name */}
+              {settings.showName !== false && (
+                <h1 className="text-3xl sm:text-5xl md:text-6xl xl:text-7xl font-editorial font-black uppercase text-[#f5f3ef] tracking-[0.12em] sm:tracking-[0.14em] leading-[0.92] drop-shadow-xl">
+                  {settings.name}
+                </h1>
+              )}
+
+              {/* Current Role */}
+              {settings.showRole !== false && (
+                <p className="text-sm sm:text-lg md:text-xl font-sans text-stone-200/90 font-light tracking-wide">
+                  {settings.role || settings.subrole}
+                </p>
+              )}
+
+              {/* Gilded Hairline Accent */}
+              <div className="w-20 h-[2px] bg-gradient-to-r from-[#e5c07b] to-transparent mx-auto lg:mx-0" />
+
+              {/* Minimalist Statement Quote */}
+              {settings.showStatement !== false && settings.statement && (
+                <blockquote className="text-xs sm:text-base md:text-lg font-editorial italic text-stone-200/85 leading-relaxed">
+                  &ldquo;{settings.statement}&rdquo;
+                </blockquote>
+              )}
+
+              {/* Location & Academic Focus Metadata */}
+              <div className="space-y-1.5 text-center lg:text-left pt-1">
+                {settings.showLocation !== false && settings.location && (
+                  <div className="flex items-center justify-center lg:justify-start gap-2 text-xs font-mono text-stone-300">
+                    <MapPin className="w-3.5 h-3.5 text-[#e5c07b]" />
+                    <span>{settings.location}</span>
+                  </div>
+                )}
+
+                {settings.showWhereAndWhat !== false && settings.whereAndWhat && (
+                  <div className="flex items-start justify-center lg:justify-start gap-2.5 text-xs font-mono text-stone-400 max-w-md">
+                    <GraduationCap className="w-3.5 h-3.5 text-[#e5c07b] shrink-0 mt-0.5" />
+                    <span className="text-[11px] leading-relaxed">
+                      {settings.whereAndWhat}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons & Social Row */}
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                {/* Hero Explore Action Button */}
+                <button
+                  onClick={handleOpenAbout}
+                  className="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-[#e5c07b] hover:bg-[#d4af37] text-stone-950 font-mono text-xs uppercase tracking-[0.2em] font-black transition-all duration-300 cursor-pointer shadow-lg active:scale-95"
+                >
+                  <span>{isNavigating ? "OPENING..." : "EXPLORE ISSUE"}</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                {/* Social Glyphs */}
+                {settings.showSocialLinks !== false && (
+                  <div className="flex items-center gap-2">
+                    {renderSocialLinks()}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* 5. Subtle Scroll Explore Hint + Admin Link */}
-      <footer className="relative z-20 pb-2 pt-1 text-center flex items-center justify-center gap-3 text-[10px] font-mono tracking-[0.25em] text-stone-500">
+      {/* 5. Subdued Bottom Footer Explore & Admin Link (Always within viewport) */}
+      <footer className="relative z-30 pb-3 pt-1 text-center flex items-center justify-center gap-3 text-[9px] sm:text-[10px] font-mono tracking-[0.2em] sm:tracking-[0.25em] text-stone-500">
         <div
           onClick={handleOpenAbout}
           className="hover:text-stone-300 uppercase cursor-pointer transition-colors flex items-center gap-1.5"
@@ -699,7 +670,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
           href="/admin"
           className="hover:text-[#e5c07b] uppercase transition-colors"
         >
-          ADMIN ↗
+          ADMIN STUDIO ↗
         </Link>
       </footer>
     </div>
