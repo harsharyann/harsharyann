@@ -262,15 +262,15 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
 
   const isPortrait = metrics.orientation === "portrait";
 
-  // Reusable Sleek Dynamic Island Capsule Dock Component
-  const renderCapsuleDock = () => (
-    <div className="backdrop-blur-2xl bg-white/[0.05] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.25)] rounded-full px-4 sm:px-6 py-2 flex items-center gap-3 sm:gap-4 transition-all duration-300 hover:border-white/35 hover:shadow-[0_25px_60px_rgba(0,0,0,0.85)]">
+  // Reusable Sleek Editorial Colophon Bar (NO BENTO BOX - Natively Printed Look)
+  const renderEditorialBar = () => (
+    <div className="flex items-center justify-center gap-4 sm:gap-6 text-stone-300 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
       {/* Social Icons (Email, GitHub, LinkedIn) */}
-      <div className="flex items-center gap-1 sm:gap-1.5 text-stone-400">
+      <div className="flex items-center gap-2 sm:gap-3 text-stone-400">
         <a
           href={portfolioData.socialLinks.email}
           title="Email Harsh Aryan"
-          className="p-1.5 text-stone-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+          className="p-1 text-stone-300/80 hover:text-white hover:scale-110 transition-all"
           aria-label="Email"
         >
           <Mail className="w-4 h-4" />
@@ -281,7 +281,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
           target="_blank"
           rel="noopener noreferrer"
           title="GitHub Profile"
-          className="p-1.5 text-stone-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+          className="p-1 text-stone-300/80 hover:text-white hover:scale-110 transition-all"
           aria-label="GitHub"
         >
           <GithubIcon className="w-4 h-4" />
@@ -292,24 +292,23 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
           target="_blank"
           rel="noopener noreferrer"
           title="LinkedIn Profile"
-          className="p-1.5 text-stone-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+          className="p-1 text-stone-300/80 hover:text-white hover:scale-110 transition-all"
           aria-label="LinkedIn"
         >
           <LinkedinIcon className="w-4 h-4" />
         </a>
       </div>
 
-      <span className="w-px h-4 bg-white/20" />
+      <span className="w-1 h-1 rounded-full bg-[#e5c07b]/70" />
 
-      {/* Hero OPEN Button with Accent Shimmer */}
+      {/* Hero OPEN Button (Editorial Underline - No Bento Box) */}
       <button
         onClick={handleOpenAbout}
-        style={{
-          borderColor: palette.borderGlow,
-        }}
-        className="group inline-flex items-center gap-2 px-5 sm:px-6 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border text-[#f5f3ef] font-mono text-xs uppercase tracking-[0.22em] font-bold transition-all duration-300 cursor-pointer shadow-md active:scale-95"
+        className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.25em] font-bold text-[#f5f3ef] hover:text-[#e5c07b] transition-all cursor-pointer py-1"
       >
-        <span>{isNavigating ? "OPENING..." : "OPEN"}</span>
+        <span className="border-b border-white/40 group-hover:border-[#e5c07b] pb-0.5 transition-colors">
+          {isNavigating ? "OPENING..." : "OPEN"}
+        </span>
         <span
           style={{ color: palette.lightAccent }}
           className="group-hover:translate-x-1 transition-transform duration-300"
@@ -318,15 +317,15 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
         </span>
       </button>
 
-      <span className="w-px h-4 bg-white/20" />
+      <span className="w-1 h-1 rounded-full bg-[#e5c07b]/70" />
 
       {/* Theme Switcher & Admin Cog */}
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex items-center gap-2 sm:gap-2.5 text-stone-400">
         <ThemeToggle />
         <Link
           href="/admin"
           title="Admin Control Panel"
-          className="p-1.5 text-stone-400 hover:text-[#e5c07b] hover:bg-white/10 rounded-full transition-colors"
+          className="p-1 text-stone-300/80 hover:text-[#e5c07b] hover:scale-110 transition-all"
           aria-label="Admin Panel"
         >
           <Settings className="w-4 h-4" />
