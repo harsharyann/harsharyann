@@ -10,7 +10,6 @@ import {
 import { PortfolioSettings } from "@/data/portfolioSettings";
 import { portfolioData } from "@/data/portfolioData";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
-import { ThemeToggle } from "./ThemeToggle";
 
 interface PhotoAwareCoverProps {
   settings: PortfolioSettings;
@@ -260,67 +259,39 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
 
   const isPortrait = metrics.orientation === "portrait";
 
-  // Reusable Sleek Editorial Colophon Bar (NO BENTO BOX - Natively Printed Look)
+  // Reusable Sleek Social Links (NO Buttons - Purely Integrated)
   const renderEditorialBar = () => (
-    <div className="flex items-center justify-center gap-4 sm:gap-6 text-stone-300 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
-      {/* Social Icons (Email, GitHub, LinkedIn) */}
-      <div className="flex items-center gap-2 sm:gap-3 text-stone-400">
-        <a
-          href={portfolioData.socialLinks.email}
-          title="Email Harsh Aryan"
-          className="p-1 text-stone-300/80 hover:text-white hover:scale-110 transition-all"
-          aria-label="Email"
-        >
-          <Mail className="w-4 h-4" />
-        </a>
-
-        <a
-          href={portfolioData.socialLinks.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="GitHub Profile"
-          className="p-1 text-stone-300/80 hover:text-white hover:scale-110 transition-all"
-          aria-label="GitHub"
-        >
-          <GithubIcon className="w-4 h-4" />
-        </a>
-
-        <a
-          href={portfolioData.socialLinks.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="LinkedIn Profile"
-          className="p-1 text-stone-300/80 hover:text-white hover:scale-110 transition-all"
-          aria-label="LinkedIn"
-        >
-          <LinkedinIcon className="w-4 h-4" />
-        </a>
-      </div>
-
-      <span className="w-1 h-1 rounded-full bg-[#e5c07b]/70" />
-
-      {/* Hero OPEN Button (Editorial Underline - No Bento Box) */}
-      <button
-        onClick={handleOpenAbout}
-        className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.25em] font-bold text-[#f5f3ef] hover:text-[#e5c07b] transition-all cursor-pointer py-1"
+    <div className="flex items-center justify-center gap-3 sm:gap-4 text-stone-400 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+      <a
+        href={portfolioData.socialLinks.email}
+        title="Email Harsh Aryan"
+        className="p-1.5 text-stone-300/80 hover:text-[#e5c07b] hover:scale-110 transition-all"
+        aria-label="Email"
       >
-        <span className="border-b border-white/40 group-hover:border-[#e5c07b] pb-0.5 transition-colors">
-          {isNavigating ? "OPENING..." : "OPEN"}
-        </span>
-        <span
-          style={{ color: palette.lightAccent }}
-          className="group-hover:translate-x-1 transition-transform duration-300"
-        >
-          &rarr;
-        </span>
-      </button>
+        <Mail className="w-4 h-4" />
+      </a>
 
-      <span className="w-1 h-1 rounded-full bg-[#e5c07b]/70" />
+      <a
+        href={portfolioData.socialLinks.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="GitHub Profile"
+        className="p-1.5 text-stone-300/80 hover:text-[#e5c07b] hover:scale-110 transition-all"
+        aria-label="GitHub"
+      >
+        <GithubIcon className="w-4 h-4" />
+      </a>
 
-      {/* Theme Switcher */}
-      <div className="flex items-center text-stone-400">
-        <ThemeToggle />
-      </div>
+      <a
+        href={portfolioData.socialLinks.linkedin}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="LinkedIn Profile"
+        className="p-1.5 text-stone-300/80 hover:text-[#e5c07b] hover:scale-110 transition-all"
+        aria-label="LinkedIn"
+      >
+        <LinkedinIcon className="w-4 h-4" />
+      </a>
     </div>
   );
 
@@ -413,15 +384,6 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
             <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-white/80 font-bold">
               {settings.name}
             </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {settings.showLocation !== false && settings.location && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-300/80 drop-shadow-sm">
-                <MapPin className="w-3 h-3 text-[#e5c07b]" />
-                {settings.location}
-              </span>
-            )}
           </div>
         </header>
 
