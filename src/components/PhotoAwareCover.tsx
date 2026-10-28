@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Mail,
   MapPin,
   GraduationCap,
+  Sliders,
 } from "lucide-react";
 import { PortfolioSettings } from "@/data/portfolioSettings";
 import { portfolioData } from "@/data/portfolioData";
@@ -82,7 +84,6 @@ function extractPaletteFromImage(img: HTMLImageElement): ExtractedPalette {
       }
     }
 
-    // Boost luminance for text/border highlights
     const lum = bestR * 0.299 + bestG * 0.587 + bestB * 0.114;
     let textR = bestR,
       textG = bestG,
@@ -118,12 +119,18 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
   const touchStartY = useRef<number | null>(null);
   const coverContainerRef = useRef<HTMLDivElement>(null);
 
-  // Default to portrait aspect ratio (prevents layout shift on initial mount)
+  // Active media URL (photo or video)
+  const mediaUrl =
+    settings.coverMediaUrl || settings.coverImage || "/custom-cover.jpg";
+  const isVideo =
+    settings.coverMediaType === "video" ||
+    /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(mediaUrl);
+
   const [metrics, setMetrics] = useState<ImageMetrics>({
-    width: 768,
-    height: 1024,
-    aspectRatio: 0.75,
-    orientation: "portrait",
+    width: 1920,
+    height: 1080,
+    aspectRatio: 1.77,
+    orientation: "landscape",
   });
   const [palette, setPalette] = useState<ExtractedPalette>(defaultPalette);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -152,13 +159,12 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
     if (isNavigating) return;
     setIsNavigating(true);
 
-    // Smooth 700ms editorial transition into the dedicated About page
     setTimeout(() => {
       router.push("/about");
     }, 700);
   }, [isNavigating, router]);
 
-  // Natural scroll detection: scrolling down opens the dedicated About page
+  // Natural scroll detection
   const handleWheel = useCallback(
     (e: React.WheelEvent<HTMLDivElement>) => {
       if (e.deltaY > 25 && !isNavigating) {
@@ -168,7 +174,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
     [handleOpenAbout, isNavigating]
   );
 
-  // Mobile swipe-up detection: swiping up opens the dedicated About page
+  // Mobile swipe-up detection
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     touchStartY.current = e.touches[0].clientY;
   };
@@ -181,7 +187,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
     }
   };
 
-  // Subtle 2D magnetic levitation interaction (ZERO 3D, buttery smooth)
+  // Subtle 2D magnetic levitation interaction
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!coverContainerRef.current) return;
     const rect = coverContainerRef.current.getBoundingClientRect();
@@ -201,7 +207,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
     setMagnetic({ x: 0, y: 0 });
   };
 
-  // Automatically detect actual aspect ratio and orientation of loaded photo
+  // Detect image aspect ratio when photo loads
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
     const { naturalWidth, naturalHeight } = img;
@@ -211,8 +217,6 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
 
       if (ratio > 1.05) {
         orientation = "landscape";
-      } else if (ratio < 0.95) {
-        orientation = "portrait";
       } else {
         orientation = "portrait";
       }
@@ -224,19 +228,18 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
         orientation,
       });
 
-      // Extract photo palette and adapt ambient aura
       const extracted = extractPaletteFromImage(img);
       setPalette(extracted);
       setIsLoaded(true);
     }
   };
 
-  // Re-detect if coverImage prop changes dynamically
+  // Re-detect if media changes dynamically
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && !isVideo) {
       const img = new Image();
       img.crossOrigin = "anonymous";
-      img.src = settings.coverImage;
+      img.src = mediaUrl;
       img.onload = () => {
         const ratio = img.naturalWidth / img.naturalHeight;
         let orientation: "portrait" | "landscape" | "square" = "portrait";
@@ -255,12 +258,12 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
         setIsLoaded(true);
       };
     }
-  }, [settings.coverImage]);
+  }, [mediaUrl, isVideo]);
 
-  const isPortrait = metrics.orientation === "portrait";
+  const isPortrait = metrics.orientation === "portrait" && !isVideo;
 
-  // Reusable Sleek Social Links (NO Buttons - Purely Integrated)
-  const renderEditorialBar = () => (
+  // Reusable Sleek Social Links
+  const renderSocialLinks = () => (
     <div className="flex items-center justify-center gap-3 sm:gap-4 text-stone-400 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
       <a
         href={portfolioData.socialLinks.email}
@@ -296,7 +299,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
   );
 
   // =========================================================================
-  // CASE 1: FULLSCREEN CINEMA COVER FOR LANDSCAPE IMAGES
+  // CASE 1: FULLSCREEN CINEMA COVER FOR LANDSCAPE & VIDEO
   // =========================================================================
   if (!isPortrait) {
     return (
@@ -312,41 +315,74 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
             : "opacity-100 translate-y-0 scale-100"
         }`}
       >
-        {/* Fullscreen Master Cover Photo Layer */}
+        {/* Fullscreen Master Cover Photo/Video Layer */}
         <div
           ref={coverContainerRef}
           onClick={handleOpenAbout}
           className="absolute inset-0 z-0 cursor-pointer overflow-hidden"
         >
-          {/* Ambient blurred backdrop if contain mode (eliminates harsh black bars) */}
+          {/* Ambient blurred backdrop if contain mode */}
           {settings.coverImageFit === "contain" && (
-            <img
-              src={settings.coverImage}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover filter blur-3xl scale-110 opacity-35 brightness-75"
-            />
+            isVideo ? (
+              <video
+                key={`ambient-${mediaUrl}`}
+                src={mediaUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover filter blur-3xl scale-110 opacity-35 brightness-75 pointer-events-none"
+              />
+            ) : (
+              <img
+                src={mediaUrl}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover filter blur-3xl scale-110 opacity-35 brightness-75 pointer-events-none"
+              />
+            )
           )}
 
-          {/* Master Full-bleed Photograph */}
-          <img
-            ref={imgRef}
-            src={settings.coverImage}
-            alt={settings.name}
-            onLoad={handleImageLoad}
-            style={{
-              objectFit: settings.coverImageFit,
-              objectPosition:
-                settings.coverImagePosition === "top"
-                  ? "center top"
-                  : settings.coverImagePosition === "bottom"
-                  ? "center bottom"
-                  : "center center",
-            }}
-            className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98] transition-all duration-700 ${
-              isLoaded ? "opacity-100 scale-100" : "opacity-95 scale-[1.01]"
-            }`}
-          />
+          {/* Master Full-bleed Media (Photo or Looping Video) */}
+          {isVideo ? (
+            <video
+              key={`master-${mediaUrl}`}
+              src={mediaUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                objectFit: settings.coverImageFit || "cover",
+                objectPosition:
+                  settings.coverImagePosition === "top"
+                    ? "center top"
+                    : settings.coverImagePosition === "bottom"
+                    ? "center bottom"
+                    : "center center",
+              }}
+              className="w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98]"
+            />
+          ) : (
+            <img
+              ref={imgRef}
+              src={mediaUrl}
+              alt={settings.name}
+              onLoad={handleImageLoad}
+              style={{
+                objectFit: settings.coverImageFit || "cover",
+                objectPosition:
+                  settings.coverImagePosition === "top"
+                    ? "center top"
+                    : settings.coverImagePosition === "bottom"
+                    ? "center bottom"
+                    : "center center",
+              }}
+              className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98] transition-all duration-700 ${
+                isLoaded ? "opacity-100 scale-100" : "opacity-95 scale-[1.01]"
+              }`}
+            />
+          )}
 
           {/* Film Grain Texture */}
           <div
@@ -356,7 +392,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
             }}
           />
 
-          {/* Dynamic Ambient Lighting Bloom tailored to extracted photo palette */}
+          {/* Dynamic Ambient Lighting Bloom */}
           <div
             className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] sm:w-[1100px] h-[500px] rounded-full blur-[140px] pointer-events-none opacity-40 transition-all duration-1000"
             style={{
@@ -367,7 +403,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
           {/* Top Subtle Vignette */}
           <div className="absolute top-0 inset-x-0 h-36 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none" />
 
-          {/* Bottom Rich Cinema Scrim: 100% crystal-clear contrast for overlaid typography on ANY photo */}
+          {/* Bottom Rich Cinema Scrim */}
           <div className="absolute bottom-0 inset-x-0 h-[80%] sm:h-[70%] md:h-[65%] bg-gradient-to-t from-[#060709] via-[#060709]/85 via-45% to-transparent pointer-events-none" />
 
           {/* Subtle Edge Vignette */}
@@ -381,30 +417,44 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
               style={{ backgroundColor: palette.primaryAccent }}
               className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_8px_currentColor]"
             />
-            <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-white/80 font-bold">
-              {settings.name}
-            </span>
+            {settings.showName !== false && (
+              <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-white/80 font-bold">
+                {settings.name}
+              </span>
+            )}
           </div>
+
+          {/* Admin Studio Link */}
+          <Link
+            href="/admin"
+            title="Open Admin Studio"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/20 bg-white/[0.06] hover:bg-white/15 text-stone-300 hover:text-white font-mono text-[10px] uppercase tracking-widest backdrop-blur-md transition-all cursor-pointer shadow-sm active:scale-95"
+          >
+            <Sliders className="w-3 h-3 text-[#e5c07b]" />
+            <span>ADMIN</span>
+          </Link>
         </header>
 
-        {/* Clean Breathing Space (No Watermark) */}
+        {/* Clean Breathing Space */}
         <div className="my-auto pointer-events-none" />
 
-        {/* Bottom Integrated Editorial Overlay ("jo niche likho ho usko isme hi likh do") */}
+        {/* Bottom Integrated Editorial Overlay */}
         <div className="relative z-20 w-full max-w-5xl mx-auto px-6 sm:px-10 pb-6 sm:pb-8 flex flex-col items-center text-center space-y-3.5 sm:space-y-4">
           {/* Big Headline Name */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-editorial font-black uppercase text-[#f5f3ef] tracking-[0.14em] leading-[0.92] drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)]">
-            {settings.name}
-          </h1>
+          {settings.showName !== false && (
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-editorial font-black uppercase text-[#f5f3ef] tracking-[0.14em] leading-[0.92] drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)]">
+              {settings.name}
+            </h1>
+          )}
 
-          {/* Role Subtitle (Controlled via Admin) */}
+          {/* Role Subtitle */}
           {settings.showRole !== false && (
             <p className="text-sm sm:text-base md:text-lg font-sans text-stone-200/95 font-light tracking-wider drop-shadow-md">
               {settings.role || settings.subrole}
             </p>
           )}
 
-          {/* Metadata Row (Location & What/Where) - NO Bento Pills, Pure Editorial Typesetting */}
+          {/* Metadata Row (Location & What/Where) */}
           {(settings.showLocation !== false || settings.showWhereAndWhat !== false) && (
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs font-mono text-stone-300 tracking-wider drop-shadow-md">
               {settings.showLocation !== false && settings.location && (
@@ -432,25 +482,36 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
             </div>
           )}
 
-          {/* Minimalist Statement Quote (Controlled via Admin) */}
+          {/* Minimalist Statement Quote */}
           {settings.showStatement !== false && settings.statement && (
             <blockquote className="text-xs sm:text-sm md:text-base font-editorial italic text-stone-200/90 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
               &ldquo;{settings.statement}&rdquo;
             </blockquote>
           )}
 
-          {/* Integrated Editorial Bar (Directly on the cover - NO Bento Box) */}
-          <div className="pt-2 sm:pt-3">
-            {renderEditorialBar()}
-          </div>
+          {/* Social Links */}
+          {settings.showSocialLinks !== false && (
+            <div className="pt-2 sm:pt-3">
+              {renderSocialLinks()}
+            </div>
+          )}
 
-          {/* Scroll to Explore Hint */}
-          <div
-            onClick={handleOpenAbout}
-            className="pt-1 text-[10px] font-mono tracking-[0.25em] text-stone-400 hover:text-white uppercase cursor-pointer transition-colors flex items-center justify-center gap-1.5"
-          >
-            <span>SCROLL TO EXPLORE</span>
-            <span className="animate-bounce">&darr;</span>
+          {/* Scroll to Explore Hint + Admin Link */}
+          <div className="flex items-center gap-3 pt-1 text-[10px] font-mono tracking-[0.25em] text-stone-400">
+            <div
+              onClick={handleOpenAbout}
+              className="hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1.5"
+            >
+              <span>SCROLL TO EXPLORE</span>
+              <span className="animate-bounce">&darr;</span>
+            </div>
+            <span className="text-stone-600">&bull;</span>
+            <Link
+              href="/admin"
+              className="hover:text-[#e5c07b] uppercase transition-colors"
+            >
+              ADMIN ↗
+            </Link>
           </div>
         </div>
       </div>
@@ -473,7 +534,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
           : "opacity-100 translate-y-0 scale-100"
       }`}
     >
-      {/* 1. Subtle Analog Film Grain Texture (Editorial print tactility) */}
+      {/* 1. Subtle Analog Film Grain Texture */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-screen z-0"
         style={{
@@ -481,7 +542,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
         }}
       />
 
-      {/* 2. Dynamic Glassmorphic Ambient Mesh (Adapts automatically to photo colors) */}
+      {/* 2. Dynamic Glassmorphic Ambient Mesh */}
       <div
         className="absolute inset-0 pointer-events-none z-0 transition-all duration-1000 ease-out"
         style={{
@@ -489,7 +550,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
         }}
       />
 
-      {/* 3. Dual-Orb Breathing Ambient Aurora (Atmospheric spotlight bloom) */}
+      {/* 3. Dual-Orb Breathing Ambient Aurora */}
       <div
         className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[900px] h-[420px] rounded-full blur-[130px] pointer-events-none transition-all duration-1000 opacity-70 z-0"
         style={{
@@ -520,43 +581,65 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
                 <div className="absolute -inset-full bg-gradient-to-tr from-transparent via-white/12 to-transparent -rotate-45 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
               </div>
 
-              {/* Photograph */}
-              <img
-                ref={imgRef}
-                src={settings.coverImage}
-                alt={settings.name}
-                onLoad={handleImageLoad}
-                style={{
-                  objectFit: settings.coverImageFit,
-                  objectPosition:
-                    settings.coverImagePosition === "top"
-                      ? "center top"
-                      : settings.coverImagePosition === "bottom"
-                      ? "center bottom"
-                      : "center center",
-                }}
-                className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.99] transition-all duration-500 group-hover:scale-[1.015] ${
-                  isLoaded ? "opacity-100" : "opacity-95"
-                }`}
-              />
+              {/* Media: Photo or Video */}
+              {isVideo ? (
+                <video
+                  src={mediaUrl}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  style={{
+                    objectFit: settings.coverImageFit || "cover",
+                    objectPosition:
+                      settings.coverImagePosition === "top"
+                        ? "center top"
+                        : settings.coverImagePosition === "bottom"
+                        ? "center bottom"
+                        : "center center",
+                  }}
+                  className="w-full h-full object-cover filter contrast-[1.03] saturate-[1.06] brightness-[0.99]"
+                />
+              ) : (
+                <img
+                  ref={imgRef}
+                  src={mediaUrl}
+                  alt={settings.name}
+                  onLoad={handleImageLoad}
+                  style={{
+                    objectFit: settings.coverImageFit || "cover",
+                    objectPosition:
+                      settings.coverImagePosition === "top"
+                        ? "center top"
+                        : settings.coverImagePosition === "bottom"
+                        ? "center bottom"
+                        : "center center",
+                  }}
+                  className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.99] transition-all duration-500 group-hover:scale-[1.015] ${
+                    isLoaded ? "opacity-100" : "opacity-95"
+                  }`}
+                />
+              )}
 
               {/* Magazine Spine Fold (Left Edge) */}
               <div className="absolute top-0 bottom-0 left-0 w-3.5 bg-gradient-to-r from-black/65 via-black/25 to-transparent pointer-events-none z-10" />
               <div className="absolute top-0 bottom-0 left-[2px] w-[1px] bg-white/25 pointer-events-none z-10" />
 
-              {/* Right Edge Inner Shadow (Gives realistic layered depth) */}
+              {/* Right Edge Inner Shadow */}
               <div className="absolute top-0 bottom-0 right-0 w-2 bg-gradient-to-l from-black/40 to-transparent pointer-events-none z-10" />
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Minimalist Editorial Typography & Integrated Dock (7 Cols) */}
+          {/* RIGHT COLUMN: Minimalist Editorial Typography (7 Cols) */}
           <div className="lg:col-span-7 space-y-5 text-center lg:text-left max-w-xl mx-auto lg:mx-0">
             {/* Big Headline Name */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-editorial font-black uppercase text-[#f5f3ef] tracking-[0.14em] leading-[0.94] drop-shadow-lg">
-              {settings.name}
-            </h1>
+            {settings.showName !== false && (
+              <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-editorial font-black uppercase text-[#f5f3ef] tracking-[0.14em] leading-[0.94] drop-shadow-lg">
+                {settings.name}
+              </h1>
+            )}
 
-            {/* Current Role (Controlled via Admin) */}
+            {/* Current Role */}
             {settings.showRole !== false && (
               <p className="text-base sm:text-xl font-sans text-stone-300 font-light tracking-wide">
                 {settings.role || settings.subrole}
@@ -566,14 +649,14 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
             {/* Thin Hairline Divider */}
             <div className="w-20 h-[1.5px] bg-[#e5c07b]/40 mx-auto lg:mx-0" />
 
-            {/* Minimalist Statement (Controlled via Admin) */}
+            {/* Minimalist Statement */}
             {settings.showStatement !== false && settings.statement && (
               <blockquote className="text-base sm:text-lg md:text-xl font-editorial italic text-stone-200/90 leading-relaxed">
                 &ldquo;{settings.statement}&rdquo;
               </blockquote>
             )}
 
-            {/* Metadata (Location & Academic Focus) - NO Bento Boxes, Pure Editorial Typesetting */}
+            {/* Metadata (Location & Academic Focus) */}
             <div className="space-y-2 text-center lg:text-left pt-1">
               {settings.showLocation !== false && settings.location && (
                 <div className="flex items-center justify-center lg:justify-start gap-2 text-xs font-mono text-stone-300">
@@ -584,7 +667,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
 
               {settings.showWhereAndWhat !== false && settings.whereAndWhat && (
                 <div className="flex items-start justify-center lg:justify-start gap-2.5 text-xs font-mono text-stone-400 max-w-md">
-                  <GraduationCap className="w-4 h-4 text-[#e5c07b] shrink-0 mt-0.5" />
+                  <GraduationCap className="w-3.5 h-3.5 text-[#e5c07b] shrink-0 mt-0.5" />
                   <span className="text-[11px] leading-relaxed">
                     {settings.whereAndWhat}
                   </span>
@@ -592,23 +675,32 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
               )}
             </div>
 
-            {/* Integrated Editorial Bar in Portrait Right Column (NO Bento Box) */}
-            <div className="pt-2 flex justify-center lg:justify-start">
-              {renderEditorialBar()}
-            </div>
+            {/* Social Links */}
+            {settings.showSocialLinks !== false && (
+              <div className="pt-2 flex justify-center lg:justify-start">
+                {renderSocialLinks()}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* 6. Subtle Scroll Explore Hint (Always present at bottom) */}
-      <footer className="relative z-20 pb-2 pt-1 text-center">
+      {/* 5. Subtle Scroll Explore Hint + Admin Link */}
+      <footer className="relative z-20 pb-2 pt-1 text-center flex items-center justify-center gap-3 text-[10px] font-mono tracking-[0.25em] text-stone-500">
         <div
           onClick={handleOpenAbout}
-          className="text-[10px] font-mono tracking-[0.25em] text-stone-500 hover:text-stone-300 uppercase cursor-pointer transition-colors flex items-center justify-center gap-1.5"
+          className="hover:text-stone-300 uppercase cursor-pointer transition-colors flex items-center gap-1.5"
         >
           <span>SCROLL TO EXPLORE</span>
           <span className="animate-bounce">&darr;</span>
         </div>
+        <span>&bull;</span>
+        <Link
+          href="/admin"
+          className="hover:text-[#e5c07b] uppercase transition-colors"
+        >
+          ADMIN ↗
+        </Link>
       </footer>
     </div>
   );

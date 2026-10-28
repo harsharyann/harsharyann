@@ -1,18 +1,24 @@
+export type CoverMediaType = "image" | "video";
+
 export interface PortfolioSettings {
-  coverImage: string;
+  coverMediaUrl: string;
+  coverMediaType: CoverMediaType;
+  coverImage?: string; // backwards compatibility
   coverImageFit: "cover" | "contain";
   coverImagePosition: "top" | "center" | "bottom";
   name: string;
   tagline: string;
   subrole: string;
-  statement: string;
-  location?: string;
   role?: string;
+  location?: string;
   whereAndWhat?: string;
-  showLocation?: boolean;
+  statement?: string;
+  showName?: boolean;
   showRole?: boolean;
+  showLocation?: boolean;
   showWhereAndWhat?: boolean;
   showStatement?: boolean;
+  showSocialLinks?: boolean;
   whatIDo?: {
     number: string;
     title: string;
@@ -26,6 +32,8 @@ export interface PortfolioSettings {
 }
 
 export const defaultSettings: PortfolioSettings = {
+  coverMediaUrl: "/custom-cover.jpg",
+  coverMediaType: "image",
   coverImage: "/custom-cover.jpg",
   coverImageFit: "cover",
   coverImagePosition: "top",
@@ -36,10 +44,12 @@ export const defaultSettings: PortfolioSettings = {
   location: "Chennai, India",
   whereAndWhat: "1st Year B.Tech CSE (AI & Data Science) · Building foundations in Code, Math & Models",
   statement: "Crafting interfaces at the intersection of modern design and artificial intelligence.",
-  showLocation: true,
+  showName: true,
   showRole: true,
+  showLocation: true,
   showWhereAndWhat: false,
   showStatement: false,
+  showSocialLinks: true,
   whatIDo: [
     {
       number: "01",
@@ -86,4 +96,4 @@ export const defaultSettings: PortfolioSettings = {
   ],
 };
 
-export const SETTINGS_STORAGE_KEY = "harsh_editorial_portfolio_settings_v1";
+export const SETTINGS_STORAGE_KEY = "harsh_editorial_portfolio_settings_v2";
