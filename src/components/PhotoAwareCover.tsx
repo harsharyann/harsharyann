@@ -2,10 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import {
   Mail,
-  Settings,
   MapPin,
   GraduationCap,
 } from "lucide-react";
@@ -319,17 +317,9 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
 
       <span className="w-1 h-1 rounded-full bg-[#e5c07b]/70" />
 
-      {/* Theme Switcher & Admin Cog */}
-      <div className="flex items-center gap-2 sm:gap-2.5 text-stone-400">
+      {/* Theme Switcher */}
+      <div className="flex items-center text-stone-400">
         <ThemeToggle />
-        <Link
-          href="/admin"
-          title="Admin Control Panel"
-          className="p-1 text-stone-300/80 hover:text-[#e5c07b] hover:scale-110 transition-all"
-          aria-label="Admin Panel"
-        >
-          <Settings className="w-4 h-4" />
-        </Link>
       </div>
     </div>
   );
@@ -435,24 +425,8 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
           </div>
         </header>
 
-        {/* Hollow Watermark: HARSH ARYAN across Mid-Screen */}
-        <div
-          className="relative z-10 my-auto pointer-events-none select-none flex items-center justify-center opacity-25 sm:opacity-35 transition-transform duration-500 ease-out"
-          style={{
-            transform: `translate3d(${magnetic.x * 0.4}px, ${magnetic.y * 0.4}px, 0)`,
-          }}
-        >
-          <span
-            className="text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] xl:text-[13rem] font-editorial font-black uppercase tracking-[0.22em] whitespace-nowrap leading-none"
-            style={{
-              WebkitTextStroke: "1.5px rgba(255, 255, 255, 0.18)",
-              color: "transparent",
-              textShadow: `0 0 50px ${palette.ambientGlowSubtle}`,
-            }}
-          >
-            {settings.name}
-          </span>
-        </div>
+        {/* Clean Breathing Space (No Watermark) */}
+        <div className="my-auto pointer-events-none" />
 
         {/* Bottom Integrated Editorial Overlay ("jo niche likho ho usko isme hi likh do") */}
         <div className="relative z-20 w-full max-w-5xl mx-auto px-6 sm:px-10 pb-6 sm:pb-8 flex flex-col items-center text-center space-y-3.5 sm:space-y-4">
