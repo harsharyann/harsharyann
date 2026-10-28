@@ -12,8 +12,8 @@ export function MagazineColophon() {
   const pathname = usePathname();
   const { personal, socialLinks } = portfolioData;
 
-  // Do not render colophon footer on the cover page (Page 01) or standalone admin panel
-  if (pathname === "/" || pathname === "/admin") {
+  // Do not render colophon footer on the cover page (Page 01)
+  if (pathname === "/") {
     return null;
   }
 
