@@ -427,7 +427,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
 
           <div className="flex items-center gap-3">
             {settings.showLocation !== false && settings.location && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-300/85 backdrop-blur-md bg-black/40 border border-white/10 px-3 py-1 rounded-full shadow-md">
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-300/80 drop-shadow-sm">
                 <MapPin className="w-3 h-3 text-[#e5c07b]" />
                 {settings.location}
               </span>
@@ -468,20 +468,27 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
             </p>
           )}
 
-          {/* Status Badges Row (Location & What/Where) (Controlled via Admin) */}
+          {/* Metadata Row (Location & What/Where) - NO Bento Pills, Pure Editorial Typesetting */}
           {(settings.showLocation !== false || settings.showWhereAndWhat !== false) && (
-            <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-              {settings.showLocation !== false && (
-                <div className="backdrop-blur-xl bg-black/55 border border-white/20 text-stone-200 rounded-full px-4 py-1.5 text-xs font-mono flex items-center gap-2 shadow-xl">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs font-mono text-stone-300 tracking-wider drop-shadow-md">
+              {settings.showLocation !== false && settings.location && (
+                <div className="flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-[#e5c07b]" />
-                  <span>{settings.location || "Chennai, India"}</span>
+                  <span>{settings.location}</span>
                 </div>
               )}
 
-              {settings.showWhereAndWhat !== false && (
-                <div className="backdrop-blur-xl bg-black/55 border border-white/20 text-stone-200/95 rounded-full px-4 py-1.5 text-xs font-mono flex items-center gap-2 shadow-xl max-w-xl text-left">
-                  <GraduationCap className="w-4 h-4 text-[#e5c07b] shrink-0" />
-                  <span className="text-[11px] truncate sm:whitespace-normal">
+              {settings.showLocation !== false &&
+                settings.showWhereAndWhat !== false &&
+                settings.location &&
+                settings.whereAndWhat && (
+                  <span className="text-white/30 hidden sm:inline">&bull;</span>
+                )}
+
+              {settings.showWhereAndWhat !== false && settings.whereAndWhat && (
+                <div className="flex items-center gap-1.5 max-w-xl text-center">
+                  <GraduationCap className="w-3.5 h-3.5 text-[#e5c07b] shrink-0" />
+                  <span className="text-[11px] leading-relaxed">
                     {settings.whereAndWhat}
                   </span>
                 </div>
@@ -496,9 +503,9 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
             </blockquote>
           )}
 
-          {/* Integrated Sleek Capsule Dock right on the cover */}
-          <div className="pt-1 sm:pt-2">
-            {renderCapsuleDock()}
+          {/* Integrated Editorial Bar (Directly on the cover - NO Bento Box) */}
+          <div className="pt-2 sm:pt-3">
+            {renderEditorialBar()}
           </div>
 
           {/* Scroll to Explore Hint */}
