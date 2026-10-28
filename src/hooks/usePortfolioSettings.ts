@@ -1,13 +1,17 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import {
   PortfolioSettings,
   defaultSettings,
   SETTINGS_STORAGE_KEY,
 } from "@/data/portfolioSettings";
 
+const emptySubscribe = () => () => {};
+
 export function usePortfolioSettings() {
+  const isLoaded = useSyncExternalStore(emptySubscribe, () => true, () => false);
+
   // Synchronous initial state from localStorage (eliminates any visual flash on refresh)
   const [settings, setSettings] = useState<PortfolioSettings>(() => {
     if (typeof window !== "undefined") {
@@ -22,7 +26,6 @@ export function usePortfolioSettings() {
     }
     return defaultSettings;
   });
-  const [isLoaded, setIsLoaded] = useState(false);
 
   // Sync with disk API & setup storage listeners
   useEffect(() => {
@@ -41,8 +44,6 @@ export function usePortfolioSettings() {
         }
       })
       .catch(() => {});
-
-    setIsLoaded(true);
 
     const handleStorageUpdate = () => {
       try {
