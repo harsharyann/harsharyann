@@ -1105,13 +1105,13 @@ export default function AdminPage() {
                     </div>
                   </div>
                 ) : (
-                  /* Landscape Simulation: Widescreen Cinema Mode */
+                  /* Landscape Simulation: Widescreen Cinema Mode (No Bento Box) */
                   <div
                     style={{
                       boxShadow:
                         "0 25px 60px rgba(0,0,0,0.9), 3px 1px 0 #1c1d24, 5px 2px 0 #0f1014",
                     }}
-                    className="relative z-10 w-full max-w-[320px] aspect-[16/10] bg-[#0b0c10] border border-white/20 rounded-[2px] overflow-hidden group shadow-2xl"
+                    className="relative z-10 w-full max-w-[320px] aspect-[16/10] bg-[#0b0c10] border border-white/20 rounded-[2px] overflow-hidden group shadow-2xl flex flex-col justify-between p-3"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -1126,8 +1126,29 @@ export default function AdminPage() {
                             ? "center bottom"
                             : "center center",
                       }}
-                      className="w-full h-full filter contrast-[1.03] saturate-[1.06]"
+                      className="absolute inset-0 w-full h-full filter contrast-[1.03] saturate-[1.06]"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
+
+                    <div className="relative z-10 flex justify-between items-center text-[8px] font-mono uppercase text-white/70">
+                      <span>{formData.name}</span>
+                      {formData.showLocation !== false && <span>{formData.location}</span>}
+                    </div>
+
+                    <div className="relative z-10 text-center space-y-0.5">
+                      <h4 className="text-xs font-editorial font-black uppercase text-white tracking-wider leading-tight">
+                        {formData.name}
+                      </h4>
+                      {formData.showRole !== false && (
+                        <p className="text-[9px] text-stone-200 font-sans line-clamp-1">
+                          {formData.role || formData.subrole}
+                        </p>
+                      )}
+                      <div className="pt-1 flex items-center justify-center gap-1.5 text-[8px] font-mono text-stone-300">
+                        <span className="border-b border-white/40 pb-0.5">OPEN</span>
+                        <span>&rarr;</span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

@@ -656,31 +656,28 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
               </blockquote>
             )}
 
-            {/* Location & Where/What Info Cards (Controlled via Admin) */}
-            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 pt-1">
-              {/* Current Location */}
-              {settings.showLocation !== false && (
-                <div className="flex items-center gap-2 text-xs font-mono text-stone-300 bg-white/[0.04] border border-white/10 rounded-full px-4 py-1.5 shadow-sm">
+            {/* Metadata (Location & Academic Focus) - NO Bento Boxes, Pure Editorial Typesetting */}
+            <div className="space-y-2 text-center lg:text-left pt-1">
+              {settings.showLocation !== false && settings.location && (
+                <div className="flex items-center justify-center lg:justify-start gap-2 text-xs font-mono text-stone-300">
                   <MapPin className="w-3.5 h-3.5 text-[#e5c07b]" />
-                  <span>{settings.location || "Chennai, India"}</span>
+                  <span>{settings.location}</span>
                 </div>
               )}
 
-              {/* Where I'm Doing & What Status */}
-              {settings.showWhereAndWhat !== false && (
-                <div className="flex items-start gap-2.5 text-xs font-mono text-stone-300/90 bg-white/[0.04] border border-white/10 rounded-xl p-3 max-w-md text-left shadow-sm">
+              {settings.showWhereAndWhat !== false && settings.whereAndWhat && (
+                <div className="flex items-start justify-center lg:justify-start gap-2.5 text-xs font-mono text-stone-400 max-w-md">
                   <GraduationCap className="w-4 h-4 text-[#e5c07b] shrink-0 mt-0.5" />
                   <span className="text-[11px] leading-relaxed">
-                    {settings.whereAndWhat ||
-                      "1st Year B.Tech CSE (AI & Data Science) · Building foundations in Code, Math & Models"}
+                    {settings.whereAndWhat}
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Integrated Capsule Dock in Portrait Right Column */}
-            <div className="pt-3 flex justify-center lg:justify-start">
-              {renderCapsuleDock()}
+            {/* Integrated Editorial Bar in Portrait Right Column (NO Bento Box) */}
+            <div className="pt-2 flex justify-center lg:justify-start">
+              {renderEditorialBar()}
             </div>
           </div>
         </div>

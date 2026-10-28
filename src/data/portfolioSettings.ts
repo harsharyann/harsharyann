@@ -26,20 +26,20 @@ export interface PortfolioSettings {
 }
 
 export const defaultSettings: PortfolioSettings = {
-  coverImage: "/harsh-cover.jpg",
+  coverImage: "/custom-cover.jpg",
   coverImageFit: "cover",
   coverImagePosition: "top",
   name: "HARSH ARYAN",
   tagline: "DESIGN · CODE · CREATE",
   subrole: "Designer · Developer · AI & Data Science",
-  role: "Designer · Developer · AI & Data Science",
+  role: "Teaching Assistant At IIT Madras",
   location: "Chennai, India",
   whereAndWhat: "1st Year B.Tech CSE (AI & Data Science) · Building foundations in Code, Math & Models",
   statement: "Crafting interfaces at the intersection of modern design and artificial intelligence.",
   showLocation: true,
   showRole: true,
-  showWhereAndWhat: true,
-  showStatement: true,
+  showWhereAndWhat: false,
+  showStatement: false,
   whatIDo: [
     {
       number: "01",
