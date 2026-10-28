@@ -232,7 +232,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
     }
   };
 
-  // Re-detect if coverImage prop changes dynamically from admin console
+  // Re-detect if coverImage prop changes dynamically
   useEffect(() => {
     if (typeof window !== "undefined") {
       const img = new Image();
