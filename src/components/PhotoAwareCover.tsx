@@ -535,26 +535,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
         }}
       />
 
-      {/* 4. HOLLOW WATERMARK: HARSH ARYAN (Gigantic luxury stroked backdrop) */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-0 transition-transform duration-500 ease-out flex items-center justify-center opacity-25 sm:opacity-35"
-        style={{
-          transform: `translate(calc(-50% + ${magnetic.x * 0.4}px), calc(-50% + ${magnetic.y * 0.4}px))`,
-        }}
-      >
-        <span
-          className="text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] xl:text-[13rem] font-editorial font-black uppercase tracking-[0.22em] whitespace-nowrap leading-none"
-          style={{
-            WebkitTextStroke: "1.5px rgba(255, 255, 255, 0.16)",
-            color: "transparent",
-            textShadow: `0 0 40px ${palette.ambientGlowSubtle}`,
-          }}
-        >
-          {settings.name}
-        </span>
-      </div>
-
-      {/* 5. MAIN PORTRAIT HERO SPREAD */}
+      {/* 4. MAIN PORTRAIT HERO SPREAD */}
       <div className="relative z-10 my-auto w-full max-w-7xl flex items-center justify-center py-4">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
           {/* LEFT COLUMN: Physical Magazine / Book Cover (5 Cols) */}
