@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Luxury Nocturnal Editorial Palette (Dark) */
+    --bg-magazine: #08090c;
+    --bg-paper: #101217;
+    --bg-paper-elevated: #161920;
+    --text-primary: #f8f7f4;
+    --text-secondary: #aba8a0;
+    --text-muted: #6f6c64;
+    --border-editorial: rgba(229, 192, 123, 0.18);
+    --border-light: rgba(255, 255, 255, 0.08);
+    --accent-gold: #d4af37;
+    --accent-amber: #e5c07b;
+    --accent-crimson: #e05252;
+    --paper-shadow: rgba(0, 0, 0, 0.85);
+    --paper-sheen: rgba(255, 255, 255, 0.06);
+  }
+
+  html.light {
+    /* Warm Italian Ivory Art Paper Palette (Light) */
+    --bg-magazine: #f9f7f2;
+    --bg-paper: #f1ede4;
+    --bg-paper-elevated: #ffffff;
+    --text-primary: #191715;
+    --text-secondary: #5c5750;
+    --text-muted: #8c857b;
+    --border-editorial: rgba(184, 134, 11, 0.22);
+    --border-light: rgba(25, 23, 21, 0.1);
+    --accent-gold: #b8860b;
+    --accent-amber: #c89218;
+    --accent-crimson: #c93b3b;
+    --paper-shadow: rgba(30, 26, 22, 0.14);
+    --paper-sheen: rgba(255, 255, 255, 0.8);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-magazine);
+  color: var(--text-primary);
+}
+
+body {
+  background-color: var(--bg-magazine);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  overflow-x: hidden;
+}
+
+/* Editorial Paper Background with Subtle Radial Ambient Lighting (100% Hardware Accelerated, Zero Lag) */
+.bg-news-texture {
+  background-color: var(--bg-magazine);
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(245, 158, 11, 0.035) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(245, 158, 11, 0.02) 0%, transparent 40%);
+}
+
+html.light .bg-news-texture {
+  background-color: var(--bg-magazine);
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(217, 119, 6, 0.035) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(217, 119, 6, 0.02) 0%, transparent 40%);
+}
+
+/* Editorial Serif Headings */
+.font-editorial {
+  font-family: "Playfair Display", Didot, "Bodoni MT", Garamond, "Times New Roman", Georgia, serif;
+  letter-spacing: -0.015em;
+}
+
+/* 3D Magazine Scene Choreography Classes (GPU Accelerated) */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.perspective-1600 {
+  perspective: 1600px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Tactile 3D Magazine Paper Styling */
+.magazine-cover-3d {
+  transform-style: preserve-3d;
+  background-color: var(--bg-paper);
+  border: 1px solid var(--border-editorial);
+  box-shadow:
+    -16px 20px 48px var(--paper-shadow),
+    0 1px 0 var(--paper-sheen) inset;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Realistic Magazine Spine Binding Shadow */
+.magazine-spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 18px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.25) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 25;
+}
+
+/* Center Fold Crease Shadow for Open Magazine Spreads */
+.magazine-crease {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 24px;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.25), transparent);
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Paper Card Style */
+.paper-card {
+  background-color: var(--bg-paper);
+  border: 1px solid var(--border-editorial);
+  box-shadow: 0 4px 20px var(--paper-shadow);
+}
+
+.border-editorial {
+  border-color: var(--border-editorial);
+}
+
+.border-editorial-light {
+  border-color: var(--border-light);
+}
+
+/* Editorial Drop Cap */
+.drop-cap::first-letter {
+  float: left;
+  font-family: "Playfair Display", Didot, "Bodoni MT", Garamond, Georgia, serif;
+  font-size: 3.4rem;
+  line-height: 0.8;
+  padding-top: 4px;
+  padding-right: 10px;
+  padding-bottom: 2px;
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+/* Pull quote */
+.pull-quote {
+  border-left: 3px solid var(--accent-gold);
+  padding-left: 1.25rem;
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+}
+
+/* Custom Scrollbar for Magazine */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-magazine);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
