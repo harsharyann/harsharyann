@@ -10,8 +10,8 @@ export function MagazineNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Do not render navbar on the cover page (Page 01) or standalone admin panel
-  if (pathname === "/" || pathname === "/admin") {
+  // Do not render navbar on the cover page (Page 01)
+  if (pathname === "/") {
     return null;
   }
 
