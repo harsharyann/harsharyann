@@ -8,7 +8,6 @@ import {
   MapPin,
   Sliders,
   ArrowRight,
-  Sparkles,
 } from "lucide-react";
 import { PortfolioSettings } from "@/data/portfolioSettings";
 import { portfolioData } from "@/data/portfolioData";
@@ -406,19 +405,18 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
 
         {/* Bottom Integrated Editorial Overlay (MOBILE-OPTIMIZED WITH SAFE-AREA PADDING) */}
         <div className="relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-8 md:px-10 pb-[calc(1.25rem+env(safe-area-inset-bottom,16px))] sm:pb-8 mt-auto flex flex-col items-center text-center space-y-2 sm:space-y-3">
-          {/* Eyebrow Role Pill */}
-          {settings.showRole !== false && (
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/45 border border-[#e5c07b]/35 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.6)] text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#e5c07b]">
-              <Sparkles className="w-3 h-3 text-[#e5c07b]" />
-              <span>{(settings.role || "Teaching Assistant @ IIT Madras").toUpperCase()}</span>
-            </div>
-          )}
-
           {/* Display Name - Modern Bold Syne Typography */}
           {settings.showName !== false && (
             <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-extrabold uppercase text-[#f5f3ef] tracking-[-0.02em] leading-[0.88] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] max-w-full break-words select-none">
               {settings.name}
             </h1>
+          )}
+
+          {/* Role Pill placed BELOW name (No star icon) */}
+          {settings.showRole !== false && (
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-black/45 border border-[#e5c07b]/35 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.6)] text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#e5c07b]">
+              <span>{(settings.role || "Teaching Assistant @ IIT Madras").toUpperCase()}</span>
+            </div>
           )}
 
           {/* Subtitle / Focus */}
@@ -519,17 +517,20 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
 
             {/* RIGHT COLUMN: Bold Creative Developer Landing Typography (7 Cols) */}
             <div className="col-span-7 space-y-4 xl:space-y-5 text-left max-w-2xl">
-              {/* Eyebrow Working Position Badge */}
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-[#e5c07b]/30 backdrop-blur-md text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#e5c07b]">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{(settings.role || "Teaching Assistant @ IIT Madras").toUpperCase()}</span>
-              </div>
-
               {/* Big Headline Name - Ultra-Cool Modern Syne Font */}
               {settings.showName !== false && (
                 <h1 className="text-6xl lg:text-7xl xl:text-8xl font-display font-extrabold uppercase text-[#f5f3ef] tracking-[-0.025em] leading-[0.88] drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)] select-none">
                   {settings.name}
                 </h1>
+              )}
+
+              {/* Role Pill placed BELOW name (No star icon) */}
+              {settings.showRole !== false && (
+                <div className="pt-0.5">
+                  <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/[0.04] border border-[#e5c07b]/30 backdrop-blur-md text-[11px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#e5c07b]">
+                    <span>{(settings.role || "Teaching Assistant @ IIT Madras").toUpperCase()}</span>
+                  </div>
+                </div>
               )}
 
               {/* Bio Hook */}
