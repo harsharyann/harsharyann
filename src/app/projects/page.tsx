@@ -5,6 +5,7 @@ import Link from "next/link";
 import { portfolioData } from "@/data/portfolioData";
 import { ArrowRight, ArrowUpRight, ExternalLink, Sparkles } from "lucide-react";
 import { GithubIcon } from "@/components/SocialIcons";
+import { AutoPageTurn } from "@/components/AutoPageTurn";
 
 export default function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -23,12 +24,12 @@ export default function ProjectsPage() {
       : portfolioData.projects.filter((p) => p.category === activeCategory);
 
   return (
-    <div className="py-10 sm:py-16 px-4 sm:px-8 max-w-6xl mx-auto space-y-12">
+    <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-12">
       {/* Page Header */}
       <div className="pb-6 border-b-2 border-black flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="sketch-stamp mb-2">
-            CHAPTER 03 • LAB EXPERIMENTS &amp; CODE
+            PROJECTS &amp; LAB EXPERIMENTS
           </div>
           <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black">
             Projects &amp; Builds
@@ -154,16 +155,12 @@ export default function ProjectsPage() {
         ))}
       </div>
 
-      {/* Navigation Footer to Chapter 04 */}
-      <div className="text-center pt-8 border-t-2 border-dashed border-stone-300">
-        <Link
-          href="/certificates"
-          className="inline-flex items-center gap-2 sketch-button-solid text-sm px-8 py-3.5"
-        >
-          <span>Continue to Chapter 04: Certificates &amp; Credentials</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
+      {/* Automatic Page Turn to Next Section */}
+      <AutoPageTurn
+        nextPath="/certificates"
+        nextTitle="Certificates & Laurels"
+        subtitle="Moving to verified honors, technical credentials & courses..."
+      />
     </div>
   );
 }

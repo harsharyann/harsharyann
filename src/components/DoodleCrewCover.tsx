@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 /**
  * DoodleCrewCover — A high-energy sketchbook cover page for Harsh Aryan.
@@ -503,6 +504,71 @@ export function DoodleCrewCover({
   const [hopping, setHopping] = React.useState(-1)
   const talkTimer = React.useRef(0)
 
+  // Smooth gesture / scroll navigation to Chapter 02 (/about)
+  const router = useRouter()
+  const isLeavingRef = React.useRef(false)
+  const [isLeaving, setIsLeaving] = React.useState(false)
+
+  // Prefetch /about so there is ZERO network latency
+  React.useEffect(() => {
+    router.prefetch("/about")
+  }, [router])
+
+  const triggerLeave = React.useCallback(() => {
+    if (isLeavingRef.current) return
+    isLeavingRef.current = true
+    setIsLeaving(true)
+    window.setTimeout(() => {
+      router.push("/about")
+    }, 280)
+  }, [router])
+
+  // Scroll, wheel, swipe gesture listeners for zero-lag page transition
+  React.useEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      if (isLeavingRef.current) return
+      if (e.deltaY > 20) {
+        triggerLeave()
+      }
+    }
+
+    let touchStartY = 0
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches[0]) {
+        touchStartY = e.touches[0].clientY
+      }
+    }
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (isLeavingRef.current) return
+      if (e.changedTouches[0]) {
+        const diffY = touchStartY - e.changedTouches[0].clientY
+        if (diffY > 40) {
+          triggerLeave()
+        }
+      }
+    }
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (isLeavingRef.current) return
+      if (e.key === "ArrowDown" || e.key === "PageDown" || (e.key === " " && !e.target)) {
+        triggerLeave()
+      }
+    }
+
+    window.addEventListener("wheel", onWheel, { passive: true })
+    window.addEventListener("touchstart", onTouchStart, { passive: true })
+    window.addEventListener("touchend", onTouchEnd, { passive: true })
+    window.addEventListener("keydown", onKeyDown)
+
+    return () => {
+      window.removeEventListener("wheel", onWheel)
+      window.removeEventListener("touchstart", onTouchStart)
+      window.removeEventListener("touchend", onTouchEnd)
+      window.removeEventListener("keydown", onKeyDown)
+    }
+  }, [triggerLeave])
+
   // Measure font on client
   useIso(() => {
     const run = () => {
@@ -883,7 +949,7 @@ export function DoodleCrewCover({
   return (
     <div
       ref={rootRef}
-      className={`dcf-root ${className || ""}`}
+      className={`dcf-root ${isLeaving ? "is-leaving" : ""} ${className || ""}`}
       data-play={play || reduced ? "1" : "0"}
       data-interactive={interactive ? "1" : "0"}
       onPointerMove={onPointerMove}
@@ -1056,48 +1122,75 @@ export function DoodleCrewCover({
 
         {/* Hero Headline & Call to Action */}
         <div className="dcf-hero-copy">
-          <p className="dcf-tagline">
-            {words.map((w, k) => (
-              <span key={k} className="dcf-word" style={{ "--d": tl.word(k) + "ms" } as React.CSSProperties}>
-                {w}{" "}
-              </span>
-            ))}
-          </p>
+          {/* Main Tagline with Sketchbook Squiggle Underline */}
+          <div className="dcf-tagline-wrapper">
+            <h2 className="dcf-tagline">
+              <span className="dcf-tag-word">DESIGN</span>
+              <span className="dcf-tag-dot">✦</span>
+              <span className="dcf-tag-word">CODE</span>
+              <span className="dcf-tag-dot">✦</span>
+              <span className="dcf-tag-word">MACHINE LEARNING</span>
+            </h2>
+            <svg
+              className="dcf-squiggle-line"
+              viewBox="0 0 320 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M3 8C45 3 95 11 145 6C195 2 245 10 317 6"
+                stroke="#000000"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
 
-          <p className="dcf-statement dcf-rise" style={{ "--d": "520ms" } as React.CSSProperties}>
-            {statement}
-          </p>
-
-          <div className="dcf-actions dcf-rise" style={{ "--d": "640ms" } as React.CSSProperties}>
+          {/* High-Craft Action Buttons */}
+          <div className="dcf-actions dcf-rise" style={{ "--d": "520ms" } as React.CSSProperties}>
             <Link href="/projects" className="dcf-btn is-solid">
-              <DoodleIcon kind="bolt" size={17} />
+              <DoodleIcon kind="bolt" size={16} />
               <span>Explore Projects</span>
+              <span className="dcf-btn-arrow">↗</span>
             </Link>
 
             <Link href="/about" className="dcf-btn is-outline">
-              <DoodleIcon kind="star" size={17} />
+              <DoodleIcon kind="star" size={16} />
               <span>About &amp; Story</span>
             </Link>
 
             <Link href="/contact" className="dcf-btn is-outline">
-              <DoodleIcon kind="plane" size={17} />
+              <DoodleIcon kind="plane" size={16} />
               <span>Contact Desk</span>
             </Link>
           </div>
 
-          <p className="dcf-hint dcf-rise" style={{ "--d": "780ms" } as React.CSSProperties}>
-            💡 <em>Click any character to talk • Move cursor to repel doodles • Catch doodles to pop</em>
-          </p>
-        </div>
-
-        {/* Playful Scroll Down Prompt */}
-        <div className="dcf-scroll-cue dcf-rise" style={{ "--d": "900ms" } as React.CSSProperties}>
-          <Link href="/about" className="dcf-scroll-link">
-            <span>Scroll or Enter Chapter 02</span>
-            <svg viewBox="0 0 24 24" width="20" height="20" className="dcf-arrow-bounce">
-              <path d="M12 4 L12 18 M6 13 L12 19 L18 13" fill="none" stroke="#000000" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
+          {/* Sleek Bouncing Scroll Indicator */}
+          <div className="dcf-scroll-cue dcf-rise" style={{ "--d": "680ms" } as React.CSSProperties}>
+            <button
+              type="button"
+              onClick={triggerLeave}
+              className="dcf-scroll-link"
+              aria-label="Scroll or tap to open sketchbook"
+            >
+              <span className="dcf-scroll-label">SCROLL DOWN TO EXPLORE</span>
+              <div className="dcf-scroll-arrow-box">
+                <svg
+                  viewBox="0 0 16 16"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M8 2 L8 13 M3 8 L8 13 L13 8" />
+                </svg>
+              </div>
+            </button>
+          </div>
         </div>
       </main>
     </div>
@@ -1110,16 +1203,24 @@ const COVER_CSS = `
   isolation: isolate;
   overflow: hidden;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100svh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   background: #ffffff;
   color: #000000;
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  will-change: transform, opacity;
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.38s ease;
+}
+
+.dcf-root.is-leaving {
+  transform: translate3d(0, -40px, 0);
+  opacity: 0;
+  pointer-events: none;
 }
 
 :where(.dcf-root) *, :where(.dcf-root) *::before, :where(.dcf-root) *::after {
@@ -1436,66 +1537,144 @@ const COVER_CSS = `
 /* Hero copy & CTA */
 .dcf-hero-copy {
   position: relative;
-  z-index: 8;
+  z-index: 15;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: clamp(24px, 4vw, 44px);
-  max-width: 860px;
+  margin-top: clamp(20px, 3.5vw, 36px);
+  max-width: 880px;
+  width: 100%;
   gap: 16px;
 }
 
+/* Tagline */
+.dcf-tagline-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
 .dcf-tagline {
-  font-family: ${DEFAULT_SERIF};
-  font-size: clamp(20px, 2.4vw, 28px);
-  font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif;
+  font-size: clamp(20px, 2.8vw, 32px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: #000000;
-  text-wrap: balance;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  line-height: 1.2;
 }
 
-.dcf-word {
+.dcf-tag-word {
   display: inline-block;
-  white-space: pre;
+  letter-spacing: 0.06em;
 }
 
-.dcf-statement {
-  font-size: clamp(14px, 1.4vw, 16px);
-  color: #444444;
+.dcf-tag-dot {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.dcf-squiggle-line {
+  width: clamp(180px, 30vw, 290px);
+  height: 10px;
+  overflow: visible;
+  margin-top: 2px;
+}
+
+/* Statement & Academic Pill */
+.dcf-statement-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 640px;
+}
+
+.dcf-academic-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: ui-monospace, monospace;
+  font-size: 11.5px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 14px;
+  background: #f5f5f5;
+  border: 1.5px solid #000000;
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 #000000;
+}
+
+.dcf-pill-dot {
+  width: 6px;
+  height: 6px;
+  background: #000000;
+  border-radius: 999px;
+  animation: dcf-pulse 2s infinite ease-in-out;
+}
+
+@keyframes dcf-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.5; }
+}
+
+.dcf-statement-text {
+  font-size: clamp(14px, 1.4vw, 15.5px);
+  color: #333333;
   line-height: 1.5;
-  max-width: 60ch;
+  font-weight: 500;
   text-wrap: balance;
 }
 
+/* Action Buttons */
 .dcf-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 14px;
-  margin-top: 6px;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
 }
 
 .dcf-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   height: 48px;
-  padding: 0 24px;
+  padding: 0 22px;
   border-radius: 999px;
   border: 2px solid #000000;
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: -0.01em;
-  transition: transform .18s cubic-bezier(.3,1.4,.5,1), box-shadow .18s cubic-bezier(.3,1.4,.5,1);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), background-color 0.18s ease;
+}
+
+.dcf-btn-arrow {
+  font-size: 13px;
+  transition: transform 0.2s ease;
+}
+
+.dcf-btn:hover .dcf-btn-arrow {
+  transform: translate(2px, -2px);
 }
 
 .dcf-btn.is-solid {
   background: #000000;
   color: #ffffff;
-  box-shadow: 0 4px 0 #333333;
+  box-shadow: 3px 3px 0 #555555;
 }
+
 .dcf-btn.is-solid svg path {
   fill: #ffffff;
   stroke: #ffffff;
@@ -1504,31 +1683,50 @@ const COVER_CSS = `
 .dcf-btn.is-outline {
   background: #ffffff;
   color: #000000;
-  box-shadow: 0 4px 0 #000000;
+  box-shadow: 3px 3px 0 #000000;
 }
 
 .dcf-btn:hover {
-  transform: translateY(-2px) rotate(-1deg);
-  box-shadow: 0 6px 0 #000000;
+  transform: translate(-2px, -2px) rotate(-0.8deg);
+  box-shadow: 5px 5px 0 #000000;
 }
 
 .dcf-btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 #000000;
-  transition-duration: .06s;
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #000000;
+  transition-duration: 0.05s;
 }
 
-.dcf-hint {
-  font-size: 12px;
-  color: #666666;
+/* Interactive Hint Badge */
+.dcf-hint-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: #fafafa;
+  border: 1.5px dashed #000000;
+  border-radius: 999px;
   font-family: ui-monospace, monospace;
+  font-size: 11px;
+  color: #444444;
+  margin-top: 4px;
+  max-width: 90%;
+  text-wrap: balance;
 }
 
-/* Scroll prompt */
+.dcf-hint-bullet {
+  font-size: 13px;
+}
+
+.dcf-hint-text strong {
+  color: #000000;
+}
+
+/* Scroll Cue */
 .dcf-scroll-cue {
-  margin-top: clamp(24px, 4vw, 40px);
-  position: relative;
-  z-index: 8;
+  margin-top: clamp(12px, 2.5vw, 24px);
+  display: flex;
+  justify-content: center;
 }
 
 .dcf-scroll-link {
@@ -1536,21 +1734,38 @@ const COVER_CSS = `
   flex-direction: column;
   align-items: center;
   gap: 6px;
+  text-decoration: none;
+}
+
+.dcf-scroll-label {
   font-family: ui-monospace, monospace;
-  font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 0.12em;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #000000;
-  transition: transform 0.2s;
+  transition: opacity 0.2s;
 }
 
-.dcf-scroll-link:hover {
-  transform: translateY(2px);
+.dcf-scroll-arrow-box {
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid #000000;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 2px 2px 0 #000000;
+  transition: transform 0.2s cubic-bezier(0.3, 1.4, 0.5, 1), background-color 0.2s ease, color 0.2s ease;
+  animation: dcf-arrow-bob 1.8s ease-in-out infinite;
 }
 
-.dcf-arrow-bounce {
-  animation: dcf-arrow-bob 1.6s ease-in-out infinite;
+.dcf-scroll-link:hover .dcf-scroll-arrow-box {
+  background: #000000;
+  color: #ffffff;
+  transform: translateY(3px);
+  box-shadow: 3px 3px 0 #333333;
 }
 
 /* Animations */
@@ -1695,11 +1910,92 @@ const COVER_CSS = `
   50% { transform: translateY(6px); }
 }
 
-@media (max-width: 768px) {
-  .dcf-header-inner { justify-content: center; text-align: center; }
-  .dcf-nav { justify-content: center; }
-  .dcf-btn { height: 44px; font-size: 13.5px; padding: 0 18px; }
-  .dcf-bubble { font-size: 12px; padding: 6px 10px; }
+@media (max-width: 640px) {
+  .dcf-main-canvas {
+    padding: 16px 14px 20px;
+    justify-content: space-between;
+  }
+
+  .dcf-stage {
+    margin: auto 0;
+    width: 100%;
+  }
+
+  .dcf-svg {
+    transform: scale(1.05);
+    transform-origin: center center;
+  }
+
+  .dcf-hit {
+    transform: scale(1.2);
+    transform-origin: center center;
+  }
+
+  /* Centered mobile speech bubble so it never clips off-screen on phones */
+  .dcf-bubble {
+    position: fixed !important;
+    left: 50% !important;
+    top: auto !important;
+    bottom: 120px !important;
+    transform: translateX(-50%) !important;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    font-size: 13px;
+    white-space: normal;
+    text-align: center;
+    z-index: 50;
+  }
+
+  .dcf-bubble::after {
+    display: none;
+  }
+
+  .dcf-tagline {
+    font-size: clamp(17px, 4.8vw, 24px);
+    gap: 6px 8px;
+  }
+
+  .dcf-tag-dot {
+    font-size: 11px;
+  }
+
+  .dcf-squiggle-line {
+    width: clamp(140px, 45vw, 220px);
+  }
+
+  /* Thumb-friendly mobile action buttons */
+  .dcf-actions {
+    width: 100%;
+    max-width: 360px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .dcf-btn.is-solid {
+    grid-column: 1 / -1;
+  }
+
+  .dcf-btn {
+    height: 44px;
+    padding: 0 14px;
+    font-size: 13px;
+    justify-content: center;
+  }
+
+  .dcf-scroll-cue {
+    margin-top: 10px;
+  }
+
+  .dcf-scroll-label {
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+  }
+
+  .dcf-scroll-arrow-box {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

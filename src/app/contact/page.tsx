@@ -5,6 +5,7 @@ import Link from "next/link";
 import { portfolioData } from "@/data/portfolioData";
 import { Check, Send, Copy, Mail, MapPin, Calendar, ArrowLeft } from "lucide-react";
 import { GithubIcon, LinkedinIcon, LeetCodeIcon } from "@/components/SocialIcons";
+import { AutoPageTurn } from "@/components/AutoPageTurn";
 
 export default function ContactPage() {
   const { personal, socialLinks } = portfolioData;
@@ -40,12 +41,12 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="py-10 sm:py-16 px-4 sm:px-8 max-w-5xl mx-auto space-y-12">
+    <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-12">
       {/* Page Header */}
       <div className="pb-6 border-b-2 border-black flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="sketch-stamp mb-2">
-            CHAPTER 05 • DISPATCH &amp; CORRESPONDENCE
+            CONTACT &amp; CORRESPONDENCE
           </div>
           <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black">
             Contact Desk
@@ -305,16 +306,13 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Return to Cover */}
-      <div className="text-center pt-8 border-t-2 border-dashed border-stone-300">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 sketch-button-outline text-sm px-8 py-3.5"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Return to Chapter 01: Cover Page</span>
-        </Link>
-      </div>
+      {/* Automatic Page Turn to Cover */}
+      <AutoPageTurn
+        nextPath="/"
+        nextTitle="Cover Page"
+        subtitle="Cycle complete • Returning to the interactive doodle cover..."
+        isReturnToStart={true}
+      />
     </div>
   );
 }

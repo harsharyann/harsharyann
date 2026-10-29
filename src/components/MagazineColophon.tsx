@@ -11,8 +11,8 @@ export function MagazineColophon() {
   const pathname = usePathname();
   const { personal, socialLinks } = portfolioData;
 
-  // Do not render on cover page or admin
-  if (pathname === "/" || pathname === "/admin") {
+  // Only render colophon at the conclusion of the storybook on the contact page
+  if (pathname !== "/contact") {
     return null;
   }
 
@@ -22,7 +22,7 @@ export function MagazineColophon() {
 
   return (
     <footer className="mt-20 py-12 px-4 sm:px-8 bg-white border-t-2 border-dashed border-black font-mono text-xs">
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-6xl xl:max-w-7xl mx-auto space-y-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-stone-200">
           <div>
             <span className="bg-black text-white px-2.5 py-0.5 text-[11px] font-black uppercase rounded tracking-wider inline-block mb-2">

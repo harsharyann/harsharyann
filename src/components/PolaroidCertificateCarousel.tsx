@@ -383,7 +383,7 @@ export function PolaroidCertificateCarousel({
                 {activeCert.title}
               </h2>
               <p className="font-mono text-xs font-bold text-stone-700 mt-1">
-                Issued by {activeCert.issuer} • Class of {activeCert.issueDate}
+                Issued by {activeCert.issuer} • {activeCert.issueDate}
               </p>
             </div>
 

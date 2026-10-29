@@ -5,6 +5,7 @@ import Link from "next/link";
 import { portfolioData } from "@/data/portfolioData";
 import { ArrowRight, Sparkles, LayoutGrid, SlidersHorizontal } from "lucide-react";
 import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCarousel";
+import { AutoPageTurn } from "@/components/AutoPageTurn";
 
 export default function CertificatesPage() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -23,12 +24,12 @@ export default function CertificatesPage() {
       : portfolioData.certificates.filter((c) => c.category === activeCategory);
 
   return (
-    <div className="py-10 sm:py-16 px-4 sm:px-8 max-w-6xl mx-auto space-y-12">
+    <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-12">
       {/* Page Header */}
       <div className="pb-6 border-b-2 border-black flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="sketch-stamp mb-2">
-            CHAPTER 04 • HONORS &amp; CREDENTIALS
+            CERTIFICATES &amp; CREDENTIALS
           </div>
           <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black">
             Certifications &amp; Laurels
@@ -69,16 +70,12 @@ export default function CertificatesPage() {
         <PolaroidCertificateCarousel certificates={filtered} height={520} cardWidth={280} />
       </div>
 
-      {/* Navigation Footer to Chapter 05 */}
-      <div className="text-center pt-8 border-t-2 border-dashed border-stone-300">
-        <Link
-          href="/contact"
-          className="inline-flex items-center gap-2 sketch-button-solid text-sm px-8 py-3.5"
-        >
-          <span>Continue to Chapter 05: Contact Desk</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
+      {/* Automatic Page Turn to Next Section */}
+      <AutoPageTurn
+        nextPath="/contact"
+        nextTitle="Contact Desk"
+        subtitle="Moving to dispatch, contact correspondence & direct messaging..."
+      />
     </div>
   );
 }

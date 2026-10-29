@@ -82,7 +82,7 @@ export const portfolioData: PortfolioData = {
     bio: "Hi! I am Harsh Aryan, a curious 1st-year undergraduate student passionate about Artificial Intelligence, Data Science, and Mathematics. I spend my time mastering Python, Linear Algebra, Exploratory Data Analysis, and fundamental Machine Learning algorithms. I am eager to learn, build practical projects, participate in hackathons, and secure early internship opportunities.",
     college: "Engineering College / University",
     degree: "B.Tech in Computer Science & Engineering (AI & Data Science)",
-    year: "1st Year (Class of 2029)",
+    year: "1st Year Undergraduate",
     cgpa: "Current 1st Year Student",
     location: "India & Open for Remote Opportunities",
     availability: "Seeking Summer 2026 Early Internships & Hackathon Collaborations",
