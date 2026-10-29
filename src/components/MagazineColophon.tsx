@@ -32,7 +32,7 @@ export function MagazineColophon() {
               {personal.name}
             </h4>
             <p className="text-xs text-stone-600 mt-1 max-w-md">
-              1st Year B.Tech in CSE (AI &amp; Data Science) • Handcrafted in Black &amp; White ink.
+              Personal Portfolio • Handcrafted in Black &amp; White ink.
             </p>
           </div>
 

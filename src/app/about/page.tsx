@@ -60,7 +60,7 @@ export default function AboutPage() {
             About Harsh Aryan
           </h1>
           <p className="mt-2 text-xs sm:text-sm font-mono text-stone-600 max-w-xl">
-            1st Year B.Tech CSE (AI &amp; Data Science) • Crafting at the intersection of Code, Mathematics &amp; Intelligent Models.
+            Crafting at the intersection of Code, Mathematics &amp; Intelligent Models.
           </p>
         </div>
 
@@ -142,14 +142,9 @@ export default function AboutPage() {
 
             {/* Polaroid-style caption strip */}
             <div className="pt-3 pb-1 flex items-center justify-between font-mono text-xs">
-              <div>
-                <span className="font-black text-black uppercase tracking-wider text-xs block">
-                  {personal.name}
-                </span>
-                <span className="text-[10px] text-stone-600 block">
-                  1st Year B.Tech &bull; CSE (AI &amp; DS)
-                </span>
-              </div>
+              <span className="font-black text-black uppercase tracking-wider text-xs block">
+                {personal.name}
+              </span>
               <span className="sketch-stamp text-[10px]">
                 ORIGINAL PRINT
               </span>
