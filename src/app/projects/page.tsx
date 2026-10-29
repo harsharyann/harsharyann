@@ -3,13 +3,19 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { portfolioData } from "@/data/portfolioData";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ExternalLink, Sparkles } from "lucide-react";
 import { GithubIcon } from "@/components/SocialIcons";
 
 export default function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const categories = ["All", "Machine Learning", "Data Analysis", "Web & AI Tools", "Python Basics"];
+  const categories = [
+    "All",
+    "Machine Learning",
+    "Data Analysis",
+    "Web & AI Tools",
+    "Python Basics",
+  ];
 
   const filtered =
     activeCategory === "All"
@@ -17,145 +23,146 @@ export default function ProjectsPage() {
       : portfolioData.projects.filter((p) => p.category === activeCategory);
 
   return (
-    <div className="py-12 sm:py-16 px-4 sm:px-8">
-      <div className="max-w-6xl mx-auto space-y-12">
-        {/* Page Top Header */}
-        <div className="pb-6 border-b-2 border-editorial flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <div className="text-xs font-mono uppercase tracking-widest text-amber-500 font-bold mb-1">
-              [ PAGE 03 &bull; PRACTICAL IMPLEMENTATIONS ]
-            </div>
-            <h1 className="text-3xl sm:text-5xl font-black font-editorial tracking-tight uppercase">
-              Projects &amp; Code
-            </h1>
-            <p className="mt-2 text-xs sm:text-sm font-editorial italic text-stone-400 max-w-xl">
-              End-to-end data analysis, baseline neural networks, and interactive Python tools built during my 1st year.
-            </p>
+    <div className="py-10 sm:py-16 px-4 sm:px-8 max-w-6xl mx-auto space-y-12">
+      {/* Page Header */}
+      <div className="pb-6 border-b-2 border-black flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div className="sketch-stamp mb-2">
+            CHAPTER 03 • LAB EXPERIMENTS &amp; CODE
           </div>
-
-          {/* Filter Tabs */}
-          <div className="flex flex-wrap gap-1.5 font-mono text-xs uppercase tracking-wider">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-3 py-1.5 border transition-all ${
-                  activeCategory === cat
-                    ? "bg-amber-500 text-stone-950 font-bold border-amber-500"
-                    : "border-editorial text-stone-400 hover:text-white"
-                }`}
-              >
-                {cat === "All" ? "[ ALL PROJECTS ]" : `[ ${cat} ]`}
-              </button>
-            ))}
-          </div>
+          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black">
+            Projects &amp; Builds
+          </h1>
+          <p className="mt-2 text-xs sm:text-sm font-mono text-stone-600 max-w-xl">
+            End-to-end exploratory data analysis, foundational machine learning algorithms, and scientific Python tools developed during my 1st year.
+          </p>
         </div>
 
-        {/* Projects Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {filtered.map((proj, idx) => (
-            <article
-              key={proj.id}
-              id={proj.id}
-              className="scroll-mt-28 paper-card p-6 sm:p-7 border-editorial rounded-sm flex flex-col justify-between group hover:border-stone-500 transition-colors"
+        {/* Category Filter Pills */}
+        <div className="flex flex-wrap gap-2 font-mono text-xs uppercase">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-3.5 py-1.5 rounded-full border-2 border-black font-bold transition-all ${
+                activeCategory === cat
+                  ? "bg-black text-white shadow-[2px_2px_0_#444]"
+                  : "bg-white text-black hover:bg-stone-100 shadow-[2px_2px_0_#000]"
+              }`}
             >
-              <div>
-                <div className="flex items-center justify-between pb-3 border-b border-editorial text-xs font-mono text-stone-400 mb-4">
-                  <span className="text-amber-500 font-bold">PROJECT 0{idx + 1}</span>
-                  <span className="text-[11px] uppercase tracking-wider">{proj.category}</span>
-                </div>
-
-                <h3 className="text-xl sm:text-2xl font-bold font-editorial uppercase text-white mb-2 group-hover:text-amber-400 transition-colors leading-snug">
-                  {proj.title}
-                </h3>
-
-                <p className="text-xs sm:text-sm font-editorial italic text-stone-300 mb-4">
-                  &ldquo;{proj.tagline}&rdquo;
-                </p>
-
-                <p className="text-xs sm:text-sm text-stone-300 font-sans leading-relaxed mb-4">
-                  {proj.description}
-                </p>
-
-                {/* Metrics */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {proj.metrics.map((m, mIdx) => (
-                    <span
-                      key={mIdx}
-                      className="px-2.5 py-0.5 border border-amber-500/30 bg-amber-500/10 text-amber-300 font-mono text-[11px] rounded-sm"
-                    >
-                      {m}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Features */}
-                <div className="space-y-1.5 mb-6 pt-3 border-t border-editorial-light">
-                  {proj.features.map((feat, fIdx) => (
-                    <div key={fIdx} className="flex items-start gap-2 text-xs text-stone-400 font-sans">
-                      <span className="text-amber-500 font-mono text-xs font-bold">&bull;</span>
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                {/* Tech Pills */}
-                <div className="flex flex-wrap gap-1.5 pb-4 border-b border-editorial-light font-mono text-[11px] mb-4">
-                  {proj.technologies.map((t) => (
-                    <span
-                      key={t}
-                      className="px-2 py-0.5 border border-editorial text-stone-300 bg-stone-900/60"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Action Links */}
-                <div className="flex items-center gap-3 font-mono text-xs">
-                  <a
-                    href={proj.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 border border-editorial hover:border-stone-400 bg-stone-900 text-stone-200 hover:text-white uppercase tracking-wider text-[11px] transition-colors"
-                  >
-                    <GithubIcon className="w-3.5 h-3.5" />
-                    <span>View GitHub Repo</span>
-                  </a>
-
-                  {proj.liveUrl && (
-                    <a
-                      href={proj.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold uppercase tracking-wider text-[11px] transition-colors"
-                    >
-                      <span>Demo</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </article>
+              {cat === "All" ? "ALL PROJECTS" : cat}
+            </button>
           ))}
         </div>
+      </div>
 
-        {/* Turn to Next Page Footer Link */}
-        <div className="pt-8 border-t-2 border-editorial flex items-center justify-between font-mono text-xs">
-          <Link href="/about" className="text-stone-400 hover:text-white uppercase transition-colors">
-            &larr; Page 02: About &amp; Education
-          </Link>
-
-          <Link
-            href="/certificates"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-stone-950 font-bold uppercase tracking-wider hover:bg-amber-400 transition-colors"
+      {/* Projects Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {filtered.map((proj, idx) => (
+          <article
+            key={proj.id}
+            id={proj.id}
+            className="scroll-mt-28 sketch-box sketch-box-hover p-6 sm:p-7 flex flex-col justify-between group space-y-6"
           >
-            <span>Turn to Page 04: Certificates</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+            <div className="space-y-4">
+              {/* Header meta */}
+              <div className="flex items-center justify-between pb-3 border-b-2 border-black font-mono text-xs">
+                <span className="sketch-stamp">
+                  PROJ #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
+                </span>
+                <span className="font-bold uppercase tracking-wider text-stone-600">
+                  {proj.category}
+                </span>
+              </div>
+
+              {/* Title & Tagline */}
+              <div>
+                <h2 className="text-2xl font-black uppercase text-black tracking-tight group-hover:underline">
+                  {proj.title}
+                </h2>
+                <p className="text-xs sm:text-sm font-semibold text-stone-700 mt-1">
+                  {proj.tagline}
+                </p>
+              </div>
+
+              {/* Description */}
+              <p className="text-xs sm:text-sm text-stone-800 leading-relaxed">
+                {proj.description}
+              </p>
+
+              {/* Key Highlights / Metrics */}
+              {proj.metrics && proj.metrics.length > 0 && (
+                <div className="p-3 bg-stone-50 border border-black rounded space-y-1">
+                  <span className="text-[10px] font-mono font-bold uppercase text-stone-500 block">
+                    KEY OBSERVATIONS &amp; METRICS:
+                  </span>
+                  <div className="flex flex-wrap gap-2 font-mono text-xs">
+                    {proj.metrics.map((m, i) => (
+                      <span key={i} className="font-bold text-black flex items-center gap-1">
+                        <span>✦</span> {m}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tech Stack Pills */}
+              <div className="space-y-1.5 pt-2">
+                <span className="text-[10px] font-mono font-bold uppercase text-stone-500 block">
+                  TECH STACK &amp; TOOLS:
+                </span>
+                <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
+                  {proj.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="border border-black px-2.5 py-0.5 rounded-full font-bold bg-white"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Action Links */}
+            <div className="pt-4 border-t-2 border-dashed border-black flex items-center justify-between gap-3">
+              <a
+                href={proj.githubUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="sketch-button-solid text-xs flex-1 text-center"
+              >
+                <GithubIcon className="w-3.5 h-3.5" />
+                <span>GitHub Repo</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+
+              {proj.liveUrl && (
+                <a
+                  href={proj.liveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="sketch-button-outline text-xs flex-1 text-center"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Live Demo</span>
+                  <ArrowUpRight className="w-3 h-3" />
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      {/* Navigation Footer to Chapter 04 */}
+      <div className="text-center pt-8 border-t-2 border-dashed border-stone-300">
+        <Link
+          href="/certificates"
+          className="inline-flex items-center gap-2 sketch-button-solid text-sm px-8 py-3.5"
+        >
+          <span>Continue to Chapter 04: Certificates &amp; Credentials</span>
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
     </div>
   );

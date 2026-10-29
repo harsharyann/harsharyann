@@ -2,37 +2,20 @@
 
 @layer base {
   :root {
-    /* Luxury Nocturnal Editorial Palette (Dark) */
-    --bg-magazine: #08090c;
-    --bg-paper: #101217;
-    --bg-paper-elevated: #161920;
-    --text-primary: #f8f7f4;
-    --text-secondary: #aba8a0;
-    --text-muted: #6f6c64;
-    --border-editorial: rgba(229, 192, 123, 0.18);
-    --border-light: rgba(255, 255, 255, 0.08);
-    --accent-gold: #d4af37;
-    --accent-amber: #e5c07b;
-    --accent-crimson: #e05252;
-    --paper-shadow: rgba(0, 0, 0, 0.85);
-    --paper-sheen: rgba(255, 255, 255, 0.06);
-  }
-
-  html.light {
-    /* Warm Italian Ivory Art Paper Palette (Light) */
-    --bg-magazine: #f9f7f2;
-    --bg-paper: #f1ede4;
+    /* Pure Black & White Hand-Drawn Sketchbook Palette */
+    --bg-magazine: #ffffff;
+    --bg-paper: #ffffff;
     --bg-paper-elevated: #ffffff;
-    --text-primary: #191715;
-    --text-secondary: #5c5750;
-    --text-muted: #8c857b;
-    --border-editorial: rgba(184, 134, 11, 0.22);
-    --border-light: rgba(25, 23, 21, 0.1);
-    --accent-gold: #b8860b;
-    --accent-amber: #c89218;
-    --accent-crimson: #c93b3b;
-    --paper-shadow: rgba(30, 26, 22, 0.14);
-    --paper-sheen: rgba(255, 255, 255, 0.8);
+    --text-primary: #000000;
+    --text-secondary: #333333;
+    --text-muted: #666666;
+    --border-editorial: #000000;
+    --border-light: rgba(0, 0, 0, 0.15);
+    --accent-gold: #000000;
+    --accent-amber: #000000;
+    --accent-crimson: #000000;
+    --paper-shadow: #000000;
+    --paper-sheen: transparent;
   }
 }
 
@@ -42,195 +25,183 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--bg-magazine);
-  color: var(--text-primary);
+  background-color: #ffffff;
+  color: #000000;
 }
 
 body {
-  background-color: var(--bg-magazine);
-  color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  background-color: #ffffff;
+  color: #000000;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
   overflow-x: hidden;
 }
 
-/* Editorial Paper Background with Subtle Radial Ambient Lighting (100% Hardware Accelerated, Zero Lag) */
+::selection {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Sketchbook paper background with subtle clean grid */
 .bg-news-texture {
-  background-color: var(--bg-magazine);
-  background-image:
-    radial-gradient(ellipse at 50% 0%, rgba(245, 158, 11, 0.035) 0%, transparent 60%),
-    radial-gradient(circle at 100% 100%, rgba(245, 158, 11, 0.02) 0%, transparent 40%);
+  background-color: #ffffff;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-html.light .bg-news-texture {
-  background-color: var(--bg-magazine);
-  background-image:
-    radial-gradient(ellipse at 50% 0%, rgba(217, 119, 6, 0.035) 0%, transparent 60%),
-    radial-gradient(circle at 100% 100%, rgba(217, 119, 6, 0.02) 0%, transparent 40%);
+/* Hand-Drawn Sketchbook Utility Classes */
+.sketch-box {
+  background: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0 #000000;
+  border-radius: 6px;
 }
 
-/* High-Impact Modern Creative Developer Typography (Awwwards / Studio Grade) */
-.font-display {
-  font-family: "Syne", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-feature-settings: "liga" 1, "kern" 1;
-  text-rendering: optimizeLegibility;
+.sketch-box-hover {
+  transition: transform 0.2s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.2s cubic-bezier(0.3, 1.4, 0.5, 1);
 }
 
-.font-mono-tech {
-  font-family: "Space Grotesk", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-feature-settings: "liga" 1, "kern" 1;
+.sketch-box-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0 #000000;
 }
 
-/* Modern High-Fashion Magazine Editorial Typography */
+.sketch-stamp {
+  display: inline-block;
+  background: #000000;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 3px;
+  transform: rotate(-1deg);
+}
+
+.sketch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: ui-monospace, monospace;
+  font-size: 11.5px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+  border: 1.5px solid #000000;
+  border-radius: 999px;
+  background: #ffffff;
+  transition: all 0.18s;
+}
+
+.sketch-pill:hover {
+  background: #000000;
+  color: #ffffff;
+  transform: translateY(-1.5px);
+}
+
+.sketch-button-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #000000;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 0 #333333;
+  transition: transform 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.18s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.sketch-button-solid:hover {
+  transform: translateY(-2px) rotate(-1deg);
+  box-shadow: 0 6px 0 #000000;
+}
+
+.sketch-button-solid:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #000000;
+}
+
+.sketch-button-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 0 #000000;
+  transition: transform 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.18s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.sketch-button-outline:hover {
+  transform: translateY(-2px) rotate(1deg);
+  box-shadow: 0 6px 0 #000000;
+}
+
+.sketch-button-outline:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #000000;
+}
+
+/* Typography Helpers */
 .font-editorial {
-  font-family: "Bodoni Moda", "Italiana", "Playfair Display", Didot, "Bodoni MT", Garamond, "Times New Roman", Georgia, serif;
-  font-feature-settings: "liga" 1, "dlig" 1, "kern" 1;
-  text-rendering: optimizeLegibility;
+  font-family: "Bodoni Moda", "Iowan Old Style", "Palatino", Georgia, serif;
+  font-feature-settings: "liga" 1, "dlig" 1;
 }
 
 .font-editorial-italic {
-  font-family: "Cormorant Garamond", "Bodoni Moda", Didot, Garamond, Georgia, serif;
+  font-family: "Cormorant Garamond", "Bodoni Moda", Georgia, serif;
   font-style: italic;
-  font-feature-settings: "liga" 1, "kern" 1;
-  text-rendering: optimizeLegibility;
 }
 
-/* Modern Magazine Paper Noise Pattern */
-.bg-magazine-canvas {
-  background-color: #060709;
-  background-image:
-    radial-gradient(ellipse at 50% -15%, rgba(229, 192, 123, 0.08) 0%, transparent 60%),
-    radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.02) 0%, transparent 40%),
-    radial-gradient(circle at 90% 10%, rgba(229, 192, 123, 0.03) 0%, transparent 50%);
-}
-
-/* Kinetic Magazine Marquee Keyframes */
-@keyframes editorialMarquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes editorialMarqueeRev {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0%); }
-}
-
-.animate-marquee {
-  display: flex;
-  width: max-content;
-  animation: editorialMarquee 38s linear infinite;
-  will-change: transform;
-}
-
-.animate-marquee-reverse {
-  display: flex;
-  width: max-content;
-  animation: editorialMarqueeRev 45s linear infinite;
-  will-change: transform;
-}
-
-/* 3D Magazine Scene Choreography Classes (GPU Accelerated) */
-.perspective-1200 {
-  perspective: 1200px;
-}
-
-.perspective-1600 {
-  perspective: 1600px;
-}
-
-.preserve-3d {
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-.backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-/* Tactile 3D Magazine Paper Styling */
-.magazine-cover-3d {
-  transform-style: preserve-3d;
-  background-color: var(--bg-paper);
-  border: 1px solid var(--border-editorial);
-  box-shadow:
-    -16px 20px 48px var(--paper-shadow),
-    0 1px 0 var(--paper-sheen) inset;
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-/* Realistic Magazine Spine Binding Shadow */
-.magazine-spine {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 18px;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.25) 50%, transparent 100%);
-  pointer-events: none;
-  z-index: 25;
-}
-
-/* Center Fold Crease Shadow for Open Magazine Spreads */
-.magazine-crease {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 24px;
-  transform: translateX(-50%);
-  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.25), transparent);
-  pointer-events: none;
-  z-index: 20;
-}
-
-/* Paper Card Style */
+/* Paper Card Style backward-compatibility */
 .paper-card {
-  background-color: var(--bg-paper);
-  border: 1px solid var(--border-editorial);
-  box-shadow: 0 4px 20px var(--paper-shadow);
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 4px 4px 0 #000000;
+  border-radius: 8px;
 }
 
 .border-editorial {
-  border-color: var(--border-editorial);
+  border-color: #000000;
 }
 
 .border-editorial-light {
-  border-color: var(--border-light);
-}
-
-/* Editorial Drop Cap */
-.drop-cap::first-letter {
-  float: left;
-  font-family: "Playfair Display", Didot, "Bodoni MT", Garamond, Georgia, serif;
-  font-size: 3.4rem;
-  line-height: 0.8;
-  padding-top: 4px;
-  padding-right: 10px;
-  padding-bottom: 2px;
-  color: var(--accent-gold);
-  font-weight: 700;
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 /* Pull quote */
 .pull-quote {
-  border-left: 3px solid var(--accent-gold);
+  border-left: 3px solid #000000;
   padding-left: 1.25rem;
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: Georgia, serif;
   font-style: italic;
 }
 
-/* Custom Scrollbar for Magazine */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-magazine);
+  background: #ffffff;
+  border-left: 1px dashed rgba(0, 0, 0, 0.2);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--text-muted);
-  border-radius: 3px;
+  background: #000000;
+  border-radius: 4px;
 }

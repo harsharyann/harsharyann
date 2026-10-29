@@ -3,62 +3,90 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ArrowUpRight, FileDown } from "lucide-react";
+import { Menu, X, FileText, ArrowLeft } from "lucide-react";
 import { portfolioData } from "@/data/portfolioData";
 
 export function MagazineNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Do not render navbar on the cover page (Page 01) or standalone admin panel
+  // Hidden on root cover and admin
   if (pathname === "/" || pathname === "/admin") {
     return null;
   }
 
-  // Portfolio reading sections (P.01 Issue Cover removed from navbar as requested)
   const pages = [
-    { pageNum: "02", name: "About & Education", path: "/about" },
-    { pageNum: "03", name: "Projects & Works", path: "/projects" },
+    { pageNum: "01", name: "Cover", path: "/" },
+    { pageNum: "02", name: "About", path: "/about" },
+    { pageNum: "03", name: "Projects", path: "/projects" },
     { pageNum: "04", name: "Certificates", path: "/certificates" },
-    { pageNum: "05", name: "Contact Desk", path: "/contact" },
+    { pageNum: "05", name: "Contact", path: "/contact" },
   ];
 
   return (
-    <header className="w-full relative z-50">
-      {/* Main Magazine Masthead */}
-      <div className="py-6 sm:py-8 px-4 sm:px-8 border-b-2 border-editorial text-center relative bg-stone-950/40">
-        <Link href="/" className="inline-block group" title="Return to Issue Cover">
-          <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.3em] block mb-2 text-stone-400 group-hover:text-amber-400 transition-colors">
-            STUDENT RESEARCH &amp; AI LEARNER FOLIO
+    <header className="w-full relative z-50 bg-white border-b-2 border-black">
+      {/* Top Sketchbook Masthead */}
+      <div className="py-4 px-4 sm:px-8 max-w-6xl mx-auto flex items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-3 group">
+          <span className="bg-black text-white px-3 py-1 text-xs sm:text-sm font-black tracking-widest uppercase rounded -rotate-1 group-hover:rotate-1 transition-transform">
+            HARSH ARYAN
           </span>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-editorial tracking-tight uppercase leading-[0.95] group-hover:opacity-90 transition-opacity">
-            {portfolioData.personal.name}
-          </h1>
-          <p className="mt-2 text-xs sm:text-sm font-editorial italic text-stone-400 max-w-md mx-auto">
-            1st Year Student in AI &amp; Data Science &bull; Building Foundations in Code, Math &amp; Models
-          </p>
+          <span className="hidden sm:inline font-mono text-[11px] font-bold tracking-wider text-stone-600 uppercase">
+            ✦ AI &amp; DATA SCIENCE SKETCHBOOK
+          </span>
         </Link>
+
+        {/* Back to Cover Shortcut */}
+        <Link
+          href="/"
+          className="hidden md:inline-flex items-center gap-1.5 text-xs font-mono font-bold text-black hover:underline"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Cover Page</span>
+        </Link>
+
+        {/* Resume button */}
+        {portfolioData.personal.resumeUrl && (
+          <a
+            href={portfolioData.personal.resumeUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono font-bold border-2 border-black px-3.5 py-1.5 rounded-full shadow-[2px_2px_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Resume PDF</span>
+          </a>
+        )}
+
+        {/* Mobile menu hamburger */}
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden p-1.5 border-2 border-black rounded shadow-[2px_2px_0_#000] hover:bg-black hover:text-white transition-colors"
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </div>
 
-      {/* Magazine Page Navigation Tabs */}
-      <div className="w-full border-b border-editorial py-2.5 px-4 sm:px-8 bg-stone-950/80 backdrop-blur-md sticky top-0 z-40">
+      {/* Chapter Tabs Sub-Bar */}
+      <div className="border-t border-dashed border-stone-300 py-2.5 px-4 sm:px-8 bg-stone-50/60">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          {/* Magazine Multi-page links (P.02 to P.05) */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8 font-mono text-xs uppercase tracking-wider">
+          <nav className="hidden md:flex items-center gap-2 lg:gap-3 font-mono text-xs font-bold uppercase">
             {pages.map((p) => {
               const isActive = pathname === p.path;
               return (
                 <Link
-                  key={p.pageNum}
+                  key={p.path}
                   href={p.path}
-                  className={`group flex items-center gap-1.5 py-1 transition-all ${
+                  className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
                     isActive
-                      ? "text-amber-400 font-bold border-b-2 border-amber-500 -mb-[12px] pb-[10px]"
-                      : "text-stone-400 hover:text-stone-100"
+                      ? "bg-black text-white shadow-[2px_2px_0_#444]"
+                      : "border border-black bg-white text-black hover:bg-black hover:text-white shadow-[1px_1px_0_#000]"
                   }`}
                 >
-                  <span className="text-[10px] text-stone-500 group-hover:text-amber-400/70">
-                    P.{p.pageNum}
+                  <span className={isActive ? "text-stone-300" : "text-stone-500"}>
+                    {p.pageNum}
                   </span>
                   <span>{p.name}</span>
                 </Link>
@@ -66,46 +94,45 @@ export function MagazineNav() {
             })}
           </nav>
 
-          {/* Action CTAs: Resume download + Mobile Menu */}
-          <div className="flex items-center gap-3 ml-auto md:ml-0">
-            <a
-              href={portfolioData.personal.resumeUrl}
-              download
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-editorial hover:border-amber-400/80 bg-stone-900/60 text-[11px] font-mono uppercase tracking-wider text-stone-300 hover:text-white transition-all shadow-sm"
-            >
-              <FileDown className="w-3.5 h-3.5 text-amber-400" />
-              <span>Resume</span>
-            </a>
-
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-              className="md:hidden p-1.5 text-stone-300 hover:text-white border border-editorial rounded-sm"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+          <span className="hidden lg:inline text-[11px] font-mono text-stone-500 font-semibold">
+            B.TECH CSE (AI &amp; DS) • CLASS OF 2029
+          </span>
         </div>
+      </div>
 
-        {/* Mobile Nav Drawer */}
-        {mobileMenuOpen && (
-          <div className="md:hidden mt-3 pt-3 pb-3 border-t border-editorial font-mono text-xs space-y-2">
-            {pages.map((p) => (
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t-2 border-black bg-white p-4 space-y-2">
+          {pages.map((p) => {
+            const isActive = pathname === p.path;
+            return (
               <Link
-                key={p.pageNum}
+                key={p.path}
                 href={p.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between py-2 px-1 border-b border-editorial/40 ${
-                  pathname === p.path ? "text-amber-400 font-bold" : "text-stone-300 hover:text-amber-400"
+                className={`block px-4 py-2.5 rounded border-2 border-black text-sm font-mono font-bold uppercase transition-all ${
+                  isActive
+                    ? "bg-black text-white"
+                    : "bg-white text-black hover:bg-stone-100"
                 }`}
               >
-                <span>P.{p.pageNum} &bull; {p.name}</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-stone-500" />
+                <span className="mr-2 opacity-60">[{p.pageNum}]</span>
+                <span>{p.name}</span>
               </Link>
-            ))}
-          </div>
-        )}
-      </div>
+            );
+          })}
+          {portfolioData.personal.resumeUrl && (
+            <a
+              href={portfolioData.personal.resumeUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="block text-center mt-3 py-2 border-2 border-black rounded font-mono text-xs font-bold bg-black text-white"
+            >
+              DOWNLOAD RESUME PDF ↗
+            </a>
+          )}
+        </div>
+      )}
     </header>
   );
 }
