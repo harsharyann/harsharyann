@@ -49,7 +49,7 @@ export const defaultSettings: PortfolioSettings = {
   name: "HARSH ARYAN",
   tagline: "DESIGN · CODE · CREATE",
   subrole: "Designer · Developer · AI & Data Science",
-  role: "Teaching Assistant At IIT Madras",
+  role: "Teaching Assistant @ IIT Madras",
   location: "Chennai, India",
   whereAndWhat: "1st Year B.Tech CSE (AI & Data Science) · Building foundations in Code, Math & Models",
   statement: "Crafting interfaces at the intersection of modern design and artificial intelligence.",

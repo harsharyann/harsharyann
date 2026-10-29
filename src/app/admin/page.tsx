@@ -289,7 +289,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, role: e.target.value }))
                   }
-                  placeholder="e.g. Teaching Assistant At IIT Madras"
+                  placeholder="e.g. Teaching Assistant @ IIT Madras"
                   className="w-full px-3.5 py-2.5 rounded-lg bg-black/50 border border-white/15 focus:border-[#e5c07b] focus:outline-none font-sans text-sm text-white"
                 />
               </div>
