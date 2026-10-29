@@ -12,7 +12,7 @@ const emptySubscribe = () => () => {};
 export function usePortfolioSettings() {
   const isLoaded = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
-  // Synchronous initial state from localStorage (eliminates visual flash on refresh)
+  // Safe SSR-compatible state: server starts with defaultSettings, browser hydrates stored or default
   const [settings, setSettings] = useState<PortfolioSettings>(() => {
     if (typeof window !== "undefined") {
       try {
@@ -21,13 +21,13 @@ export function usePortfolioSettings() {
           return { ...defaultSettings, ...JSON.parse(stored) };
         }
       } catch {
-        // Fallback to default
+        // Fallback
       }
     }
     return defaultSettings;
   });
 
-  // Sync with disk API & setup storage listeners
+  // Sync with server disk persistence safely on client
   useEffect(() => {
     // 1. Sync from server disk persistence
     fetch("/api/settings")
