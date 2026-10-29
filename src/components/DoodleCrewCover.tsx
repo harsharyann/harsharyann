@@ -3,6 +3,8 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useTheme } from "./ThemeProvider"
+import { ThemeToggle } from "./ThemeToggle"
 
 /**
  * DoodleCrewCover — A high-energy sketchbook cover page for Harsh Aryan.
@@ -366,67 +368,125 @@ const ART: { [k: string]: Art } = {
   },
 }
 
-/** Strictly Black & White Doodles */
-const BlackWhiteDoodle = ({ kind }: { kind: DoodleKind }) => {
+/** Dynamic Doodles: Colourful in Light Mode, Crisp B&W in Dark Mode */
+const DoodleGraphic = ({ kind, isDark = false }: { kind: DoodleKind; isDark?: boolean }) => {
+  if (isDark) {
+    switch (kind) {
+      case "flame":
+        return (
+          <>
+            <path fill="#ffffff" d="M0 14 C-9 14 -12 6 -10 0 C-8 -5 -4 -6 -4 -12 C1 -9 3 -5 2 -1 C4 -3 5 -6 5 -8 C10 -3 11 4 8 9 C6 12 3 14 0 14 Z" />
+            <path fill="#0c0c0c" d="M0 11.5 C-4 11.5 -6 8 -5 5 C-4 2 -1 1 -1 -3 C2 -1 4 3 3 6 C4 5 5 4 5 3 C7 6 5 11.5 0 11.5 Z" />
+          </>
+        )
+      case "star":
+        return (
+          <path
+            fill="#ffffff"
+            stroke="#ffffff"
+            strokeWidth="1.2"
+            d="M0 -13 L3.6 -4.4 L13 -4 L5.8 2.2 L8.2 12 L0 6.6 L-8.2 12 L-5.8 2.2 L-13 -4 L-3.6 -4.4 Z"
+          />
+        )
+      case "heart":
+        return (
+          <path
+            fill="#ffffff"
+            stroke="#ffffff"
+            strokeWidth="1.2"
+            d="M0 11 C-6 6 -13 1 -13 -5 C-13 -10 -8 -13 -4 -11 C-2 -10 -1 -8 0 -6 C1 -8 2 -10 4 -11 C8 -13 13 -10 13 -5 C13 1 6 6 0 11 Z"
+          />
+        )
+      case "bolt":
+        return (
+          <path
+            fill="#ffffff"
+            stroke="#ffffff"
+            strokeWidth="1.2"
+            d="M3 -14 L-8 2 L-1 2 L-4 14 L8 -3 L1 -3 Z"
+          />
+        )
+      case "sparkle":
+        return (
+          <path
+            fill="#ffffff"
+            stroke="#ffffff"
+            strokeWidth="1.2"
+            d="M0 -13 C1 -4 4 -1 13 0 C4 1 1 4 0 13 C-1 4 -4 1 -13 0 C-4 -1 -1 -4 0 -13 Z"
+          />
+        )
+      case "spiral":
+        return <path fill="none" stroke="#ffffff" strokeWidth="2.2" d="M0 0 C2 -2 4 0 3 3 C1 6 -4 5 -5 1 C-6 -4 -1 -8 4 -7 C9 -5 10 2 7 6" />
+      case "plane":
+        return (
+          <>
+            <path fill="#171717" stroke="#ffffff" strokeWidth="2" d="M-13 -1 L13 -10 L4 12 L0 3 Z" />
+            <path fill="none" stroke="#ffffff" strokeWidth="1.8" d="M0 3 L13 -10 M0 3 L-2 9 L2 5" />
+          </>
+        )
+    }
+  }
+
+  // Light Mode Vibrant Colourful Theme
   switch (kind) {
     case "flame":
       return (
         <>
-          <path fill="#000000" d="M0 14 C-9 14 -12 6 -10 0 C-8 -5 -4 -6 -4 -12 C1 -9 3 -5 2 -1 C4 -3 5 -6 5 -8 C10 -3 11 4 8 9 C6 12 3 14 0 14 Z" />
-          <path fill="#ffffff" d="M0 11.5 C-4 11.5 -6 8 -5 5 C-4 2 -1 1 -1 -3 C2 -1 4 3 3 6 C4 5 5 4 5 3 C7 6 5 11.5 0 11.5 Z" />
+          <path fill="#f97316" stroke="#000000" strokeWidth="1.2" d="M0 14 C-9 14 -12 6 -10 0 C-8 -5 -4 -6 -4 -12 C1 -9 3 -5 2 -1 C4 -3 5 -6 5 -8 C10 -3 11 4 8 9 C6 12 3 14 0 14 Z" />
+          <path fill="#fde047" d="M0 11.5 C-4 11.5 -6 8 -5 5 C-4 2 -1 1 -1 -3 C2 -1 4 3 3 6 C4 5 5 4 5 3 C7 6 5 11.5 0 11.5 Z" />
         </>
       )
     case "star":
       return (
         <path
-          fill="#000000"
+          fill="#facc15"
           stroke="#000000"
-          strokeWidth="1.2"
+          strokeWidth="1.4"
           d="M0 -13 L3.6 -4.4 L13 -4 L5.8 2.2 L8.2 12 L0 6.6 L-8.2 12 L-5.8 2.2 L-13 -4 L-3.6 -4.4 Z"
         />
       )
     case "heart":
       return (
         <path
-          fill="#000000"
+          fill="#f43f5e"
           stroke="#000000"
-          strokeWidth="1.2"
+          strokeWidth="1.4"
           d="M0 11 C-6 6 -13 1 -13 -5 C-13 -10 -8 -13 -4 -11 C-2 -10 -1 -8 0 -6 C1 -8 2 -10 4 -11 C8 -13 13 -10 13 -5 C13 1 6 6 0 11 Z"
         />
       )
     case "bolt":
       return (
         <path
-          fill="#000000"
+          fill="#fbbf24"
           stroke="#000000"
-          strokeWidth="1.2"
+          strokeWidth="1.4"
           d="M3 -14 L-8 2 L-1 2 L-4 14 L8 -3 L1 -3 Z"
         />
       )
     case "sparkle":
       return (
         <path
-          fill="#000000"
+          fill="#c084fc"
           stroke="#000000"
-          strokeWidth="1.2"
+          strokeWidth="1.4"
           d="M0 -13 C1 -4 4 -1 13 0 C4 1 1 4 0 13 C-1 4 -4 1 -13 0 C-4 -1 -1 -4 0 -13 Z"
         />
       )
     case "spiral":
-      return <path fill="none" stroke="#000000" strokeWidth="2.2" d="M0 0 C2 -2 4 0 3 3 C1 6 -4 5 -5 1 C-6 -4 -1 -8 4 -7 C9 -5 10 2 7 6" />
+      return <path fill="none" stroke="#10b981" strokeWidth="2.4" d="M0 0 C2 -2 4 0 3 3 C1 6 -4 5 -5 1 C-6 -4 -1 -8 4 -7 C9 -5 10 2 7 6" />
     case "plane":
       return (
         <>
-          <path fill="#ffffff" stroke="#000000" strokeWidth="2" d="M-13 -1 L13 -10 L4 12 L0 3 Z" />
-          <path fill="none" stroke="#000000" strokeWidth="1.8" d="M0 3 L13 -10 M0 3 L-2 9 L2 5" />
+          <path fill="#38bdf8" stroke="#000000" strokeWidth="2" d="M-13 -1 L13 -10 L4 12 L0 3 Z" />
+          <path fill="none" stroke="#0284c7" strokeWidth="1.8" d="M0 3 L13 -10 M0 3 L-2 9 L2 5" />
         </>
       )
   }
 }
 
-const DoodleIcon = ({ kind, size = 18 }: { kind: DoodleKind; size?: number }) => (
+const DoodleIcon = ({ kind, size = 18, isDark = false }: { kind: DoodleKind; size?: number; isDark?: boolean }) => (
   <svg viewBox="-16 -16 32 32" width={size} height={size} aria-hidden="true" className="shrink-0">
-    <BlackWhiteDoodle kind={kind} />
+    <DoodleGraphic kind={kind} isDark={isDark} />
   </svg>
 )
 
@@ -487,6 +547,8 @@ export function DoodleCrewCover({
   className,
 }: DoodleCrewCoverProps) {
   const uid = React.useId().replace(/[^a-zA-Z0-9_-]/g, "")
+  const { theme } = useTheme()
+  const isDark = theme === "dark"
   const word = wordmark.toUpperCase()
   const chars = React.useMemo(() => Array.from(word), [word])
 
@@ -729,10 +791,11 @@ export function DoodleCrewCover({
       const oh = s.h
       s.w = r.width
       s.h = r.height
+      const isMobile = r.width < 640
       if (s.floaters.length !== doodleList.length || !ow) {
         s.floaters = doodleList.map((d, k) => ({
           x: (0.04 + 0.92 * ((k + hash(k * 9.1) * 0.8) / Math.max(1, doodleList.length))) * r.width,
-          y: (0.02 + hash(k * 3.3) * 0.56) * r.height,
+          y: (isMobile ? 0.08 + hash(k * 3.3) * 0.82 : 0.02 + hash(k * 3.3) * 0.56) * r.height,
           vx: 0,
           vy: 0,
           rot: (hash(k * 1.7) - 0.5) * 50,
@@ -958,6 +1021,16 @@ export function DoodleCrewCover({
     >
       <style>{COVER_CSS}</style>
 
+      {/* Top Header Bar with Harsh Aryan stamp and Theme Toggle */}
+      <header className="dcf-top-bar">
+        <div className="dcf-top-inner">
+          <div className="dcf-brand-stamp">HARSH ARYAN</div>
+          <div className="dcf-top-actions">
+            <ThemeToggle showLabel />
+          </div>
+        </div>
+      </header>
+
       {/* Main Cover Canvas */}
       <main className="dcf-main-canvas" ref={worldRef}>
         {/* Wordmark & Live Doodle Characters Stage */}
@@ -1099,7 +1172,7 @@ export function DoodleCrewCover({
           </div>
         </div>
 
-        {/* Floating Black & White Doodles */}
+        {/* Floating Doodles */}
         {doodleList.length > 0 && (
           <div className="dcf-doodles" aria-hidden="true">
             {doodleList.map((d, k) => (
@@ -1112,7 +1185,7 @@ export function DoodleCrewCover({
               >
                 <span className="dcf-doodle-in" style={{ "--d": tl.doodles + k * 65 + "ms" } as React.CSSProperties}>
                   <svg viewBox="-16 -16 32 32" width={d.size} height={d.size}>
-                    <BlackWhiteDoodle kind={d.kind} />
+                    <DoodleGraphic kind={d.kind} isDark={isDark} />
                   </svg>
                 </span>
               </div>
@@ -1150,18 +1223,18 @@ export function DoodleCrewCover({
           {/* High-Craft Action Buttons */}
           <div className="dcf-actions dcf-rise" style={{ "--d": "520ms" } as React.CSSProperties}>
             <Link href="/projects" className="dcf-btn is-solid">
-              <DoodleIcon kind="bolt" size={16} />
+              <DoodleIcon kind="bolt" size={16} isDark={isDark} />
               <span>Explore Projects</span>
               <span className="dcf-btn-arrow">↗</span>
             </Link>
 
             <Link href="/about" className="dcf-btn is-outline">
-              <DoodleIcon kind="star" size={16} />
+              <DoodleIcon kind="star" size={16} isDark={isDark} />
               <span>About &amp; Story</span>
             </Link>
 
             <Link href="/contact" className="dcf-btn is-outline">
-              <DoodleIcon kind="plane" size={16} />
+              <DoodleIcon kind="plane" size={16} isDark={isDark} />
               <span>Contact Desk</span>
             </Link>
           </div>
@@ -1257,92 +1330,184 @@ const COVER_CSS = `
   white-space: nowrap;
 }
 
-/* Header bar */
-.dcf-header {
-  position: relative;
-  z-index: 20;
-  width: 100%;
-  padding: 24px clamp(16px, 4vw, 48px) 0;
+/* Top bar */
+.dcf-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  padding: 18px clamp(16px, 4vw, 40px);
 }
 
-.dcf-header-inner {
-  max-width: 1360px;
+.dcf-top-inner {
+  max-width: 1440px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding-bottom: 16px;
-  border-bottom: 2px dashed #000000;
-}
-
-.dcf-brand-tag {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
 }
 
 .dcf-brand-stamp {
+  font-family: ui-monospace, monospace;
   font-weight: 900;
-  font-size: 18px;
-  letter-spacing: 0.08em;
+  font-size: 14px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   background: #000000;
   color: #ffffff;
-  padding: 4px 10px;
-  border-radius: 4px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
   transform: rotate(-1.5deg);
   display: inline-block;
+  user-select: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
-.dcf-brand-sub {
-  font-family: ui-monospace, monospace;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: #555555;
-  text-transform: uppercase;
+.dcf-brand-stamp:hover {
+  transform: rotate(0deg) scale(1.04);
 }
 
-.dcf-nav {
-  display: flex;
-  align-items: center;
-  gap: clamp(10px, 2vw, 24px);
-  flex-wrap: wrap;
-}
+/* Light Mode: Colourful Character Fills */
+html:not(.dark) .dcf-art[style*="--i: 0"] { fill: #a7f3d0; }
+html:not(.dark) .dcf-art[style*="--i: 1"] { fill: #fde047; }
+html:not(.dark) .dcf-art[style*="--i: 2"] { fill: #fca5a5; }
+html:not(.dark) .dcf-art[style*="--i: 3"] { fill: #bae6fd; }
+html:not(.dark) .dcf-art[style*="--i: 4"] { fill: #e9d5ff; }
+html:not(.dark) .dcf-art[style*="--i: 5"] { fill: #fed7aa; }
 
-.dcf-nav-link {
-  font-family: ui-monospace, monospace;
-  font-size: 12px;
-  font-weight: 750;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 4px 8px;
-  border-bottom: 1.5px solid transparent;
-  transition: all 0.2s;
-}
+/* Light Mode: Tagline & Squiggle & Button Colors */
+html:not(.dark) .dcf-tag-word:nth-of-type(1) { color: #4f46e5; }
+html:not(.dark) .dcf-tag-word:nth-of-type(2) { color: #059669; }
+html:not(.dark) .dcf-tag-word:nth-of-type(3) { color: #e11d48; }
+html:not(.dark) .dcf-tag-dot { color: #f59e0b; }
+html:not(.dark) .dcf-squiggle-line path { stroke: #f97316; }
 
-.dcf-nav-link:hover {
-  border-bottom-color: #000000;
-  transform: translateY(-1px);
-}
-
-.dcf-nav-resume {
-  font-family: ui-monospace, monospace;
-  font-size: 12px;
-  font-weight: 800;
-  border: 1.5px solid #000000;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: #ffffff;
-  transition: all 0.2s;
-}
-
-.dcf-nav-resume:hover {
-  background: #000000;
+html:not(.dark) .dcf-btn.is-solid {
+  background: #4f46e5;
+  border-color: #3730a3;
   color: #ffffff;
-  transform: translateY(-2px);
+  box-shadow: 3px 3px 0 #1e1b4b;
+}
+html:not(.dark) .dcf-btn.is-solid:hover {
+  background: #4338ca;
+  box-shadow: 5px 5px 0 #1e1b4b;
+}
+
+/* Dark Mode: Crisp B&W Aesthetic */
+html.dark .dcf-root {
+  background: #0c0c0c;
+  color: #ffffff;
+}
+
+html.dark .dcf-brand-stamp {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 2px 2px 0 #ffffff;
+}
+
+html.dark .dcf-svg text {
+  fill: #ffffff;
+}
+
+html.dark .dcf-art {
+  fill: #171717;
+  stroke: #ffffff;
+}
+
+html.dark .dcf-art .k {
+  fill: #ffffff;
+}
+
+html.dark .dcf-art .dcf-glint {
+  fill: #0c0c0c;
+}
+
+html.dark .dcf-art circle[fill="#ffffff"] {
+  fill: #171717;
+}
+
+html.dark .dcf-ground path {
+  stroke: #ffffff;
+}
+
+html.dark .dcf-pebble {
+  fill: #171717;
+  stroke: #ffffff;
+}
+
+html.dark .dcf-dust {
+  stroke: #ffffff;
+}
+
+html.dark .dcf-tagline {
+  color: #ffffff;
+}
+
+html.dark .dcf-tag-word {
+  color: #ffffff !important;
+}
+
+html.dark .dcf-tag-dot {
+  color: #ffffff !important;
+}
+
+html.dark .dcf-squiggle-line path {
+  stroke: #ffffff !important;
+}
+
+html.dark .dcf-btn.is-solid {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+  box-shadow: 3px 3px 0 #888888;
+}
+
+html.dark .dcf-btn.is-solid:hover {
+  box-shadow: 5px 5px 0 #ffffff;
+}
+
+html.dark .dcf-btn.is-outline {
+  background: #141414;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 3px 3px 0 #ffffff;
+}
+
+html.dark .dcf-btn.is-outline:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+html.dark .dcf-bubble {
+  background: #141414;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 3px 3px 0 #ffffff;
+}
+
+html.dark .dcf-bubble::after {
+  background: #141414;
+  border-right-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+html.dark .dcf-scroll-label {
+  color: #ffffff;
+}
+
+html.dark .dcf-scroll-arrow-box {
+  background: #141414;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 2px 2px 0 #ffffff;
+}
+
+html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 3px 3px 0 #888888;
 }
 
 /* Main Canvas */
@@ -1911,24 +2076,53 @@ const COVER_CSS = `
 }
 
 @media (max-width: 640px) {
+  .dcf-top-bar {
+    padding: 12px 14px;
+  }
+
+  .dcf-brand-stamp {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
   .dcf-main-canvas {
-    padding: 16px 14px 20px;
-    justify-content: space-between;
+    padding: 60px 14px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    min-height: 100svh;
+    height: 100svh;
+    box-sizing: border-box;
   }
 
   .dcf-stage {
-    margin: auto 0;
+    margin: 0;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .dcf-svg {
-    transform: scale(1.05);
+    transform: scale(1.22);
     transform-origin: center center;
+    overflow: visible;
+    width: 96%;
+    max-width: 420px;
   }
 
   .dcf-hit {
     transform: scale(1.2);
     transform-origin: center center;
+  }
+
+  .dcf-hero-copy {
+    margin-top: 4px;
+    gap: 12px;
+    max-width: 360px;
+    width: 100%;
   }
 
   /* Centered mobile speech bubble so it never clips off-screen on phones */
@@ -1984,7 +2178,7 @@ const COVER_CSS = `
   }
 
   .dcf-scroll-cue {
-    margin-top: 10px;
+    margin-top: 6px;
   }
 
   .dcf-scroll-label {

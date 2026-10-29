@@ -1,48 +1,52 @@
 "use client";
 
-import React, { useState, useSyncExternalStore } from "react";
-import { Moon, Sun } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Moon, Palette, Sun } from "lucide-react";
+import { useTheme } from "./ThemeProvider";
 
-const emptySubscribe = () => () => {};
+interface ThemeToggleProps {
+  className?: string;
+  showLabel?: boolean;
+}
 
-export function ThemeToggle() {
-  const isClient = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
+export function ThemeToggle({ className = "", showLabel = false }: ThemeToggleProps) {
+  const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("portfolio-theme") as "dark" | "light") || "dark";
-    }
-    return "dark";
-  });
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    localStorage.setItem("portfolio-theme", nextTheme);
-    document.documentElement.classList.toggle("light", nextTheme === "light");
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
-  };
-
-  if (!isClient) {
+  if (!mounted) {
     return (
-      <div className="w-9 h-9 rounded-full bg-slate-800/40 border border-slate-700/50" />
+      <div className={`w-9 h-9 rounded-full border-2 border-black/30 bg-stone-100 ${className}`} />
     );
   }
 
+  const isLight = theme === "light";
+
   return (
     <button
+      type="button"
       onClick={toggleTheme}
-      aria-label="Toggle theme"
-      className="relative p-2 rounded-full border border-slate-700/60 dark:border-slate-800 bg-slate-800/50 dark:bg-slate-900/60 text-slate-300 dark:text-slate-200 hover:text-white hover:border-indigo-500/50 transition-all duration-200 shadow-sm cursor-pointer"
+      aria-label={isLight ? "Switch to Black & White dark mode" : "Switch to Colourful light mode"}
+      title={isLight ? "Switch to Black & White Dark Mode" : "Switch to Colourful Light Mode"}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border-2 border-black transition-all cursor-pointer font-mono text-xs font-bold ${
+        isLight
+          ? "bg-white text-black hover:bg-black hover:text-white shadow-[2px_2px_0_#000]"
+          : "bg-stone-900 text-white border-white hover:bg-white hover:text-black shadow-[2px_2px_0_#fff]"
+      } ${className}`}
     >
-      {theme === "dark" ? (
-        <Sun className="w-4 h-4 text-amber-400 transition-transform rotate-0 hover:rotate-45" />
+      {isLight ? (
+        <>
+          <Palette className="w-3.5 h-3.5 text-indigo-600 transition-transform hover:rotate-12" />
+          {showLabel ? <span>Colourful</span> : <span className="hidden sm:inline">Color</span>}
+        </>
       ) : (
-        <Moon className="w-4 h-4 text-indigo-400 transition-transform hover:-rotate-12" />
+        <>
+          <Sun className="w-3.5 h-3.5 text-amber-300 transition-transform hover:rotate-45" />
+          {showLabel ? <span>B&amp;W Dark</span> : <span className="hidden sm:inline">B&amp;W</span>}
+        </>
       )}
     </button>
   );

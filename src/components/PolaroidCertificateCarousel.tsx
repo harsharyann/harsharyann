@@ -368,35 +368,35 @@ export function PolaroidCertificateCarousel({
 
       {/* Interactive Detail Drawer & Controls */}
       {activeCert && (
-        <div className="sketch-box p-6 sm:p-8 space-y-6 pl-cert-controls bg-white">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b-2 border-black">
+        <div className="sketch-box p-6 sm:p-8 space-y-6 pl-cert-controls bg-white dark:bg-stone-900">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b-2 border-black dark:border-stone-800">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="sketch-stamp">
+                <span className="sketch-stamp bg-indigo-600 text-white dark:bg-white dark:text-black">
                   ACTIVE CERTIFICATE 0{active + 1} / 0{n}
                 </span>
-                <span className="font-mono text-xs font-bold uppercase text-stone-600">
+                <span className="font-mono text-xs font-bold uppercase text-indigo-600 dark:text-stone-300">
                   {activeCert.category}
                 </span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black uppercase text-black tracking-tight mt-2">
+              <h2 className="text-2xl sm:text-3xl font-black uppercase text-black dark:text-white tracking-tight mt-2">
                 {activeCert.title}
               </h2>
-              <p className="font-mono text-xs font-bold text-stone-700 mt-1">
+              <p className="font-mono text-xs font-bold text-stone-700 dark:text-stone-300 mt-1">
                 Issued by {activeCert.issuer} • {activeCert.issueDate}
               </p>
             </div>
 
             {/* Stepper Buttons & Counter */}
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xs font-bold text-black px-3 py-1 border-2 border-black rounded-full bg-stone-50">
+              <span className="font-mono text-xs font-bold text-black dark:text-white px-3 py-1 border-2 border-black dark:border-white rounded-full bg-stone-50 dark:bg-stone-800">
                 <b>{pad2(active + 1)}</b> / {pad2(n)}
               </span>
 
               <button
                 type="button"
                 onClick={() => step(-1)}
-                className="w-10 h-10 border-2 border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-[2px_2px_0_#000] active:translate-y-[1px]"
+                className="w-10 h-10 border-2 border-black dark:border-white rounded-full flex items-center justify-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] active:translate-y-[1px] cursor-pointer"
                 aria-label="Previous certificate"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -405,7 +405,7 @@ export function PolaroidCertificateCarousel({
               <button
                 type="button"
                 onClick={() => step(1)}
-                className="w-10 h-10 border-2 border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-[2px_2px_0_#000] active:translate-y-[1px]"
+                className="w-10 h-10 border-2 border-black dark:border-white rounded-full flex items-center justify-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] active:translate-y-[1px] cursor-pointer"
                 aria-label="Next certificate"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -415,20 +415,20 @@ export function PolaroidCertificateCarousel({
 
           {/* Description & Competencies */}
           <div className="space-y-4">
-            <p className="text-stone-800 text-sm leading-relaxed">
+            <p className="text-stone-800 dark:text-stone-200 text-sm leading-relaxed">
               {activeCert.description}
             </p>
 
             {/* Skills Pills */}
             <div className="space-y-1.5 pt-1">
-              <span className="text-[10px] font-mono font-bold uppercase text-stone-500 block">
+              <span className="text-[10px] font-mono font-bold uppercase text-stone-500 dark:text-stone-400 block">
                 SPECIALIZED KNOWLEDGE &amp; SKILLS:
               </span>
               <div className="flex flex-wrap gap-1.5 font-mono text-xs">
                 {activeCert.skillsLearned.map((skill) => (
                   <span
                     key={skill}
-                    className="border-2 border-black px-2.5 py-0.5 rounded-full font-bold bg-white"
+                    className="border border-indigo-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-stone-800 text-indigo-700 dark:text-stone-200"
                   >
                     ✦ {skill}
                   </span>
@@ -438,9 +438,9 @@ export function PolaroidCertificateCarousel({
           </div>
 
           {/* Action Verification Footer */}
-          <div className="pt-4 border-t-2 border-dashed border-black flex flex-wrap items-center justify-between gap-4">
-            <div className="font-mono text-xs text-stone-600">
-              Credential ID: <span className="font-bold text-black">{activeCert.credentialId || "VERIFIED-ON-FILE"}</span>
+          <div className="pt-4 border-t-2 border-dashed border-black dark:border-stone-800 flex flex-wrap items-center justify-between gap-4">
+            <div className="font-mono text-xs text-stone-600 dark:text-stone-400">
+              Credential ID: <span className="font-bold text-black dark:text-white">{activeCert.credentialId || "VERIFIED-ON-FILE"}</span>
             </div>
 
             {activeCert.credentialUrl ? (
@@ -455,7 +455,7 @@ export function PolaroidCertificateCarousel({
                 <ArrowUpRight className="w-3 h-3" />
               </a>
             ) : (
-              <span className="font-mono text-xs font-bold text-stone-600">
+              <span className="font-mono text-xs font-bold text-stone-600 dark:text-stone-400">
                 Verified On-Record
               </span>
             )}
@@ -606,5 +606,67 @@ const POLAROID_CSS = `
   height: 8px;
   background: #000000;
   border-radius: 1px;
+}
+
+/* Dark Mode Support */
+html.dark .pl-cert-root {
+  border-color: #ffffff;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+html.dark .pl-cert-string path {
+  stroke: #ffffff;
+}
+
+html.dark .pl-cert-print {
+  background: #171717;
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 4px 6px 0 #ffffff;
+}
+
+html.dark .pl-cert-card[data-on='0'] .pl-cert-print {
+  box-shadow: 2px 4px 0 rgba(255, 255, 255, 0.35);
+}
+
+html.dark .pl-cert-card[data-on='1'] .pl-cert-print {
+  box-shadow: 6px 10px 0 #ffffff;
+}
+
+html.dark .pl-cert-shot {
+  background: #111111;
+  border-color: #ffffff;
+}
+
+html.dark .pl-cert-parchment {
+  background-color: #1a1a1a;
+  background-image: radial-gradient(#ffffff 0.75px, transparent 0.75px);
+}
+
+html.dark .pl-cert-border {
+  border-color: #ffffff;
+  background: #171717;
+  color: #ffffff;
+}
+
+html.dark .pl-cert-border * {
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+html.dark .pl-cert-note {
+  color: #ffffff;
+}
+
+html.dark .pl-cert-peg {
+  background: #171717;
+  border-color: #ffffff;
+  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.7);
+}
+
+html.dark .pl-cert-peg::after {
+  background: #ffffff;
 }
 `

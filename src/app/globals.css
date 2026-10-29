@@ -2,20 +2,19 @@
 
 @layer base {
   :root {
-    /* Pure Black & White Hand-Drawn Sketchbook Palette */
-    --bg-magazine: #ffffff;
-    --bg-paper: #ffffff;
-    --bg-paper-elevated: #ffffff;
+    --bg-canvas: #ffffff;
     --text-primary: #000000;
     --text-secondary: #333333;
     --text-muted: #666666;
-    --border-editorial: #000000;
-    --border-light: rgba(0, 0, 0, 0.15);
-    --accent-gold: #000000;
-    --accent-amber: #000000;
-    --accent-crimson: #000000;
-    --paper-shadow: #000000;
-    --paper-sheen: transparent;
+    --border-color: #000000;
+  }
+
+  html.dark {
+    --bg-canvas: #0c0c0c;
+    --text-primary: #ffffff;
+    --text-secondary: #d4d4d4;
+    --text-muted: #a3a3a3;
+    --border-color: #ffffff;
   }
 }
 
@@ -27,27 +26,46 @@ html {
   scroll-behavior: smooth;
   background-color: #ffffff;
   color: #000000;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+html.dark {
+  background-color: #0c0c0c;
+  color: #ffffff;
 }
 
 body {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
   overflow-x: hidden;
 }
 
 ::selection {
-  background-color: #000000;
+  background-color: #4f46e5;
   color: #ffffff;
 }
 
-/* Sketchbook paper background with subtle clean grid */
+html.dark ::selection {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Light Mode Paper Grid / Dark Mode Architectural Grid */
 .bg-news-texture {
   background-color: #ffffff;
   background-image: 
     linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+html.dark .bg-news-texture {
+  background-color: #0c0c0c;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -57,6 +75,14 @@ body {
   border: 2px solid #000000;
   box-shadow: 3px 3px 0 #000000;
   border-radius: 6px;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+html.dark .sketch-box {
+  background: #171717;
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 3px 3px 0 #ffffff;
 }
 
 .sketch-box-hover {
@@ -66,6 +92,10 @@ body {
 .sketch-box-hover:hover {
   transform: translate(-3px, -3px);
   box-shadow: 6px 6px 0 #000000;
+}
+
+html.dark .sketch-box-hover:hover {
+  box-shadow: 6px 6px 0 #ffffff;
 }
 
 .sketch-stamp {
@@ -79,6 +109,12 @@ body {
   padding: 3px 9px;
   border-radius: 3px;
   transform: rotate(-1deg);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html.dark .sketch-stamp {
+  background: #ffffff;
+  color: #000000;
 }
 
 .sketch-pill {
@@ -93,13 +129,27 @@ body {
   border: 1.5px solid #000000;
   border-radius: 999px;
   background: #ffffff;
+  color: #000000;
+  box-shadow: 2px 2px 0 #000000;
   transition: all 0.18s;
 }
 
 .sketch-pill:hover {
-  background: #000000;
+  background: #4f46e5;
   color: #ffffff;
   transform: translateY(-1.5px);
+}
+
+html.dark .sketch-pill {
+  background: #171717;
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 2px 2px 0 #ffffff;
+}
+
+html.dark .sketch-pill:hover {
+  background: #ffffff;
+  color: #000000;
 }
 
 .sketch-button-solid {
@@ -107,7 +157,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #000000;
+  background: #4f46e5;
   color: #ffffff;
   border: 2px solid #000000;
   border-radius: 999px;
@@ -115,11 +165,13 @@ body {
   font-size: 13.5px;
   font-weight: 800;
   letter-spacing: -0.01em;
-  box-shadow: 0 4px 0 #333333;
-  transition: transform 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.18s cubic-bezier(0.3, 1.4, 0.5, 1);
+  box-shadow: 0 4px 0 #000000;
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), background-color 0.18s ease;
 }
 
 .sketch-button-solid:hover {
+  background: #4338ca;
   transform: translateY(-2px) rotate(-1deg);
   box-shadow: 0 6px 0 #000000;
 }
@@ -127,6 +179,18 @@ body {
 .sketch-button-solid:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #000000;
+}
+
+html.dark .sketch-button-solid {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+  box-shadow: 0 4px 0 #888888;
+}
+
+html.dark .sketch-button-solid:hover {
+  background: #e5e5e5;
+  box-shadow: 0 6px 0 #ffffff;
 }
 
 .sketch-button-outline {
@@ -143,10 +207,12 @@ body {
   font-weight: 800;
   letter-spacing: -0.01em;
   box-shadow: 0 4px 0 #000000;
-  transition: transform 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.18s cubic-bezier(0.3, 1.4, 0.5, 1);
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.18s cubic-bezier(0.3, 1.4, 0.5, 1), background-color 0.18s ease;
 }
 
 .sketch-button-outline:hover {
+  background: #fef08a;
   transform: translateY(-2px) rotate(1deg);
   box-shadow: 0 6px 0 #000000;
 }
@@ -154,6 +220,18 @@ body {
 .sketch-button-outline:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #000000;
+}
+
+html.dark .sketch-button-outline {
+  background: #171717;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 4px 0 #ffffff;
+}
+
+html.dark .sketch-button-outline:hover {
+  background: #ffffff;
+  color: #000000;
 }
 
 /* Typography Helpers */
@@ -167,30 +245,6 @@ body {
   font-style: italic;
 }
 
-/* Paper Card Style backward-compatibility */
-.paper-card {
-  background-color: #ffffff;
-  border: 2px solid #000000;
-  box-shadow: 4px 4px 0 #000000;
-  border-radius: 8px;
-}
-
-.border-editorial {
-  border-color: #000000;
-}
-
-.border-editorial-light {
-  border-color: rgba(0, 0, 0, 0.15);
-}
-
-/* Pull quote */
-.pull-quote {
-  border-left: 3px solid #000000;
-  padding-left: 1.25rem;
-  font-family: Georgia, serif;
-  font-style: italic;
-}
-
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
@@ -201,7 +255,16 @@ body {
   border-left: 1px dashed rgba(0, 0, 0, 0.2);
 }
 
+html.dark ::-webkit-scrollbar-track {
+  background: #0c0c0c;
+  border-left-color: rgba(255, 255, 255, 0.15);
+}
+
 ::-webkit-scrollbar-thumb {
-  background: #000000;
+  background: #4f46e5;
   border-radius: 4px;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #ffffff;
 }

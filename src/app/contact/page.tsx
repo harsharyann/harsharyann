@@ -43,20 +43,20 @@ export default function ContactPage() {
   return (
     <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-12">
       {/* Page Header */}
-      <div className="pb-6 border-b-2 border-black flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="pb-6 border-b-2 border-black dark:border-stone-800 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <div className="sketch-stamp mb-2">
+          <div className="sketch-stamp mb-2 bg-indigo-600 text-white dark:bg-white dark:text-black">
             CONTACT &amp; CORRESPONDENCE
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black">
+          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white">
             Contact Desk
           </h1>
-          <p className="mt-2 text-xs sm:text-sm font-mono text-stone-600 max-w-xl">
+          <p className="mt-2 text-xs sm:text-sm font-mono text-stone-600 dark:text-stone-400 max-w-xl">
             Open to Summer 2026 early internship roles, collegiate hackathon teams, research mentorship, and open-source collaborations.
           </p>
         </div>
 
-        <div className="text-xs font-mono font-bold text-stone-700 uppercase bg-stone-100 p-2 rounded border border-black">
+        <div className="text-xs font-mono font-bold text-stone-700 dark:text-stone-300 uppercase bg-stone-100 dark:bg-stone-900 p-2 rounded border border-black dark:border-stone-700">
           RESPONSE WINDOW • &lt; 24 HOURS
         </div>
       </div>
@@ -66,21 +66,21 @@ export default function ContactPage() {
         <div className="lg:col-span-5 space-y-6">
           {/* Direct Email Card */}
           <div className="sketch-box p-6 space-y-4">
-            <span className="text-[10px] font-mono font-bold text-stone-500 uppercase block">
+            <span className="text-[10px] font-mono font-bold text-indigo-600 dark:text-stone-400 uppercase block">
               OFFICIAL ELECTRONIC MAIL:
             </span>
-            <div className="font-mono text-sm sm:text-base font-bold text-black break-all">
+            <div className="font-mono text-sm sm:text-base font-bold text-black dark:text-white break-all">
               {personal.email}
             </div>
 
             <button
               type="button"
               onClick={handleCopyEmail}
-              className="w-full sketch-button-outline text-xs py-2"
+              className="w-full sketch-button-outline text-xs py-2 cursor-pointer"
             >
               {copied ? (
                 <>
-                  <Check className="w-3.5 h-3.5" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Copied to Clipboard!</span>
                 </>
               ) : (
@@ -94,24 +94,24 @@ export default function ContactPage() {
 
           {/* Availability & Location Card */}
           <div className="sketch-box p-6 space-y-4">
-            <span className="text-[10px] font-mono font-bold text-stone-500 uppercase block pb-2 border-b border-black">
+            <span className="text-[10px] font-mono font-bold text-indigo-600 dark:text-stone-400 uppercase block pb-2 border-b border-black dark:border-stone-800">
               CURRENT STATUS &amp; COORDINATES:
             </span>
 
             <div className="space-y-3 font-mono text-xs">
               <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-black shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-indigo-600 dark:text-white shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-stone-500 uppercase block text-[10px]">BASE LOCATION</span>
-                  <span className="font-bold text-black">{personal.location}</span>
+                  <span className="text-stone-500 dark:text-stone-400 uppercase block text-[10px]">BASE LOCATION</span>
+                  <span className="font-bold text-black dark:text-white">{personal.location}</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5">
-                <Calendar className="w-4 h-4 text-black shrink-0 mt-0.5" />
+                <Calendar className="w-4 h-4 text-emerald-600 dark:text-white shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-stone-500 uppercase block text-[10px]">SEEKING / OPPORTUNITIES</span>
-                  <span className="font-bold text-black">{personal.availability}</span>
+                  <span className="text-stone-500 dark:text-stone-400 uppercase block text-[10px]">SEEKING / OPPORTUNITIES</span>
+                  <span className="font-bold text-black dark:text-white">{personal.availability}</span>
                 </div>
               </div>
             </div>
@@ -119,7 +119,7 @@ export default function ContactPage() {
 
           {/* Social Channels List */}
           <div className="sketch-box p-6 space-y-3">
-            <span className="text-[10px] font-mono font-bold text-stone-500 uppercase block pb-2 border-b border-black">
+            <span className="text-[10px] font-mono font-bold text-indigo-600 dark:text-stone-400 uppercase block pb-2 border-b border-black dark:border-stone-800">
               CONNECTED NETWORKS:
             </span>
 
@@ -128,7 +128,7 @@ export default function ContactPage() {
                 href={socialLinks.github}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-between p-2.5 border-2 border-black rounded hover:bg-black hover:text-white transition-all font-mono text-xs font-bold"
+                className="flex items-center justify-between p-2.5 border-2 border-black dark:border-stone-700 rounded hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all font-mono text-xs font-bold"
               >
                 <div className="flex items-center gap-2">
                   <GithubIcon className="w-4 h-4" />
@@ -141,7 +141,7 @@ export default function ContactPage() {
                 href={socialLinks.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-between p-2.5 border-2 border-black rounded hover:bg-black hover:text-white transition-all font-mono text-xs font-bold"
+                className="flex items-center justify-between p-2.5 border-2 border-black dark:border-stone-700 rounded hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all font-mono text-xs font-bold"
               >
                 <div className="flex items-center gap-2">
                   <LinkedinIcon className="w-4 h-4" />
@@ -155,7 +155,7 @@ export default function ContactPage() {
                   href={socialLinks.leetcode}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between p-2.5 border-2 border-black rounded hover:bg-black hover:text-white transition-all font-mono text-xs font-bold"
+                  className="flex items-center justify-between p-2.5 border-2 border-black dark:border-stone-700 rounded hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all font-mono text-xs font-bold"
                 >
                   <div className="flex items-center gap-2">
                     <LeetCodeIcon className="w-4 h-4" />
@@ -171,23 +171,23 @@ export default function ContactPage() {
         {/* Right Column: Sketchbook Mailbox Form */}
         <div className="lg:col-span-7">
           <div className="sketch-box p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b-2 border-black">
+            <div className="flex items-center justify-between pb-3 border-b-2 border-black dark:border-stone-800">
               <div>
-                <span className="sketch-stamp">DISPATCH FORM</span>
-                <h2 className="text-xl font-black uppercase text-black mt-2">
+                <span className="sketch-stamp bg-indigo-600 text-white dark:bg-white dark:text-black">DISPATCH FORM</span>
+                <h2 className="text-xl font-black uppercase text-black dark:text-white mt-2">
                   Send a Direct Message
                 </h2>
               </div>
-              <Send className="w-5 h-5 text-black" />
+              <Send className="w-5 h-5 text-indigo-600 dark:text-white" />
             </div>
 
             {submitted ? (
-              <div className="p-6 border-2 border-black bg-stone-50 text-center space-y-3 rounded">
+              <div className="p-6 border-2 border-black dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-center space-y-3 rounded">
                 <span className="text-3xl">✈️</span>
-                <h3 className="text-lg font-black uppercase text-black">
+                <h3 className="text-lg font-black uppercase text-black dark:text-white">
                   Dispatch Sent Successfully!
                 </h3>
-                <p className="text-xs text-stone-700 font-mono">
+                <p className="text-xs text-stone-700 dark:text-stone-300 font-mono">
                   Thank you for reaching out. Harsh will review your note and respond back promptly.
                 </p>
                 <button
@@ -203,7 +203,7 @@ export default function ContactPage() {
                 <div className="space-y-1">
                   <label
                     htmlFor="name"
-                    className="block font-mono text-xs font-bold uppercase text-stone-700"
+                    className="block font-mono text-xs font-bold uppercase text-stone-700 dark:text-stone-300"
                   >
                     Your Full Name / Organization:
                   </label>
@@ -216,14 +216,14 @@ export default function ContactPage() {
                       setFormData({ ...formData, name: e.target.value })
                     }
                     placeholder="e.g. Alex Morgan / Tech Team"
-                    className="w-full p-3 border-2 border-black rounded font-mono text-xs focus:outline-none focus:ring-2 focus:ring-black bg-white"
+                    className="w-full p-3 border-2 border-black dark:border-stone-700 rounded font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white dark:bg-stone-800 text-black dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-1">
                   <label
                     htmlFor="email"
-                    className="block font-mono text-xs font-bold uppercase text-stone-700"
+                    className="block font-mono text-xs font-bold uppercase text-stone-700 dark:text-stone-300"
                   >
                     Your Return Email:
                   </label>
@@ -236,14 +236,14 @@ export default function ContactPage() {
                       setFormData({ ...formData, email: e.target.value })
                     }
                     placeholder="e.g. alex@company.com"
-                    className="w-full p-3 border-2 border-black rounded font-mono text-xs focus:outline-none focus:ring-2 focus:ring-black bg-white"
+                    className="w-full p-3 border-2 border-black dark:border-stone-700 rounded font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white dark:bg-stone-800 text-black dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-1">
                   <label
                     htmlFor="category"
-                    className="block font-mono text-xs font-bold uppercase text-stone-700"
+                    className="block font-mono text-xs font-bold uppercase text-stone-700 dark:text-stone-300"
                   >
                     Inquiry Intent / Classification:
                   </label>
@@ -253,7 +253,7 @@ export default function ContactPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, category: e.target.value })
                     }
-                    className="w-full p-3 border-2 border-black rounded font-mono text-xs focus:outline-none focus:ring-2 focus:ring-black bg-white"
+                    className="w-full p-3 border-2 border-black dark:border-stone-700 rounded font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white dark:bg-stone-800 text-black dark:text-white"
                   >
                     <option value="Summer 2026 Internship Opportunity">
                       Summer 2026 Early Internship Opportunity
@@ -273,7 +273,7 @@ export default function ContactPage() {
                 <div className="space-y-1">
                   <label
                     htmlFor="message"
-                    className="block font-mono text-xs font-bold uppercase text-stone-700"
+                    className="block font-mono text-xs font-bold uppercase text-stone-700 dark:text-stone-300"
                   >
                     Note / Message:
                   </label>
@@ -286,14 +286,14 @@ export default function ContactPage() {
                       setFormData({ ...formData, message: e.target.value })
                     }
                     placeholder="Tell me about the role, hackathon project, or problem you are exploring..."
-                    className="w-full p-3 border-2 border-black rounded font-mono text-xs focus:outline-none focus:ring-2 focus:ring-black bg-white"
+                    className="w-full p-3 border-2 border-black dark:border-stone-700 rounded font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white dark:bg-stone-800 text-black dark:text-white"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full sketch-button-solid py-3 text-sm flex items-center justify-center gap-2"
+                  className="w-full sketch-button-solid py-3 text-sm flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   <span>

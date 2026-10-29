@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, FileText } from "lucide-react";
 import { portfolioData } from "@/data/portfolioData";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function MagazineNav() {
   const pathname = usePathname();
@@ -23,18 +24,18 @@ export function MagazineNav() {
   ];
 
   return (
-    <header className="w-full sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-2 border-black py-3 px-4 sm:px-8">
+    <header className="w-full sticky top-0 z-50 bg-white/95 dark:bg-stone-950/95 backdrop-blur-md border-b-2 border-black dark:border-stone-800 py-3 px-4 sm:px-8 transition-colors duration-200">
       <div className="max-w-6xl xl:max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Brand Link to Cover */}
         <Link
           href="/"
-          className="font-mono text-xs font-black uppercase bg-black text-white px-2.5 py-1 rounded tracking-wider shadow-[2px_2px_0_#555] hover:bg-stone-800 transition-all flex items-center gap-1.5"
+          className="font-mono text-xs font-black uppercase bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 rounded tracking-wider shadow-[2px_2px_0_#555] dark:shadow-[2px_2px_0_#fff] hover:opacity-85 transition-all flex items-center gap-1.5"
           title="Return to Cover"
         >
           <span>HARSH ARYAN</span>
         </Link>
 
-        {/* Navigation Chapter Pills without numbers, no Cover */}
+        {/* Navigation Chapter Pills - Colourful in Light, B&W in Dark */}
         <nav className="hidden md:flex items-center gap-2 lg:gap-3 font-mono text-xs font-bold uppercase">
           {pages.map((p) => {
             const isActive = pathname === p.path;
@@ -44,8 +45,8 @@ export function MagazineNav() {
                 href={p.path}
                 className={`px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
                   isActive
-                    ? "bg-black text-white shadow-[2px_2px_0_#555]"
-                    : "border-2 border-black bg-white text-black hover:bg-black hover:text-white shadow-[2px_2px_0_#000]"
+                    ? "bg-indigo-600 text-white shadow-[2px_2px_0_#000] dark:bg-white dark:text-black dark:shadow-[2px_2px_0_#fff]"
+                    : "border-2 border-black dark:border-stone-400 bg-white dark:bg-stone-900 text-black dark:text-stone-200 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#888]"
                 }`}
               >
                 <span>{p.name}</span>
@@ -54,14 +55,16 @@ export function MagazineNav() {
           })}
         </nav>
 
-        {/* Right side: Resume button & mobile menu hamburger */}
-        <div className="flex items-center gap-3">
+        {/* Right side: ThemeToggle, Resume button & mobile menu hamburger */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <ThemeToggle />
+
           {portfolioData.personal.resumeUrl && (
             <a
               href={portfolioData.personal.resumeUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-mono font-bold border-2 border-black px-3.5 py-1.5 rounded-full bg-white text-black shadow-[2px_2px_0_#000] hover:bg-black hover:text-white transition-all"
+              className="inline-flex items-center gap-1.5 text-xs font-mono font-bold border-2 border-black dark:border-white px-3.5 py-1.5 rounded-full bg-white dark:bg-stone-900 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all"
             >
               <FileText className="w-3.5 h-3.5" />
               <span>Resume PDF</span>
@@ -71,7 +74,7 @@ export function MagazineNav() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 border-2 border-black rounded shadow-[2px_2px_0_#000] hover:bg-black hover:text-white transition-colors"
+            className="md:hidden p-1.5 border-2 border-black dark:border-white rounded shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -81,7 +84,7 @@ export function MagazineNav() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t-2 border-black bg-white p-4 space-y-2 mt-3">
+        <div className="md:hidden border-t-2 border-black dark:border-stone-800 bg-white dark:bg-stone-950 p-4 space-y-2 mt-3">
           {pages.map((p) => {
             const isActive = pathname === p.path;
             return (
@@ -89,10 +92,10 @@ export function MagazineNav() {
                 key={p.path}
                 href={p.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 rounded border-2 border-black text-sm font-mono font-bold uppercase transition-all ${
+                className={`block px-4 py-2.5 rounded border-2 border-black dark:border-stone-700 text-sm font-mono font-bold uppercase transition-all ${
                   isActive
-                    ? "bg-black text-white"
-                    : "bg-white text-black hover:bg-stone-100"
+                    ? "bg-indigo-600 text-white dark:bg-white dark:text-black"
+                    : "bg-white dark:bg-stone-900 text-black dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800"
                 }`}
               >
                 <span>{p.name}</span>

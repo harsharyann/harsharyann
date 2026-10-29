@@ -21,18 +21,18 @@ export function MagazineColophon() {
   };
 
   return (
-    <footer className="mt-20 py-12 px-4 sm:px-8 bg-white border-t-2 border-dashed border-black font-mono text-xs">
+    <footer className="mt-20 py-12 px-4 sm:px-8 bg-white dark:bg-stone-950 border-t-2 border-dashed border-black dark:border-stone-800 font-mono text-xs transition-colors duration-200">
       <div className="max-w-6xl xl:max-w-7xl mx-auto space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-stone-200">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-stone-200 dark:border-stone-800">
           <div>
-            <span className="bg-black text-white px-2.5 py-0.5 text-[11px] font-black uppercase rounded tracking-wider inline-block mb-2">
+            <span className="bg-indigo-600 dark:bg-white text-white dark:text-black px-2.5 py-0.5 text-[11px] font-black uppercase rounded tracking-wider inline-block mb-2">
               SKETCHBOOK COLOPHON
             </span>
-            <h4 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-black">
+            <h4 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-black dark:text-white">
               {personal.name}
             </h4>
-            <p className="text-xs text-stone-600 mt-1 max-w-md">
-              Personal Portfolio • Handcrafted in Black &amp; White ink.
+            <p className="text-xs text-stone-600 dark:text-stone-400 mt-1 max-w-md">
+              Personal Portfolio • Handcrafted in Ink &amp; Math.
             </p>
           </div>
 
@@ -66,30 +66,30 @@ export function MagazineColophon() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-stone-600 text-[11px]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-stone-600 dark:text-stone-400 text-[11px]">
           <p>© 2026 Harsh Aryan. All ideas sketched by hand.</p>
 
           <div className="flex items-center gap-4">
-            <Link href="/" className="hover:text-black font-bold underline">
-              Cover Issue
+            <Link href="/" className="hover:text-black dark:hover:text-white font-bold underline">
+              Cover
             </Link>
-            <Link href="/about" className="hover:text-black font-bold">
+            <Link href="/about" className="hover:text-black dark:hover:text-white font-bold">
               About
             </Link>
-            <Link href="/projects" className="hover:text-black font-bold">
+            <Link href="/projects" className="hover:text-black dark:hover:text-white font-bold">
               Projects
             </Link>
-            <Link href="/certificates" className="hover:text-black font-bold">
+            <Link href="/certificates" className="hover:text-black dark:hover:text-white font-bold">
               Certificates
             </Link>
-            <Link href="/contact" className="hover:text-black font-bold">
+            <Link href="/contact" className="hover:text-black dark:hover:text-white font-bold">
               Contact
             </Link>
 
             <button
               type="button"
               onClick={scrollToTop}
-              className="inline-flex items-center gap-1 border border-black px-2.5 py-1 rounded-full text-black hover:bg-black hover:text-white transition-colors ml-2 font-bold"
+              className="inline-flex items-center gap-1 border border-black dark:border-white px-2.5 py-1 rounded-full text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors ml-2 font-bold cursor-pointer"
             >
               <span>Top</span>
               <ArrowUp className="w-3 h-3" />

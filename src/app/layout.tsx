@@ -3,6 +3,7 @@ import "./globals.css";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
 import { MagazineNav } from "@/components/MagazineNav";
 import { MagazineColophon } from "@/components/MagazineColophon";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -44,11 +45,13 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-news-texture flex flex-col antialiased selection:bg-black selection:text-white">
-        <ScrollProgressBar />
-        <MagazineNav />
-        {children}
-        <MagazineColophon />
+      <body className="min-h-screen bg-news-texture flex flex-col antialiased selection:bg-indigo-600 selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200">
+        <ThemeProvider>
+          <ScrollProgressBar />
+          <MagazineNav />
+          {children}
+          <MagazineColophon />
+        </ThemeProvider>
       </body>
     </html>
   );

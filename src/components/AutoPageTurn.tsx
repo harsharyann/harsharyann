@@ -89,25 +89,25 @@ export function AutoPageTurn({
 
   return (
     <div
-      className={`mt-16 pt-10 pb-12 border-t-2 border-dashed border-black flex flex-col items-center justify-center text-center space-y-4 transition-all duration-200 ${
+      className={`mt-16 pt-10 pb-12 border-t-2 border-dashed border-black dark:border-stone-800 flex flex-col items-center justify-center text-center space-y-4 transition-all duration-200 ${
         isFading ? "opacity-0 -translate-y-2" : "opacity-100 translate-y-0"
       }`}
     >
-      <span className="font-mono text-[11px] font-bold text-stone-500 uppercase tracking-widest">
+      <span className="font-mono text-[11px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-widest">
         {isReturnToStart ? "End of Portfolio" : "End of Section"}
       </span>
 
       <button
         type="button"
         onClick={goToNext}
-        className="sketch-button-solid text-sm px-8 py-3.5 inline-flex items-center gap-2 group shadow-[3px_3px_0_#000] hover:shadow-[5px_5px_0_#000] transition-all"
+        className="sketch-button-solid text-sm px-8 py-3.5 inline-flex items-center gap-2 group shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all cursor-pointer"
         aria-label={`Go to ${nextTitle}`}
       >
         <span>Continue to {nextTitle}</span>
         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
       </button>
 
-      <p className="font-mono text-[11px] text-stone-500">
+      <p className="font-mono text-[11px] text-stone-500 dark:text-stone-400">
         Scroll down or click to continue →
       </p>
     </div>

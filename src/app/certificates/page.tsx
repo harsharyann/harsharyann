@@ -26,15 +26,15 @@ export default function CertificatesPage() {
   return (
     <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-12">
       {/* Page Header */}
-      <div className="pb-6 border-b-2 border-black flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="pb-6 border-b-2 border-black dark:border-stone-800 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <div className="sketch-stamp mb-2">
+          <div className="sketch-stamp mb-2 bg-indigo-600 text-white dark:bg-white dark:text-black">
             CERTIFICATES &amp; CREDENTIALS
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black">
+          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white">
             Certifications &amp; Laurels
           </h1>
-          <p className="mt-2 text-xs sm:text-sm font-mono text-stone-600 max-w-xl">
+          <p className="mt-2 text-xs sm:text-sm font-mono text-stone-600 dark:text-stone-400 max-w-xl">
             Verified technical coursework pegged onto an interactive clothesline. Drag the line, swipe prints, or click any card to inspect credentials.
           </p>
         </div>
@@ -45,10 +45,10 @@ export default function CertificatesPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-full border-2 border-black font-bold transition-all ${
+              className={`px-3.5 py-1.5 rounded-full border-2 border-black dark:border-white font-bold transition-all cursor-pointer ${
                 activeCategory === cat
-                  ? "bg-black text-white shadow-[2px_2px_0_#444]"
-                  : "bg-white text-black hover:bg-stone-100 shadow-[2px_2px_0_#000]"
+                  ? "bg-indigo-600 text-white dark:bg-white dark:text-black shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                  : "bg-white text-black dark:bg-stone-900 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#666]"
               }`}
             >
               {cat === "All" ? "ALL CERTIFICATES" : cat}
@@ -59,12 +59,12 @@ export default function CertificatesPage() {
 
       {/* Main Interactive Polaroid Clothesline Carousel */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between text-xs font-mono font-bold text-stone-600">
+        <div className="flex items-center justify-between text-xs font-mono font-bold text-stone-600 dark:text-stone-400">
           <span className="flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-black" />
+            <Sparkles className="w-4 h-4 text-indigo-600 dark:text-white" />
             <span>DRAG THE STRING OR CLICK A CARD TO SWING</span>
           </span>
-          <span>{filtered.length} PRINTS HANGING</span>
+          <span className="text-indigo-600 dark:text-white">{filtered.length} PRINTS HANGING</span>
         </div>
 
         <PolaroidCertificateCarousel certificates={filtered} height={520} cardWidth={280} />
