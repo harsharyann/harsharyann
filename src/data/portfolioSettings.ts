@@ -41,9 +41,9 @@ export interface PortfolioSettings {
 }
 
 export const defaultSettings: PortfolioSettings = {
-  coverMediaUrl: "/custom-cover.jpg",
+  coverMediaUrl: "https://ik.imagekit.io/1mkdyxchg/mine%20(1).png",
   coverMediaType: "image",
-  coverImage: "/custom-cover.jpg",
+  coverImage: "https://ik.imagekit.io/1mkdyxchg/mine%20(1).png",
   coverImageFit: "cover",
   coverImagePosition: "top",
   name: "HARSH ARYAN",
@@ -59,9 +59,9 @@ export const defaultSettings: PortfolioSettings = {
   showWhereAndWhat: false,
   showStatement: false,
   showSocialLinks: true,
-  bgDesignType: "kinetic-masthead",
-  bgDesignText: "HARSH ARYAN · VOL. 2026 · EDITORIAL ARCHIVE",
-  showBgDesign: true,
+  bgDesignType: "none",
+  bgDesignText: "HARSH ARYAN",
+  showBgDesign: false,
   greetingText: "HEY THERE, I'M HARSH — WELCOME TO MY ARCHIVE",
   showGreeting: true,
   currentPositionTag: "CURRENT WORKING POSITION",
