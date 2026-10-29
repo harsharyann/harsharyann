@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePortfolioSettings } from "@/hooks/usePortfolioSettings";
+import { MagazineBgType } from "@/data/portfolioSettings";
 import {
   ArrowLeft,
   Check,
@@ -60,29 +61,6 @@ export default function AdminPage() {
     }
   };
 
-  // Sample Presets for easy testing of photos & videos
-  const samplePresets = [
-    {
-      name: "Current Flower Photo",
-      type: "image" as const,
-      url: "/custom-cover.jpg",
-    },
-    {
-      name: "Looping Ocean Waves Video",
-      type: "video" as const,
-      url: "https://assets.mixkit.co/videos/preview/mixkit-waves-in-the-water-1164-large.mp4",
-    },
-    {
-      name: "Looping Night City Lights Video",
-      type: "video" as const,
-      url: "https://assets.mixkit.co/videos/preview/mixkit-traffic-in-a-city-at-night-4264-large.mp4",
-    },
-    {
-      name: "Minimalist Architecture Photo",
-      type: "image" as const,
-      url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=80",
-    },
-  ];
 
   const isVideo =
     formData.coverMediaType === "video" ||
@@ -212,81 +190,6 @@ export default function AdminPage() {
                 <p className="text-[11px] font-mono text-stone-400">
                   Tip: Supports `.jpg`, `.png`, `.webp`, `.mp4`, `.webm`, `.mov` direct links or local paths.
                 </p>
-              </div>
-
-              {/* Quick Preset Buttons */}
-              <div className="space-y-2 pt-2 border-t border-white/10">
-                <span className="text-[11px] font-mono text-stone-400 uppercase tracking-wider block">
-                  Quick Testing Presets:
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {samplePresets.map((preset) => (
-                    <button
-                      key={preset.name}
-                      type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          coverMediaUrl: preset.url,
-                          coverImage: preset.url,
-                          coverMediaType: preset.type,
-                        }))
-                      }
-                      className="text-left p-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#e5c07b]/40 transition-all text-xs cursor-pointer group"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-sans font-medium text-stone-200 group-hover:text-white">
-                          {preset.name}
-                        </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/50 text-[#e5c07b] uppercase">
-                          {preset.type}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Media Fit Options */}
-              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/10">
-                <div>
-                  <label className="text-xs font-mono text-stone-400 uppercase tracking-wider block mb-1.5">
-                    Media Fit Mode:
-                  </label>
-                  <select
-                    value={formData.coverImageFit || "cover"}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        coverImageFit: e.target.value as "cover" | "contain",
-                      }))
-                    }
-                    className="w-full px-3 py-2 rounded-lg bg-black/50 border border-white/15 focus:border-[#e5c07b] focus:outline-none font-mono text-xs text-white"
-                  >
-                    <option value="cover">Cover (Full-bleed Cinema)</option>
-                    <option value="contain">Contain (Framed + Ambient Blur)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-xs font-mono text-stone-400 uppercase tracking-wider block mb-1.5">
-                    Position Alignment:
-                  </label>
-                  <select
-                    value={formData.coverImagePosition || "center"}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        coverImagePosition: e.target.value as "top" | "center" | "bottom",
-                      }))
-                    }
-                    className="w-full px-3 py-2 rounded-lg bg-black/50 border border-white/15 focus:border-[#e5c07b] focus:outline-none font-mono text-xs text-white"
-                  >
-                    <option value="center">Center</option>
-                    <option value="top">Top</option>
-                    <option value="bottom">Bottom</option>
-                  </select>
-                </div>
               </div>
             </div>
 
@@ -566,6 +469,196 @@ export default function AdminPage() {
                 <p className="text-[11px] font-mono text-stone-400">
                   Toggles visibility of Email, GitHub &amp; LinkedIn glyphs on the cover.
                 </p>
+              </div>
+            </div>
+
+            {/* PANEL 3: MAGAZINE BACKGROUND DESIGN & EDITORIAL STORY STUDIO */}
+            <div className="backdrop-blur-xl bg-white/[0.03] border border-white/10 rounded-xl p-6 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#e5c07b] font-bold">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Magazine Background &amp; Editorial Layout</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      showBgDesign: prev.showBgDesign === false ? true : false,
+                    }))
+                  }
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                    formData.showBgDesign !== false
+                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                      : "bg-red-500/15 text-red-400 border border-red-500/30"
+                  }`}
+                >
+                  {formData.showBgDesign !== false ? (
+                    <>
+                      <Eye className="w-3 h-3" />
+                      <span>Bg Design Active</span>
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="w-3 h-3" />
+                      <span>Bg Design Hidden</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Background Design Style */}
+              <div className="space-y-2">
+                <label className="text-xs font-mono uppercase tracking-wider text-stone-300 block font-bold">
+                  Background Magazine Design Style:
+                </label>
+                <select
+                  value={formData.bgDesignType || "kinetic-masthead"}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      bgDesignType: e.target.value as MagazineBgType,
+                    }))
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-black/50 border border-white/15 focus:border-[#e5c07b] focus:outline-none font-mono text-xs text-white"
+                >
+                  <option value="kinetic-masthead">
+                    Kinetic Masthead (Large Architectural Editorial Headline)
+                  </option>
+                  <option value="ticker-stream">
+                    Ticker Stream (Dual Gliding Marquee Headlines)
+                  </option>
+                  <option value="minimal-grid">
+                    Technical Layout Grid (Swiss Blueprint Quadrants)
+                  </option>
+                  <option value="none">
+                    None (Pure Velvet Minimalist Canvas)
+                  </option>
+                </select>
+              </div>
+
+              {/* Background Headline Text */}
+              <div className="space-y-2">
+                <label className="text-xs font-mono uppercase tracking-wider text-stone-300 block">
+                  Background Watermark Text:
+                </label>
+                <input
+                  type="text"
+                  value={formData.bgDesignText || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      bgDesignText: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. HARSH ARYAN · VOL. 2026 · EDITORIAL ARCHIVE"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-black/50 border border-white/15 focus:border-[#e5c07b] focus:outline-none font-editorial uppercase text-xs text-white"
+                />
+              </div>
+
+              {/* Greeting Message */}
+              <div className="space-y-2 pt-3 border-t border-white/10">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase tracking-wider text-stone-300 font-bold">
+                    Cool Editorial Greeting
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        showGreeting: prev.showGreeting === false ? true : false,
+                      }))
+                    }
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                      formData.showGreeting !== false
+                        ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                        : "bg-red-500/15 text-red-400 border border-red-500/30"
+                    }`}
+                  >
+                    {formData.showGreeting !== false ? "Visible" : "Hidden"}
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={formData.greetingText || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      greetingText: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. HEY THERE, I'M HARSH — WELCOME TO MY ARCHIVE"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-black/50 border border-white/15 focus:border-[#e5c07b] focus:outline-none font-mono text-xs text-white"
+                />
+              </div>
+
+              {/* Current Working Position Label */}
+              <div className="space-y-2 pt-3 border-t border-white/10">
+                <label className="text-xs font-mono uppercase tracking-wider text-stone-300 block font-bold">
+                  Current Role Tag / Badge:
+                </label>
+                <input
+                  type="text"
+                  value={formData.currentPositionTag || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      currentPositionTag: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. CURRENT WORKING POSITION or INTERNSHIP & RESEARCH"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-black/50 border border-white/15 focus:border-[#e5c07b] focus:outline-none font-mono text-xs text-white"
+                />
+              </div>
+
+              {/* Toggles for Matrix & Chapter Shortcuts */}
+              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/10">
+                <div className="p-3 rounded-lg bg-black/40 border border-white/10 flex flex-col justify-between gap-2">
+                  <span className="text-[11px] font-mono uppercase text-stone-300">
+                    3-Part Quick Dossier Matrix
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        showQuickMatrix:
+                          prev.showQuickMatrix === false ? true : false,
+                      }))
+                    }
+                    className={`w-full py-1 text-center rounded text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                      formData.showQuickMatrix !== false
+                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                        : "bg-red-500/20 text-red-400 border border-red-500/30"
+                    }`}
+                  >
+                    {formData.showQuickMatrix !== false ? "Visible" : "Hidden"}
+                  </button>
+                </div>
+
+                <div className="p-3 rounded-lg bg-black/40 border border-white/10 flex flex-col justify-between gap-2">
+                  <span className="text-[11px] font-mono uppercase text-stone-300">
+                    Chapter Shortcuts (01..04)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        showChapterLinks:
+                          prev.showChapterLinks === false ? true : false,
+                      }))
+                    }
+                    className={`w-full py-1 text-center rounded text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                      formData.showChapterLinks !== false
+                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                        : "bg-red-500/20 text-red-400 border border-red-500/30"
+                    }`}
+                  >
+                    {formData.showChapterLinks !== false ? "Visible" : "Hidden"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

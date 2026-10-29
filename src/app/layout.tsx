@@ -32,6 +32,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,600;0,6..96,800;0,6..96,900;1,6..96,400;1,6..96,600&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Italiana&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-screen bg-news-texture flex flex-col antialiased selection:bg-[#e5c07b] selection:text-stone-950">
         <ScrollProgressBar />
         <MagazineNav />

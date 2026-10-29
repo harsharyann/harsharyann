@@ -306,11 +306,10 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
       onTouchMove={handleTouchMove}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={`relative w-full min-h-[100dvh] h-[100dvh] flex flex-col justify-between items-center bg-[#060709] text-[#f5f3ef] selection:bg-[#e5c07b] selection:text-stone-950 font-sans select-none overflow-hidden transition-all duration-700 ease-out ${
-        isNavigating
-          ? "opacity-0 -translate-y-6 scale-[0.98]"
-          : "opacity-100 translate-y-0 scale-100"
-      }`}
+      className={`relative w-full min-h-[100dvh] h-[100dvh] flex flex-col justify-between items-center bg-[#060709] text-[#f5f3ef] selection:bg-[#e5c07b] selection:text-stone-950 font-sans select-none overflow-hidden transition-all duration-700 ease-out ${isNavigating
+        ? "opacity-0 -translate-y-6 scale-[0.98]"
+        : "opacity-100 translate-y-0 scale-100"
+        }`}
     >
       {/* 1. Master Background Atmosphere (Adaptive Ambient Mesh) */}
       <div
@@ -403,8 +402,8 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
                     settings.coverImagePosition === "top"
                       ? "center top"
                       : settings.coverImagePosition === "bottom"
-                      ? "center bottom"
-                      : "center center",
+                        ? "center bottom"
+                        : "center center",
                 }}
                 className="w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98]"
               />
@@ -420,12 +419,11 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
                     settings.coverImagePosition === "top"
                       ? "center top"
                       : settings.coverImagePosition === "bottom"
-                      ? "center bottom"
-                      : "center center",
+                        ? "center bottom"
+                        : "center center",
                 }}
-                className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98] transition-all duration-700 ${
-                  isLoaded ? "opacity-100 scale-100" : "opacity-95 scale-[1.01]"
-                }`}
+                className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98] transition-all duration-700 ${isLoaded ? "opacity-100 scale-100" : "opacity-95 scale-[1.01]"
+                  }`}
               />
             )}
 
@@ -565,12 +563,11 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
                       settings.coverImagePosition === "top"
                         ? "center top"
                         : settings.coverImagePosition === "bottom"
-                        ? "center bottom"
-                        : "center center",
+                          ? "center bottom"
+                          : "center center",
                   }}
-                  className={`w-full h-full filter contrast-[1.04] saturate-[1.06] brightness-[0.99] transition-all duration-500 group-hover:scale-[1.015] ${
-                    isLoaded ? "opacity-100" : "opacity-95"
-                  }`}
+                  className={`w-full h-full filter contrast-[1.04] saturate-[1.06] brightness-[0.99] transition-all duration-500 group-hover:scale-[1.015] ${isLoaded ? "opacity-100" : "opacity-95"
+                    }`}
                 />
 
                 {/* Realistic Book Spine (Left Edge with Leatherette Crease) */}

@@ -1,4 +1,5 @@
 export type CoverMediaType = "image" | "video";
+export type MagazineBgType = "kinetic-masthead" | "ticker-stream" | "minimal-grid" | "none";
 
 export interface PortfolioSettings {
   coverMediaUrl: string;
@@ -19,6 +20,14 @@ export interface PortfolioSettings {
   showWhereAndWhat?: boolean;
   showStatement?: boolean;
   showSocialLinks?: boolean;
+  bgDesignType?: MagazineBgType;
+  bgDesignText?: string;
+  showBgDesign?: boolean;
+  greetingText?: string;
+  showGreeting?: boolean;
+  currentPositionTag?: string;
+  showQuickMatrix?: boolean;
+  showChapterLinks?: boolean;
   whatIDo?: {
     number: string;
     title: string;
@@ -50,6 +59,14 @@ export const defaultSettings: PortfolioSettings = {
   showWhereAndWhat: false,
   showStatement: false,
   showSocialLinks: true,
+  bgDesignType: "kinetic-masthead",
+  bgDesignText: "HARSH ARYAN · VOL. 2026 · EDITORIAL ARCHIVE",
+  showBgDesign: true,
+  greetingText: "HEY THERE, I'M HARSH — WELCOME TO MY ARCHIVE",
+  showGreeting: true,
+  currentPositionTag: "CURRENT WORKING POSITION",
+  showQuickMatrix: true,
+  showChapterLinks: true,
   whatIDo: [
     {
       number: "01",
