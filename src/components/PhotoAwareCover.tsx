@@ -9,7 +9,6 @@ import {
   Sliders,
   ArrowRight,
   Sparkles,
-  BookOpen,
 } from "lucide-react";
 import { PortfolioSettings } from "@/data/portfolioSettings";
 import { portfolioData } from "@/data/portfolioData";
@@ -74,6 +73,7 @@ function extractPaletteFromImage(img: HTMLImageElement): ExtractedPalette {
       const delta = max - min;
       const lightness = (max + min) / 2;
 
+      // Filter out pure black, pure white, and low-contrast grays
       if (lightness > 25 && lightness < 235 && delta > 20) {
         const sat = delta / (1 - Math.abs(2 * (lightness / 255) - 1));
         if (sat > maxSat) {
@@ -96,42 +96,22 @@ function extractPaletteFromImage(img: HTMLImageElement): ExtractedPalette {
       textB = Math.min(255, Math.round(bestB * boost));
     }
 
+    const primaryAccent = `rgb(${bestR}, ${bestG}, ${bestB})`;
+    const lightAccent = `rgb(${textR}, ${textG}, ${textB})`;
+    const ambientGlow = `rgba(${bestR}, ${bestG}, ${bestB}, 0.38)`;
+    const ambientGlowSubtle = `rgba(${bestR}, ${bestG}, ${bestB}, 0.16)`;
+    const borderGlow = `rgba(${textR}, ${textG}, ${textB}, 0.45)`;
+
     return {
-      primaryAccent: `rgb(${bestR}, ${bestG}, ${bestB})`,
-      lightAccent: `rgb(${textR}, ${textG}, ${textB})`,
-      ambientGlow: `rgba(${bestR}, ${bestG}, ${bestB}, 0.38)`,
-      ambientGlowSubtle: `rgba(${bestR}, ${bestG}, ${bestB}, 0.16)`,
-      borderGlow: `rgba(${textR}, ${textG}, ${textB}, 0.45)`,
+      primaryAccent,
+      lightAccent,
+      ambientGlow,
+      ambientGlowSubtle,
+      borderGlow,
     };
   } catch {
     return defaultPalette;
   }
-}
-
-/**
- * Editorial Barcode Component (Authentic Magazine Publishing Folio)
- */
-function MagazineBarcode() {
-  return (
-    <div className="flex flex-col items-start gap-1 font-mono text-[9px] text-stone-400 select-none">
-      <div className="flex items-end gap-[2px] h-8 px-2 py-1 bg-white/[0.03] rounded border border-white/10 shadow-sm">
-        {[3, 1, 2, 4, 1, 3, 2, 1, 4, 2, 1, 3, 1, 2, 4, 1, 3, 2, 1, 2, 4, 1, 3, 2].map(
-          (h, i) => (
-            <span
-              key={i}
-              className={`w-[2px] bg-stone-300/85 ${
-                h === 4 ? "h-6" : h === 3 ? "h-5" : h === 2 ? "h-4" : "h-3"
-              }`}
-            />
-          )
-        )}
-      </div>
-      <div className="flex items-center justify-between w-full text-[8px] tracking-[0.22em] text-stone-500 uppercase">
-        <span>ISSN 2026-AI</span>
-        <span>ED. 01</span>
-      </div>
-    </div>
-  );
 }
 
 export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
@@ -158,7 +138,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
   const [magnetic, setMagnetic] = useState({ x: 0, y: 0 });
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Prefetch /about so transition is instantaneous
+  // Prefetch /about so transition is instantaneous and pre-warmed
   useEffect(() => {
     router.prefetch("/about");
 
@@ -215,12 +195,12 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    const dx = (e.clientX - centerX) / 45;
-    const dy = (e.clientY - centerY) / 45;
+    const dx = (e.clientX - centerX) / 40;
+    const dy = (e.clientY - centerY) / 40;
 
     setMagnetic({
-      x: Math.max(-8, Math.min(8, dx)),
-      y: Math.max(-8, Math.min(8, dy)),
+      x: Math.max(-10, Math.min(10, dx)),
+      y: Math.max(-10, Math.min(10, dy)),
     });
   };
 
@@ -274,16 +254,18 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
     };
   }, [mediaUrl, isVideo]);
 
+  const isPortrait = metrics.orientation === "portrait" && !isVideo;
+
   // Reusable Sleek Social Links
   const renderSocialLinks = () => (
-    <div className="flex items-center gap-2.5 text-stone-400">
+    <div className="flex items-center justify-center gap-3 sm:gap-4 text-stone-400 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
       <a
         href={portfolioData.socialLinks.email}
         title="Email Harsh Aryan"
         className="p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.1] text-stone-300 hover:text-[#e5c07b] hover:scale-110 transition-all border border-white/5"
         aria-label="Email"
       >
-        <Mail className="w-3.5 h-3.5" />
+        <Mail className="w-4 h-4" />
       </a>
 
       <a
@@ -294,7 +276,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
         className="p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.1] text-stone-300 hover:text-[#e5c07b] hover:scale-110 transition-all border border-white/5"
         aria-label="GitHub"
       >
-        <GithubIcon className="w-3.5 h-3.5" />
+        <GithubIcon className="w-4 h-4" />
       </a>
 
       <a
@@ -305,7 +287,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
         className="p-2 rounded-full bg-white/[0.04] hover:bg-white/[0.1] text-stone-300 hover:text-[#e5c07b] hover:scale-110 transition-all border border-white/5"
         aria-label="LinkedIn"
       >
-        <LinkedinIcon className="w-3.5 h-3.5" />
+        <LinkedinIcon className="w-4 h-4" />
       </a>
     </div>
   );
@@ -318,7 +300,7 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
       onTouchMove={handleTouchMove}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={`relative w-full min-h-[100dvh] flex flex-col justify-between items-center bg-[#07080b] text-[#f5f3ef] selection:bg-[#e5c07b] selection:text-stone-950 font-sans select-none overflow-x-hidden transition-all duration-700 ease-out px-4 sm:px-8 md:px-12 py-3 sm:py-5 ${
+      className={`relative w-full h-[100dvh] max-h-[100dvh] min-h-[100dvh] flex flex-col justify-between items-center bg-[#07080b] text-[#f5f3ef] selection:bg-[#e5c07b] selection:text-stone-950 font-sans select-none overflow-hidden transition-all duration-700 ease-out ${
         isNavigating
           ? "opacity-0 -translate-y-4 scale-[0.98]"
           : "opacity-100 translate-y-0 scale-100"
@@ -328,189 +310,188 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
       <div
         className="absolute inset-0 pointer-events-none z-0 transition-all duration-1000 ease-out"
         style={{
-          background: `radial-gradient(ellipse at 50% 40%, ${palette.ambientGlow} 0%, ${palette.ambientGlowSubtle} 40%, transparent 75%), radial-gradient(circle at 85% 15%, rgba(229, 192, 123, 0.08) 0%, transparent 50%)`,
+          background: "radial-gradient(ellipse at 50% 25%, rgba(229, 192, 123, 0.04) 0%, transparent 60%)",
         }}
       />
 
       {/* 2. Tactile Magazine Paper Fiber & Micro-Grain Texture */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-overlay z-0"
+        className="absolute inset-0 pointer-events-none opacity-[0.04] mix-blend-overlay z-0"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paperNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.8 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paperNoise)'/%3E%3C/svg%3E")`,
         }}
       />
 
-      {/* 3. Print Registration Crosshairs on Four Corners */}
-      <span className="absolute top-3 left-4 text-stone-600 font-mono text-[9px] pointer-events-none z-10 hidden sm:block">
-        +
-      </span>
-      <span className="absolute top-3 right-4 text-stone-600 font-mono text-[9px] pointer-events-none z-10 hidden sm:block">
-        +
-      </span>
-      <span className="absolute bottom-3 left-4 text-stone-600 font-mono text-[9px] pointer-events-none z-10 hidden sm:block">
-        +
-      </span>
-      <span className="absolute bottom-3 right-4 text-stone-600 font-mono text-[9px] pointer-events-none z-10 hidden sm:block">
-        +
-      </span>
-
-      {/* =========================================================================
-          TOP FOLIO / EDITORIAL ISSUE BAR
-          ========================================================================= */}
-      <header className="relative z-30 w-full max-w-7xl mx-auto flex items-center justify-between text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase text-stone-400 border-b border-white/10 pb-3 pt-1">
-        <div className="flex items-center gap-2.5 sm:gap-4">
-          <span className="font-bold text-[#e5c07b]">VOL. 2026</span>
-          <span className="text-white/20">/</span>
-          <span>ISSUE NO. 01</span>
-          <span className="hidden md:inline text-white/20">/</span>
-          <span className="hidden md:inline text-stone-400">CHENNAI EDITION</span>
-        </div>
-
-        <div className="hidden lg:flex items-center gap-2 text-stone-500 tracking-[0.28em] text-[10px]">
-          <span>✦</span>
-          <span>THE EDITORIAL MONOGRAPH</span>
-          <span>✦</span>
-        </div>
-
-        <div className="flex items-center gap-3 sm:gap-5">
-          <span className="hidden sm:inline text-stone-500 text-[10px]">
-            PRICE: TIME & ATTENTION
-          </span>
-          <Link
-            href="/admin"
-            title="Open Admin Studio"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#e5c07b]/35 bg-[#e5c07b]/10 hover:bg-[#e5c07b]/20 text-[#e5c07b] text-[9px] font-mono font-bold uppercase tracking-widest backdrop-blur-md transition-all cursor-pointer shadow-sm active:scale-95"
-          >
-            <Sliders className="w-3 h-3 text-[#e5c07b]" />
-            <span>STUDIO ↗</span>
-          </Link>
-        </div>
+      {/* 3. Top Master Header Bar */}
+      <header className="relative z-30 w-full px-4 sm:px-8 md:px-12 pt-3.5 sm:pt-6 flex items-center justify-end shrink-0">
+        {/* Admin Studio Link */}
+        <Link
+          href="/admin"
+          title="Open Cover Studio"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/20 bg-white/[0.06] hover:bg-white/15 text-stone-300 hover:text-white font-mono text-[9px] sm:text-[10px] uppercase tracking-widest backdrop-blur-md transition-all cursor-pointer shadow-sm active:scale-95"
+        >
+          <Sliders className="w-3 h-3 text-[#e5c07b]" />
+          <span>ADMIN</span>
+        </Link>
       </header>
 
-      {/* =========================================================================
-          GRAND HIGH-FASHION EDITORIAL MASTHEAD
-          ========================================================================= */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto text-center pt-2 sm:pt-4 pb-2">
-        {settings.showName !== false && (
-          <h1 className="text-4xl sm:text-7xl md:text-8xl lg:text-9xl font-editorial font-black uppercase text-[#f5f3ef] tracking-[0.14em] sm:tracking-[0.18em] lg:tracking-[0.22em] leading-[0.88] drop-shadow-[0_12px_40px_rgba(0,0,0,0.95)] select-none">
-            {settings.name || "HARSH ARYAN"}
-          </h1>
-        )}
+      {/* 4. MAIN CONTENT AREA */}
+      {/*
+        --------------------------------------------------------------------------
+        VIEW A: FULLSCREEN CINEMA / MOBILE IMMERSIVE COVER
+        Active when:
+        1. Media is Landscape or Video (on all screens: Phone, iPad, MacBook, 4K)
+        2. Media is Portrait on Mobile screens (< lg)
+        --------------------------------------------------------------------------
+      */}
+      <div
+        className={`w-full h-full flex flex-col justify-between items-center ${
+          isPortrait ? "lg:hidden" : ""
+        }`}
+      >
+        {/* Full-bleed media layer */}
+        <div
+          ref={coverContainerRef}
+          onClick={handleOpenAbout}
+          className="absolute inset-0 z-0 cursor-pointer overflow-hidden"
+        >
+          {/* Master Media Layer */}
+          {isVideo ? (
+            <video
+              key={`master-${mediaUrl}`}
+              src={mediaUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                objectFit: settings.coverImageFit || "cover",
+                objectPosition:
+                  settings.coverImagePosition === "top"
+                    ? "center top"
+                    : settings.coverImagePosition === "bottom"
+                    ? "center bottom"
+                    : "center center",
+              }}
+              className="w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98]"
+            />
+          ) : (
+            <img
+              ref={imgRef}
+              src={mediaUrl}
+              alt={settings.name}
+              suppressHydrationWarning
+              onLoad={handleImageLoad}
+              style={{
+                objectFit: settings.coverImageFit || "cover",
+                objectPosition:
+                  settings.coverImagePosition === "top"
+                    ? "center top"
+                    : settings.coverImagePosition === "bottom"
+                    ? "center bottom"
+                    : "center center",
+              }}
+              className={`w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98] transition-all duration-700 ${
+                isLoaded ? "opacity-100 scale-100" : "opacity-95 scale-[1.01]"
+              }`}
+            />
+          )}
 
-        <div className="flex items-center justify-center gap-3 sm:gap-6 mt-2 text-[8px] sm:text-[10px] md:text-[11px] font-mono tracking-[0.22em] text-stone-400 uppercase">
-          <span className="hidden sm:inline-block w-8 md:w-16 h-[1px] bg-gradient-to-r from-transparent to-[#e5c07b]/60" />
-          <span>COMPUTER SCIENCE · ARTIFICIAL INTELLIGENCE · DESIGN</span>
-          <span className="hidden sm:inline-block w-8 md:w-16 h-[1px] bg-gradient-to-l from-transparent to-[#e5c07b]/60" />
+          {/* Top Subtle Vignette */}
+          <div className="absolute top-0 inset-x-0 h-28 sm:h-36 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none" />
+
+          {/* Bottom Rich Cinema Scrim (Guarantees crisp text legibility) */}
+          <div className="absolute bottom-0 inset-x-0 h-[80%] sm:h-[72%] md:h-[65%] bg-gradient-to-t from-[#07080b] via-[#07080b]/85 via-50% to-transparent pointer-events-none" />
+        </div>
+
+        {/* Bottom Integrated Editorial Overlay (MOBILE-OPTIMIZED WITH SAFE-AREA PADDING) */}
+        <div className="relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-8 md:px-10 pb-[calc(1.25rem+env(safe-area-inset-bottom,16px))] sm:pb-8 mt-auto flex flex-col items-center text-center space-y-2 sm:space-y-3">
+          {/* Eyebrow Role Pill */}
+          {settings.showRole !== false && (
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/45 border border-[#e5c07b]/35 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.6)] text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#e5c07b]">
+              <Sparkles className="w-3 h-3 text-[#e5c07b]" />
+              <span>{(settings.role || "Teaching Assistant @ IIT Madras").toUpperCase()}</span>
+            </div>
+          )}
+
+          {/* Display Name - Modern Bold Syne Typography */}
+          {settings.showName !== false && (
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-extrabold uppercase text-[#f5f3ef] tracking-[-0.02em] leading-[0.88] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] max-w-full break-words select-none">
+              {settings.name}
+            </h1>
+          )}
+
+          {/* Subtitle / Focus */}
+          <p className="text-xs sm:text-sm font-sans text-stone-300 font-light tracking-wide max-w-xl">
+            1st Year B.Tech CSE (AI &amp; Data Science) · Code, Math &amp; Models
+          </p>
+
+          {/* Location & Academic Focus Metadata */}
+          {settings.showLocation !== false && settings.location && (
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-mono uppercase tracking-[0.18em] text-stone-300">
+              <MapPin className="w-3 h-3 text-[#e5c07b]" />
+              <span>{settings.location}</span>
+            </div>
+          )}
+
+          {/* Social Links */}
+          {settings.showSocialLinks !== false && (
+            <div className="pt-1">
+              {renderSocialLinks()}
+            </div>
+          )}
+
+          {/* Scroll Explore Hint */}
+          <div className="flex items-center gap-2.5 pt-1 text-[9px] sm:text-[10px] font-mono tracking-[0.2em] text-stone-400">
+            <div
+              onClick={handleOpenAbout}
+              className="hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1.5"
+            >
+              <span>SCROLL TO EXPLORE</span>
+              <span className="animate-bounce">&darr;</span>
+            </div>
+            <span className="text-stone-600">&bull;</span>
+            <Link
+              href="/admin"
+              className="hover:text-[#e5c07b] uppercase transition-colors"
+            >
+              ADMIN ↗
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* =========================================================================
-          MAGAZINE MAIN COVER SPREAD (DESKTOP 3-ZONE / MOBILE STACKED)
-          ========================================================================= */}
-      <main className="relative z-20 w-full max-w-7xl mx-auto my-auto py-3 sm:py-4">
-        {/* DESKTOP 3-ZONE EDITORIAL SPREAD (lg+) */}
-        <div className="hidden lg:grid grid-cols-12 gap-8 xl:gap-10 items-center">
-          {/* -------------------------------------------------------------------
-              LEFT FLANK: Cover Stories & Dispatches (Cols 1-3)
-              ------------------------------------------------------------------- */}
-          <div className="col-span-3 space-y-6 text-left">
-            {/* Story 01: Academic Role */}
-            {settings.showRole !== false && (
-              <div className="space-y-1.5 group">
-                <div className="flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.25em] text-[#e5c07b] font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#e5c07b] shadow-[0_0_8px_#e5c07b] animate-pulse" />
-                  <span>01 / APPOINTMENT</span>
+      {/*
+        --------------------------------------------------------------------------
+        VIEW B: HIGH-IMPACT CREATIVE DEVELOPER LANDING SPREAD
+        Active on Desktop, Laptop, MacBook, and Widescreen Displays (>= lg)
+        Features clean floating gallery canvas on left & bold typographic hero on right!
+        --------------------------------------------------------------------------
+      */}
+      {isPortrait && (
+        <div className="hidden lg:flex relative z-10 w-full max-w-7xl mx-auto px-8 md:px-12 my-auto items-center justify-center py-6">
+          <div className="w-full grid grid-cols-12 gap-12 xl:gap-16 items-center">
+            {/* LEFT COLUMN: Modern Floating Gallery Canvas (5 Cols) */}
+            <div className="col-span-5 flex justify-end">
+              <div
+                ref={coverContainerRef}
+                onClick={handleOpenAbout}
+                style={{
+                  transform: `translate3d(${magnetic.x}px, ${magnetic.y}px, 0)`,
+                  boxShadow: `0 30px 90px rgba(0,0,0,0.95), 0 0 70px ${palette.ambientGlow}, inset 0 1px 1px rgba(255,255,255,0.25)`,
+                  aspectRatio: metrics.aspectRatio || 0.72,
+                }}
+                className="relative w-full max-w-[340px] xl:max-w-[390px] max-h-[70vh] rounded-2xl bg-[#0b0c10]/85 backdrop-blur-xl border border-white/20 overflow-hidden cursor-pointer group transition-all duration-500 ease-out hover:scale-[1.02]"
+              >
+                {/* Specular Edge Highlights */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none z-20" />
+
+                {/* Glossy Diagonal Light Sweep Reflection */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden z-20">
+                  <div className="absolute -inset-full bg-gradient-to-tr from-transparent via-white/14 to-transparent -rotate-45 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
                 </div>
-                <h2 className="text-lg font-editorial font-bold uppercase tracking-wider text-white leading-tight">
-                  {settings.role || "Teaching Assistant @ IIT Madras"}
-                </h2>
-                <p className="text-xs font-sans text-stone-300 font-light leading-relaxed">
-                  {settings.whereAndWhat ||
-                    "Data Science & Applications. Mentoring algorithmic intuition & computational foundations."}
-                </p>
-                <div className="w-12 h-[1px] bg-white/15 pt-0.5" />
-              </div>
-            )}
 
-            {/* Story 02: Technical Discipline */}
-            <div className="space-y-1.5">
-              <div className="text-[9px] font-mono uppercase tracking-[0.25em] text-stone-400 font-bold">
-                02 / THE ARCHITECTURE
-              </div>
-              <h3 className="text-sm font-editorial font-bold uppercase tracking-wider text-stone-200">
-                Applied AI &amp; Web Systems
-              </h3>
-              <p className="text-xs font-sans text-stone-400 font-light leading-relaxed">
-                Next.js 16 · PyTorch · Linear Algebra · GPU Accelerated Shaders
-              </p>
-              <div className="w-12 h-[1px] bg-white/15 pt-0.5" />
-            </div>
-
-            {/* Dispatch Location */}
-            {settings.showLocation !== false && settings.location && (
-              <div className="space-y-1 text-xs font-mono text-stone-400">
-                <div className="flex items-center gap-1.5 text-stone-300 uppercase tracking-widest text-[10px]">
-                  <MapPin className="w-3.5 h-3.5 text-[#e5c07b]" />
-                  <span>{settings.location}</span>
-                </div>
-                <p className="text-[10px] text-emerald-400/90 font-mono tracking-wider">
-                  ● ACTIVE FOR COLLABORATION
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* -------------------------------------------------------------------
-              CENTER STAGE: The Tactile Magazine Cover Photo (Cols 4-9)
-              ------------------------------------------------------------------- */}
-          <div className="col-span-6 flex justify-center">
-            <div
-              ref={coverContainerRef}
-              onClick={handleOpenAbout}
-              style={{
-                transform: `translate3d(${magnetic.x}px, ${magnetic.y}px, 0)`,
-                boxShadow: `0 35px 100px rgba(0,0,0,0.95), 0 0 80px ${palette.ambientGlow}, inset 0 1px 2px rgba(255,255,255,0.35)`,
-                aspectRatio: metrics.aspectRatio || 0.72,
-              }}
-              className="relative w-full max-w-[360px] xl:max-w-[410px] max-h-[64vh] rounded-2xl bg-[#090a0f] border border-[#e5c07b]/35 ring-1 ring-white/15 overflow-hidden cursor-pointer group transition-all duration-500 ease-out hover:scale-[1.025]"
-            >
-              {/* Authentic Magazine Spine Crease (Left Edge) */}
-              <div className="absolute left-0 inset-y-0 w-4 bg-gradient-to-r from-black/85 via-black/35 to-transparent pointer-events-none z-20" />
-
-              {/* Specular Edge Highlights */}
-              <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#e5c07b]/60 to-transparent pointer-events-none z-20" />
-
-              {/* Glossy Diagonal Light Sweep Reflection */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden z-20">
-                <div className="absolute -inset-full bg-gradient-to-tr from-transparent via-white/18 to-transparent -rotate-45 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
-              </div>
-
-              {/* Magazine Corner Issue Stamp */}
-              <div className="absolute top-3.5 right-3.5 z-20 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-[#e5c07b]/40 text-[9px] font-mono tracking-widest text-[#e5c07b] uppercase shadow-md flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-[#e5c07b]" />
-                <span>ISSUE 01</span>
-              </div>
-
-              {/* Master Media Layer (Photo or Video) */}
-              {isVideo ? (
-                <video
-                  src={mediaUrl}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  style={{
-                    objectFit: settings.coverImageFit || "cover",
-                    objectPosition:
-                      settings.coverImagePosition === "top"
-                        ? "center top"
-                        : settings.coverImagePosition === "bottom"
-                        ? "center bottom"
-                        : "center center",
-                  }}
-                  className="w-full h-full filter contrast-[1.03] saturate-[1.06] brightness-[0.98]"
-                />
-              ) : (
+                {/* Cover Photograph */}
                 <img
                   ref={imgRef}
                   src={mediaUrl}
@@ -530,174 +511,105 @@ export function PhotoAwareCover({ settings }: PhotoAwareCoverProps) {
                     isLoaded ? "opacity-100" : "opacity-95"
                   }`}
                 />
+
+                {/* Subtle Modern Frame Bezel Shadow */}
+                <div className="absolute inset-0 rounded-2xl border border-white/10 pointer-events-none z-10" />
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN: Bold Creative Developer Landing Typography (7 Cols) */}
+            <div className="col-span-7 space-y-4 xl:space-y-5 text-left max-w-2xl">
+              {/* Eyebrow Working Position Badge */}
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-[#e5c07b]/30 backdrop-blur-md text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-[#e5c07b]">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{(settings.role || "Teaching Assistant @ IIT Madras").toUpperCase()}</span>
+              </div>
+
+              {/* Big Headline Name - Ultra-Cool Modern Syne Font */}
+              {settings.showName !== false && (
+                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-display font-extrabold uppercase text-[#f5f3ef] tracking-[-0.025em] leading-[0.88] drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)] select-none">
+                  {settings.name}
+                </h1>
               )}
 
-              {/* Bottom Frosted Magazine Caption Strip */}
-              <div className="absolute bottom-0 inset-x-0 p-3.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-20 flex items-center justify-between text-[10px] font-mono text-stone-300">
-                <span className="tracking-[0.2em] uppercase font-bold text-white drop-shadow">
-                  {settings.name || "HARSH ARYAN"}
-                </span>
-                <span className="text-[#e5c07b] text-[9px] tracking-widest uppercase">
-                  CLICK TO READ ↗
-                </span>
-              </div>
-            </div>
-          </div>
+              {/* Bio Hook */}
+              <p className="text-base sm:text-lg font-sans text-stone-300 font-light tracking-wide leading-relaxed max-w-xl">
+                1st Year B.Tech CSE (AI &amp; Data Science) · Crafting intelligent interfaces, machine learning models, and high-performance web systems.
+              </p>
 
-          {/* -------------------------------------------------------------------
-              RIGHT FLANK: Curator's Note, CTAs & Barcode (Cols 10-12)
-              ------------------------------------------------------------------- */}
-          <div className="col-span-3 space-y-6 text-left">
-            {/* Story 03: Curator Statement Quote */}
-            {settings.showStatement !== false && settings.statement && (
-              <div className="space-y-1.5">
-                <div className="text-[9px] font-mono uppercase tracking-[0.25em] text-[#e5c07b] font-bold">
-                  03 / CURATOR&apos;S NOTE
+              {/* Clean Typographic Ledger (Zero Generic AI Gray Boxes) */}
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-mono text-stone-400 uppercase tracking-widest pt-1">
+                <div className="flex items-center gap-1.5 text-stone-200">
+                  <MapPin className="w-3.5 h-3.5 text-[#e5c07b]" />
+                  <span>CHENNAI, INDIA</span>
                 </div>
-                <blockquote className="text-xs font-editorial-italic text-stone-200/90 leading-relaxed border-l-2 border-[#e5c07b]/60 pl-3">
+                <span className="text-white/20">&bull;</span>
+                <div className="text-stone-300">
+                  <span className="text-[#e5c07b]">FOCUS:</span> FULL-STACK + APPLIED AI
+                </div>
+              </div>
+
+              {/* Statement Quote */}
+              {settings.showStatement !== false && settings.statement && (
+                <blockquote className="text-xs sm:text-sm font-editorial-italic font-light text-stone-300/85 leading-relaxed border-l-2 border-[#e5c07b]/60 pl-3.5 max-w-xl">
                   &ldquo;{settings.statement}&rdquo;
                 </blockquote>
-                <div className="w-12 h-[1px] bg-white/15 pt-0.5" />
+              )}
+
+              {/* Landing Page Action CTAs */}
+              <div className="pt-3 flex flex-wrap items-center gap-4">
+                {/* Primary CTA */}
+                <button
+                  onClick={handleOpenAbout}
+                  className="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#e5c07b] hover:bg-[#d4af37] text-stone-950 font-mono text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 cursor-pointer shadow-[0_4px_24px_rgba(229,192,123,0.3)] active:scale-95"
+                >
+                  <span>EXPLORE ARCHIVE</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                {/* Direct Chapter Links */}
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider">
+                  <Link
+                    href="/projects"
+                    className="px-4 py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-stone-300 hover:text-white transition-all cursor-pointer"
+                  >
+                    PROJECTS ↗
+                  </Link>
+                  <Link
+                    href="/certificates"
+                    className="px-4 py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-stone-300 hover:text-white transition-all cursor-pointer"
+                  >
+                    CREDS ↗
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="px-4 py-2.5 rounded-full bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-stone-300 hover:text-white transition-all cursor-pointer"
+                  >
+                    CONTACT ↗
+                  </Link>
+                </div>
               </div>
-            )}
 
-            {/* Main Action CTAs */}
-            <div className="space-y-3 pt-1">
-              <button
-                onClick={handleOpenAbout}
-                className="group w-full inline-flex items-center justify-between px-5 py-3 rounded-full bg-[#e5c07b] hover:bg-[#d4af37] text-stone-950 font-mono text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 cursor-pointer shadow-[0_4px_24px_rgba(229,192,123,0.3)] active:scale-95"
-              >
-                <span>{isNavigating ? "OPENING ISSUE..." : "EXPLORE ISSUE 01"}</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+              {/* Social Glyphs & Scroll Explore Row */}
+              <div className="pt-2 flex items-center gap-6">
+                {settings.showSocialLinks !== false && (
+                  <div className="flex items-center gap-2">
+                    {renderSocialLinks()}
+                  </div>
+                )}
 
-              {/* Direct Chapter Links */}
-              <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono uppercase tracking-wider text-center">
-                <Link
-                  href="/projects"
-                  className="py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-stone-300 hover:text-white transition-all"
+                <div
+                  onClick={handleOpenAbout}
+                  className="hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-2 text-xs font-mono tracking-[0.2em] text-stone-400"
                 >
-                  PROJECTS
-                </Link>
-                <Link
-                  href="/certificates"
-                  className="py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-stone-300 hover:text-white transition-all"
-                >
-                  CREDS
-                </Link>
-                <Link
-                  href="/contact"
-                  className="py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-stone-300 hover:text-white transition-all"
-                >
-                  CONTACT
-                </Link>
+                  <span>SCROLL TO EXPLORE</span>
+                  <span className="animate-bounce">&darr;</span>
+                </div>
               </div>
             </div>
-
-            {/* Authentic Magazine Barcode */}
-            <div className="pt-2">
-              <MagazineBarcode />
-            </div>
           </div>
         </div>
-
-        {/* =====================================================================
-            MOBILE / TABLET EDITORIAL COVER (< lg)
-            Zero clipping, flawless magazine aesthetic on iPhone, iPad, Android
-            ===================================================================== */}
-        <div className="flex lg:hidden flex-col items-center text-center space-y-4">
-          {/* Eyebrow Role Pill */}
-          {settings.showRole !== false && (
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/50 border border-[#e5c07b]/35 backdrop-blur-md text-[10px] sm:text-xs font-mono uppercase tracking-[0.18em] text-[#e5c07b] shadow-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#e5c07b] shadow-[0_0_8px_#e5c07b] animate-pulse shrink-0" />
-              <span>{(settings.role || "Teaching Assistant @ IIT Madras").toUpperCase()}</span>
-            </div>
-          )}
-
-          {/* Centered Magazine Cover Card */}
-          <div
-            onClick={handleOpenAbout}
-            className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[3/4] rounded-2xl bg-[#090a0f] border border-[#e5c07b]/40 ring-1 ring-white/15 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.95)] cursor-pointer group"
-          >
-            {/* Spine Crease */}
-            <div className="absolute left-0 inset-y-0 w-3 bg-gradient-to-r from-black/85 to-transparent z-20 pointer-events-none" />
-
-            {/* Corner Badge */}
-            <div className="absolute top-2.5 right-2.5 z-20 px-2 py-0.5 rounded-full bg-black/60 border border-[#e5c07b]/40 text-[8px] font-mono tracking-widest text-[#e5c07b] uppercase">
-              ISSUE 01
-            </div>
-
-            {isVideo ? (
-              <video
-                src={mediaUrl}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <img
-                src={mediaUrl}
-                alt={settings.name}
-                suppressHydrationWarning
-                onLoad={handleImageLoad}
-                className="w-full h-full object-cover"
-              />
-            )}
-
-            <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/90 to-transparent z-20 flex items-center justify-between text-[9px] font-mono text-stone-300">
-              <span className="font-bold text-white uppercase">{settings.name}</span>
-              <span className="text-[#e5c07b]">TAP TO EXPLORE ↗</span>
-            </div>
-          </div>
-
-          {/* Statement Quote */}
-          {settings.showStatement !== false && settings.statement && (
-            <blockquote className="text-xs sm:text-sm font-editorial-italic text-stone-200/90 leading-relaxed max-w-md px-2">
-              &ldquo;{settings.statement}&rdquo;
-            </blockquote>
-          )}
-
-          {/* Action CTA */}
-          <div className="w-full max-w-xs space-y-2.5 pt-1">
-            <button
-              onClick={handleOpenAbout}
-              className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-full bg-[#e5c07b] hover:bg-[#d4af37] text-stone-950 font-mono text-xs font-black uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg active:scale-95"
-            >
-              <span>{isNavigating ? "OPENING..." : "EXPLORE ISSUE 01"}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            {/* Mobile Barcode */}
-            <div className="flex justify-center pt-1">
-              <MagazineBarcode />
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* =========================================================================
-          BOTTOM EDITORIAL COLOPHON FOOTER
-          ========================================================================= */}
-      <footer className="relative z-30 w-full max-w-7xl mx-auto flex items-center justify-between text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-stone-400 border-t border-white/10 pt-3 pb-1">
-        <div className="flex items-center gap-3">
-          {renderSocialLinks()}
-        </div>
-
-        <div
-          onClick={handleOpenAbout}
-          className="hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1.5 text-stone-400"
-        >
-          <BookOpen className="w-3.5 h-3.5 text-[#e5c07b]" />
-          <span>SCROLL OR CLICK TO FLIP PAGE</span>
-          <span className="animate-bounce">&darr;</span>
-        </div>
-
-        <div className="text-[9px] sm:text-[10px] text-stone-500 uppercase tracking-widest hidden sm:block">
-          &copy; 2026 HARSH ARYAN ARCHIVE
-        </div>
-      </footer>
+      )}
     </div>
   );
 }
