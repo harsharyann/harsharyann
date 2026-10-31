@@ -262,7 +262,6 @@ export function MobileDoodleCover() {
 
         {/* Animated Swipe Up Indicator */}
         <motion.div
-          type="button"
           onClick={() => navigateTo("/about")}
           animate={{ y: [0, -6, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}

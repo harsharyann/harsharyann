@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useSyncExternalStore } from "react"
 
 export interface SparkQuote {
   dayIndex: number // 0 = Sun, 1 = Mon, ..., 6 = Sat
@@ -196,35 +196,42 @@ function BoltIcon({ className = "w-4 h-4", color = "#f59e0b" }: { className?: st
   )
 }
 
+const emptySubscribe = () => () => {}
+
+const subscribeReducedMotion = (callback: () => void) => {
+  if (typeof window === "undefined" || !window.matchMedia) return () => {}
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
+  mq.addEventListener?.("change", callback)
+  return () => mq.removeEventListener?.("change", callback)
+}
+
+const getReducedMotionSnapshot = () => {
+  if (typeof window === "undefined" || !window.matchMedia) return false
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+}
+
 export function DailySpark({ isDark = false }: { isDark?: boolean }) {
   const [now, setNow] = useState<Date | null>(null)
-  const [mounted, setMounted] = useState<boolean>(false)
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false)
+  const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotionSnapshot, () => false)
   const [typedText, setTypedText] = useState<string>("")
   const [isTyping, setIsTyping] = useState<boolean>(false)
   const [copied, setCopied] = useState<boolean>(false)
-  const [reducedMotion, setReducedMotion] = useState<boolean>(false)
 
   // Real-time ticking clock & day detection on client mount
   useEffect(() => {
-    setMounted(true)
-    setNow(new Date())
-
     const timer = setInterval(() => {
       setNow(new Date())
     }, 1000)
 
-    if (typeof window !== "undefined" && window.matchMedia) {
-      const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
-      setReducedMotion(mq.matches)
-      const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
-      mq.addEventListener?.("change", handler)
-      return () => {
-        clearInterval(timer)
-        mq.removeEventListener?.("change", handler)
-      }
-    }
+    const initTimer = setTimeout(() => {
+      setNow(new Date())
+    }, 0)
 
-    return () => clearInterval(timer)
+    return () => {
+      clearInterval(timer)
+      clearTimeout(initTimer)
+    }
   }, [])
 
   // Automatically determine today's quote based on current weekday
