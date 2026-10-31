@@ -4,21 +4,15 @@ import Image from "next/image";
 import { portfolioData } from "@/data/portfolioData";
 import { AutoPageTurn } from "@/components/AutoPageTurn";
 import {
-  GraduationCap,
-  Award,
-  ArrowRight,
+  Brain,
   Code2,
   FolderGit2,
   FileText,
-  Sparkles,
   Compass,
-  CheckCircle2,
-  Cpu,
-  Binary,
 } from "lucide-react";
 
 export default function AboutPage() {
-  const { personal, education, schooling, skills, projects } = portfolioData;
+  const { personal, skills, projects } = portfolioData;
   const featuredProjects = projects.slice(0, 3);
 
   const phaseBadges = [
@@ -37,28 +31,28 @@ export default function AboutPage() {
 
   const timelineMilestones = [
     {
-      period: "2025",
-      title: "Foundational Distinctions",
-      subtitle: `${schooling.institution} • ${schooling.percentage}`,
-      description: "Completed senior secondary with top honors in Physics, Mathematics & Computer Science. Built early algorithmic intuition through competitive problems.",
+      period: "Foundations",
+      title: "Algorithmic Intuition & Logic",
+      subtitle: "Python, C & Core Problem Solving",
+      description: "Cultivated a deep focus on core algorithms, clean data structures, and mathematical logic through hundreds of practice problems.",
     },
     {
-      period: "2025 — Present",
-      title: "Undergraduate Immersion",
-      subtitle: `${education.institution} • CSE (AI & DS)`,
-      description: "Enrolled in Bachelor of Technology specializing in AI & Data Science. Dedicated to rigorous coursework in Discrete Math, Linear Algebra, and Systems Programming.",
+      period: "Data & Math",
+      title: "Exploratory Modeling & Linear Algebra",
+      subtitle: "Vectorized Computations & Analytics",
+      description: "Deep-diving into NumPy, Pandas, multivariate statistics, and exploring datasets to extract actionable signals and predictive patterns.",
     },
     {
-      period: "Current Phase",
-      title: "Mathematics & Machine Learning Laboratory",
-      subtitle: "Hands-on Modeling & Data Analysis",
-      description: "Deep-diving into vectorized computations with NumPy/Pandas, supervised regression/classification, and implementing algorithms from first principles.",
+      period: "Machine Learning",
+      title: "Deep Learning & Neural Architectures",
+      subtitle: "PyTorch, Computer Vision & CNNs",
+      description: "Building and fine-tuning neural networks from first principles. Implementing CNNs, transfer learning pipelines, and model evaluation metrics.",
     },
     {
-      period: "Target 2026",
-      title: "Industry Collaboration & Internships",
-      subtitle: "Summer 2026 Early Internship Focus",
-      description: "Actively seeking collegiate hackathons, open-source AI tooling contributions, and early research or engineering internship positions.",
+      period: "Systems & Vision",
+      title: "Intelligent Systems & Open Source",
+      subtitle: "Full-Stack AI Tooling & Deployment",
+      description: "Deploying interactive models, developing high-performance web tooling, and contributing to open-source developer infrastructure.",
     },
   ];
 
@@ -68,7 +62,7 @@ export default function AboutPage() {
       <div className="pb-6 border-b-2 border-black dark:border-stone-800 flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="sketch-stamp mb-2 bg-indigo-600 text-white dark:bg-white dark:text-black">
-            ABOUT &amp; ACADEMICS
+            ABOUT &amp; CRAFT
           </div>
           <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white">
             About Harsh Aryan
@@ -103,11 +97,11 @@ export default function AboutPage() {
           </div>
 
           <p className="text-stone-800 dark:text-stone-200 text-sm sm:text-base leading-relaxed">
-            I am <strong className="text-indigo-600 dark:text-white font-black">{personal.name}</strong>, a freshman undergraduate passionate about Artificial Intelligence, Data Science, and Scientific Computing. My fascination began when I wrote my first Python script to automate a repetitive task; seeing lines of logic produce tangible results sparked an obsession that has guided my work ever since.
+            I am <strong className="text-indigo-600 dark:text-white font-black">{personal.name}</strong>, a developer passionate about Artificial Intelligence, Data Science, and Scientific Computing. My fascination began when I wrote my first Python script to automate a repetitive task; seeing lines of logic produce tangible results sparked an obsession that has guided my work ever since.
           </p>
 
           <p className="text-stone-800 dark:text-stone-200 text-sm sm:text-base leading-relaxed">
-            While modern AI moves at breakneck speed, I believe real engineering requires solid anchors. Rather than jumping straight to pre-trained libraries, I spend my early years understanding the foundational mathematics—Linear Algebra, Multivariate Calculus, and Probability—implementing algorithms from scratch before relying on abstractions.
+            While modern AI moves at breakneck speed, I believe real engineering requires solid anchors. Rather than jumping straight to high-level wrappers, I spend my time understanding the foundational mathematics—Linear Algebra, Multivariate Calculus, and Probability—implementing algorithms from scratch before relying on abstractions.
           </p>
 
           {/* Handcrafted Notebook Quote Card */}
@@ -116,7 +110,7 @@ export default function AboutPage() {
               NOTEBOOK ENTRY #01 • PERSPECTIVE
             </div>
             <p className="font-editorial italic text-base sm:text-lg text-indigo-950 dark:text-stone-100 font-semibold leading-relaxed">
-              &ldquo;Being in 1st year is an immense superpower: it grants four focused years to master mathematics, build real-world open source systems, and prepare for high-impact AI research.&rdquo;
+              &ldquo;Master the underlying mathematics, build real-world open source systems, and engineering excellence will naturally follow.&rdquo;
             </p>
             <span className="block text-right font-mono text-xs font-bold mt-2 text-indigo-700 dark:text-stone-300">
               — Harsh Aryan
@@ -124,7 +118,7 @@ export default function AboutPage() {
           </div>
 
           <p className="text-stone-800 dark:text-stone-200 text-sm sm:text-base leading-relaxed">
-            When I am not writing code or studying course notes, you will find me participating in hackathons, analyzing Kaggle datasets, and experimenting with clean, tactile front-end designs.
+            When I am not writing code or studying theory, you will find me participating in hackathons, analyzing Kaggle datasets, and experimenting with clean, tactile front-end designs.
           </p>
         </div>
 
@@ -142,7 +136,7 @@ export default function AboutPage() {
             <div className="relative aspect-[4/5] w-full overflow-hidden border-2 border-black dark:border-white bg-stone-100 dark:bg-stone-800">
               <Image
                 src="/harsh-cover.jpg"
-                alt="Harsh Aryan - B.Tech CSE (AI & DS)"
+                alt="Harsh Aryan - AI & Data Science"
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 420px"
@@ -162,6 +156,96 @@ export default function AboutPage() {
               <span className="sketch-stamp text-[10px] bg-indigo-600 text-white dark:bg-white dark:text-black">
                 ORIGINAL PRINT
               </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Core Engineering Disciplines & Specializations */}
+      <div className="space-y-6 pt-4 border-t-2 border-dashed border-black dark:border-stone-800">
+        <div className="flex items-center gap-3">
+          <Brain className="w-6 h-6 text-indigo-600 dark:text-white" />
+          <h2 className="text-2xl font-black uppercase tracking-tight text-black dark:text-white">
+            Core Disciplines &amp; Specializations
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Pillar 01 */}
+          <div className="sketch-box p-6 space-y-4 flex flex-col justify-between hover:translate-y-[-2px] transition-transform">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b-2 border-black dark:border-stone-800 text-xs font-mono">
+                <span className="sketch-stamp bg-indigo-600 text-white dark:bg-white dark:text-black">DISCIPLINE 01</span>
+                <span className="font-bold text-indigo-600 dark:text-stone-300">INTELLIGENCE</span>
+              </div>
+              <h3 className="text-xl font-black uppercase text-black dark:text-white mt-3 leading-snug">
+                Machine Learning &amp; Neural Models
+              </h3>
+              <p className="text-sm text-stone-700 dark:text-stone-300 mt-2 leading-relaxed">
+                Developing supervised classifiers, regression models, and deep neural architectures. Focused on end-to-end model evaluation, transfer learning with ResNet, and CNN-based computer vision.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-dashed border-stone-300 dark:border-stone-700">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-2 font-bold">
+                KEY CAPABILITIES:
+              </span>
+              <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
+                <span className="border border-indigo-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-stone-800 text-indigo-700 dark:text-stone-200">✦ PyTorch &amp; Scikit-Learn</span>
+                <span className="border border-indigo-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-stone-800 text-indigo-700 dark:text-stone-200">✦ CNN Radiography Screening</span>
+                <span className="border border-indigo-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-stone-800 text-indigo-700 dark:text-stone-200">✦ Model Evaluation &amp; Metrics</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Pillar 02 */}
+          <div className="sketch-box p-6 space-y-4 flex flex-col justify-between hover:translate-y-[-2px] transition-transform">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b-2 border-black dark:border-stone-800 text-xs font-mono">
+                <span className="sketch-stamp bg-emerald-600 text-white dark:bg-white dark:text-black">DISCIPLINE 02</span>
+                <span className="font-bold text-emerald-600 dark:text-stone-300">ANALYTICS</span>
+              </div>
+              <h3 className="text-xl font-black uppercase text-black dark:text-white mt-3 leading-snug">
+                Data Science &amp; Statistical Modeling
+              </h3>
+              <p className="text-sm text-stone-700 dark:text-stone-300 mt-2 leading-relaxed">
+                Extracting actionable insights from high-dimensional datasets. Mastery of vectorized data manipulation, outlier detection, hypothesis validation, and rich statistical visualization.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-dashed border-stone-300 dark:border-stone-700">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-2 font-bold">
+                KEY CAPABILITIES:
+              </span>
+              <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
+                <span className="border border-emerald-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-emerald-50 dark:bg-stone-800 text-emerald-700 dark:text-stone-200">✦ Pandas &amp; Vectorized NumPy</span>
+                <span className="border border-emerald-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-emerald-50 dark:bg-stone-800 text-emerald-700 dark:text-stone-200">✦ Correlation &amp; Feature EDA</span>
+                <span className="border border-emerald-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-emerald-50 dark:bg-stone-800 text-emerald-700 dark:text-stone-200">✦ Interactive Seaborn &amp; Plotly</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Pillar 03 */}
+          <div className="sketch-box p-6 space-y-4 flex flex-col justify-between hover:translate-y-[-2px] transition-transform">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b-2 border-black dark:border-stone-800 text-xs font-mono">
+                <span className="sketch-stamp bg-purple-600 text-white dark:bg-white dark:text-black">DISCIPLINE 03</span>
+                <span className="font-bold text-purple-600 dark:text-stone-300">SYSTEMS</span>
+              </div>
+              <h3 className="text-xl font-black uppercase text-black dark:text-white mt-3 leading-snug">
+                Interactive Systems &amp; Web Tooling
+              </h3>
+              <p className="text-sm text-stone-700 dark:text-stone-300 mt-2 leading-relaxed">
+                Bridging machine learning models with accessible user interfaces. Designing high-craft web apps with Streamlit, React, Next.js, and TypeScript with zero-friction UX.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-dashed border-stone-300 dark:border-stone-700">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-2 font-bold">
+                KEY CAPABILITIES:
+              </span>
+              <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
+                <span className="border border-purple-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-purple-50 dark:bg-stone-800 text-purple-700 dark:text-stone-200">✦ Next.js &amp; React Architecture</span>
+                <span className="border border-purple-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-purple-50 dark:bg-stone-800 text-purple-700 dark:text-stone-200">✦ Streamlit Dashboards</span>
+                <span className="border border-purple-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-purple-50 dark:bg-stone-800 text-purple-700 dark:text-stone-200">✦ Neo-Brutalist Craft &amp; UX</span>
+              </div>
             </div>
           </div>
         </div>
@@ -199,85 +283,6 @@ export default function AboutPage() {
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Academic Track: University & Schooling */}
-      <div className="space-y-6 pt-4 border-t-2 border-dashed border-black dark:border-stone-800">
-        <div className="flex items-center gap-3">
-          <GraduationCap className="w-6 h-6 text-indigo-600 dark:text-white" />
-          <h2 className="text-2xl font-black uppercase tracking-tight text-black dark:text-white">
-            Academic Track &amp; Coursework
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Undergraduate Enrollment */}
-          <div className="sketch-box p-6 space-y-4 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b-2 border-black dark:border-stone-800 text-xs font-mono">
-                <span className="sketch-stamp bg-indigo-600 text-white dark:bg-white dark:text-black">CURRENT ENROLLMENT</span>
-                <span className="font-bold text-stone-700 dark:text-stone-300">{education.duration}</span>
-              </div>
-              <h3 className="text-xl font-black uppercase text-black dark:text-white mt-3">
-                {education.institution}
-              </h3>
-              <p className="text-sm font-semibold text-stone-700 dark:text-stone-300 mt-1">
-                {education.degree}
-              </p>
-              <div className="mt-3 text-xs font-mono text-stone-600 dark:text-stone-400">
-                Current Status: <span className="text-indigo-600 dark:text-white font-bold">{education.status}</span>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-dashed border-stone-300 dark:border-stone-700">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-2 font-bold">
-                KEY SYLLABUS &amp; CORE MODULES:
-              </span>
-              <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
-                {education.courses.map((course) => (
-                  <span
-                    key={course}
-                    className="border border-indigo-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-stone-800 text-indigo-700 dark:text-stone-200"
-                  >
-                    ✦ {course}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Schooling Background */}
-          <div className="sketch-box p-6 space-y-4 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b-2 border-black dark:border-stone-800 text-xs font-mono">
-                <span className="sketch-stamp bg-rose-600 text-white dark:bg-white dark:text-black">
-                  SENIOR SECONDARY
-                </span>
-                <span className="font-bold text-stone-700 dark:text-stone-300">{schooling.year}</span>
-              </div>
-              <h3 className="text-xl font-black uppercase text-black dark:text-white mt-3">
-                {schooling.institution}
-              </h3>
-              <p className="text-sm font-semibold text-stone-700 dark:text-stone-300 mt-1">
-                {schooling.board} • {schooling.stream}
-              </p>
-              <div className="mt-3 text-xs font-mono text-stone-600 dark:text-stone-400">
-                Academic Score: <span className="text-rose-600 dark:text-white font-bold">{schooling.percentage}</span>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-dashed border-stone-300 dark:border-stone-700">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-2 font-bold">
-                CORE PILLARS:
-              </span>
-              <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
-                <span className="border border-rose-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-rose-50 dark:bg-stone-800 text-rose-700 dark:text-stone-200">✦ Physics &amp; Mathematics</span>
-                <span className="border border-rose-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-rose-50 dark:bg-stone-800 text-rose-700 dark:text-stone-200">✦ Computer Science</span>
-                <span className="border border-rose-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-rose-50 dark:bg-stone-800 text-rose-700 dark:text-stone-200">✦ Logical Reasoning</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 

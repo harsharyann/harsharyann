@@ -1153,22 +1153,22 @@ export function DoodleCrewCover({
       {/* Main Cover Canvas */}
       <main className="dcf-main-canvas" ref={worldRef}>
         {/* Floating Dossier Stickers (Desktop Bottom Flanks) — Repositioned to bottom corners, ZERO overlap with letters */}
-        <aside className="dcf-side-flank is-left" aria-label="Current Role Information">
+        <aside className="dcf-side-flank is-left" aria-label="Craft & Engineering Focus">
           <div className="dcf-flank-tape" />
           <div className="dcf-flank-header">
             <svg className="dcf-flank-pin-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
               <path d="M13 2L18 7L15 10L14 9L11 12V15L9 17L8 15H5L3 13L6 10L5 9L8 6L10 7L12 4L11 3L13 2Z" fill="#ff2a55" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
               <path d="M9 17L5 20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
-            <span className="dcf-flank-tag">ACTIVE ROLE</span>
+            <span className="dcf-flank-tag">CRAFT &amp; FOCUS</span>
           </div>
-          <div className="dcf-flank-title">Teaching Assistant</div>
+          <div className="dcf-flank-title">Code, Math &amp; Models</div>
           <div className="dcf-flank-sub">
-            @ IIT Madras <span className="dcf-flank-sub-pill">BS Degree</span>
+            AI &amp; Data Science <span className="dcf-flank-sub-pill">Builder</span>
           </div>
           <div className="dcf-flank-status">
             <span className="dcf-flank-dot" />
-            <span>Available for Collab</span>
+            <span>Open for Projects</span>
           </div>
         </aside>
 
