@@ -8,6 +8,7 @@ import {
   Unlock,
   Save,
   CheckCircle,
+  CheckCircle2,
   AlertCircle,
   Plus,
   Trash2,
@@ -27,6 +28,13 @@ import {
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Project, Certificate, PortfolioData } from "@/data/portfolioData";
+import {
+  extractGoogleDriveId,
+  isGoogleDriveUrl,
+  formatGoogleDriveImageUrl,
+  formatGoogleDriveThumbnailUrl,
+  formatGoogleDriveViewUrl,
+} from "@/lib/googleDrive";
 
 interface ContactMessage {
   id: string;
@@ -119,17 +127,25 @@ export default function AdminPage() {
     category: "Machine Learning",
     skillsLearned: [],
     description: "",
+    verificationSource: "",
   });
   const [customCertCat, setCustomCertCat] = useState("");
+  const [isCustomCat, setIsCustomCat] = useState(false);
   const [skillInput, setSkillInput] = useState("");
+  const [driveInput, setDriveInput] = useState("");
+  const [driveFeedback, setDriveFeedback] = useState<string | null>(null);
 
   // Sync state when initialData arrives from server/context
   useEffect(() => {
     if (initialData && initialData.personal) {
       setPortfolio({
         ...initialData,
-        projectCategories: initialData.projectCategories || DEFAULT_PROJECT_CATS,
-        certificateCategories: initialData.certificateCategories || DEFAULT_CERT_CATS,
+        projectCategories: initialData.projectCategories !== undefined
+          ? initialData.projectCategories
+          : DEFAULT_PROJECT_CATS,
+        certificateCategories: initialData.certificateCategories !== undefined
+          ? initialData.certificateCategories
+          : DEFAULT_CERT_CATS,
       });
     }
   }, [initialData]);
@@ -363,7 +379,11 @@ export default function AdminPage() {
 
   // ── Certificate Actions ──
   const openNewCertModal = () => {
-    const cats = portfolio.certificateCategories || DEFAULT_CERT_CATS;
+    const cats = (portfolio.certificateCategories && portfolio.certificateCategories.length > 0)
+      ? portfolio.certificateCategories
+      : ["General"];
+    const initialCategory = cats[0] || "General";
+
     setEditingCert(null);
     setCertForm({
       id: "cert-" + Date.now(),
@@ -373,21 +393,77 @@ export default function AdminPage() {
       credentialId: "",
       credentialUrl: "",
       imageUrl: "",
-      category: cats[0] || "Machine Learning",
+      category: initialCategory,
       skillsLearned: ["Python"],
       description: "",
+      verificationSource: "",
     });
+    setIsCustomCat(false);
     setCustomCertCat("");
     setSkillInput("");
+    setDriveInput("");
+    setDriveFeedback(null);
     setIsCertModalOpen(true);
   };
 
   const openEditCertModal = (c: Certificate) => {
     setEditingCert(c);
-    setCertForm({ ...c });
+    setCertForm({
+      ...c,
+      verificationSource: c.verificationSource || "",
+    });
+    setIsCustomCat(false);
     setCustomCertCat("");
     setSkillInput(c.skillsLearned?.join(", ") || "");
+    setDriveInput("");
+    setDriveFeedback(null);
     setIsCertModalOpen(true);
+  };
+
+  const handleDrivePaste = (val: string) => {
+    setDriveInput(val);
+    const fileId = extractGoogleDriveId(val);
+    if (fileId) {
+      setDriveFeedback(`✓ Google Drive ID detected: ${fileId}`);
+    } else if (val.trim()) {
+      setDriveFeedback("Could not find a valid Google Drive file ID. Please paste a standard Google Drive share link.");
+    } else {
+      setDriveFeedback(null);
+    }
+  };
+
+  const applyDriveAsImage = () => {
+    const fileId = extractGoogleDriveId(driveInput);
+    if (!fileId) {
+      alert("Please enter a valid Google Drive link first.");
+      return;
+    }
+    const directUrl = formatGoogleDriveImageUrl(driveInput);
+    setCertForm((prev) => ({ ...prev, imageUrl: directUrl }));
+    setDriveFeedback("✅ Applied as Certificate Photo URL!");
+  };
+
+  const applyDriveAsCredential = () => {
+    const fileId = extractGoogleDriveId(driveInput);
+    if (!fileId) {
+      alert("Please enter a valid Google Drive link first.");
+      return;
+    }
+    const viewUrl = formatGoogleDriveViewUrl(driveInput);
+    setCertForm((prev) => ({ ...prev, credentialUrl: viewUrl }));
+    setDriveFeedback("✅ Applied as Credential Verification URL!");
+  };
+
+  const applyDriveBoth = () => {
+    const fileId = extractGoogleDriveId(driveInput);
+    if (!fileId) {
+      alert("Please enter a valid Google Drive link first.");
+      return;
+    }
+    const directUrl = formatGoogleDriveImageUrl(driveInput);
+    const viewUrl = formatGoogleDriveViewUrl(driveInput);
+    setCertForm((prev) => ({ ...prev, imageUrl: directUrl, credentialUrl: viewUrl }));
+    setDriveFeedback("✅ Applied to both Photo Image & Credential Link!");
   };
 
   const handleSaveCert = async () => {
@@ -396,9 +472,30 @@ export default function AdminPage() {
       return;
     }
 
-    const effectiveCategory = customCertCat.trim() || certForm.category || "Machine Learning";
+    const cats = (portfolio.certificateCategories && portfolio.certificateCategories.length > 0)
+      ? portfolio.certificateCategories
+      : ["General"];
+
+    // Determine the effective category
+    let effectiveCategory = "";
+    if (isCustomCat && customCertCat.trim()) {
+      effectiveCategory = customCertCat.trim();
+    } else if (certForm.category && certForm.category.trim()) {
+      effectiveCategory = certForm.category.trim();
+    } else {
+      effectiveCategory = cats[0] || "General";
+    }
+
+    // Normalize any raw Google Drive links before saving
+    const finalImageUrl = certForm.imageUrl ? formatGoogleDriveImageUrl(certForm.imageUrl) : "";
+    const finalCredentialUrl = certForm.credentialUrl
+      ? (isGoogleDriveUrl(certForm.credentialUrl) ? formatGoogleDriveViewUrl(certForm.credentialUrl) : certForm.credentialUrl)
+      : "";
+
     const finalCert: Certificate = {
       ...certForm,
+      imageUrl: finalImageUrl,
+      credentialUrl: finalCredentialUrl,
       category: effectiveCategory,
     };
 
@@ -409,9 +506,11 @@ export default function AdminPage() {
       updatedCerts = [finalCert, ...portfolio.certificates];
     }
 
-    // Auto-register category if new
-    const currentCats = portfolio.certificateCategories || DEFAULT_CERT_CATS;
-    const updatedCats = currentCats.includes(effectiveCategory) ? currentCats : [...currentCats, effectiveCategory];
+    // Auto-register category ONLY if user typed a new custom category
+    let updatedCats = portfolio.certificateCategories || [];
+    if (isCustomCat && customCertCat.trim() && !updatedCats.includes(customCertCat.trim())) {
+      updatedCats = [...updatedCats, customCertCat.trim()];
+    }
 
     const newPortfolio: PortfolioData = {
       ...portfolio,
@@ -556,7 +655,9 @@ export default function AdminPage() {
 
   // Active categories helper
   const projectCats = portfolio.projectCategories || DEFAULT_PROJECT_CATS;
-  const certCats = portfolio.certificateCategories || DEFAULT_CERT_CATS;
+  const certCats = (portfolio.certificateCategories && portfolio.certificateCategories.length > 0)
+    ? portfolio.certificateCategories
+    : DEFAULT_CERT_CATS;
 
   // ─── AUTHENTICATED DASHBOARD (SOCIUS IN PURE LIGHT THEME) ───
   return (
@@ -922,15 +1023,27 @@ export default function AdminPage() {
                   <div className="flex gap-4">
                     {/* Certificate Photo / Image Thumbnail (if added) */}
                     {cert.imageUrl ? (
-                      <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden border-2 border-stone-300 shadow-sm bg-stone-100 flex items-center justify-center">
+                      <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden border-2 border-stone-300 shadow-sm bg-stone-100 flex items-center justify-center relative">
                         <img
-                          src={cert.imageUrl}
+                          src={formatGoogleDriveImageUrl(cert.imageUrl)}
                           alt={cert.title}
+                          referrerPolicy="no-referrer"
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            (e.target as HTMLElement).style.display = "none";
+                            const target = e.currentTarget;
+                            if (!target.dataset.triedFallback && isGoogleDriveUrl(cert.imageUrl)) {
+                              target.dataset.triedFallback = "true";
+                              target.src = formatGoogleDriveThumbnailUrl(cert.imageUrl);
+                            } else {
+                              (target as HTMLElement).style.display = "none";
+                            }
                           }}
                         />
+                        {isGoogleDriveUrl(cert.imageUrl) && (
+                          <span className="absolute bottom-0.5 right-0.5 px-1 py-0.2 bg-black/75 text-amber-300 font-mono text-[8px] font-bold rounded">
+                            DRIVE
+                          </span>
+                        )}
                       </div>
                     ) : (
                       <div className="w-16 h-16 shrink-0 rounded-xl bg-amber-50 border border-amber-300 flex items-center justify-center text-amber-700">
@@ -964,8 +1077,15 @@ export default function AdminPage() {
                       </div>
 
                       <h3 className="font-mono font-black text-sm text-stone-900 line-clamp-1">{cert.title}</h3>
-                      <p className="font-mono text-xs text-stone-600">
-                        {cert.issuer} • <span className="font-bold">{cert.issueDate}</span>
+                      <p className="font-mono text-xs text-stone-600 flex items-center gap-2 flex-wrap">
+                        <span>{cert.issuer} • <span className="font-bold">{cert.issueDate}</span></span>
+                        <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-300">
+                          {cert.verificationSource?.trim()
+                            ? (cert.verificationSource.trim().toLowerCase().startsWith("verified by")
+                                ? cert.verificationSource.trim()
+                                : `Verified by ${cert.verificationSource.trim()}`)
+                            : (cert.issuer ? `Verified by ${cert.issuer}` : "Verified by Institution")}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -1097,6 +1217,152 @@ export default function AdminPage() {
               </div>
             </div>
 
+            {/* ── Mobile Cover Photo Manager ── */}
+            <div className="pt-4 border-t border-stone-200 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-mono text-sm font-black uppercase text-stone-900 flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-purple-600" />
+                    <span>Mobile Phone Cover Photo</span>
+                  </h3>
+                  <p className="font-mono text-xs text-stone-500">
+                    Phone view (mobile devices) pe ye photo fullscreen ambient drift background me show hoti hai.
+                  </p>
+                </div>
+                {portfolio.personal.coverPhotoUrl && (
+                  <span className="font-mono text-[10px] bg-purple-100 text-purple-800 font-bold px-2.5 py-0.5 rounded-full border border-purple-300">
+                    Custom Photo Set
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                {/* Inputs & Controls (Left 8 cols) */}
+                <div className="md:col-span-8 space-y-3">
+                  <div>
+                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                      Google Drive Link ya Direct Image URL:
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
+                        value={portfolio.personal.coverPhotoUrl || ""}
+                        onChange={(e) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, coverPhotoUrl: e.target.value },
+                          }))
+                        }
+                        className="flex-1 px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                      />
+                      {portfolio.personal.coverPhotoUrl && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, coverPhotoUrl: "" },
+                            }))
+                          }
+                          className="px-3 py-1.5 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 font-mono text-xs cursor-pointer"
+                          title="Clear input"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Google Drive Status Notification */}
+                  {isGoogleDriveUrl(portfolio.personal.coverPhotoUrl) && (
+                    <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                      <div>
+                        <div className="font-bold">Google Drive link detected!</div>
+                        <div className="text-[11px] text-emerald-700">
+                          Drive ID: <span className="font-mono font-bold">{extractGoogleDriveId(portfolio.personal.coverPhotoUrl)}</span> — Auto-converted into high-speed CDN image link.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Or Upload From Computer / Phone */}
+                  <div className="pt-2 flex flex-wrap items-center gap-2">
+                    <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
+                      <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
+                      <span>📁 Select Image from Device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                              if (ev.target?.result) {
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    coverPhotoUrl: ev.target!.result as string,
+                                  },
+                                }));
+                              }
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, coverPhotoUrl: "/harsh-cover.jpg" },
+                        }))
+                      }
+                      className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer"
+                    >
+                      Reset to Default (/harsh-cover.jpg)
+                    </button>
+                  </div>
+
+                  <p className="font-mono text-[11px] text-stone-500">
+                    💡 <strong>Drive Tip:</strong> Google Drive me image link copy karte waqt ensure karein ki access <em>&quot;Anyone with the link can view&quot;</em> pe set ho.
+                  </p>
+                </div>
+
+                {/* Live Preview Mockup (Right 4 cols) */}
+                <div className="md:col-span-4 flex flex-col items-center">
+                  <div className="font-mono text-[11px] font-bold text-stone-500 mb-1.5">
+                    Live Phone Mockup Preview:
+                  </div>
+                  <div className="relative w-36 h-64 rounded-3xl p-1 bg-stone-900 border-2 border-stone-700 shadow-lg overflow-hidden flex flex-col">
+                    <div className="relative w-full h-full rounded-[20px] overflow-hidden bg-stone-800">
+                      <img
+                        src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl) || "/harsh-cover.jpg"}
+                        alt="Cover Preview"
+                        className="w-full h-full object-cover object-[center_16%]"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+                      <div className="absolute bottom-2 left-2 right-2 text-center">
+                        <span className="text-[9px] font-mono font-bold text-white uppercase bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs">
+                          {portfolio.personal.name || "Preview"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={handleSaveAll}
@@ -1183,6 +1449,152 @@ export default function AdminPage() {
                     }
                     className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
                   />
+                </div>
+              </div>
+
+              {/* ── About Page Polaroid Photo Manager ── */}
+              <div className="pt-4 border-t border-stone-200 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-mono text-sm font-black uppercase text-stone-900 flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-amber-500" />
+                      <span>About Page Polaroid Photo</span>
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      About page (`/about`) me right side ke sketchbook Polaroid frame me show hone wali photo.
+                    </p>
+                  </div>
+                  {portfolio.personal.aboutPhotoUrl && (
+                    <span className="font-mono text-[10px] bg-amber-100 text-amber-900 font-bold px-2.5 py-0.5 rounded-full border border-amber-300">
+                      Custom Photo Set
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                  {/* Inputs & Controls (Left 8 cols) */}
+                  <div className="md:col-span-8 space-y-3">
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Google Drive Link ya Direct Image URL:
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
+                          value={portfolio.personal.aboutPhotoUrl || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, aboutPhotoUrl: e.target.value },
+                            }))
+                          }
+                          className="flex-1 px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        />
+                        {portfolio.personal.aboutPhotoUrl && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutPhotoUrl: "" },
+                              }))
+                            }
+                            className="px-3 py-1.5 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 font-mono text-xs cursor-pointer"
+                            title="Clear input"
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Google Drive Status Notification */}
+                    {isGoogleDriveUrl(portfolio.personal.aboutPhotoUrl) && (
+                      <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                        <div>
+                          <div className="font-bold">Google Drive link detected!</div>
+                          <div className="text-[11px] text-emerald-700">
+                            Drive ID: <span className="font-mono font-bold">{extractGoogleDriveId(portfolio.personal.aboutPhotoUrl)}</span> — Auto-converted into direct high-res CDN image link.
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Or Upload From Computer / Phone */}
+                    <div className="pt-2 flex flex-wrap items-center gap-2">
+                      <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
+                        <span>📁 Select Image from Device</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => {
+                                if (ev.target?.result) {
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: {
+                                      ...prev.personal,
+                                      aboutPhotoUrl: ev.target!.result as string,
+                                    },
+                                  }));
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, aboutPhotoUrl: "/harsh-cover.jpg" },
+                          }))
+                        }
+                        className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer"
+                      >
+                        Reset to Default (/harsh-cover.jpg)
+                      </button>
+                    </div>
+
+                    <p className="font-mono text-[11px] text-stone-500">
+                      💡 <strong>Drive Tip:</strong> Google Drive me image link copy karte waqt ensure karein ki access <em>&quot;Anyone with the link can view&quot;</em> pe set ho.
+                    </p>
+                  </div>
+
+                  {/* Live Preview Polaroid Mockup (Right 4 cols) */}
+                  <div className="md:col-span-4 flex flex-col items-center">
+                    <div className="font-mono text-[11px] font-bold text-stone-500 mb-1.5">
+                      Live Polaroid Mockup Preview:
+                    </div>
+                    <div className="p-3 bg-white border-2 border-black rounded-lg shadow-[4px_4px_0_#8b5cf6] w-36 sm:w-44 rotate-[-1deg]">
+                      <div className="relative aspect-[4/5] w-full overflow-hidden border border-black rounded bg-stone-100">
+                        <img
+                          src={formatGoogleDriveImageUrl(portfolio.personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
+                          alt="About Photo Preview"
+                          className="w-full h-full object-cover object-top"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
+                          }}
+                        />
+                        <div className="absolute bottom-1 right-1 bg-black/80 text-white text-[8px] font-mono px-1.5 py-0.5 rounded">
+                          PREVIEW
+                        </div>
+                      </div>
+                      <div className="pt-2 text-center font-mono font-bold text-[10px] text-stone-900 truncate">
+                        {portfolio.personal.name || "Harsh Aryan"}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1462,23 +1874,90 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {/* Verification Source / Provider Badge (Coursera, IBM, College, Hackathon, etc.) */}
+              <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-300 space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <label className="block text-emerald-950 font-bold text-xs flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Verification Badge / Source (Coursera, IBM, College, Hackathon):</span>
+                  </label>
+                  <span className="text-[10px] text-emerald-800 font-mono font-bold bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+                    Custom Provider Badge
+                  </span>
+                </div>
+
+                <input
+                  type="text"
+                  value={certForm.verificationSource || ""}
+                  onChange={(e) => setCertForm({ ...certForm, verificationSource: e.target.value })}
+                  placeholder="e.g. Coursera, IBM, College, Hackathon, Politecnico Milano..."
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-emerald-300 text-stone-900 focus:border-emerald-600 focus:outline-none text-xs font-mono"
+                />
+
+                {/* Quick 1-click Preset Chips */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span className="text-[10px] font-mono text-stone-500 font-bold mr-1">Quick Presets:</span>
+                  {["Coursera", "IBM", "College", "Hackathon", "Institute", "IIT Madras", "Google", "NPTEL", "Kaggle"].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setCertForm({ ...certForm, verificationSource: preset })}
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                        certForm.verificationSource === preset
+                          ? "bg-emerald-600 text-white border-emerald-700 shadow-xs"
+                          : "bg-white text-emerald-900 border-emerald-300 hover:bg-emerald-100"
+                      }`}
+                    >
+                      + {preset}
+                    </button>
+                  ))}
+                  {certForm.verificationSource && (
+                    <button
+                      type="button"
+                      onClick={() => setCertForm({ ...certForm, verificationSource: "" })}
+                      className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border border-stone-300 text-stone-500 hover:bg-stone-100 cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                {/* Live Preview of the Badge */}
+                <div className="pt-1 flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] text-stone-500 font-mono">Live Visitor Badge Preview:</span>
+                  <div className="inline-flex items-center gap-1.5 font-mono text-[11px] font-black text-emerald-700 bg-emerald-100/90 px-2.5 py-0.5 rounded-md border border-emerald-400 shadow-xs">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>
+                      {certForm.verificationSource?.trim()
+                        ? (certForm.verificationSource.trim().toLowerCase().startsWith("verified by")
+                            ? certForm.verificationSource.trim()
+                            : `Verified by ${certForm.verificationSource.trim()}`)
+                        : (certForm.issuer?.trim()
+                            ? `Verified by ${certForm.issuer.trim()}`
+                            : "Verified by Institution")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* Category Selector + Custom Category */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-stone-800 font-bold mb-1">Category:</label>
                   <select
-                    value={customCertCat ? "__custom__" : certForm.category}
+                    value={isCustomCat ? "__custom__" : certForm.category}
                     onChange={(e) => {
                       if (e.target.value === "__custom__") {
-                        setCustomCertCat("New Category");
+                        setIsCustomCat(true);
                       } else {
+                        setIsCustomCat(false);
                         setCustomCertCat("");
                         setCertForm({ ...certForm, category: e.target.value });
                       }
                     }}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none"
                   >
-                    {certCats.map((cat) => (
+                    {Array.from(new Set([...certCats, certForm.category].filter(Boolean))).map((cat) => (
                       <option key={cat} value={cat}>
                         {cat}
                       </option>
@@ -1487,18 +1966,84 @@ export default function AdminPage() {
                   </select>
                 </div>
 
-                {customCertCat !== "" && (
+                {isCustomCat && (
                   <div>
                     <label className="block text-stone-800 font-bold mb-1">Custom Category Name:</label>
                     <input
                       type="text"
+                      autoFocus
                       value={customCertCat}
                       onChange={(e) => setCustomCertCat(e.target.value)}
-                      placeholder="e.g. Hackathons, Cloud Computing"
+                      placeholder="e.g. Extra Caricullam, Hackathons"
                       className="w-full px-3.5 py-2.5 rounded-xl bg-amber-50 border-2 border-amber-400 text-stone-900 focus:border-black focus:outline-none"
                     />
                   </div>
                 )}
+              </div>
+
+              {/* ── GOOGLE DRIVE HELPER BOX ── */}
+              <div className="p-4 rounded-2xl bg-amber-50/70 border-2 border-dashed border-amber-400 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1 rounded-md bg-amber-200 text-amber-900 font-bold text-xs">
+                      📁
+                    </span>
+                    <span className="font-bold text-stone-900 text-xs">
+                      Add Certificate via Google Drive Link:
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-amber-900 font-bold bg-amber-200/90 px-2 py-0.5 rounded-full border border-amber-300">
+                    Quick Converter
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={driveInput}
+                      onChange={(e) => handleDrivePaste(e.target.value)}
+                      placeholder="Paste any Google Drive link: https://drive.google.com/file/d/.../view"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 text-stone-900 focus:border-amber-500 focus:outline-none text-xs"
+                    />
+                  </div>
+
+                  {driveFeedback && (
+                    <div className="text-[11px] font-bold text-amber-900 bg-amber-100/80 px-2.5 py-1 rounded-lg border border-amber-300/80">
+                      {driveFeedback}
+                    </div>
+                  )}
+
+                  {extractGoogleDriveId(driveInput) && (
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={applyDriveBoth}
+                        className="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-black font-black uppercase text-[10px] shadow-[2px_2px_0_#000] border border-black cursor-pointer transition-transform hover:-translate-y-0.5"
+                      >
+                        ⚡ Set for Both (Photo + View Link)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={applyDriveAsImage}
+                        className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-stone-100 text-stone-800 font-bold text-[10px] border border-stone-300 cursor-pointer shadow-xs"
+                      >
+                        🖼️ Set as Photo Only
+                      </button>
+                      <button
+                        type="button"
+                        onClick={applyDriveAsCredential}
+                        className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-stone-100 text-stone-800 font-bold text-[10px] border border-stone-300 cursor-pointer shadow-xs"
+                      >
+                        🔗 Set as View Link Only
+                      </button>
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-stone-600 font-mono leading-tight">
+                    💡 <b>Google Drive Tip:</b> Make sure your file sharing permission in Google Drive is set to <b>&quot;Anyone with the link can view&quot;</b> so your certificate displays smoothly.
+                  </p>
+                </div>
               </div>
 
               {/* Certificate Image / Photo URL (Photo Link Feature) */}
@@ -1513,27 +2058,54 @@ export default function AdminPage() {
                 <input
                   type="text"
                   value={certForm.imageUrl || ""}
-                  onChange={(e) => setCertForm({ ...certForm, imageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/... or https://your-host.com/cert.png"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (isGoogleDriveUrl(val) && !val.includes("lh3.googleusercontent.com")) {
+                      const converted = formatGoogleDriveImageUrl(val);
+                      setCertForm({ ...certForm, imageUrl: converted });
+                      setDriveFeedback("✓ Google Drive link converted to direct image URL automatically!");
+                    } else {
+                      setCertForm({ ...certForm, imageUrl: val });
+                    }
+                  }}
+                  placeholder="https://images.unsplash.com/... or Google Drive link"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none"
                 />
 
                 {/* Live Image Preview */}
                 {certForm.imageUrl && (
                   <div className="mt-2.5 p-3 rounded-2xl bg-stone-100 border border-stone-300 flex items-center gap-3">
-                    <div className="w-20 h-14 rounded-lg overflow-hidden border border-stone-300 bg-white shadow-sm flex items-center justify-center">
+                    <div className="w-20 h-14 rounded-lg overflow-hidden border border-stone-300 bg-white shadow-sm flex items-center justify-center shrink-0">
                       <img
-                        src={certForm.imageUrl}
+                        src={formatGoogleDriveImageUrl(certForm.imageUrl)}
                         alt="Preview"
+                        referrerPolicy="no-referrer"
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          (e.target as HTMLElement).style.display = "none";
+                          const target = e.currentTarget;
+                          if (!target.dataset.triedFallback && isGoogleDriveUrl(certForm.imageUrl)) {
+                            target.dataset.triedFallback = "true";
+                            target.src = formatGoogleDriveThumbnailUrl(certForm.imageUrl);
+                          } else {
+                            (target as HTMLElement).style.display = "none";
+                          }
                         }}
                       />
                     </div>
-                    <div className="text-[11px] font-mono text-stone-600">
-                      <span className="font-bold text-stone-900 block">Photo Preview Loaded</span>
-                      <span>This image will appear inside the polaroid print frame.</span>
+                    <div className="text-[11px] font-mono text-stone-600 min-w-0">
+                      <span className="font-bold text-stone-900 block flex items-center gap-1.5 flex-wrap">
+                        <span>Photo Preview</span>
+                        {isGoogleDriveUrl(certForm.imageUrl) && (
+                          <span className="px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 font-bold text-[9px] border border-amber-300">
+                            Google Drive Connected
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-[10px] text-stone-500">
+                        {isGoogleDriveUrl(certForm.imageUrl)
+                          ? "High-res Google Drive direct stream configured."
+                          : "This image will appear inside the polaroid print frame."}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -1553,12 +2125,24 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <label className="block text-stone-800 font-bold mb-1">Credential Verification URL:</label>
+                  <label className="block text-stone-800 font-bold mb-1 flex items-center justify-between">
+                    <span>Credential Verification URL:</span>
+                    {isGoogleDriveUrl(certForm.credentialUrl) && (
+                      <span className="text-[10px] text-amber-800 font-bold bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">Google Drive Link</span>
+                    )}
+                  </label>
                   <input
                     type="text"
                     value={certForm.credentialUrl || ""}
-                    onChange={(e) => setCertForm({ ...certForm, credentialUrl: e.target.value })}
-                    placeholder="https://coursera.org/verify/..."
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (isGoogleDriveUrl(val)) {
+                        setCertForm({ ...certForm, credentialUrl: formatGoogleDriveViewUrl(val) });
+                      } else {
+                        setCertForm({ ...certForm, credentialUrl: val });
+                      }
+                    }}
+                    placeholder="https://coursera.org/verify/... or Google Drive URL"
                     className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none"
                   />
                 </div>

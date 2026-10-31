@@ -3,7 +3,7 @@
     "name": "Harsh Aryan",
     "role": "AI & Data Science Student & Teaching Assistant",
     "headline": "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",
-    "bio": "Hi! I am Harsh Aryan, a curious 1st-year undergraduate student passionate about Artificial Intelligence, Data Science, and Mathematics. I spend my time mastering Python, Linear Algebra, Exploratory Data Analysis, and fundamental Machine Learning algorithms. I am eager to learn, build practical projects, participate in hackathons, and secure early internship opportunities.",
+    "bio": "I am Harsh Aryan, a developer passionate about Artificial Intelligence, Data Science, and Scientific Computing. My fascination began when I wrote my first Python script to automate a repetitive task; seeing lines of logic produce tangible results sparked an obsession that has guided my work ever since.\n\nWhile modern AI moves at breakneck speed, I believe real engineering requires solid anchors. Rather than jumping straight to high-level wrappers, I spend my time understanding the foundational mathematics—Linear Algebra, Multivariate Calculus, and Probability—implementing algorithms from scratch before relying on abstractions.",
     "college": "Engineering College / University",
     "degree": "Computer Science & Engineering (AI & Data Science)",
     "year": "Undergraduate",
@@ -11,7 +11,9 @@
     "location": "India & Open for Remote Opportunities",
     "availability": "Seeking Summer 2026 Early Internships & Hackathon Collaborations",
     "email": "harsharyan@outlook.com",
-    "resumeUrl": "/Harsh_Aryan_Resume.pdf"
+    "resumeUrl": "/Harsh_Aryan_Resume.pdf",
+    "aboutPhotoUrl": "/harsh-cover.jpg",
+    "coverPhotoUrl": "/harsh-cover.jpg"
   },
   "socialLinks": {
     "github": "https://github.com",
@@ -287,103 +289,47 @@
   ],
   "certificates": [
     {
-      "id": "deeplearning-ai-ml",
-      "title": "Supervised Machine Learning: Regression and Classification",
-      "issuer": "DeepLearning.AI & Stanford Online (Coursera)",
-      "issueDate": "2025",
-      "credentialId": "DLAI-ML-2025-HA",
-      "credentialUrl": "https://coursera.org",
-      "category": "Machine Learning",
+      "id": "cert-1793487658548",
+      "title": "Smart Teaching and Learning with AI",
+      "issuer": "POLITECNICO MILANO 1863",
+      "issueDate": "2026",
+      "credentialId": "",
+      "credentialUrl": "",
+      "imageUrl": "https://lh3.googleusercontent.com/d/1y2eKG3oZSlVpmcFFbGpyG1ERXvTYvvyR",
+      "category": "AI",
       "skillsLearned": [
-        "Linear Regression",
-        "Logistic Regression",
-        "Gradient Descent",
-        "Cost Functions",
-        "Overfitting & Regularization"
+        "Teaching USing AI"
       ],
-      "description": "Mastered core supervised learning algorithms taught by Andrew Ng, including cost function formulation, vectorization in NumPy, and feature scaling."
+      "description": "",
+      "verificationSource": "Coursera"
     },
     {
-      "id": "imperial-linear-algebra",
-      "title": "Mathematics for Machine Learning: Linear Algebra",
-      "issuer": "Imperial College London (Coursera)",
-      "issueDate": "2025",
-      "credentialId": "ICL-LA-2025-98",
-      "credentialUrl": "https://coursera.org",
-      "category": "Mathematics & Hackathons",
+      "id": "cert-1793486557158",
+      "title": "fdvd",
+      "issuer": "fdf",
+      "issueDate": "2026",
+      "credentialId": "",
+      "credentialUrl": "",
+      "imageUrl": "https://lh3.googleusercontent.com/d/1a3CqNLtTCeV24d6Jr1rB43O3Z4jqFun8",
+      "category": "Programing",
       "skillsLearned": [
-        "Matrix Transformations",
-        "Eigenvalues & Eigenvectors",
-        "Dot Products",
-        "Basis Vectors",
-        "Gram-Schmidt"
+        "Python"
       ],
-      "description": "Rigorous mathematical course on vector spaces, linear transformations, orthogonal projections, and principal component analysis (PCA) intuition."
+      "description": ""
     },
     {
-      "id": "ibm-python-ds",
-      "title": "Python for Data Science, AI & Development",
-      "issuer": "IBM (Coursera)",
-      "issueDate": "2025",
-      "credentialId": "IBM-PYDS-2025",
-      "credentialUrl": "https://coursera.org",
-      "category": "Data Science",
+      "id": "cert-1793486500372",
+      "title": "fv",
+      "issuer": "df",
+      "issueDate": "2026",
+      "credentialId": "",
+      "credentialUrl": "",
+      "imageUrl": "https://lh3.googleusercontent.com/d/1a3CqNLtTCeV24d6Jr1rB43O3Z4jqFun8",
+      "category": "Extra Caricullam",
       "skillsLearned": [
-        "Python OOP",
-        "Pandas",
-        "NumPy",
-        "REST APIs",
-        "Web Scraping with BeautifulSoup"
+        "Python"
       ],
-      "description": "Comprehensive hands-on training in Python programming, working with external APIs, data extraction, and manipulation using Pandas dataframes."
-    },
-    {
-      "id": "kaggle-pandas-ml",
-      "title": "Kaggle Learn: Intro to Machine Learning & Pandas",
-      "issuer": "Kaggle / Google",
-      "issueDate": "2025",
-      "credentialId": "KAGGLE-CERT-HA",
-      "credentialUrl": "https://kaggle.com",
-      "category": "Data Science",
-      "skillsLearned": [
-        "Data Exploration",
-        "Model Validation (MAE)",
-        "Random Forests",
-        "Handling Missing Values"
-      ],
-      "description": "Practical micro-courses completing real-world housing price prediction benchmarks and data cleaning challenges on Kaggle."
-    },
-    {
-      "id": "hackerrank-sql",
-      "title": "SQL (Basic & Intermediate) Skill Certificate",
-      "issuer": "HackerRank",
-      "issueDate": "2025",
-      "credentialId": "HR-SQL-VERIFIED",
-      "credentialUrl": "https://hackerrank.com",
-      "category": "Programming",
-      "skillsLearned": [
-        "Joins & Unions",
-        "GROUP BY & HAVING",
-        "Subqueries",
-        "Aggregations",
-        "Conditional Queries"
-      ],
-      "description": "Verified assessment validating relational database query skills, joining multiple tables, and extracting analytical insights."
-    },
-    {
-      "id": "college-hackathon-2025",
-      "title": "Freshman TechFest Hackathon — 2nd Runner Up",
-      "issuer": "College Innovation Council & Student Chapter",
-      "issueDate": "2025",
-      "credentialId": "TF-HACK-2025-03",
-      "category": "Mathematics & Hackathons",
-      "skillsLearned": [
-        "Fast Prototyping",
-        "Streamlit",
-        "Team Collaboration",
-        "Pitching to Faculty Judges"
-      ],
-      "description": "Built and pitched CampusIQ student assistant within 24 hours among 45+ competing teams, awarded Best Freshman Innovation."
+      "description": ""
     }
   ],
   "projectCategories": [
@@ -393,9 +339,8 @@
     "Python Basics"
   ],
   "certificateCategories": [
-    "Machine Learning",
-    "Data Science",
-    "Programming",
-    "Mathematics & Hackathons"
+    "Extra Caricullam",
+    "Programing",
+    "AI"
   ]
 }

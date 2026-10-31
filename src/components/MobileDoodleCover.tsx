@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Mail, Shield } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
+import { formatGoogleDriveImageUrl, isGoogleDriveUrl } from "@/lib/googleDrive";
 
 /* ── Hand-Drawn Mural-Adaptive SVG Doodles (Sampled from the background graffiti wall) ── */
 
@@ -181,10 +182,11 @@ export function MobileDoodleCover() {
           }}
         >
           <Image
-            src="/harsh-cover.jpg"
-            alt={portfolio.personal.name || "Harsh Aryan"}
+            src={formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl) || "/harsh-cover.jpg"}
+            alt={portfolio?.personal?.name || "Harsh Aryan"}
             fill
             priority
+            unoptimized={isGoogleDriveUrl(portfolio?.personal?.coverPhotoUrl) || (portfolio?.personal?.coverPhotoUrl?.startsWith("data:") ?? false)}
             sizes="100vw"
             className="object-cover object-[center_16%]"
           />

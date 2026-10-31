@@ -23,6 +23,7 @@ export interface Certificate {
   category: string;
   skillsLearned: string[];
   description: string;
+  verificationSource?: string;
 }
 
 export interface PortfolioData {
@@ -39,6 +40,8 @@ export interface PortfolioData {
     availability: string;
     email: string;
     resumeUrl: string;
+    aboutPhotoUrl?: string;
+    coverPhotoUrl?: string;
   };
   socialLinks: {
     github: string;
@@ -91,6 +94,8 @@ export const portfolioData: PortfolioData = {
     availability: "Seeking Summer 2026 Early Internships & Hackathon Collaborations",
     email: "harsharyan@outlook.com",
     resumeUrl: "/Harsh_Aryan_Resume.pdf",
+    aboutPhotoUrl: "/harsh-cover.jpg",
+    coverPhotoUrl: "/harsh-cover.jpg",
   },
 
   socialLinks: {

@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { portfolioData } from "@/data/portfolioData"
 import { usePortfolio } from "@/context/PortfolioContext"
+import { formatGoogleDriveImageUrl, isGoogleDriveUrl } from "@/lib/googleDrive"
 import {
   Brain,
   Code2,
@@ -470,10 +471,11 @@ export default function AboutPage() {
             {/* Inner photo border */}
             <div className="relative aspect-[4/5] w-full overflow-hidden border-2 border-black dark:border-white rounded bg-stone-100 dark:bg-stone-800 group/photo">
               <Image
-                src="/harsh-cover.jpg"
-                alt="Harsh Aryan - Teaching Assistant @ IIT Madras"
+                src={formatGoogleDriveImageUrl(personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
+                alt={`${personal.name} - ${personal.role}`}
                 fill
                 priority
+                unoptimized={isGoogleDriveUrl(personal.aboutPhotoUrl) || (personal.aboutPhotoUrl?.startsWith("data:") ?? false)}
                 sizes="(max-width: 768px) 100vw, 420px"
                 className="object-cover object-top hover:scale-[1.03] transition-transform duration-500"
               />

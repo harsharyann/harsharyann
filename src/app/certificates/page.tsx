@@ -97,17 +97,22 @@ export default function CertificatesPage() {
 
   // Dynamic certificate categories from portfolio configuration + catalog
   const dynamicCategoryNames = React.useMemo(() => {
-    const fromConfig = portfolio?.certificateCategories || [
+    const fromConfig = (portfolio?.certificateCategories && portfolio.certificateCategories.length > 0)
+      ? portfolio.certificateCategories
+      : []
+    const fromCerts = (portfolio?.certificates || []).map((c) => c.category)
+    const merged = Array.from(new Set([...fromConfig, ...fromCerts])).filter(Boolean)
+    if (merged.length > 0) return merged
+
+    return [
       "Machine Learning",
       "Data Science",
       "Programming",
       "Mathematics & Hackathons",
     ]
-    const fromCerts = (portfolio?.certificates || []).map((c) => c.category)
-    return Array.from(new Set([...fromConfig, ...fromCerts])).filter(Boolean)
   }, [portfolio?.certificateCategories, portfolio?.certificates])
 
-  const COLOR_PALETTE = ["purple", "emerald", "cyan", "amber", "rose", "indigo", "teal", "orange"]
+  const COLOR_PALETTE = ["indigo", "emerald", "cyan", "amber", "red", "purple", "teal", "orange"]
 
   const categories = React.useMemo(() => {
     return [
@@ -145,11 +150,11 @@ export default function CertificatesPage() {
           <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-400 text-amber-800 dark:text-amber-300 font-bold">
               <Award className="w-3 h-3 text-amber-500" />
-              6 Verified Certificates
+              {certsList.length} Verified {certsList.length === 1 ? "Certificate" : "Certificates"}
             </span>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-400 text-emerald-800 dark:text-emerald-300 font-bold">
               <ShieldCheck className="w-3 h-3 text-emerald-500" />
-              Stanford, Imperial &amp; IBM
+              Verified Laurels &amp; Awards
             </span>
           </div>
         </div>
@@ -176,7 +181,7 @@ export default function CertificatesPage() {
             </svg>
 
             <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
-              Verified technical coursework and hackathon recognitions pegged onto an interactive clothesline. Drag the line, swipe prints, or click any card to inspect credentials.
+              Verified academic achievements, hackathon laurels, and institutional recognitions presented in widescreen landscape prints. Click any certificate to zoom and securely inspect high-resolution details.
             </p>
           </div>
 
@@ -207,8 +212,8 @@ export default function CertificatesPage() {
               activeStyle = "bg-sky-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
             } else if (cat.color === "amber") {
               activeStyle = "bg-amber-400 text-black shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
-            } else if (cat.color === "rose") {
-              activeStyle = "bg-rose-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
+            } else if (cat.color === "red") {
+              activeStyle = "bg-red-800 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
             } else if (cat.color === "indigo") {
               activeStyle = "bg-indigo-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
             } else if (cat.color === "teal") {
@@ -238,18 +243,18 @@ export default function CertificatesPage() {
       </div>
 
       {/* =========================================================================
-          INTERACTIVE POLAROID CLOTHESLINE CAROUSEL
+          INTERACTIVE POLAROID CLOTHESLINE CAROUSEL (Landscape Rectangular Prints)
           (With Doodle #2: Clothesline Clothespin Guide)
       ========================================================================= */}
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold text-stone-600 dark:text-stone-400">
           <ClothespinGuideDoodle />
           <span className="text-amber-700 dark:text-amber-300 font-black">
-            {filtered.length} PRINTS HANGING ON THE LINE
+            {filtered.length} {filtered.length === 1 ? "PRINT" : "PRINTS"} HANGING ON THE LINE
           </span>
         </div>
 
-        <PolaroidCertificateCarousel certificates={filtered} height={520} cardWidth={280} />
+        <PolaroidCertificateCarousel certificates={filtered} height={550} cardWidth={460} />
       </div>
     </div>
   )
