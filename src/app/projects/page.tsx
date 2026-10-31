@@ -197,13 +197,30 @@ export default function ProjectsPage() {
   const projectsList: Project[] = portfolio?.projects || portfolioData.projects
   const [activeCategory, setActiveCategory] = useState("All")
 
-  const categories = [
-    { label: "All", name: "ALL PROJECTS", color: "all" },
-    { label: "Machine Learning", name: "MACHINE LEARNING", color: "purple" },
-    { label: "Data Analysis", name: "DATA ANALYSIS", color: "emerald" },
-    { label: "Web & AI Tools", name: "WEB & AI TOOLS", color: "cyan" },
-    { label: "Python Basics", name: "PYTHON BASICS", color: "amber" },
-  ]
+  // Dynamic project categories from portfolio configuration + projects catalog
+  const dynamicCategoryNames = React.useMemo(() => {
+    const fromConfig = portfolio?.projectCategories || [
+      "Machine Learning",
+      "Data Analysis",
+      "Web & AI Tools",
+      "Python Basics",
+    ]
+    const fromProjects = (portfolio?.projects || []).map((p) => p.category)
+    return Array.from(new Set([...fromConfig, ...fromProjects])).filter(Boolean)
+  }, [portfolio?.projectCategories, portfolio?.projects])
+
+  const COLOR_PALETTE = ["purple", "emerald", "cyan", "amber", "rose", "indigo", "teal", "orange"]
+
+  const categories = React.useMemo(() => {
+    return [
+      { label: "All", name: "ALL PROJECTS", color: "all" },
+      ...dynamicCategoryNames.map((name, idx) => ({
+        label: name,
+        name: name.toUpperCase(),
+        color: COLOR_PALETTE[idx % COLOR_PALETTE.length],
+      })),
+    ]
+  }, [dynamicCategoryNames])
 
   const filtered =
     activeCategory === "All"
@@ -396,6 +413,14 @@ export default function ProjectsPage() {
               activeStyle = "bg-sky-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
             } else if (cat.color === "amber") {
               activeStyle = "bg-amber-400 text-black shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
+            } else if (cat.color === "rose") {
+              activeStyle = "bg-rose-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
+            } else if (cat.color === "indigo") {
+              activeStyle = "bg-indigo-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
+            } else if (cat.color === "teal") {
+              activeStyle = "bg-teal-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
+            } else if (cat.color === "orange") {
+              activeStyle = "bg-orange-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
             }
 
             return (

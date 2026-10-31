@@ -396,39 +396,60 @@ export function PolaroidCertificateCarousel({
                   boxShadow: isCurrent ? `6px 10px 0 ${theme.printShadow}` : undefined,
                 }}
               >
-                {/* Certificate Emblem Parchment View */}
+                {/* Certificate Emblem Parchment View OR Certificate Photo Image */}
                 <div className="pl-cert-shot">
-                  <div className="pl-cert-parchment">
-                    {/* Inner Certificate Border */}
-                    <div className="pl-cert-border">
-                      <div className="flex items-center justify-between w-full pb-1 border-b border-black dark:border-stone-700 text-[9px] font-mono font-bold uppercase tracking-wider">
-                        <span>CERT #{i + 1 < 10 ? `0${i + 1}` : i + 1}</span>
-                        <span className="font-black text-black dark:text-white">{cert.issueDate}</span>
+                  {cert.imageUrl ? (
+                    <div className="relative w-full h-full bg-stone-100 dark:bg-stone-800 rounded overflow-hidden flex flex-col justify-between">
+                      <img
+                        src={cert.imageUrl}
+                        alt={cert.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = "none";
+                        }}
+                      />
+                      <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm text-white font-mono text-[8px] font-bold uppercase">
+                        #{i + 1 < 10 ? `0${i + 1}` : i + 1}
                       </div>
-
-                      {/* Laurel Crest Emblem with Category Color */}
-                      <div className="my-auto text-center space-y-1 py-1">
-                        <div
-                          className={`inline-block p-2 rounded-full border-2 border-black dark:border-white ${theme.crestBorder} ${theme.crestBg}`}
-                        >
-                          <Award className="w-6 h-6" />
-                        </div>
-                        <div className="font-mono text-[9px] font-black uppercase tracking-widest text-black dark:text-white block">
-                          VERIFIED CREDENTIAL
-                        </div>
-                        <div className="font-bold text-xs uppercase line-clamp-1 text-black dark:text-white px-1">
-                          {cert.issuer}
-                        </div>
-                      </div>
-
-                      {/* Category tag at bottom of photo area */}
                       <div
-                        className={`w-full text-center py-0.5 rounded font-mono text-[8.5px] font-black uppercase tracking-wide truncate border ${theme.categoryBadge}`}
+                        className={`absolute bottom-1 left-1 right-1 text-center py-0.5 rounded font-mono text-[8.5px] font-black uppercase tracking-wide truncate border shadow-xs bg-white/95 dark:bg-black/95 ${theme.categoryBadge}`}
                       >
                         {cert.category}
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="pl-cert-parchment">
+                      {/* Inner Certificate Border */}
+                      <div className="pl-cert-border">
+                        <div className="flex items-center justify-between w-full pb-1 border-b border-black dark:border-stone-700 text-[9px] font-mono font-bold uppercase tracking-wider">
+                          <span>CERT #{i + 1 < 10 ? `0${i + 1}` : i + 1}</span>
+                          <span className="font-black text-black dark:text-white">{cert.issueDate}</span>
+                        </div>
+
+                        {/* Laurel Crest Emblem with Category Color */}
+                        <div className="my-auto text-center space-y-1 py-1">
+                          <div
+                            className={`inline-block p-2 rounded-full border-2 border-black dark:border-white ${theme.crestBorder} ${theme.crestBg}`}
+                          >
+                            <Award className="w-6 h-6" />
+                          </div>
+                          <div className="font-mono text-[9px] font-black uppercase tracking-widest text-black dark:text-white block">
+                            VERIFIED CREDENTIAL
+                          </div>
+                          <div className="font-bold text-xs uppercase line-clamp-1 text-black dark:text-white px-1">
+                            {cert.issuer}
+                          </div>
+                        </div>
+
+                        {/* Category tag at bottom of photo area */}
+                        <div
+                          className={`w-full text-center py-0.5 rounded font-mono text-[8.5px] font-black uppercase tracking-wide truncate border ${theme.categoryBadge}`}
+                        >
+                          {cert.category}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Hand-written Polaroid Caption Area */}
@@ -525,6 +546,33 @@ export function PolaroidCertificateCarousel({
                 ))}
               </div>
             </div>
+
+            {/* Certificate Photo Preview in Detail Drawer */}
+            {activeCert.imageUrl && (
+              <div className="pt-2">
+                <a
+                  href={activeCert.imageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-3 p-2.5 rounded-xl border-2 border-black dark:border-stone-600 bg-white dark:bg-stone-800 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] hover:-translate-y-0.5 transition-all group"
+                >
+                  <div className="w-16 h-12 rounded-lg overflow-hidden border border-stone-200 bg-stone-100 shrink-0">
+                    <img
+                      src={activeCert.imageUrl}
+                      alt={activeCert.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <div className="font-mono text-xs">
+                    <span className="font-black text-black dark:text-white flex items-center gap-1 group-hover:text-amber-500 transition-colors">
+                      <span>View Full Certificate Photo</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </span>
+                    <span className="text-stone-500 text-[10px] block">High-Resolution Credential Document</span>
+                  </div>
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Action Verification Footer */}

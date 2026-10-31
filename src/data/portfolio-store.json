@@ -1,7 +1,7 @@
 {
   "personal": {
     "name": "Harsh Aryan",
-    "role": "AI & Data Science Specialist & Teaching Assistant",
+    "role": "AI & Data Science Student & Teaching Assistant",
     "headline": "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",
     "bio": "Hi! I am Harsh Aryan, a curious 1st-year undergraduate student passionate about Artificial Intelligence, Data Science, and Mathematics. I spend my time mastering Python, Linear Algebra, Exploratory Data Analysis, and fundamental Machine Learning algorithms. I am eager to learn, build practical projects, participate in hackathons, and secure early internship opportunities.",
     "college": "Engineering College / University",
@@ -385,5 +385,17 @@
       ],
       "description": "Built and pitched CampusIQ student assistant within 24 hours among 45+ competing teams, awarded Best Freshman Innovation."
     }
+  ],
+  "projectCategories": [
+    "Machine Learning",
+    "Data Analysis",
+    "Web & AI Tools",
+    "Python Basics"
+  ],
+  "certificateCategories": [
+    "Machine Learning",
+    "Data Science",
+    "Programming",
+    "Mathematics & Hackathons"
   ]
 }

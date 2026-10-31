@@ -25,7 +25,10 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
 
   const refreshData = async () => {
     try {
-      const res = await fetch("/api/portfolio", { cache: "no-store" });
+      const res = await fetch(`/api/portfolio?_t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
       if (res.ok) {
         const json = await res.json();
         if (json && json.personal) {
@@ -45,13 +48,17 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
 
   const updateData = async (newData: PortfolioData): Promise<boolean> => {
     try {
-      setData(newData);
+      setData({ ...newData });
       const res = await fetch("/api/portfolio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newData),
       });
       if (res.ok) {
+        const result = await res.json();
+        if (result.data) {
+          setData({ ...result.data });
+        }
         return true;
       }
       return false;

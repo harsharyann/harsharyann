@@ -20,10 +20,6 @@ let memoryPortfolioCache: PortfolioData | null = null;
 let memoryMessagesCache: ContactMessage[] | null = null;
 
 export function getStoredPortfolioData(): PortfolioData {
-  if (memoryPortfolioCache) {
-    return memoryPortfolioCache;
-  }
-
   try {
     if (fs.existsSync(STORE_PATH)) {
       const raw = fs.readFileSync(STORE_PATH, "utf8");
@@ -33,6 +29,10 @@ export function getStoredPortfolioData(): PortfolioData {
     }
   } catch (err) {
     console.error("Error reading portfolio-store.json:", err);
+  }
+
+  if (memoryPortfolioCache) {
+    return memoryPortfolioCache;
   }
 
   // Fallback to default portfolioData and write store

@@ -3,7 +3,7 @@ export interface Project {
   title: string;
   tagline: string;
   description: string;
-  category: "Machine Learning" | "Data Analysis" | "Web & AI Tools" | "Python Basics";
+  category: string;
   technologies: string[];
   metrics: string[];
   features: string[];
@@ -19,7 +19,8 @@ export interface Certificate {
   issueDate: string;
   credentialId?: string;
   credentialUrl?: string;
-  category: "Machine Learning" | "Data Science" | "Programming" | "Mathematics & Hackathons";
+  imageUrl?: string;
+  category: string;
   skillsLearned: string[];
   description: string;
 }
@@ -66,11 +67,13 @@ export interface PortfolioData {
     year: string;
     percentage: string;
   };
+  projectCategories?: string[];
   projects: Project[];
   skills: {
     category: string;
     items: string[];
   }[];
+  certificateCategories?: string[];
   certificates: Certificate[];
 }
 
@@ -128,6 +131,13 @@ export const portfolioData: PortfolioData = {
     year: "Completed 2025",
     percentage: "90%+",
   },
+
+  projectCategories: [
+    "Machine Learning",
+    "Data Analysis",
+    "Web & AI Tools",
+    "Python Basics",
+  ],
 
   projects: [
     {
@@ -259,6 +269,13 @@ export const portfolioData: PortfolioData = {
       category: "Mathematics for ML",
       items: ["Linear Algebra (Matrices & Vectors)", "Calculus (Derivatives & Gradients)", "Probability & Descriptive Statistics", "Discrete Math"],
     },
+  ],
+
+  certificateCategories: [
+    "Machine Learning",
+    "Data Science",
+    "Programming",
+    "Mathematics & Hackathons",
   ],
 
   certificates: [

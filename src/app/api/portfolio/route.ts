@@ -2,9 +2,17 @@ import { NextResponse } from "next/server";
 import { getStoredPortfolioData, saveStoredPortfolioData, resetStoredPortfolioData } from "@/lib/portfolioStore";
 import { isAuthenticated } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
+  // Reading url or headers forces dynamic execution
+  const url = new URL(req.url);
   const data = getStoredPortfolioData();
-  return NextResponse.json(data);
+  return NextResponse.json(data, {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+  });
 }
 
 export async function POST(req: Request) {
