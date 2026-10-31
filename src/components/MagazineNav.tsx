@@ -119,39 +119,7 @@ export function MagazineNav() {
 
   return (
     <>
-      {/* ── TOP-LEFT BRAND BADGE (Return to Cover) ── */}
-      <div className="hidden md:flex fixed top-5 left-6 lg:left-8 z-50 pointer-events-none">
-        <Link
-          href="/"
-          className="pointer-events-auto group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white dark:bg-stone-900 text-black dark:text-white px-4 py-2 rounded-full tracking-wider border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none"
-          title="Return to Cover Page"
-        >
-          {/* Mascot Smiley */}
-          <svg
-            viewBox="0 0 24 24"
-            className="w-4 h-4 text-amber-500 dark:text-amber-400 group-hover:rotate-12 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="9" />
-            <path d="M8.5 10h.01" strokeWidth="3" />
-            <path d="M14 9.5c.5.5 1 1.5 1 1.5" />
-            <path d="M8 14c1.5 2 6.5 2 8 0" />
-          </svg>
-
-          <span>HARSH ARYAN</span>
-
-          <span className="text-[10px] text-stone-400 group-hover:text-black dark:group-hover:text-white transition-colors font-sans">
-            ↵
-          </span>
-        </Link>
-      </div>
-
-      {/* ── DESKTOP BOTTOM-RIGHT FLOATING NAV BUTTON & THEME CHANGER CLUSTER ── */}
+      {/* ── DESKTOP BOTTOM-RIGHT FLOATING MENU BUTTON & THEME CHANGER CLUSTER ── */}
       <div
         ref={dropdownRef}
         className="hidden md:flex fixed bottom-6 right-6 lg:right-8 z-50 items-center gap-3 select-none"
@@ -246,12 +214,12 @@ export function MagazineNav() {
           <ThemeToggle />
         </div>
 
-        {/* ── THE NAV BUTTON (In the bottom-right cluster) ── */}
+        {/* ── THE MENU BUTTON ("NAV" text removed as requested) ── */}
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className="group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white dark:bg-stone-900 text-black dark:text-white px-4 py-2.5 rounded-full border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none cursor-pointer"
-          aria-label="Toggle Navigation Menu"
+          aria-label="Toggle Menu"
           aria-expanded={isOpen}
         >
           {/* Active Chapter Dot */}
@@ -260,9 +228,9 @@ export function MagazineNav() {
             style={{ backgroundColor: activePage?.accentHex || "#f59e0b" }}
           />
 
-          {/* Dynamic Label */}
+          {/* Clean Label without "NAV" */}
           <span className="tracking-wide">
-            {isOpen ? "CLOSE ✕" : `NAV • ${activePage?.shortLabel || "MENU"} ☰`}
+            {isOpen ? "CLOSE ✕" : `${activePage?.shortLabel || "MENU"} ☰`}
           </span>
 
           {/* Subtle Sparkle */}
