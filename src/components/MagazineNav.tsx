@@ -216,36 +216,9 @@ export function MagazineNav() {
 
       {/* ── iOS-Style Floating Bottom Navigation Dock (Mobile Only) ── */}
       <nav
-        className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[390px] backdrop-blur-2xl bg-white/85 dark:bg-stone-900/85 border border-black/15 dark:border-white/15 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)] p-1.5 flex items-center justify-between gap-1 select-none"
+        className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[360px] backdrop-blur-2xl bg-white/85 dark:bg-stone-900/85 border border-black/15 dark:border-white/15 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)] p-1.5 flex items-center justify-between gap-1 select-none"
         aria-label="iOS Mobile Navigation Bar"
       >
-        {/* Cover / Home Button */}
-        <Link
-          href="/"
-          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-full transition-all duration-200 active:scale-90 ${
-            pathname === "/"
-              ? "bg-black text-white dark:bg-white dark:text-black shadow-sm font-bold scale-[1.03]"
-              : "text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white"
-          }`}
-          title="Return to Cover"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-          </svg>
-          <span className="text-[10px] font-mono tracking-tight font-bold uppercase mt-0.5">
-            Cover
-          </span>
-        </Link>
-
         {/* Inner Pages: About, Projects, Certs, Contact */}
         {pages.map((p) => {
           const isActive = pathname === p.path;

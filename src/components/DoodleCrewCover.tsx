@@ -1535,7 +1535,7 @@ const COVER_CSS = `
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #ffffff;
+  background-color: transparent;
   background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1.2px, transparent 1.2px);
   background-size: 24px 24px;
   color: #000000;
@@ -2191,7 +2191,7 @@ html:not(.dark) .dcf-btn.is-contact:hover {
 
 /* Dark Mode: Crisp B&W Aesthetic with Radiant Neon Wordmark */
 html.dark .dcf-root {
-  background-color: #0c0c0e;
+  background-color: transparent;
   background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
   background-size: 24px 24px;
   color: #ffffff;

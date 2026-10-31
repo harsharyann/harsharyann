@@ -3,6 +3,7 @@ import "./globals.css";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
 import { MagazineNav } from "@/components/MagazineNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { FluidBackground } from "@/components/FluidBackground";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -44,7 +45,6 @@ export default function RootLayout({
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
         />
         <link
           href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
@@ -71,6 +71,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-news-texture flex flex-col antialiased selection:bg-indigo-600 selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200 pb-24 md:pb-0">
         <ThemeProvider>
+          <FluidBackground />
           <ScrollProgressBar />
           <MagazineNav />
           {children}
