@@ -2,11 +2,9 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
+import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 
@@ -104,7 +102,7 @@ export function MobileDoodleCover() {
           />
         </motion.div>
 
-        {/* Ambient Floating 3D Fluid Atmosphere Orbs (Sampled from mural yellow & t-shirt sage green) */}
+        {/* Ambient Floating 3D Atmosphere Orbs (Mural gold & sage green) */}
         <motion.div
           className="absolute top-1/4 -right-16 w-64 h-64 rounded-full bg-amber-500/25 blur-3xl pointer-events-none"
           animate={{
@@ -131,86 +129,62 @@ export function MobileDoodleCover() {
         />
 
         {/* Cinematic Multi-Stop Overlays */}
-        {/* Subtle Top Vignette */}
         <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
-
-        {/* Bottom Rich Gradient for Editorial Readability */}
-        <div className="absolute bottom-0 left-0 right-0 h-[72%] bg-gradient-to-t from-black via-black/85 via-50% to-transparent pointer-events-none" />
-
-        {/* Subtle Edge Vignette */}
+        <div className="absolute bottom-0 left-0 right-0 h-[76%] bg-gradient-to-t from-black via-black/90 via-55% to-transparent pointer-events-none" />
         <div className="absolute inset-0 ring-1 ring-inset ring-white/10 pointer-events-none" />
       </div>
 
-      {/* ── Top Header removed on phone as requested: Clean edge-to-edge portrait visual ── */}
-
-      {/* ── Bottom Section: Typography, Sampled Color Role Badge & Social Dock ── */}
-      <footer className="relative z-20 w-full flex flex-col items-center text-center px-5 pb-7 pt-4">
-        {/* Editorial Bold Name */}
+      {/* ── Bottom Section: Redesigned Cool Editorial Hero Typography & Social Dock ── */}
+      <footer className="relative z-20 w-full flex flex-col items-center text-center px-6 pb-8 pt-4">
+        {/* Cool Display Name — Space Grotesk Bold Editorial Styling */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.18, ease: "easeOut" }}
-          className="font-mono text-4xl sm:text-5xl font-black uppercase tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]"
+          transition={{ duration: 0.65, delay: 0.15, ease: "easeOut" }}
+          className="font-['Space_Grotesk'] text-[2.75rem] sm:text-5xl font-black tracking-[-0.03em] uppercase text-white drop-shadow-[0_6px_28px_rgba(0,0,0,0.95)]"
         >
           {portfolio.personal.name || "HARSH ARYAN"}
         </motion.h1>
 
-        {/* Teaching Assistant Badge — Placed directly below the name & Color-sampled from the mural */}
+        {/* Teaching Assistant Badge — Sleek Glass Capsule directly below the name */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.25, ease: "easeOut" }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/25 via-emerald-600/20 to-teal-500/25 border border-amber-400/50 text-amber-300 font-mono text-[11px] sm:text-xs font-black tracking-wider uppercase mt-2 mb-1.5 backdrop-blur-xl shadow-[0_0_20px_rgba(245,158,11,0.25)]"
+          transition={{ duration: 0.65, delay: 0.22, ease: "easeOut" }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/50 backdrop-blur-2xl border border-amber-400/50 text-amber-300 font-['Space_Grotesk'] text-[11px] sm:text-xs font-bold tracking-wider uppercase mt-2 mb-2 shadow-[0_0_24px_rgba(245,158,11,0.25)]"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
           <span>{portfolio.personal.role || "Teaching Assistant • IIT Madras"}</span>
         </motion.div>
 
-        {/* Specialization Subtitle with mural-sampled gradient divider */}
+        {/* Headline & Discipline — Stylish Minimalist Tag */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.32, ease: "easeOut" }}
-          className="relative inline-block mt-0.5 mb-2.5 max-w-[320px]"
+          transition={{ duration: 0.65, delay: 0.28, ease: "easeOut" }}
+          className="relative inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-xl mb-2.5 max-w-[340px]"
         >
-          <span className="font-mono text-xs sm:text-sm font-extrabold uppercase tracking-widest text-stone-200 drop-shadow line-clamp-1">
+          <span className="font-['Space_Grotesk'] text-[11.5px] sm:text-xs font-semibold uppercase tracking-[0.16em] text-stone-200 drop-shadow line-clamp-1">
             {portfolio.personal.headline || "AI & Data Science Specialist"}
           </span>
-          <span
-            className="block h-[2px] w-full bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 mt-1 opacity-80"
-            aria-hidden="true"
-          />
         </motion.div>
 
-        {/* Brief Tagline */}
+        {/* Editorial Subtitle Tagline */}
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.38, ease: "easeOut" }}
-          className="text-stone-300 text-[12px] sm:text-[13px] max-w-[310px] leading-relaxed drop-shadow font-sans mb-3.5"
+          transition={{ duration: 0.65, delay: 0.34, ease: "easeOut" }}
+          className="text-stone-300/85 text-[12px] sm:text-[13px] max-w-[310px] leading-relaxed drop-shadow font-sans mb-4 font-normal"
         >
           Designing intelligent models, exploratory analytics &amp; modern software systems.
         </motion.p>
 
-        {/* Primary Animated Action Button */}
-        <motion.button
-          type="button"
-          onClick={() => navigateTo("/about")}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ duration: 0.5, delay: 0.44 }}
-          className="w-full max-w-[280px] py-3 px-6 rounded-full bg-white text-black font-mono text-xs font-black uppercase tracking-widest shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:bg-amber-300 active:scale-95 transition-all cursor-pointer"
-        >
-          ENTER PORTFOLIO
-        </motion.button>
-
-        {/* Quick Actions & Socials Dock — Email, LinkedIn, GitHub, Theme & Admin */}
+        {/* Social Icons Dock — Email, LinkedIn, GitHub (Clean Minimal Glass Circles) */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="flex items-center justify-center gap-2.5 mt-3.5"
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex items-center justify-center gap-3.5 mb-4"
         >
           {/* GitHub Icon Button */}
           <a
@@ -219,9 +193,9 @@ export function MobileDoodleCover() {
             rel="noopener noreferrer"
             aria-label="GitHub Profile"
             title="GitHub"
-            className="group relative flex items-center justify-center w-9 h-9 rounded-full bg-black/60 hover:bg-white text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]"
+            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]"
           >
-            <GithubIcon className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
+            <GithubIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
           </a>
 
           {/* LinkedIn Icon Button */}
@@ -231,9 +205,9 @@ export function MobileDoodleCover() {
             rel="noopener noreferrer"
             aria-label="LinkedIn Profile"
             title="LinkedIn"
-            className="group relative flex items-center justify-center w-9 h-9 rounded-full bg-black/60 hover:bg-[#0077b5] text-white border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_15px_rgba(0,119,181,0.5)]"
+            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-[#0077b5] text-white border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_20px_rgba(0,119,181,0.5)]"
           >
-            <LinkedinIcon className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
+            <LinkedinIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
           </a>
 
           {/* Email Icon Button */}
@@ -241,41 +215,30 @@ export function MobileDoodleCover() {
             href={`mailto:${portfolio.personal.email || "harsharyan@outlook.com"}`}
             aria-label="Send Email"
             title="Email Harsh"
-            className="group relative flex items-center justify-center w-9 h-9 rounded-full bg-black/60 hover:bg-amber-400 text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_15px_rgba(251,191,36,0.5)]"
+            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-amber-400 text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_20px_rgba(251,191,36,0.5)]"
           >
-            <Mail className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
+            <Mail className="w-4 h-4 transition-transform group-hover:scale-110" />
           </a>
-
-          {/* Theme Toggle Button */}
-          <div className="flex items-center scale-90">
-            <ThemeToggle />
-          </div>
-
-          {/* Admin Console Shortcut */}
-          <Link
-            href="/admin"
-            aria-label="Admin Portal"
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-black/60 hover:bg-amber-400 text-white/70 hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md"
-            title="Admin Console"
-          >
-            <Lock className="w-3.5 h-3.5" />
-          </Link>
         </motion.div>
 
-        {/* Animated Swipe Up Indicator */}
+        {/* Sleek Animated Swipe Up Indicator Capsule */}
         <motion.div
           onClick={() => navigateTo("/about")}
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center cursor-pointer mt-3.5 pt-1 group"
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center cursor-pointer pt-1 group"
           role="button"
           tabIndex={0}
-          aria-label="Swipe up or tap to enter portfolio"
+          aria-label="Swipe up to explore portfolio"
         >
-          <span className="font-mono text-[10px] font-extrabold uppercase tracking-[0.25em] text-white/60 group-hover:text-white transition-colors">
-            SWIPE UP TO EXPLORE
-          </span>
-          <div className="w-1.5 h-3.5 rounded-full bg-gradient-to-b from-white/80 via-white/40 to-transparent mt-1 animate-pulse" />
+          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-xl transition-all shadow-[0_2px_12px_rgba(0,0,0,0.4)]">
+            <span className="font-['Space_Grotesk'] text-[10.5px] font-bold uppercase tracking-[0.22em] text-white/90">
+              Swipe up to explore
+            </span>
+            <span className="text-amber-400 text-xs group-hover:-translate-y-0.5 transition-transform">
+              ↑
+            </span>
+          </div>
         </motion.div>
       </footer>
     </section>
