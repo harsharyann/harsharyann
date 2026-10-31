@@ -7,7 +7,6 @@ import {
   Brain,
   Code2,
   FolderGit2,
-  FileText,
   Compass,
 } from "lucide-react";
 
@@ -71,18 +70,6 @@ export default function AboutPage() {
             Crafting at the intersection of Code, Mathematics &amp; Intelligent Models.
           </p>
         </div>
-
-        {personal.resumeUrl && (
-          <a
-            href={personal.resumeUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="sketch-button-solid text-xs"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Resume PDF</span>
-          </a>
-        )}
       </div>
 
       {/* Main Narrative & Profile Dossier Grid */}

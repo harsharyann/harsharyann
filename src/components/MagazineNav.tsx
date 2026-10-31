@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, FileText } from "lucide-react";
-import { portfolioData } from "@/data/portfolioData";
+import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function MagazineNav() {
@@ -55,21 +54,9 @@ export function MagazineNav() {
           })}
         </nav>
 
-        {/* Right side: ThemeToggle, Resume button & mobile menu hamburger */}
+        {/* Right side: ThemeToggle & mobile menu hamburger */}
         <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
-
-          {portfolioData.personal.resumeUrl && (
-            <a
-              href={portfolioData.personal.resumeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-mono font-bold border-2 border-black dark:border-white px-3.5 py-1.5 rounded-full bg-white dark:bg-stone-900 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Resume PDF</span>
-            </a>
-          )}
 
           <button
             type="button"
