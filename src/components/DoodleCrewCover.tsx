@@ -1031,23 +1031,75 @@ export function DoodleCrewCover({
     >
       <style>{COVER_CSS}</style>
 
-      {/* Top Header Bar with Harsh Aryan stamp, Live Clock, Social Links and Theme Toggle */}
+      {/* Top Header Bar with Harsh Aryan stamp, Live Clock, Social Links */}
       <header className="dcf-top-bar">
         <div className="dcf-top-inner">
           <div className="dcf-top-left">
             <div className="dcf-brand-stamp">HARSH ARYAN</div>
-            <span className="dcf-edition-tag">VOL. 2026 / ED. 01</span>
+            <div className="dcf-role-badge" title="Teaching Assistant @ IIT Madras • B.Tech CSE (AI & DS)">
+              <span className="dcf-role-dot" />
+              <span className="dcf-role-text">TA @ IIT Madras • CSE (AI &amp; DS)</span>
+            </div>
           </div>
 
-          {/* Center: Live Real-Time Clock */}
-          <div className="dcf-time-badge" title="Live Local / Chennai Time">
-            <span className="dcf-live-dot" />
-            <span className="dcf-time-city">CHENNAI</span>
-            <span className="dcf-time-sep">•</span>
-            <span className="dcf-time-digits">{currentTime || "07:00:00 AM"}</span>
+          {/* Center: Unique Real-Time Clock Gadget with Cute Kitty Doodle */}
+          <div className="dcf-time-wrapper">
+            {/* Cute Kitty Doodle Peeking Over Clock */}
+            <div className="dcf-kitty-doodle" aria-hidden="true" title="Meow! Time is ticking in Chennai 🐾">
+              <svg viewBox="0 0 64 48" width="46" height="35" className="dcf-kitty-svg">
+                {/* Wagging Kitty Tail */}
+                <path
+                  d="M51 25 C57 19 62 13 58 9 C54 6 48 13 46 21"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  fill="none"
+                  className="dcf-kitty-tail"
+                />
+                {/* Left Ear */}
+                <polygon points="14,18 20,4 28,14" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+                <polygon points="16,16 20,7 26,13" fill="#fca5a5" stroke="none" />
+                {/* Right Ear */}
+                <polygon points="36,14 44,4 50,18" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+                <polygon points="38,13 44,7 48,16" fill="#fca5a5" stroke="none" />
+                {/* Head */}
+                <ellipse cx="32" cy="22" rx="19" ry="14" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" />
+                {/* Happy curved eyes */}
+                <path d="M22 20 Q26 16 30 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+                <path d="M34 20 Q38 16 42 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+                {/* Blush cheeks */}
+                <ellipse cx="20" cy="24" rx="3.5" ry="2.2" fill="#f43f5e" opacity="0.45" />
+                <ellipse cx="44" cy="24" rx="3.5" ry="2.2" fill="#f43f5e" opacity="0.45" />
+                {/* Tiny nose & mouth */}
+                <polygon points="31,23 33,23 32,24.5" fill="#f43f5e" />
+                <path d="M32 24.5 Q29.5 27 27 25 M32 24.5 Q34.5 27 37 25" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+                {/* Whiskers */}
+                <path d="M12 21 L3 19 M12 24 L2 24 M12 27 L4 29" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                <path d="M52 21 L61 19 M52 24 L62 24 M52 27 L60 29" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                {/* Paws resting on the clock top */}
+                <ellipse cx="24" cy="34" rx="5" ry="3.2" fill="#ffffff" stroke="currentColor" strokeWidth="2" />
+                <ellipse cx="40" cy="34" rx="5" ry="3.2" fill="#ffffff" stroke="currentColor" strokeWidth="2" />
+                <path d="M22 36 L22 33 M25 36 L25 33 M38 36 L38 33 M41 36 L41 33" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+            </div>
+
+            {/* Unique Real-Time Clock Badge */}
+            <div className="dcf-time-badge" title="Live Local / Chennai Time">
+              <span className="dcf-live-dot" />
+              <span className="dcf-time-city">CHENNAI</span>
+              <span className="dcf-time-sep">•</span>
+              <span className="dcf-time-digits">{currentTime || "07:00:00 AM"}</span>
+            </div>
+
+            {/* Sparkle Doodle near Time */}
+            <div className="dcf-kitty-sparkle" aria-hidden="true">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="#f59e0b">
+                <path d="M8 0 L9.5 6.5 L16 8 L9.5 9.5 L8 16 L6.5 9.5 L0 8 L6.5 6.5 Z" />
+              </svg>
+            </div>
           </div>
 
-          {/* Right: Social Media Links + Theme Toggle */}
+          {/* Right: Social Media Links */}
           <div className="dcf-top-actions">
             <div className="dcf-social-group">
               <a
@@ -1086,22 +1138,25 @@ export function DoodleCrewCover({
       {/* Main Cover Canvas */}
       <main className="dcf-main-canvas" ref={worldRef}>
         {/* Floating Dossier Stickers (Desktop Bottom Flanks) — Repositioned to bottom corners, ZERO overlap with letters */}
-        <aside className="dcf-side-flank is-left" aria-label="Craft & Engineering Focus">
-          <div className="dcf-flank-tape" />
+        <aside className="dcf-side-flank is-left" aria-label="Current Role & Position">
+          <div className="dcf-flank-tape is-left-tape" />
           <div className="dcf-flank-header">
             <svg className="dcf-flank-pin-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
               <path d="M13 2L18 7L15 10L14 9L11 12V15L9 17L8 15H5L3 13L6 10L5 9L8 6L10 7L12 4L11 3L13 2Z" fill="#ff2a55" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
               <path d="M9 17L5 20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
-            <span className="dcf-flank-tag">CRAFT &amp; FOCUS</span>
+            <span className="dcf-flank-tag">ACTIVE POSITION</span>
           </div>
-          <div className="dcf-flank-title">Code, Math &amp; Models</div>
+          <div className="dcf-flank-title">Teaching Assistant</div>
+          <div className="dcf-flank-org">
+            @ IIT Madras <span className="dcf-flank-sub-pill">BS Degree</span>
+          </div>
           <div className="dcf-flank-sub">
-            AI &amp; Data Science <span className="dcf-flank-sub-pill">Builder</span>
+            1st Year B.Tech CSE (AI &amp; Data Science) • Machine Learning &amp; Math Models
           </div>
           <div className="dcf-flank-status">
             <span className="dcf-flank-dot" />
-            <span>Open for Projects</span>
+            <span>Available for Collabs</span>
           </div>
         </aside>
 
@@ -1463,16 +1518,82 @@ const COVER_CSS = `
   transform: rotate(0deg) scale(1.04);
 }
 
-.dcf-edition-tag {
+.dcf-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
   font-family: ui-monospace, monospace;
   font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 0.12em;
-  color: #666666;
-  text-transform: uppercase;
+  font-weight: 800;
+  border-radius: 999px;
+  border: 1.5px solid #000000;
+  background: #eef2ff;
+  color: #312e81;
+  box-shadow: 2px 2px 0 #4f46e5;
+  user-select: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Center: Live Real-Time Clock Badge — Styled in the exact same theme as Brand Stamp */
+.dcf-role-badge:hover {
+  transform: scale(1.03);
+  box-shadow: 3px 3px 0 #4f46e5;
+}
+
+.dcf-role-dot {
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 999px;
+  background: #4f46e5;
+  animation: dcf-live-pulse 1.8s ease-in-out infinite;
+}
+
+/* Center: Live Real-Time Clock Gadget with Cute Kitty */
+.dcf-time-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+}
+
+.dcf-kitty-doodle {
+  position: absolute;
+  top: -24px;
+  left: 14px;
+  z-index: 5;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.dcf-time-wrapper:hover .dcf-kitty-doodle {
+  transform: translateY(-4px) rotate(-3deg);
+}
+
+.dcf-kitty-tail {
+  transform-origin: 51px 25px;
+  animation: dcf-kitty-wag 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes dcf-kitty-wag {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(14deg); }
+  100% { transform: rotate(-6deg); }
+}
+
+.dcf-kitty-sparkle {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 6;
+  pointer-events: none;
+  animation: dcf-kitty-sparkle 2.6s ease-in-out infinite alternate;
+}
+
+@keyframes dcf-kitty-sparkle {
+  0% { transform: scale(0.85) rotate(0deg); opacity: 0.8; }
+  100% { transform: scale(1.2) rotate(24deg); opacity: 1; }
+}
+
 .dcf-time-badge {
   display: inline-flex;
   align-items: center;
@@ -1645,6 +1766,16 @@ const COVER_CSS = `
   margin-bottom: 3px;
 }
 
+.dcf-flank-org {
+  font-size: 11.5px;
+  font-weight: 850;
+  color: #4338ca;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .dcf-flank-sub {
   font-size: 11px;
   color: #555555;
@@ -1655,10 +1786,11 @@ const COVER_CSS = `
 .dcf-flank-sub-pill {
   display: inline-block;
   font-size: 9.5px;
-  font-weight: 700;
+  font-weight: 800;
   padding: 1px 6px;
-  background: #f1f5f9;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #3b82f6;
   border-radius: 999px;
   margin-left: 3px;
 }
@@ -1729,6 +1861,22 @@ html:not(.dark) .dcf-art[style*="--i: 3"] { fill: #bae6fd; }
 html:not(.dark) .dcf-art[style*="--i: 4"] { fill: #e9d5ff; }
 html:not(.dark) .dcf-art[style*="--i: 5"] { fill: #fed7aa; }
 
+/* Light Mode: Neo-Pop Colourful Flank Cards & Badges */
+html:not(.dark) .dcf-side-flank.is-left {
+  background: #fffdf5;
+  box-shadow: 4px 4px 0 #f59e0b;
+}
+html:not(.dark) .dcf-side-flank.is-right {
+  background: #fdfcff;
+  box-shadow: 4px 4px 0 #8b5cf6;
+}
+html:not(.dark) .dcf-flank-tape.is-left-tape {
+  background: rgba(254, 240, 138, 0.95);
+}
+html:not(.dark) .dcf-flank-tape.is-right-tape {
+  background: rgba(167, 243, 208, 0.95);
+}
+
 /* Light Mode: Tagline & Squiggle & Button Colors */
 html:not(.dark) .dcf-tag-word:nth-of-type(1) { color: #4f46e5; }
 html:not(.dark) .dcf-tag-word:nth-of-type(2) { color: #059669; }
@@ -1736,15 +1884,36 @@ html:not(.dark) .dcf-tag-word:nth-of-type(3) { color: #e11d48; }
 html:not(.dark) .dcf-tag-dot { color: #f59e0b; }
 html:not(.dark) .dcf-squiggle-line path { stroke: #f97316; }
 
-html:not(.dark) .dcf-btn.is-solid {
+/* 3 Colourful Action Buttons in Light Mode */
+html:not(.dark) .dcf-actions .dcf-btn:nth-child(1) {
   background: #4f46e5;
   border-color: #3730a3;
   color: #ffffff;
   box-shadow: 3px 3px 0 #1e1b4b;
 }
-html:not(.dark) .dcf-btn.is-solid:hover {
+html:not(.dark) .dcf-actions .dcf-btn:nth-child(1):hover {
   background: #4338ca;
   box-shadow: 5px 5px 0 #1e1b4b;
+}
+html:not(.dark) .dcf-actions .dcf-btn:nth-child(2) {
+  background: #fef08a;
+  border-color: #000000;
+  color: #000000;
+  box-shadow: 3px 3px 0 #d97706;
+}
+html:not(.dark) .dcf-actions .dcf-btn:nth-child(2):hover {
+  background: #fde047;
+  box-shadow: 5px 5px 0 #d97706;
+}
+html:not(.dark) .dcf-actions .dcf-btn:nth-child(3) {
+  background: #cffafe;
+  border-color: #000000;
+  color: #000000;
+  box-shadow: 3px 3px 0 #0284c7;
+}
+html:not(.dark) .dcf-actions .dcf-btn:nth-child(3):hover {
+  background: #a5f3fc;
+  box-shadow: 5px 5px 0 #0284c7;
 }
 
 /* Cute blushing cheeks */
@@ -1773,8 +1942,38 @@ html.dark .dcf-brand-stamp {
   box-shadow: 2px 2px 0 #ffffff;
 }
 
-html.dark .dcf-edition-tag {
-  color: #aaaaaa;
+html.dark .dcf-role-badge {
+  background: #18181b;
+  border-color: #ffffff;
+  color: #f4f4f5;
+  box-shadow: 2px 2px 0 #ffffff;
+}
+
+html.dark .dcf-role-dot {
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+html.dark .dcf-flank-org {
+  color: #818cf8;
+}
+
+html.dark .dcf-kitty-svg polygon[fill="#ffffff"],
+html.dark .dcf-kitty-svg ellipse[fill="#ffffff"] {
+  fill: #18181b;
+  stroke: #ffffff;
+}
+
+html.dark .dcf-kitty-tail {
+  stroke: #ffffff;
+}
+
+html.dark .dcf-kitty-svg path {
+  stroke: #ffffff;
+}
+
+html.dark .dcf-kitty-svg polygon[fill="#fca5a5"] {
+  fill: #f43f5e;
 }
 
 html.dark .dcf-time-badge {
@@ -2538,11 +2737,21 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   }
 }
 
+@media (max-width: 900px) {
+  .dcf-role-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+}
+
 @media (max-width: 768px) {
-  .dcf-time-badge {
+  .dcf-time-wrapper {
     display: none;
   }
-  .dcf-edition-tag {
+}
+
+@media (max-width: 540px) {
+  .dcf-role-badge {
     display: none;
   }
 }
