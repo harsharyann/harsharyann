@@ -1032,72 +1032,11 @@ export function DoodleCrewCover({
     >
       <style>{COVER_CSS}</style>
 
-      {/* Top Header Bar with Harsh Aryan stamp, Live Clock, Social Links */}
+      {/* Top Header Bar with Harsh Aryan stamp and Candy Social Links */}
       <header className="dcf-top-bar">
         <div className="dcf-top-inner">
           <div className="dcf-top-left">
             <div className="dcf-brand-stamp">HARSH ARYAN</div>
-            <div className="dcf-role-badge" title="Teaching Assistant @ IIT Madras • B.Tech CSE (AI & DS)">
-              <span className="dcf-role-dot" />
-              <span className="dcf-role-text">TA @ IIT Madras • CSE (AI &amp; DS)</span>
-            </div>
-          </div>
-
-          {/* Center: Unique Real-Time Clock Gadget with Cute Kitty Doodle */}
-          <div className="dcf-time-wrapper">
-            {/* Cute Kitty Doodle Peeking Over Clock */}
-            <div className="dcf-kitty-doodle" aria-hidden="true" title="Meow! Time is ticking in Chennai 🐾">
-              <svg viewBox="0 0 64 48" width="46" height="35" className="dcf-kitty-svg">
-                {/* Wagging Kitty Tail */}
-                <path
-                  d="M51 25 C57 19 62 13 58 9 C54 6 48 13 46 21"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  fill="none"
-                  className="dcf-kitty-tail"
-                />
-                {/* Left Ear */}
-                <polygon points="14,18 20,4 28,14" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
-                <polygon points="16,16 20,7 26,13" fill="#fca5a5" stroke="none" />
-                {/* Right Ear */}
-                <polygon points="36,14 44,4 50,18" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
-                <polygon points="38,13 44,7 48,16" fill="#fca5a5" stroke="none" />
-                {/* Head */}
-                <ellipse cx="32" cy="22" rx="19" ry="14" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" />
-                {/* Happy curved eyes */}
-                <path d="M22 20 Q26 16 30 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-                <path d="M34 20 Q38 16 42 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-                {/* Blush cheeks */}
-                <ellipse cx="20" cy="24" rx="3.5" ry="2.2" fill="#f43f5e" opacity="0.45" />
-                <ellipse cx="44" cy="24" rx="3.5" ry="2.2" fill="#f43f5e" opacity="0.45" />
-                {/* Tiny nose & mouth */}
-                <polygon points="31,23 33,23 32,24.5" fill="#f43f5e" />
-                <path d="M32 24.5 Q29.5 27 27 25 M32 24.5 Q34.5 27 37 25" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-                {/* Whiskers */}
-                <path d="M12 21 L3 19 M12 24 L2 24 M12 27 L4 29" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                <path d="M52 21 L61 19 M52 24 L62 24 M52 27 L60 29" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                {/* Paws resting on the clock top */}
-                <ellipse cx="24" cy="34" rx="5" ry="3.2" fill="#ffffff" stroke="currentColor" strokeWidth="2" />
-                <ellipse cx="40" cy="34" rx="5" ry="3.2" fill="#ffffff" stroke="currentColor" strokeWidth="2" />
-                <path d="M22 36 L22 33 M25 36 L25 33 M38 36 L38 33 M41 36 L41 33" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-              </svg>
-            </div>
-
-            {/* Unique Real-Time Clock Badge */}
-            <div className="dcf-time-badge" title="Live Local / Chennai Time">
-              <span className="dcf-live-dot" />
-              <span className="dcf-time-city">CHENNAI</span>
-              <span className="dcf-time-sep">•</span>
-              <span className="dcf-time-digits">{currentTime || "07:00:00 AM"}</span>
-            </div>
-
-            {/* Sparkle Doodle near Time */}
-            <div className="dcf-kitty-sparkle" aria-hidden="true">
-              <svg viewBox="0 0 16 16" width="13" height="13" fill="#f59e0b">
-                <path d="M8 0 L9.5 6.5 L16 8 L9.5 9.5 L8 16 L6.5 9.5 L0 8 L6.5 6.5 Z" />
-              </svg>
-            </div>
           </div>
 
           {/* Right: Candy Social Links */}
@@ -1134,41 +1073,68 @@ export function DoodleCrewCover({
             </div>
           </div>
         </div>
-
-        {/* Mobile-only secondary status strip */}
-        <div className="dcf-mobile-role-strip">
-          <div className="dcf-role-badge is-mobile" title="Teaching Assistant @ IIT Madras • B.Tech CSE (AI & DS)">
-            <span className="dcf-role-dot" />
-            <span className="dcf-role-text">TA @ IIT Madras • CSE (AI &amp; DS)</span>
-          </div>
-        </div>
       </header>
 
       {/* Main Cover Canvas */}
       <main className="dcf-main-canvas" ref={worldRef}>
-        {/* Floating Dossier Stickers (Desktop Bottom Flanks) — Repositioned to bottom corners, ZERO overlap with letters */}
-        <aside className="dcf-side-flank is-left" aria-label="Current Role & Position">
-          <div className="dcf-flank-tape is-left-tape" />
-          <div className="dcf-flank-header">
-            <svg className="dcf-flank-pin-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
-              <path d="M13 2L18 7L15 10L14 9L11 12V15L9 17L8 15H5L3 13L6 10L5 9L8 6L10 7L12 4L11 3L13 2Z" fill="#ff2a55" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-              <path d="M9 17L5 20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        {/* Desk Clock Widget with Cute Kitty Doodle (Bottom-Left) */}
+        <div className="dcf-desk-clock" aria-label="Current Local Time in Chennai">
+          {/* Cute Kitty Doodle Peeking Over Clock */}
+          <div className="dcf-kitty-doodle" aria-hidden="true" title="Meow! Time is ticking in Chennai 🐾">
+            <svg viewBox="0 0 64 48" width="56" height="42" className="dcf-kitty-svg">
+              {/* Wagging Kitty Tail */}
+              <path
+                d="M51 25 C57 19 62 13 58 9 C54 6 48 13 46 21"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                fill="none"
+                className="dcf-kitty-tail"
+              />
+              {/* Left Ear */}
+              <polygon points="14,18 20,4 28,14" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+              <polygon points="16,16 20,7 26,13" fill="#fca5a5" stroke="none" />
+              {/* Right Ear */}
+              <polygon points="36,14 44,4 50,18" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+              <polygon points="38,13 44,7 48,16" fill="#fca5a5" stroke="none" />
+              {/* Head */}
+              <ellipse cx="32" cy="22" rx="19" ry="14" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" />
+              {/* Happy curved eyes */}
+              <path d="M22 20 Q26 16 30 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+              <path d="M34 20 Q38 16 42 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+              {/* Blush cheeks */}
+              <ellipse cx="20" cy="24" rx="3.5" ry="2.2" fill="#f43f5e" opacity="0.5" />
+              <ellipse cx="44" cy="24" rx="3.5" ry="2.2" fill="#f43f5e" opacity="0.5" />
+              {/* Tiny nose & mouth */}
+              <polygon points="31,23 33,23 32,24.5" fill="#f43f5e" />
+              <path d="M32 24.5 Q29.5 27 27 25 M32 24.5 Q34.5 27 37 25" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+              {/* Whiskers */}
+              <path d="M12 21 L3 19 M12 24 L2 24 M12 27 L4 29" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <path d="M52 21 L61 19 M52 24 L62 24 M52 27 L60 29" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              {/* Paws resting on the clock top */}
+              <ellipse cx="24" cy="34" rx="5" ry="3.2" fill="#ffffff" stroke="currentColor" strokeWidth="2" />
+              <ellipse cx="40" cy="34" rx="5" ry="3.2" fill="#ffffff" stroke="currentColor" strokeWidth="2" />
+              <path d="M22 36 L22 33 M25 36 L25 33 M38 36 L38 33 M41 36 L41 33" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
             </svg>
-            <span className="dcf-flank-tag">ACTIVE POSITION</span>
           </div>
-          <div className="dcf-flank-title">Teaching Assistant</div>
-          <div className="dcf-flank-org">
-            @ IIT Madras <span className="dcf-flank-sub-pill">BS Degree</span>
-          </div>
-          <div className="dcf-flank-sub">
-            1st Year B.Tech CSE (AI &amp; Data Science) • Machine Learning &amp; Math Models
-          </div>
-          <div className="dcf-flank-status">
-            <span className="dcf-flank-dot" />
-            <span>Available for Collabs</span>
-          </div>
-        </aside>
 
+          {/* Sized-Up Real-Time Clock Badge */}
+          <div className="dcf-time-badge" title="Live Local / Chennai Time">
+            <span className="dcf-live-dot" />
+            <span className="dcf-time-city">CHENNAI</span>
+            <span className="dcf-time-sep">•</span>
+            <span className="dcf-time-digits">{currentTime || "07:00:00 AM"}</span>
+          </div>
+
+          {/* Sparkle Doodle near Time */}
+          <div className="dcf-kitty-sparkle" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="#f59e0b">
+              <path d="M8 0 L9.5 6.5 L16 8 L9.5 9.5 L8 16 L6.5 9.5 L0 8 L6.5 6.5 Z" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Portfolio Quick Dossier (Bottom-Right) */}
         <aside className="dcf-side-flank is-right" aria-label="Portfolio Quick Dossier">
           <div className="dcf-flank-tape is-right-tape" />
           <div className="dcf-flank-header">
@@ -1370,6 +1336,24 @@ export function DoodleCrewCover({
 
         {/* Hero Headline & Call to Action */}
         <div className="dcf-hero-copy">
+          {/* Active Roles & Specialization — Front-and-Center directly under the Name */}
+          <div className="dcf-hero-roles dcf-rise" style={{ "--d": "460ms" } as React.CSSProperties} aria-label="Harsh Aryan - Current Role and Specialization">
+            <div className="dcf-hero-role-pill is-ta" title="Teaching Assistant • IIT Madras (BS Degree)">
+              <span className="dcf-role-live-dot" aria-hidden="true" />
+              <span className="dcf-role-text-bold">Teaching Assistant</span>
+              <span className="dcf-role-sep">•</span>
+              <span className="dcf-role-org">IIT Madras</span>
+              <span className="dcf-role-subtag">BS Degree</span>
+            </div>
+
+            <div className="dcf-hero-role-pill is-degree" title="B.Tech Computer Science (AI & Data Science)">
+              <span className="dcf-role-sparkle-icon" aria-hidden="true">✦</span>
+              <span className="dcf-role-degree-text">B.Tech CSE</span>
+              <span className="dcf-role-sep">•</span>
+              <span className="dcf-role-spec">AI &amp; Data Science</span>
+            </div>
+          </div>
+
           {/* Main Tagline with Sketchbook Squiggle Underline */}
           <div className="dcf-tagline-wrapper">
             <h2 className="dcf-tagline">
@@ -1503,13 +1487,12 @@ const COVER_CSS = `
 .dcf-top-left {
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
 .dcf-brand-stamp {
   font-family: ui-monospace, monospace;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 13.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   background: #000000;
@@ -1527,55 +1510,129 @@ const COVER_CSS = `
   transform: rotate(0deg) scale(1.04);
 }
 
-.dcf-role-badge {
+/* Hero Roles directly under HARSH ARYAN wordmark */
+.dcf-hero-roles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  width: 100%;
+  max-width: 760px;
+  z-index: 12;
+}
+
+.dcf-hero-role-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 11px;
+  gap: 7px;
+  padding: 6.5px 16px;
   font-family: ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 12.5px;
   font-weight: 800;
   border-radius: 999px;
-  border: 1.5px solid #000000;
-  background: #eef2ff;
-  color: #312e81;
-  box-shadow: 2px 2px 0 #4f46e5;
+  border: 2px solid #000000;
   user-select: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.2s ease;
 }
 
-.dcf-role-badge:hover {
-  transform: scale(1.03);
-  box-shadow: 3px 3px 0 #4f46e5;
+.dcf-hero-role-pill.is-ta {
+  background: #eef2ff;
+  color: #1e1b4b;
+  box-shadow: 3.5px 3.5px 0 #4f46e5;
 }
 
-.dcf-role-dot {
-  width: 6.5px;
-  height: 6.5px;
+.dcf-hero-role-pill.is-ta:hover {
+  transform: translateY(-2px) rotate(-1.2deg);
+  box-shadow: 5px 5px 0 #4f46e5;
+}
+
+.dcf-hero-role-pill.is-degree {
+  background: #ecfdf5;
+  color: #064e3b;
+  box-shadow: 3.5px 3.5px 0 #059669;
+}
+
+.dcf-hero-role-pill.is-degree:hover {
+  transform: translateY(-2px) rotate(1.2deg);
+  box-shadow: 5px 5px 0 #059669;
+}
+
+.dcf-role-sparkle-icon {
+  color: #d97706;
+  font-size: 13.5px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.dcf-role-text-bold {
+  font-weight: 900;
+  color: #1e1b4b;
+}
+
+.dcf-role-sep {
+  opacity: 0.45;
+  font-weight: 900;
+}
+
+.dcf-role-org {
+  font-weight: 850;
+  color: #4338ca;
+}
+
+.dcf-role-subtag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 850;
+  padding: 1.5px 7px;
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #3b82f6;
   border-radius: 999px;
-  background: #4f46e5;
-  animation: dcf-live-pulse 1.8s ease-in-out infinite;
+  margin-left: 2px;
 }
 
-/* Center: Live Real-Time Clock Gadget with Cute Kitty */
-.dcf-time-wrapper {
-  position: relative;
+.dcf-role-degree-text {
+  font-weight: 900;
+  color: #064e3b;
+}
+
+.dcf-role-spec {
+  font-weight: 850;
+  color: #047857;
+}
+
+/* Bottom-Left Desk Clock Widget with Cute Kitty Doodle */
+.dcf-desk-clock {
+  position: absolute;
+  bottom: clamp(20px, 4vh, 48px);
+  left: clamp(20px, 3.5vw, 54px);
+  z-index: 25;
   display: inline-flex;
   align-items: center;
   user-select: none;
+  pointer-events: auto;
+  transition: transform 0.22s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.dcf-desk-clock:hover {
+  transform: translateY(-3px) scale(1.03);
 }
 
 .dcf-kitty-doodle {
   position: absolute;
-  top: -24px;
-  left: 14px;
+  top: -30px;
+  left: 18px;
   z-index: 5;
   pointer-events: none;
+  color: #000000;
   transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1);
 }
 
-.dcf-time-wrapper:hover .dcf-kitty-doodle {
-  transform: translateY(-4px) rotate(-3deg);
+.dcf-desk-clock:hover .dcf-kitty-doodle {
+  transform: translateY(-5px) rotate(-4deg);
 }
 
 .dcf-kitty-tail {
@@ -1591,7 +1648,7 @@ const COVER_CSS = `
 
 .dcf-kitty-sparkle {
   position: absolute;
-  top: -8px;
+  top: -10px;
   right: -8px;
   z-index: 6;
   pointer-events: none;
@@ -1607,15 +1664,15 @@ const COVER_CSS = `
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 14px;
-  background: #000000;
-  color: #ffffff;
-  border: 2px solid #000000;
-  border-radius: 6px;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
-  transform: rotate(1.2deg);
+  padding: 8px 18px;
+  background: #fffbeb;
+  color: #000000;
+  border: 2.5px solid #000000;
+  border-radius: 10px;
+  box-shadow: 3.5px 3.5px 0 #f59e0b;
+  transform: rotate(-1deg);
   font-family: ui-monospace, monospace;
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 850;
   letter-spacing: 0.08em;
   user-select: none;
@@ -1624,16 +1681,17 @@ const COVER_CSS = `
 
 .dcf-time-badge:hover {
   transform: rotate(0deg) scale(1.04);
-  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
+  box-shadow: 4.5px 4.5px 0 #f59e0b;
 }
 
 .dcf-live-dot {
-  width: 7px;
-  height: 7px;
+  width: 7.5px;
+  height: 7.5px;
   border-radius: 999px;
   background: #10b981;
   box-shadow: 0 0 6px #10b981;
   animation: dcf-live-pulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
 }
 
 @keyframes dcf-live-pulse {
@@ -1643,15 +1701,20 @@ const COVER_CSS = `
 
 .dcf-time-city {
   font-weight: 900;
+  color: #ea580c;
+  letter-spacing: 0.1em;
 }
 
 .dcf-time-sep {
   opacity: 0.45;
+  font-weight: 900;
 }
 
 .dcf-time-digits {
   font-variant-numeric: tabular-nums;
-  font-weight: 850;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #000000;
 }
 
 /* Right: Actions & Socials */
@@ -1691,42 +1754,28 @@ const COVER_CSS = `
   box-shadow: 1px 1px 0 #000000;
 }
 
-/* Side Flanks (Desktop Bottom Flanks) — Repositioned away from letters to avoid collision */
-.dcf-side-flank {
+/* Side Flank (Desktop Bottom-Right Dossier) */
+.dcf-side-flank.is-right {
   position: absolute;
   bottom: clamp(24px, 4vh, 48px);
-  top: auto;
+  right: clamp(20px, 3.5vw, 54px);
   width: 185px;
   padding: 16px 16px 14px;
   background: #fffdf5;
   color: #000000;
   border: 2px solid #000000;
   border-radius: 12px;
-  box-shadow: 4px 4px 0 #000000;
+  box-shadow: 4px 4px 0 #8b5cf6;
   z-index: 20;
   pointer-events: auto;
   user-select: none;
-  transition: transform 0.22s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.22s ease;
-}
-
-.dcf-side-flank.is-left {
-  left: clamp(20px, 3.5vw, 54px);
-  transform: rotate(-2deg);
-}
-
-.dcf-side-flank.is-left:hover {
-  transform: rotate(0deg) translateY(-4px) scale(1.04);
-  box-shadow: 6px 6px 0 #000000;
-}
-
-.dcf-side-flank.is-right {
-  right: clamp(20px, 3.5vw, 54px);
   transform: rotate(2deg);
+  transition: transform 0.22s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.22s ease;
 }
 
 .dcf-side-flank.is-right:hover {
   transform: rotate(0deg) translateY(-4px) scale(1.04);
-  box-shadow: 6px 6px 0 #000000;
+  box-shadow: 6px 6px 0 #8b5cf6;
 }
 
 /* Washi tape sticker detail */
@@ -2033,20 +2082,44 @@ html.dark .dcf-brand-stamp {
   box-shadow: 2px 2px 0 #ffffff;
 }
 
-html.dark .dcf-role-badge {
-  background: #18181b;
-  border-color: #ffffff;
-  color: #f4f4f5;
-  box-shadow: 2px 2px 0 #ffffff;
+html.dark .dcf-hero-role-pill.is-ta {
+  background: #1e1b4b;
+  color: #e0e7ff;
+  border-color: #818cf8;
+  box-shadow: 3.5px 3.5px 0 #6366f1;
 }
 
-html.dark .dcf-role-dot {
-  background: #38bdf8;
-  box-shadow: 0 0 6px #38bdf8;
+html.dark .dcf-hero-role-pill.is-ta .dcf-role-text-bold {
+  color: #c7d2fe;
 }
 
-html.dark .dcf-flank-org {
-  color: #818cf8;
+html.dark .dcf-hero-role-pill.is-ta .dcf-role-org {
+  color: #a5b4fc;
+}
+
+html.dark .dcf-hero-role-pill.is-ta .dcf-role-subtag {
+  background: #312e81;
+  color: #c7d2fe;
+  border-color: #6366f1;
+}
+
+html.dark .dcf-hero-role-pill.is-degree {
+  background: #064e3b;
+  color: #d1fae5;
+  border-color: #34d399;
+  box-shadow: 3.5px 3.5px 0 #10b981;
+}
+
+html.dark .dcf-hero-role-pill.is-degree .dcf-role-degree-text {
+  color: #a7f3d0;
+}
+
+html.dark .dcf-hero-role-pill.is-degree .dcf-role-spec {
+  color: #6ee7b7;
+}
+
+html.dark .dcf-desk-clock .dcf-kitty-doodle {
+  color: #ffffff;
 }
 
 html.dark .dcf-kitty-svg polygon[fill="#ffffff"],
@@ -2068,14 +2141,22 @@ html.dark .dcf-kitty-svg polygon[fill="#fca5a5"] {
 }
 
 html.dark .dcf-time-badge {
-  background: #ffffff;
-  color: #000000;
+  background: #18181b;
+  color: #ffffff;
   border-color: #ffffff;
-  box-shadow: 2px 2px 0 #ffffff;
+  box-shadow: 3.5px 3.5px 0 #818cf8;
 }
 
 html.dark .dcf-time-badge:hover {
-  box-shadow: 3px 3px 0 #ffffff;
+  box-shadow: 4.5px 4.5px 0 #818cf8;
+}
+
+html.dark .dcf-time-city {
+  color: #facc15;
+}
+
+html.dark .dcf-time-digits {
+  color: #ffffff;
 }
 
 html.dark .dcf-social-link {
@@ -2824,58 +2905,22 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
 
 @media (max-width: 1200px), (max-height: 720px) {
   .dcf-side-flank {
-    display: none;
+    display: none !important;
   }
 }
 
 @media (max-width: 768px) {
   .dcf-top-bar {
     position: relative;
-    padding: 12px 16px 4px;
+    padding: 12px 16px 6px;
     width: 100%;
   }
 
   .dcf-top-inner {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
     width: 100%;
-  }
-
-  .dcf-top-left {
-    order: 1;
-  }
-
-  .dcf-top-left .dcf-role-badge {
-    display: none;
-  }
-
-  .dcf-top-actions {
-    order: 2;
-  }
-
-  .dcf-top-inner .dcf-time-wrapper {
-    order: 3;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 6px;
-    margin-bottom: 2px;
-  }
-
-  .dcf-mobile-role-strip {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-top: 6px;
-  }
-
-  .dcf-mobile-role-strip .dcf-role-badge {
-    display: inline-flex;
-    font-size: 11px;
-    padding: 4px 12px;
   }
 
   .dcf-brand-stamp {
@@ -2884,13 +2929,13 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   }
 
   .dcf-main-canvas {
-    padding: 14px 12px 24px;
+    padding: 10px 12px 24px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 14px;
-    min-height: calc(100svh - 100px);
+    gap: 12px;
+    min-height: calc(100svh - 60px);
     box-sizing: border-box;
   }
 
@@ -2916,19 +2961,30 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   .dcf-hit {
     transform: none !important;
   }
-}
-
-@media (min-width: 769px) {
-  .dcf-mobile-role-strip {
-    display: none;
-  }
-}
 
   .dcf-hero-copy {
     margin-top: 4px;
-    gap: 12px;
+    gap: 10px;
     max-width: 360px;
     width: 100%;
+  }
+
+  .dcf-hero-roles {
+    gap: 6px;
+    margin-top: 0;
+    margin-bottom: 2px;
+    padding: 0 4px;
+  }
+
+  .dcf-hero-role-pill {
+    padding: 4.5px 12px;
+    font-size: 11px;
+    gap: 5px;
+  }
+
+  .dcf-role-subtag {
+    font-size: 9px;
+    padding: 1px 5px;
   }
 
   /* Centered mobile speech bubble so it never clips off-screen on phones */
@@ -2951,7 +3007,7 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   }
 
   .dcf-tagline {
-    font-size: clamp(17px, 4.8vw, 24px);
+    font-size: clamp(16px, 4.6vw, 22px);
     gap: 6px 8px;
   }
 
@@ -2981,6 +3037,31 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
     padding: 0 14px;
     font-size: 13px;
     justify-content: center;
+  }
+
+  /* Desk Clock Widget always shown in bottom-left on mobile */
+  .dcf-desk-clock {
+    position: absolute;
+    bottom: clamp(14px, 2vh, 22px);
+    left: clamp(12px, 3vw, 20px);
+    z-index: 25;
+    display: inline-flex !important;
+  }
+
+  .dcf-desk-clock .dcf-time-badge {
+    padding: 6px 13px;
+    font-size: 12px;
+    box-shadow: 2.5px 2.5px 0 #f59e0b;
+  }
+
+  .dcf-desk-clock .dcf-kitty-doodle {
+    top: -24px;
+    left: 12px;
+  }
+
+  .dcf-desk-clock .dcf-kitty-svg {
+    width: 44px;
+    height: 33px;
   }
 
   .dcf-scroll-cue {
