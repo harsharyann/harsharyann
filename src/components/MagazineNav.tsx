@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Lock, Sparkles, Home, User, FolderGit2, Award, Mail, X } from "lucide-react";
+import { Lock, Sparkles, Home, User, FolderGit2, Award, Mail, Moon, Sun } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
 interface NavPage {
@@ -119,9 +119,8 @@ export function MagazineNav() {
 
   return (
     <>
-      {/* ── DESKTOP NAVIGATION BUTTON (Zero full-width header clutter on Desktop) ── */}
-      <div className="hidden md:flex fixed top-4 left-0 right-0 z-50 pointer-events-none px-6 lg:px-10 justify-between items-start">
-        {/* Floating Brand Stamp (Return to Cover) */}
+      {/* ── TOP-LEFT BRAND BADGE (Return to Cover) ── */}
+      <div className="hidden md:flex fixed top-5 left-6 lg:left-8 z-50 pointer-events-none">
         <Link
           href="/"
           className="pointer-events-auto group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white dark:bg-stone-900 text-black dark:text-white px-4 py-2 rounded-full tracking-wider border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none"
@@ -150,122 +149,125 @@ export function MagazineNav() {
             ↵
           </span>
         </Link>
+      </div>
 
-        {/* Floating Nav Button & Theme Switcher Cluster */}
-        <div ref={dropdownRef} className="pointer-events-auto relative flex items-center gap-2.5">
-          {/* THE NAV BUTTON (Replaces traditional wide navbar) */}
-          <button
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className="group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white dark:bg-stone-900 text-black dark:text-white px-4 py-2 rounded-full border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none cursor-pointer"
-            aria-label="Toggle Navigation Menu"
-            aria-expanded={isOpen}
+      {/* ── DESKTOP BOTTOM-RIGHT FLOATING NAV BUTTON & THEME CHANGER CLUSTER ── */}
+      <div
+        ref={dropdownRef}
+        className="hidden md:flex fixed bottom-6 right-6 lg:right-8 z-50 items-center gap-3 select-none"
+      >
+        {/* EXPANDABLE SKETCHBOOK DIRECTORY POPUP (Opens Upwards from Bottom-Right) */}
+        {isOpen && (
+          <div
+            className="absolute right-0 bottom-full mb-3 w-80 bg-white dark:bg-stone-900 border-2 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-bottom-3 duration-150 select-none"
+            role="dialog"
+            aria-label="Site Navigation Directory"
           >
-            {/* Active Chapter Dot */}
-            <span
-              className="w-2.5 h-2.5 rounded-full animate-pulse flex-shrink-0"
-              style={{ backgroundColor: activePage?.accentHex || "#f59e0b" }}
-            />
+            {/* Header with quick close hint */}
+            <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-black/10 dark:border-white/10 font-mono text-[11px] font-black uppercase text-stone-500 dark:text-stone-400">
+              <span className="flex items-center gap-1.5">
+                <span className="text-amber-500">✦</span> CHAPTER DIRECTORY
+              </span>
+              <span className="text-[10px] text-stone-400">[ESC TO CLOSE]</span>
+            </div>
 
-            {/* Dynamic Label */}
-            <span className="tracking-wide">
-              {isOpen ? "CLOSE ✕" : `NAV • ${activePage?.shortLabel || "MENU"} ☰`}
-            </span>
-
-            {/* Subtle Star */}
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 group-hover:rotate-45 transition-transform" />
-          </button>
-
-          {/* Theme Switcher Capsule */}
-          <div className="flex items-center">
-            <ThemeToggle />
-          </div>
-
-          {/* ── EXPANDABLE SKETCHBOOK DIRECTORY DROPDOWN ── */}
-          {isOpen && (
-            <div
-              className="absolute right-0 top-12 mt-2 w-80 bg-white dark:bg-stone-900 border-2 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] rounded-2xl p-4 z-50 animate-in fade-in zoom-in-95 duration-150 select-none"
-              role="dialog"
-              aria-label="Site Navigation Directory"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-black/10 dark:border-white/10 font-mono text-[11px] font-black uppercase text-stone-500 dark:text-stone-400">
-                <span className="flex items-center gap-1.5">
-                  <span className="text-amber-500">✦</span> CHAPTER DIRECTORY
-                </span>
-                <span className="text-[10px] text-stone-400">[ESC TO CLOSE]</span>
-              </div>
-
-              {/* Navigation Links */}
-              <div className="space-y-1.5">
-                {/* 01 Cover */}
-                <Link
-                  href="/"
-                  className="flex items-center justify-between p-2.5 rounded-xl border border-transparent hover:border-black dark:hover:border-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-all group font-mono text-xs font-bold"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-[10px] text-stone-400 font-extrabold w-5">01</span>
-                    <Home className="w-4 h-4 text-stone-500 group-hover:text-amber-500 transition-colors" />
-                    <span className="text-black dark:text-white uppercase font-black">Cover Screen</span>
-                  </div>
-                  <span className="text-[10px] text-stone-400 font-mono">↵ Intro</span>
-                </Link>
-
-                {/* Chapter Pages */}
-                {pages.map((p) => {
-                  const isActive = pathname === p.path;
-                  return (
-                    <Link
-                      key={p.path}
-                      href={p.path}
-                      className={`flex items-center justify-between p-2.5 rounded-xl border transition-all font-mono text-xs font-bold ${
-                        isActive
-                          ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-[2.5px_2.5px_0_#888]"
-                          : "border-transparent hover:border-black dark:hover:border-white hover:bg-stone-100 dark:hover:bg-stone-800 text-black dark:text-white"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className={`text-[10px] font-extrabold w-5 ${isActive ? "text-amber-400 dark:text-amber-600" : "text-stone-400"}`}>
-                          {p.chapter}
-                        </span>
-                        <span className="flex items-center justify-center">
-                          {p.icon(isActive)}
-                        </span>
-                        <span className="uppercase font-black">{p.name}</span>
-                      </div>
-
-                      {isActive ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase text-amber-300 dark:text-amber-700 bg-stone-800 dark:bg-stone-200 px-2 py-0.5 rounded-full">
-                          <span>✦</span> CURRENT
-                        </span>
-                      ) : (
-                        <span className="text-[10px] text-stone-400 uppercase font-mono">
-                          {p.badge}
-                        </span>
-                      )}
-                    </Link>
-                  );
-                })}
-
-                {/* Admin Portal Shortcut */}
-                <div className="pt-2 mt-2 border-t border-black/10 dark:border-white/10">
-                  <Link
-                    href="/admin"
-                    className="flex items-center justify-between p-2 rounded-xl text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all font-mono text-[11px] font-bold"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Lock className="w-3.5 h-3.5" />
-                      <span>Admin CMS Console</span>
-                    </span>
-                    <span className="text-[9px] bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 px-1.5 py-0.5 rounded">
-                      Locked
-                    </span>
-                  </Link>
+            {/* Navigation Links */}
+            <div className="space-y-1.5">
+              {/* 01 Cover */}
+              <Link
+                href="/"
+                className="flex items-center justify-between p-2.5 rounded-xl border border-transparent hover:border-black dark:hover:border-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-all group font-mono text-xs font-bold"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-[10px] text-stone-400 font-extrabold w-5">01</span>
+                  <Home className="w-4 h-4 text-stone-500 group-hover:text-amber-500 transition-colors" />
+                  <span className="text-black dark:text-white uppercase font-black">Cover Screen</span>
                 </div>
+                <span className="text-[10px] text-stone-400 font-mono">↵ Intro</span>
+              </Link>
+
+              {/* Chapter Pages */}
+              {pages.map((p) => {
+                const isActive = pathname === p.path;
+                return (
+                  <Link
+                    key={p.path}
+                    href={p.path}
+                    className={`flex items-center justify-between p-2.5 rounded-xl border transition-all font-mono text-xs font-bold ${
+                      isActive
+                        ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-[2.5px_2.5px_0_#888]"
+                        : "border-transparent hover:border-black dark:hover:border-white hover:bg-stone-100 dark:hover:bg-stone-800 text-black dark:text-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className={`text-[10px] font-extrabold w-5 ${isActive ? "text-amber-400 dark:text-amber-600" : "text-stone-400"}`}>
+                        {p.chapter}
+                      </span>
+                      <span className="flex items-center justify-center">
+                        {p.icon(isActive)}
+                      </span>
+                      <span className="uppercase font-black">{p.name}</span>
+                    </div>
+
+                    {isActive ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase text-amber-300 dark:text-amber-700 bg-stone-800 dark:bg-stone-200 px-2 py-0.5 rounded-full">
+                        <span>✦</span> CURRENT
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-stone-400 uppercase font-mono">
+                        {p.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+
+              {/* Admin Portal Shortcut */}
+              <div className="pt-2 mt-2 border-t border-black/10 dark:border-white/10">
+                <Link
+                  href="/admin"
+                  className="flex items-center justify-between p-2 rounded-xl text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all font-mono text-[11px] font-bold"
+                >
+                  <span className="flex items-center gap-2">
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Admin CMS Console</span>
+                  </span>
+                  <span className="text-[9px] bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 px-1.5 py-0.5 rounded">
+                    Locked
+                  </span>
+                </Link>
               </div>
             </div>
-          )}
+          </div>
+        )}
+
+        {/* ── THEME CHANGER CAPSULE (In the bottom-right cluster) ── */}
+        <div className="flex items-center bg-white dark:bg-stone-900 rounded-full border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] p-1 hover:-translate-y-0.5 transition-all">
+          <ThemeToggle />
         </div>
+
+        {/* ── THE NAV BUTTON (In the bottom-right cluster) ── */}
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white dark:bg-stone-900 text-black dark:text-white px-4 py-2.5 rounded-full border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none cursor-pointer"
+          aria-label="Toggle Navigation Menu"
+          aria-expanded={isOpen}
+        >
+          {/* Active Chapter Dot */}
+          <span
+            className="w-2.5 h-2.5 rounded-full animate-pulse flex-shrink-0"
+            style={{ backgroundColor: activePage?.accentHex || "#f59e0b" }}
+          />
+
+          {/* Dynamic Label */}
+          <span className="tracking-wide">
+            {isOpen ? "CLOSE ✕" : `NAV • ${activePage?.shortLabel || "MENU"} ☰`}
+          </span>
+
+          {/* Subtle Sparkle */}
+          <Sparkles className="w-3.5 h-3.5 text-amber-500 group-hover:rotate-45 transition-transform" />
+        </button>
       </div>
 
       {/* ── PHONE NAVIGATION: TOP HEADER REMOVED! (Clean edge-to-edge reading on mobile) ── */}
