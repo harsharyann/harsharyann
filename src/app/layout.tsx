@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
 import { MagazineNav } from "@/components/MagazineNav";
-import { MagazineColophon } from "@/components/MagazineColophon";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const viewport: Viewport = {
@@ -50,7 +49,6 @@ export default function RootLayout({
           <ScrollProgressBar />
           <MagazineNav />
           {children}
-          <MagazineColophon />
         </ThemeProvider>
       </body>
     </html>

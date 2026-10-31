@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
 
 export function MagazineNav() {
   const pathname = usePathname();
@@ -54,14 +53,12 @@ export function MagazineNav() {
           })}
         </nav>
 
-        {/* Right side: ThemeToggle & mobile menu hamburger */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <ThemeToggle />
-
+        {/* Right side: mobile menu hamburger */}
+        <div className="flex md:hidden items-center">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 border-2 border-black dark:border-white rounded shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+            className="p-1.5 border-2 border-black dark:border-white rounded shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

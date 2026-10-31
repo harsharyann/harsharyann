@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { portfolioData } from "@/data/portfolioData";
-import { ArrowRight, ArrowUpRight, ExternalLink, Sparkles } from "lucide-react";
+import { ArrowUpRight, ExternalLink } from "lucide-react";
 import { GithubIcon } from "@/components/SocialIcons";
 import { AutoPageTurn } from "@/components/AutoPageTurn";
 

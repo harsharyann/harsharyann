@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { portfolioData } from "@/data/portfolioData";
-import { ArrowRight, Sparkles, LayoutGrid, SlidersHorizontal } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCarousel";
 import { AutoPageTurn } from "@/components/AutoPageTurn";
 

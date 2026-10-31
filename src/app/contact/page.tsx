@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { portfolioData } from "@/data/portfolioData";
-import { Check, Send, Copy, Mail, MapPin, Calendar, ArrowLeft } from "lucide-react";
+import { Check, Send, Copy, Mail, MapPin, Calendar, ArrowUp } from "lucide-react";
 import { GithubIcon, LinkedinIcon, LeetCodeIcon } from "@/components/SocialIcons";
-import { AutoPageTurn } from "@/components/AutoPageTurn";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function ContactPage() {
   const { personal, socialLinks } = portfolioData;
@@ -306,13 +306,90 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Automatic Page Turn to Cover */}
-      <AutoPageTurn
-        nextPath="/"
-        nextTitle="Cover Page"
-        subtitle="Cycle complete • Returning to the interactive doodle cover..."
-        isReturnToStart={true}
-      />
+      {/* Editorial Contact Footer */}
+      <footer className="mt-16 pt-10 border-t-2 border-black dark:border-stone-800 space-y-8 font-mono text-xs">
+        {/* Upper tier: Colophon Details & Social Channels */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-stone-200 dark:border-stone-800">
+          <div>
+            <span className="bg-indigo-600 dark:bg-white text-white dark:text-black px-2.5 py-0.5 text-[11px] font-black uppercase rounded tracking-wider inline-block mb-2">
+              SKETCHBOOK COLOPHON
+            </span>
+            <h4 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-black dark:text-white">
+              {personal.name}
+            </h4>
+            <p className="text-xs text-stone-600 dark:text-stone-400 mt-1 max-w-md">
+              Personal Portfolio • Handcrafted with Code, Math &amp; Models.
+            </p>
+          </div>
+
+          {/* Social Channels */}
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href={socialLinks.github}
+              target="_blank"
+              rel="noreferrer"
+              className="sketch-pill"
+            >
+              <GithubIcon className="w-3.5 h-3.5" />
+              <span>GitHub</span>
+            </a>
+            <a
+              href={socialLinks.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              className="sketch-pill"
+            >
+              <LinkedinIcon className="w-3.5 h-3.5" />
+              <span>LinkedIn</span>
+            </a>
+            <a
+              href={`mailto:${personal.email}`}
+              className="sketch-pill"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>{personal.email}</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Lower tier: Small Return-to-Cover Button, Theme Switcher & Copyright */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Small button to return to Cover Page */}
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/"
+              className="sketch-button-solid text-xs py-1.5 px-3.5 inline-flex items-center gap-1.5 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] cursor-pointer"
+              title="Return to Cover Page"
+            >
+              <span>← Cover Page</span>
+            </Link>
+
+            <span className="text-stone-500 dark:text-stone-400 font-bold text-[11px]">
+              © 2026 Harsh Aryan • Handcrafted Edition
+            </span>
+          </div>
+
+          {/* Theme Switcher ("colour change krne wla") + Back to Top */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-stone-500 dark:text-stone-400 font-bold text-[11px] uppercase">
+                Theme:
+              </span>
+              <ThemeToggle showLabel />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="inline-flex items-center gap-1 border-2 border-black dark:border-white px-2.5 py-1.5 rounded-full text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors font-bold cursor-pointer text-xs shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+              title="Scroll to Top"
+            >
+              <span>Top</span>
+              <ArrowUp className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

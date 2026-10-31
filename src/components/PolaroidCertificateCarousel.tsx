@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Certificate } from "@/data/portfolioData"
-import { Award, ShieldCheck, ArrowUpRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
+import { Award, ShieldCheck, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react"
 
 /**
  * PolaroidCertificateCarousel — Black & White Sketchbook Polaroid Line Carousel.
