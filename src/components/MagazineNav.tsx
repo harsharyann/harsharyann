@@ -3,8 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Lock, Sparkles, Home, User, FolderGit2, Award, Mail, Moon, Sun } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
+import { Lock, Sparkles, Home, User, FolderGit2, Award, Mail } from "lucide-react";
 
 interface NavPage {
   name: string;
@@ -209,12 +208,7 @@ export function MagazineNav() {
           </div>
         )}
 
-        {/* ── THEME CHANGER CAPSULE (In the bottom-right cluster) ── */}
-        <div className="flex items-center bg-white dark:bg-stone-900 rounded-full border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] p-1 hover:-translate-y-0.5 transition-all">
-          <ThemeToggle />
-        </div>
-
-        {/* ── THE MENU BUTTON ("NAV" text removed as requested) ── */}
+        {/* ── THE MENU BUTTON (Bottom-Right Floating NavButton) ── */}
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
@@ -241,7 +235,7 @@ export function MagazineNav() {
       {/* ── PHONE NAVIGATION: TOP HEADER REMOVED! (Clean edge-to-edge reading on mobile) ── */}
       {/* ── PHONE FLOATING BOTTOM DOCK ONLY ── */}
       <nav
-        className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[390px] backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border-2 border-black dark:border-white rounded-full shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff] p-1.5 flex items-center justify-between gap-1 select-none"
+        className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[360px] backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border-2 border-black dark:border-white rounded-full shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff] p-1.5 flex items-center justify-between gap-1 select-none"
         aria-label="Mobile Navigation Dock"
       >
         {/* Home / Cover Link */}
@@ -282,11 +276,6 @@ export function MagazineNav() {
             </Link>
           );
         })}
-
-        {/* Compact Theme Toggle in Mobile Dock */}
-        <div className="flex items-center justify-center pl-1 pr-1 border-l border-black/15 dark:border-white/20 scale-90">
-          <ThemeToggle />
-        </div>
       </nav>
     </>
   );

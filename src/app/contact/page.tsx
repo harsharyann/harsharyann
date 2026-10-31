@@ -17,7 +17,6 @@ import {
   Clock,
 } from "lucide-react"
 import { GithubIcon, LinkedinIcon, LeetCodeIcon } from "@/components/SocialIcons"
-import { ThemeToggle } from "@/components/ThemeToggle"
 
 /**
  * Handcrafted Doodle #1 — The Airmail Flying Letter 💌
@@ -657,15 +656,8 @@ export default function ContactPage() {
             </span>
           </div>
 
-          {/* Theme Switcher + Back to Top */}
+          {/* Back to Top */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-stone-500 dark:text-stone-400 font-bold text-[11px] uppercase">
-                Theme:
-              </span>
-              <ThemeToggle showLabel />
-            </div>
-
             <button
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
