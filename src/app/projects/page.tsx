@@ -2,7 +2,8 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
-import { portfolioData } from "@/data/portfolioData"
+import { portfolioData, Project } from "@/data/portfolioData"
+import { usePortfolio } from "@/context/PortfolioContext"
 import {
   ArrowUpRight,
   ExternalLink,
@@ -192,6 +193,8 @@ function RocketDoodle({ className = "" }: { className?: string }) {
 }
 
 export default function ProjectsPage() {
+  const { data: portfolio } = usePortfolio()
+  const projectsList: Project[] = portfolio?.projects || portfolioData.projects
   const [activeCategory, setActiveCategory] = useState("All")
 
   const categories = [
@@ -204,8 +207,8 @@ export default function ProjectsPage() {
 
   const filtered =
     activeCategory === "All"
-      ? portfolioData.projects
-      : portfolioData.projects.filter((p) => p.category === activeCategory)
+      ? projectsList
+      : projectsList.filter((p) => p.category === activeCategory)
 
   // Color theme definitions for project cards based on category
   const themeMap: Record<
@@ -378,8 +381,8 @@ export default function ProjectsPage() {
           {categories.map((cat) => {
             const count =
               cat.label === "All"
-                ? portfolioData.projects.length
-                : portfolioData.projects.filter((p) => p.category === cat.label).length
+                ? projectsList.length
+                : projectsList.filter((p) => p.category === cat.label).length
 
             const isActive = activeCategory === cat.label
 

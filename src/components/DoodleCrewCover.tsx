@@ -3,8 +3,10 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Mail } from "lucide-react"
+import { Mail, Lock } from "lucide-react"
 import { useTheme } from "./ThemeProvider"
+import { ThemeToggle } from "./ThemeToggle"
+import { usePortfolio } from "@/context/PortfolioContext"
 import { GithubIcon, LinkedinIcon } from "./SocialIcons"
 import { DailySpark } from "./DailySpark"
 
@@ -610,7 +612,8 @@ export function DoodleCrewCover({
   const chars = React.useMemo(() => Array.from(word), [word])
 
   // Live ticking clock (Chennai / User Local Time)
-  const router = useRouter()
+    const { data: portfolio } = usePortfolio()
+const router = useRouter()
   const isLeavingRef = React.useRef(false)
   const [isLeaving, setIsLeaving] = React.useState(false)
 
@@ -1142,6 +1145,9 @@ export function DoodleCrewCover({
 
           {/* Right: Candy Social Links */}
           <div className="dcf-top-actions">
+            <div className="dcf-theme-wrap mr-1">
+              <ThemeToggle />
+            </div>
             <div className="dcf-social-group">
               <a
                 href="https://github.com/harsharyann"
@@ -1171,6 +1177,9 @@ export function DoodleCrewCover({
               >
                 <Mail className="w-4 h-4" />
               </a>
+              <Link href="/admin" className="dcf-social-link is-admin" title="Admin Control Center (Locked)" aria-label="Admin Control Center">
+                <Lock className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </div>
@@ -1437,49 +1446,21 @@ export function DoodleCrewCover({
 
         {/* Hero Headline & Call to Action */}
         <div className="dcf-hero-copy">
-          {/* Active Roles & Specialization — Front-and-Center directly under the Name */}
-          <div className="dcf-hero-roles dcf-rise" style={{ "--d": "460ms" } as React.CSSProperties} aria-label="Harsh Aryan - Current Role and Specialization">
-            <div className="dcf-hero-role-pill is-ta" title="Teaching Assistant • IIT Madras">
+          {/* Active Role — Redesigned Sleek Editorial Badge */}
+          <div className="dcf-hero-roles dcf-rise" style={{ "--d": "460ms" } as React.CSSProperties} aria-label="Harsh Aryan - Current Role">
+            <div className="dcf-hero-role-pill is-ta group cursor-default" title="Teaching Assistant • IIT Madras">
               <span className="dcf-role-live-dot" aria-hidden="true" />
-              <span className="dcf-role-text-bold">Teaching Assistant</span>
-              <span className="dcf-role-sep">•</span>
-              <span className="dcf-role-org">IIT Madras</span>
-            </div>
-
-            <div className="dcf-hero-role-pill is-degree" title="AI & Data Science • Machine Learning">
-              <span className="dcf-role-sparkle-icon" aria-hidden="true">✦</span>
-              <span className="dcf-role-degree-text">AI &amp; Data Science</span>
-              <span className="dcf-role-sep">•</span>
-              <span className="dcf-role-spec">Machine Learning</span>
+              <span className="dcf-role-text-bold">{portfolio.personal.role || "Teaching Assistant • IIT Madras"}</span>
             </div>
           </div>
 
-          {/* Main Tagline with Sketchbook Squiggle Underline */}
-          <div className="dcf-tagline-wrapper">
-            <h2 className="dcf-tagline">
-              <span className="dcf-tag-word">DESIGN</span>
-              <span className="dcf-tag-dot">✦</span>
-              <span className="dcf-tag-word">CODE</span>
-              <span className="dcf-tag-dot">✦</span>
-              <span className="dcf-tag-word">MACHINE LEARNING</span>
-            </h2>
-            <svg
-              className="dcf-squiggle-line"
-              viewBox="0 0 320 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                d="M3 8C45 3 95 11 145 6C195 2 245 10 317 6"
-                stroke="#000000"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-            </svg>
+          {/* Clean Modern Subtitle (Dynamic from CMS) */}
+          <div className="dcf-sub-copy dcf-rise" style={{ "--d": "490ms" } as React.CSSProperties}>
+            <p className="dcf-hero-headline-text">
+              {portfolio.personal.headline || "Exploring Data Science, Machine Learning Foundations & Scientific Computing"}
+            </p>
           </div>
 
-          {/* High-Craft Action Buttons */}
           <div className="dcf-actions dcf-rise" style={{ "--d": "520ms" } as React.CSSProperties}>
             <Link href="/projects" className="dcf-btn is-projects is-solid">
               <DoodleIcon kind="bolt" size={16} isDark={isDark} />

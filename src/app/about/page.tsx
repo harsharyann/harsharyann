@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { portfolioData } from "@/data/portfolioData"
+import { usePortfolio } from "@/context/PortfolioContext"
 import {
   Brain,
   Code2,
@@ -187,7 +190,8 @@ function PaperPlaneFlightDoodle({ className = "" }: { className?: string }) {
 }
 
 export default function AboutPage() {
-  const { personal, skills, projects, quickStats } = portfolioData
+  const { data: portfolio } = usePortfolio()
+  const { personal, skills, projects, quickStats } = portfolio
   const featuredProjects = projects.slice(0, 3)
 
   // Color-coded milestone phases

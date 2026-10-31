@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useState } from "react"
-import { portfolioData } from "@/data/portfolioData"
+import { portfolioData, Certificate } from "@/data/portfolioData"
+import { usePortfolio } from "@/context/PortfolioContext"
 import { Sparkles, Award, ShieldCheck, CheckCircle2 } from "lucide-react"
 import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCarousel"
 
@@ -90,6 +91,8 @@ function ClothespinGuideDoodle({ className = "" }: { className?: string }) {
 }
 
 export default function CertificatesPage() {
+  const { data: portfolio } = usePortfolio()
+  const certsList: Certificate[] = portfolio?.certificates || portfolioData.certificates
   const [activeCategory, setActiveCategory] = useState("All")
 
   const categories = [
@@ -102,8 +105,8 @@ export default function CertificatesPage() {
 
   const filtered =
     activeCategory === "All"
-      ? portfolioData.certificates
-      : portfolioData.certificates.filter((c) => c.category === activeCategory)
+      ? certsList
+      : certsList.filter((c) => c.category === activeCategory)
 
   return (
     <div className="py-8 sm:py-14 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-12">
@@ -173,8 +176,8 @@ export default function CertificatesPage() {
           {categories.map((cat) => {
             const count =
               cat.label === "All"
-                ? portfolioData.certificates.length
-                : portfolioData.certificates.filter((c) => c.category === cat.label).length
+                ? certsList.length
+                : certsList.filter((c) => c.category === cat.label).length
 
             const isActive = activeCategory === cat.label
 

@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { portfolioData } from "@/data/portfolioData"
+import { usePortfolio } from "@/context/PortfolioContext"
 import {
   Check,
   Send,
@@ -175,7 +176,8 @@ function ChaiCupDoodle({ className = "" }: { className?: string }) {
 }
 
 export default function ContactPage() {
-  const { personal, socialLinks } = portfolioData
+  const { data: portfolio } = usePortfolio()
+  const { personal, socialLinks } = portfolio
   const [copied, setCopied] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -208,6 +210,20 @@ export default function ContactPage() {
         params.append("email", formData.email)
         params.append("category", formData.category)
         params.append("message", formData.message)
+
+        // Save to local admin inbox
+        try {
+          await fetch("/api/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: formData.name,
+              email: formData.email,
+              category: formData.category,
+              message: formData.message,
+            }),
+          });
+        } catch (e) {}
 
         await fetch(GOOGLE_SHEET_URL, {
           method: "POST",

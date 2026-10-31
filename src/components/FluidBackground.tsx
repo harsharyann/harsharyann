@@ -1,165 +1,303 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { useTheme } from "./ThemeProvider";
 
+/**
+ * FluidBackground — A high-performance 3D fluid-like texture background.
+ *
+ * Features:
+ * - Dynamic 3D surface height-field with real-time normal calculation & Phong specular lighting
+ * - Dual chromatic palettes (Pearlescent Prism in Light Mode, Obsidian Mercury Nebula in Dark Mode)
+ * - Interactive pointer & touch ripples propagating in 3D perspective
+ * - Micro-tactile caustic grain & architectural depth lines
+ * - Automatically pauses when tab is hidden to preserve battery
+ */
 export function FluidBackground() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { theme } = useTheme();
+  const themeRef = useRef<string>(theme);
+
+  useEffect(() => {
+    themeRef.current = theme;
+  }, [theme]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = 0;
+    let height = 0;
+    let simWidth = 0;
+    let simHeight = 0;
+
+    // Pointer ripple state
+    const pointer = {
+      x: -1000,
+      y: -1000,
+      targetX: -1000,
+      targetY: -1000,
+      speed: 0,
+      isDown: false,
+    };
+
+    // Interactive wave ripples
+    type Ripple = { x: number; y: number; radius: number; maxRadius: number; strength: number; age: number };
+    const ripples: Ripple[] = [];
+
+    const handlePointerMove = (e: MouseEvent | TouchEvent) => {
+      let clientX = 0;
+      let clientY = 0;
+      if ("touches" in e && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else if ("clientX" in e) {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      } else {
+        return;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const prevX = pointer.targetX;
+      const prevY = pointer.targetY;
+      pointer.targetX = clientX - rect.left;
+      pointer.targetY = clientY - rect.top;
+
+      const dist = Math.hypot(pointer.targetX - prevX, pointer.targetY - prevY);
+      pointer.speed = dist;
+
+      if (dist > 18 && ripples.length < 14) {
+        ripples.push({
+          x: pointer.targetX,
+          y: pointer.targetY,
+          radius: 8,
+          maxRadius: Math.min(180, 50 + dist * 3.5),
+          strength: Math.min(1.2, 0.4 + dist * 0.02),
+          age: 0,
+        });
+      }
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("touchmove", handlePointerMove, { passive: true });
+
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      // Clamped scale factor for ultra-smooth 60fps 3D fluid calculation
+      const scale = width < 768 ? 0.35 : 0.45;
+      simWidth = Math.max(80, Math.floor(width * scale));
+      simHeight = Math.max(60, Math.floor(height * scale));
+
+      canvas.width = simWidth;
+      canvas.height = simHeight;
+    };
+
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+
+    let isVisible = true;
+    const handleVisibilityChange = () => {
+      isVisible = !document.hidden;
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Main 3D Fluid Rendering Loop
+    let time = 0;
+    let imgData: ImageData | null = null;
+
+    const render = () => {
+      if (!isVisible) {
+        animationFrameId = requestAnimationFrame(render);
+        return;
+      }
+
+      time += 0.016;
+
+      // Smooth pointer lerp
+      pointer.x += (pointer.targetX - pointer.x) * 0.15;
+      pointer.y += (pointer.targetY - pointer.y) * 0.15;
+
+      // Update ripples
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const rip = ripples[i];
+        rip.radius += 2.8;
+        rip.age += 0.025;
+        if (rip.radius > rip.maxRadius || rip.age > 1) {
+          ripples.splice(i, 1);
+        }
+      }
+
+      if (!imgData || imgData.width !== simWidth || imgData.height !== simHeight) {
+        imgData = ctx.createImageData(simWidth, simHeight);
+      }
+
+      const data = imgData.data;
+      const isDark = themeRef.current === "dark";
+
+      const scaleX = width / simWidth;
+      const scaleY = height / simHeight;
+      const pSimX = pointer.x / scaleX;
+      const pSimY = pointer.y / scaleY;
+
+      // 3D Directional Light Vector (Normalized)
+      const lx = Math.cos(time * 0.4) * 0.6;
+      const ly = Math.sin(time * 0.35) * 0.5 - 0.4;
+      const lz = 0.75;
+      const lLen = Math.hypot(lx, ly, lz) || 1;
+      const nlx = lx / lLen;
+      const nly = ly / lLen;
+      const nlz = lz / lLen;
+
+      // Compute Height Field & 3D Lighting Per Pixel
+      for (let y = 0; y < simHeight; y++) {
+        const nyCoord = y / simHeight;
+        const wy = y * 0.045;
+
+        for (let x = 0; x < simWidth; x++) {
+          const nxCoord = x / simWidth;
+          const wx = x * 0.045;
+
+          // Multi-harmonic 3D wave interference
+          const wave1 = Math.sin(wx * 0.8 + time * 0.9 + Math.cos(wy * 0.7 - time * 0.6));
+          const wave2 = Math.cos(wy * 0.9 - time * 0.75 + Math.sin(wx * 0.6 + time * 0.5));
+          const wave3 = Math.sin((wx + wy) * 0.55 + time * 1.1) * 0.5;
+
+          // Pointer fluid swell
+          const pdx = x - pSimX;
+          const pdy = y - pSimY;
+          const pDist = Math.hypot(pdx, pdy);
+          let pSwell = 0;
+          if (pDist < 45) {
+            pSwell = Math.cos((pDist / 45) * Math.PI * 0.5) * 1.2;
+          }
+
+          // Ripples influence
+          let ripSwell = 0;
+          for (let r = 0; r < ripples.length; r++) {
+            const rp = ripples[r];
+            const rx = rp.x / scaleX;
+            const ry = rp.y / scaleY;
+            const rDist = Math.hypot(x - rx, y - ry);
+            const deltaR = Math.abs(rDist - rp.radius / scaleX);
+            if (deltaR < 12) {
+              const falloff = 1 - rp.age;
+              ripSwell += Math.cos((deltaR / 12) * Math.PI) * rp.strength * falloff * 0.8;
+            }
+          }
+
+          // Combined Height Value
+          const h = (wave1 + wave2 + wave3) * 0.5 + pSwell + ripSwell;
+
+          // Surface Normal approximation
+          // df/dx and df/dy
+          const dhdx = Math.cos(wx * 0.8 + time * 0.9) * 0.8 + Math.cos((wx + wy) * 0.55 + time * 1.1) * 0.28;
+          const dhdy = -Math.sin(wy * 0.9 - time * 0.75) * 0.9 + Math.cos((wx + wy) * 0.55 + time * 1.1) * 0.28;
+
+          // Normal vector
+          const normX = -dhdx * 0.55;
+          const normY = -dhdy * 0.55;
+          const normZ = 1.0;
+          const normLen = Math.hypot(normX, normY, normZ) || 1;
+          const nx = normX / normLen;
+          const ny = normY / normLen;
+          const nz = normZ / normLen;
+
+          // Diffuse Dot product
+          const diff = Math.max(0, nx * nlx + ny * nly + nz * nlz);
+
+          // Specular highlight (Half-angle vector)
+          const hx = nlx;
+          const hy = nly;
+          const hz = nlz + 1.0;
+          const hLen = Math.hypot(hx, hy, hz) || 1;
+          const ndoth = Math.max(0, nx * (hx / hLen) + ny * (hy / hLen) + nz * (hz / hLen));
+          const spec = Math.pow(ndoth, 20);
+
+          const idx = (y * simWidth + x) * 4;
+
+          if (isDark) {
+            // ── Dark Mode: Cosmic Obsidian & Liquid Nebula ──
+            // Deep base: #09090b with electric violet, indigo & cyan ribbons
+            const tMorph = (h + 1.5) * 0.35;
+            const r = Math.floor(10 + diff * 18 + spec * 160 + Math.sin(tMorph * 3.1) * 35);
+            const g = Math.floor(12 + diff * 28 + spec * 210 + Math.cos(tMorph * 2.4) * 45);
+            const b = Math.floor(22 + diff * 65 + spec * 255 + Math.sin(tMorph * 4.2 + 1) * 75);
+            const a = Math.floor(140 + diff * 45 + spec * 80);
+
+            data[idx] = Math.min(255, Math.max(0, r));
+            data[idx + 1] = Math.min(255, Math.max(0, g));
+            data[idx + 2] = Math.min(255, Math.max(0, b));
+            data[idx + 3] = Math.min(240, Math.max(70, a));
+          } else {
+            // ── Light Mode: Pearlescent Liquid Silk & Prismatic Fluid ──
+            // Creamy crystalline base with warm amber, soft rose, and fresh emerald refraction
+            const tMorph = (h + 1.5) * 0.38;
+            const prismR = Math.sin(tMorph * 3.2 + nxCoord * 2) * 40 + 215;
+            const prismG = Math.sin(tMorph * 2.8 + nyCoord * 2 + 1.5) * 35 + 210;
+            const prismB = Math.cos(tMorph * 3.5 + 2.8) * 45 + 225;
+
+            const r = Math.floor(prismR + spec * 65 - diff * 15);
+            const g = Math.floor(prismG + spec * 65 - diff * 12);
+            const b = Math.floor(prismB + spec * 65 - diff * 10);
+            const a = Math.floor(120 + diff * 35 + spec * 90);
+
+            data[idx] = Math.min(255, Math.max(0, r));
+            data[idx + 1] = Math.min(255, Math.max(0, g));
+            data[idx + 2] = Math.min(255, Math.max(0, b));
+            data[idx + 3] = Math.min(210, Math.max(60, a));
+          }
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    animationFrameId = requestAnimationFrame(render);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("touchmove", handlePointerMove);
+      window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   return (
     <div
       className="fixed inset-0 pointer-events-none -z-10 overflow-hidden select-none"
       aria-hidden="true"
     >
-      {/* ── Light Mode Fluid Mesh Gradient Layer ── */}
-      <div className="dark:hidden absolute inset-0 w-full h-full bg-[#fafafd] transition-opacity duration-500">
-        {/* Fluid Orb 1: Warm Radiant Amber / Peach / Sunset Coral */}
-        <div
-          className="absolute -top-[12%] -left-[10%] w-[58vw] min-w-[340px] max-w-[700px] h-[58vw] min-h-[340px] max-h-[700px] rounded-full opacity-65 blur-[100px] sm:blur-[130px] mix-blend-multiply"
-          style={{
-            background:
-              "radial-gradient(circle at center, rgba(251, 191, 36, 0.45) 0%, rgba(251, 146, 60, 0.35) 45%, rgba(244, 63, 94, 0.22) 75%, transparent 100%)",
-            animation: "fluidDrift1 22s ease-in-out infinite alternate",
-          }}
-        />
+      {/* Dynamic 3D Fluid Canvas Layer */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+        style={{
+          filter: "blur(24px)",
+          transform: "scale(1.08)",
+        }}
+      />
 
-        {/* Fluid Orb 2: Electric Violet / Indigo Breeze */}
-        <div
-          className="absolute top-[2%] -right-[12%] w-[54vw] min-w-[320px] max-w-[660px] h-[54vw] min-h-[320px] max-h-[660px] rounded-full opacity-60 blur-[110px] sm:blur-[140px] mix-blend-multiply"
-          style={{
-            background:
-              "radial-gradient(circle at center, rgba(129, 140, 248, 0.45) 0%, rgba(99, 102, 241, 0.35) 50%, rgba(192, 132, 252, 0.2) 80%, transparent 100%)",
-            animation: "fluidDrift2 26s ease-in-out infinite alternate",
-          }}
-        />
+      {/* Tactile Liquid Caustics & Fine Paper Grid Texture */}
+      <div
+        className="absolute inset-0 opacity-45 mix-blend-overlay dark:opacity-35 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1px), linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px)",
+          backgroundSize: "24px 24px, 24px 24px, 24px 24px",
+        }}
+      />
 
-        {/* Fluid Orb 3: Fresh Emerald / Mint / Sky Blue */}
-        <div
-          className="absolute bottom-[10%] -left-[8%] w-[52vw] min-w-[300px] max-w-[620px] h-[52vw] min-h-[300px] max-h-[620px] rounded-full opacity-55 blur-[100px] sm:blur-[130px] mix-blend-multiply"
-          style={{
-            background:
-              "radial-gradient(circle at center, rgba(52, 211, 153, 0.4) 0%, rgba(56, 189, 248, 0.32) 55%, rgba(147, 197, 253, 0.18) 85%, transparent 100%)",
-            animation: "fluidDrift3 24s ease-in-out infinite alternate",
-          }}
-        />
-
-        {/* Fluid Orb 4: Rose Quartz / Sunset Magenta Accent */}
-        <div
-          className="absolute -bottom-[10%] -right-[8%] w-[56vw] min-w-[320px] max-w-[680px] h-[56vw] min-h-[320px] max-h-[680px] rounded-full opacity-55 blur-[110px] sm:blur-[140px] mix-blend-multiply"
-          style={{
-            background:
-              "radial-gradient(circle at center, rgba(244, 114, 182, 0.38) 0%, rgba(251, 146, 60, 0.28) 50%, rgba(253, 224, 71, 0.2) 80%, transparent 100%)",
-            animation: "fluidDrift1 28s ease-in-out infinite alternate-reverse",
-          }}
-        />
-
-        {/* Fluid Orb 5: Center Ambient Atmosphere */}
-        <div
-          className="absolute top-[35%] left-[18%] w-[64vw] max-w-[750px] h-[38vw] max-h-[480px] rounded-full opacity-40 blur-[130px] sm:blur-[160px] mix-blend-multiply"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, rgba(167, 139, 250, 0.28) 0%, rgba(254, 215, 170, 0.22) 50%, transparent 80%)",
-            animation: "fluidDrift2 20s ease-in-out infinite alternate-reverse",
-          }}
-        />
-
-        {/* Tactile Paper Texture & Fine Dot Grid Overlay */}
-        <div
-          className="absolute inset-0 opacity-40 mix-blend-color-burn"
-          style={{
-            backgroundImage:
-              "radial-gradient(rgba(0, 0, 0, 0.08) 1.1px, transparent 1.1px), linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px)",
-            backgroundSize: "28px 28px, 28px 28px, 28px 28px",
-          }}
-        />
-      </div>
-
-      {/* ── Dark Mode Cosmic Obsidian Nebula Layer ── */}
-      <div className="hidden dark:block absolute inset-0 w-full h-full bg-[#09090b] transition-opacity duration-500">
-        {/* Dark Nebula Orb 1: Deep Indigo Aura */}
-        <div
-          className="absolute -top-[10%] -left-[10%] w-[58vw] min-w-[340px] max-w-[700px] h-[58vw] min-h-[340px] max-h-[700px] rounded-full opacity-45 blur-[140px]"
-          style={{
-            background:
-              "radial-gradient(circle at center, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.1) 50%, transparent 80%)",
-            animation: "fluidDrift1 26s ease-in-out infinite alternate",
-          }}
-        />
-
-        {/* Dark Nebula Orb 2: Deep Violet / Purple Shimmer */}
-        <div
-          className="absolute top-[5%] -right-[12%] w-[52vw] min-w-[320px] max-w-[660px] h-[52vw] min-h-[320px] max-h-[660px] rounded-full opacity-40 blur-[150px]"
-          style={{
-            background:
-              "radial-gradient(circle at center, rgba(168, 85, 247, 0.18) 0%, rgba(139, 92, 246, 0.08) 55%, transparent 80%)",
-            animation: "fluidDrift2 30s ease-in-out infinite alternate",
-          }}
-        />
-
-        {/* Dark Nebula Orb 3: Deep Emerald Cyan Flare */}
-        <div
-          className="absolute -bottom-[8%] -left-[6%] w-[54vw] min-w-[300px] max-w-[620px] h-[54vw] min-h-[300px] max-h-[620px] rounded-full opacity-35 blur-[140px]"
-          style={{
-            background:
-              "radial-gradient(circle at center, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.08) 50%, transparent 80%)",
-            animation: "fluidDrift3 28s ease-in-out infinite alternate",
-          }}
-        />
-
-        {/* Dark Nebula Orb 4: Subtle Amber Ember */}
-        <div
-          className="absolute bottom-[2%] -right-[6%] w-[50vw] min-w-[300px] max-w-[620px] h-[50vw] min-h-[300px] max-h-[620px] rounded-full opacity-30 blur-[150px]"
-          style={{
-            background:
-              "radial-gradient(circle at center, rgba(245, 158, 11, 0.14) 0%, rgba(239, 68, 68, 0.06) 50%, transparent 80%)",
-            animation: "fluidDrift1 32s ease-in-out infinite alternate-reverse",
-          }}
-        />
-
-        {/* Architectural Fine Grid for Deep Contrast */}
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage:
-              "radial-gradient(rgba(255, 255, 255, 0.08) 1.1px, transparent 1.1px), linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px)",
-            backgroundSize: "28px 28px, 28px 28px, 28px 28px",
-          }}
-        />
-      </div>
-
-      {/* Embedded Fluid Keyframe Animations */}
-      <style jsx>{`
-        @keyframes fluidDrift1 {
-          0% {
-            transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-          }
-          50% {
-            transform: translate3d(5vw, 4vh, 0) scale(1.08) rotate(3deg);
-          }
-          100% {
-            transform: translate3d(-4vw, 6vh, 0) scale(0.95) rotate(-2deg);
-          }
-        }
-        @keyframes fluidDrift2 {
-          0% {
-            transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-          }
-          50% {
-            transform: translate3d(-6vw, -5vh, 0) scale(1.1) rotate(-4deg);
-          }
-          100% {
-            transform: translate3d(4vw, -3vh, 0) scale(0.96) rotate(2deg);
-          }
-        }
-        @keyframes fluidDrift3 {
-          0% {
-            transform: translate3d(0, 0, 0) scale(1);
-          }
-          50% {
-            transform: translate3d(4vw, -4vh, 0) scale(1.06);
-          }
-          100% {
-            transform: translate3d(-3vw, 5vh, 0) scale(0.98);
-          }
-        }
-      `}</style>
+      {/* Subtle Depth Vignette */}
+      <div className="absolute inset-0 bg-radial-vignette opacity-30 dark:opacity-50 pointer-events-none" />
     </div>
   );
 }
