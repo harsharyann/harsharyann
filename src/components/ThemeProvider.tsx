@@ -22,9 +22,11 @@ function applyTheme(t: Theme) {
   if (t === "dark") {
     root.classList.add("dark");
     root.classList.remove("light");
+    root.setAttribute("data-theme", "dark");
   } else {
     root.classList.add("light");
     root.classList.remove("dark");
+    root.setAttribute("data-theme", "light");
   }
 }
 
@@ -32,15 +34,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
-    const saved = localStorage.getItem("portfolio-theme") as Theme | null;
-    if (saved === "dark" || saved === "light") {
-      applyTheme(saved);
-      queueMicrotask(() => {
-        setThemeState(saved);
-      });
-    } else {
-      applyTheme("light");
-    }
+    const isDark = document.documentElement.classList.contains("dark");
+    setThemeState(isDark ? "dark" : "light");
   }, []);
 
   const setTheme = (newTheme: Theme) => {
