@@ -2,9 +2,11 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Mail } from "lucide-react"
 import { useTheme } from "./ThemeProvider"
 import { GithubIcon, LinkedinIcon } from "./SocialIcons"
+import { DailySpark } from "./DailySpark"
 
 /**
  * DoodleCrewCover — A high-energy sketchbook cover page for Harsh Aryan.
@@ -608,6 +610,105 @@ export function DoodleCrewCover({
   const chars = React.useMemo(() => Array.from(word), [word])
 
   // Live ticking clock (Chennai / User Local Time)
+  const router = useRouter()
+  const isLeavingRef = React.useRef(false)
+  const [isLeaving, setIsLeaving] = React.useState(false)
+
+  React.useEffect(() => {
+    router.prefetch("/about")
+  }, [router])
+
+  const triggerLeave = React.useCallback(() => {
+    if (isLeavingRef.current) return
+    isLeavingRef.current = true
+    setIsLeaving(true)
+    window.setTimeout(() => {
+      router.push("/about")
+    }, 280)
+  }, [router])
+
+  // Navigate to /about on scroll down, mouse wheel, or touch swipe
+  React.useEffect(() => {
+    const isAtBottom = () => {
+      const root = rootRef.current
+      if (root && root.scrollHeight > root.clientHeight + 10) {
+        return root.scrollTop + root.clientHeight >= root.scrollHeight - 35
+      }
+      const scrollY = window.scrollY || document.documentElement.scrollTop || 0
+      const windowH = window.innerHeight
+      const docH = document.documentElement.scrollHeight
+      return scrollY + windowH >= docH - 35
+    }
+
+    let wheelAccum = 0
+    let wheelTimer: ReturnType<typeof setTimeout>
+
+    const onWheel = (e: WheelEvent) => {
+      if (isLeavingRef.current) return
+      if (e.deltaY > 0 && isAtBottom()) {
+        wheelAccum += e.deltaY
+        if (wheelAccum > 25) {
+          triggerLeave()
+        }
+        clearTimeout(wheelTimer)
+        wheelTimer = setTimeout(() => {
+          wheelAccum = 0
+        }, 300)
+      } else if (e.deltaY < 0) {
+        wheelAccum = 0
+      }
+    }
+
+    let touchStartY = 0
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches[0]) {
+        touchStartY = e.touches[0].clientY
+      }
+    }
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (isLeavingRef.current) return
+      if (e.changedTouches[0]) {
+        const diffY = touchStartY - e.changedTouches[0].clientY
+        if (diffY > 40 && isAtBottom()) {
+          triggerLeave()
+        }
+      }
+    }
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (isLeavingRef.current) return
+      const activeEl = document.activeElement
+      if (
+        activeEl &&
+        (activeEl.tagName === "INPUT" ||
+          activeEl.tagName === "TEXTAREA" ||
+          (activeEl as HTMLElement).isContentEditable)
+      ) {
+        return
+      }
+      if (
+        (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") &&
+        isAtBottom()
+      ) {
+        triggerLeave()
+      }
+    }
+
+    window.addEventListener("wheel", onWheel, { passive: true })
+    window.addEventListener("touchstart", onTouchStart, { passive: true })
+    window.addEventListener("touchend", onTouchEnd, { passive: true })
+    window.addEventListener("keydown", onKeyDown)
+
+    return () => {
+      window.removeEventListener("wheel", onWheel)
+      window.removeEventListener("touchstart", onTouchStart)
+      window.removeEventListener("touchend", onTouchEnd)
+      window.removeEventListener("keydown", onKeyDown)
+      clearTimeout(wheelTimer)
+    }
+  }, [triggerLeave])
+
   const [currentTime, setCurrentTime] = React.useState<string>("")
   React.useEffect(() => {
     const update = () => {
@@ -1023,7 +1124,7 @@ export function DoodleCrewCover({
   return (
     <div
       ref={rootRef}
-      className={`dcf-root ${className || ""}`}
+      className={`dcf-root ${isLeaving ? "is-leaving" : ""} ${className || ""}`}
       data-play={play || reduced ? "1" : "0"}
       data-interactive={interactive ? "1" : "0"}
       onPointerMove={onPointerMove}
@@ -1063,7 +1164,7 @@ export function DoodleCrewCover({
                 <LinkedinIcon className="w-4 h-4" />
               </a>
               <a
-                href="mailto:harsharyan.dev@gmail.com"
+                href="mailto:harsharyan@outlook.com"
                 className="dcf-social-link is-mail"
                 title="Email"
                 aria-label="Send Email"
@@ -1338,19 +1439,18 @@ export function DoodleCrewCover({
         <div className="dcf-hero-copy">
           {/* Active Roles & Specialization — Front-and-Center directly under the Name */}
           <div className="dcf-hero-roles dcf-rise" style={{ "--d": "460ms" } as React.CSSProperties} aria-label="Harsh Aryan - Current Role and Specialization">
-            <div className="dcf-hero-role-pill is-ta" title="Teaching Assistant • IIT Madras (BS Degree)">
+            <div className="dcf-hero-role-pill is-ta" title="Teaching Assistant • IIT Madras">
               <span className="dcf-role-live-dot" aria-hidden="true" />
               <span className="dcf-role-text-bold">Teaching Assistant</span>
               <span className="dcf-role-sep">•</span>
               <span className="dcf-role-org">IIT Madras</span>
-              <span className="dcf-role-subtag">BS Degree</span>
             </div>
 
-            <div className="dcf-hero-role-pill is-degree" title="B.Tech Computer Science (AI & Data Science)">
+            <div className="dcf-hero-role-pill is-degree" title="AI & Data Science • Machine Learning">
               <span className="dcf-role-sparkle-icon" aria-hidden="true">✦</span>
-              <span className="dcf-role-degree-text">B.Tech CSE</span>
+              <span className="dcf-role-degree-text">AI &amp; Data Science</span>
               <span className="dcf-role-sep">•</span>
-              <span className="dcf-role-spec">AI &amp; Data Science</span>
+              <span className="dcf-role-spec">Machine Learning</span>
             </div>
           </div>
 
@@ -1397,6 +1497,26 @@ export function DoodleCrewCover({
               <span>Contact Desk</span>
             </Link>
           </div>
+
+          {/* THE DAILY SPARK ✦ - 7 Days, 7 Quotes */}
+          <DailySpark isDark={isDark} />
+
+          {/* Scroll Cue down to About page */}
+          <div className="dcf-scroll-cue dcf-rise" style={{ "--d": "600ms" } as React.CSSProperties}>
+            <button
+              type="button"
+              onClick={triggerLeave}
+              className="dcf-scroll-link"
+              aria-label="Scroll down or click to explore about story"
+            >
+              <span className="dcf-scroll-label font-mono">SCROLL DOWN TO EXPLORE</span>
+              <div className="dcf-scroll-arrow-box">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M8 2 L8 13 M3 8 L8 13 L13 8" />
+                </svg>
+              </div>
+            </button>
+          </div>
         </div>
       </main>
     </div>
@@ -1407,7 +1527,8 @@ const COVER_CSS = `
 .dcf-root {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   width: 100%;
   min-height: 100svh;
   box-sizing: border-box;

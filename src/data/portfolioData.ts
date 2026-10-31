@@ -77,16 +77,16 @@ export interface PortfolioData {
 export const portfolioData: PortfolioData = {
   personal: {
     name: "Harsh Aryan",
-    role: "1st Year B.Tech Student & AI/Data Science Enthusiast",
+    role: "AI & Data Science Specialist & Teaching Assistant",
     headline: "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",
     bio: "Hi! I am Harsh Aryan, a curious 1st-year undergraduate student passionate about Artificial Intelligence, Data Science, and Mathematics. I spend my time mastering Python, Linear Algebra, Exploratory Data Analysis, and fundamental Machine Learning algorithms. I am eager to learn, build practical projects, participate in hackathons, and secure early internship opportunities.",
     college: "Engineering College / University",
-    degree: "B.Tech in Computer Science & Engineering (AI & Data Science)",
-    year: "1st Year Undergraduate",
-    cgpa: "Current 1st Year Student",
+    degree: "Computer Science & Engineering (AI & Data Science)",
+    year: "Undergraduate",
+    cgpa: "Active Student",
     location: "India & Open for Remote Opportunities",
     availability: "Seeking Summer 2026 Early Internships & Hackathon Collaborations",
-    email: "harsharyan.dev@gmail.com",
+    email: "harsharyan@outlook.com",
     resumeUrl: "/Harsh_Aryan_Resume.pdf",
   },
 
@@ -95,11 +95,11 @@ export const portfolioData: PortfolioData = {
     linkedin: "https://linkedin.com",
     kaggle: "https://kaggle.com",
     leetcode: "https://leetcode.com",
-    email: "mailto:harsharyan.dev@gmail.com",
+    email: "mailto:harsharyan@outlook.com",
   },
 
   quickStats: [
-    { value: "1st Year", label: "Academic Standing", sublabel: "B.Tech CSE (AI & DS)" },
+    { value: "AI & DS", label: "Specialization", sublabel: "Machine Learning & Analytics" },
     { value: "6+", label: "Python & ML Projects", sublabel: "Hands-on implementations" },
     { value: "6", label: "Certifications", sublabel: "Courses & Hackathons" },
     { value: "150+", label: "Coding Problems", sublabel: "Python, C & Logic building" },
@@ -107,9 +107,9 @@ export const portfolioData: PortfolioData = {
 
   education: {
     institution: "Department of Computer Science & Engineering",
-    degree: "Bachelor of Technology (B.Tech) in CSE (Artificial Intelligence & Data Science)",
+    degree: "Computer Science & Engineering (Artificial Intelligence & Data Science)",
     duration: "2025 — 2029",
-    status: "Currently in 1st Year (Semester 1 & 2)",
+    status: "Active Academic Program",
     score: "Active Semesters",
     courses: [
       "Programming in Python & C",
@@ -199,6 +199,42 @@ export const portfolioData: PortfolioData = {
       ],
       githubUrl: "https://github.com",
       imageGradient: "from-purple-600 via-pink-700 to-rose-800",
+    },
+    {
+      id: "mnist-digit-recognizer",
+      title: "MNIST Digit Neural Canvas & Real-Time Classifier",
+      tagline: "Interactive HTML5 drawing canvas coupled with PyTorch CNN for real-time digit inference.",
+      description:
+        "Engineered an interactive deep learning web app featuring a real-time drawing canvas where users sketch digits 0-9. The backend convolutional network preprocesses the pixel matrix and returns prediction probabilities with softmax bar charts.",
+      category: "Machine Learning",
+      technologies: ["Python", "PyTorch", "Torchvision", "FastAPI", "Canvas API", "HTML5"],
+      metrics: ["99.1% Test Accuracy", "Sub-15ms Inference", "Interactive Canvas"],
+      features: [
+        "Custom 3-layer CNN architecture trained on 60,000 MNIST training samples",
+        "Canvas normalization pipeline with 28x28 grayscale centering and anti-aliasing",
+        "Real-time confidence scores and softmax bar visualization for all 10 digits",
+      ],
+      githubUrl: "https://github.com",
+      liveUrl: "https://demo.example.com",
+      imageGradient: "from-purple-600 via-indigo-700 to-blue-800",
+    },
+    {
+      id: "california-housing-eda",
+      title: "Geospatial Housing Valuation & Feature Engineering",
+      tagline: "End-to-end regression pipeline analyzing 20,000+ median house value records.",
+      description:
+        "Conducted extensive statistical feature engineering on geographical coordinates, proximity to the ocean, and income tiers. Built Random Forest and Gradient Boosting regressors with automated hyperparameter tuning via GridSearchCV.",
+      category: "Data Analysis",
+      technologies: ["Python", "Pandas", "Scikit-Learn", "XGBoost", "Matplotlib", "Folium"],
+      metrics: ["RMSE: $48.2k", "20,640 Records", "Geospatial Heatmaps"],
+      features: [
+        "Interactive Folium geospatial map visualizing housing clusters and ocean proximity impact",
+        "Custom feature cross-combinations (rooms per household, population density)",
+        "Automated cross-validation pipeline comparing Random Forest, Ridge, and XGBoost",
+      ],
+      githubUrl: "https://github.com",
+      liveUrl: "https://demo.example.com",
+      imageGradient: "from-emerald-600 via-teal-700 to-green-800",
     },
   ],
 

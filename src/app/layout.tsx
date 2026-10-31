@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Harsh Aryan — Creative Sketchbook Portfolio",
   description:
-    "Hand-drawn sketchbook portfolio of Harsh Aryan — 1st Year B.Tech CSE (AI & Data Science).",
+    "Hand-drawn sketchbook portfolio of Harsh Aryan — AI & Data Science Developer.",
   keywords: [
     "Harsh Aryan",
     "Portfolio",
@@ -23,6 +23,13 @@ export const metadata: Metadata = {
     "Creative Developer",
   ],
   authors: [{ name: "Harsh Aryan" }],
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -40,7 +47,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>

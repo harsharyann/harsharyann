@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Colourful Neo-Pop Yellow Squircle Background -->
+  <rect x="3" y="3" width="58" height="58" rx="16" fill="#FDE047" stroke="#000000" stroke-width="3" />
+  <rect x="5.5" y="5.5" width="53" height="53" rx="13.5" fill="#FACC15" />
+
+  <!-- Playful Colorful Doodles / Sparkles in corners -->
+  <!-- Top Right Coral Star -->
+  <path d="M49 8 L50.8 12.2 L55 14 L50.8 15.8 L49 20 L47.2 15.8 L43 14 L47.2 12.2 Z" fill="#FF2A55" stroke="#000000" stroke-width="1.3" />
+  <!-- Bottom Left Cyan Star -->
+  <path d="M12 47 L13.5 49.8 L16.5 51 L13.5 52.2 L12 55 L10.5 52.2 L7.5 51 L10.5 49.8 Z" fill="#38BDF8" stroke="#000000" stroke-width="1.3" />
+
+  <!-- Cute Doodle Kitty Mascot -->
+  <!-- Left Ear -->
+  <polygon points="17,29 23,13 32,24" fill="#FFFFFF" stroke="#000000" stroke-width="2.6" stroke-linejoin="round" />
+  <polygon points="19,27 23,17 30,23" fill="#F472B6" />
+
+  <!-- Right Ear -->
+  <polygon points="36,24 45,13 51,29" fill="#FFFFFF" stroke="#000000" stroke-width="2.6" stroke-linejoin="round" />
+  <polygon points="38,23 45,17 49,27" fill="#F472B6" />
+
+  <!-- Kitty Head (Round & Chubby) -->
+  <ellipse cx="34" cy="36" rx="20" ry="16" fill="#FFFFFF" stroke="#000000" stroke-width="2.8" />
+
+  <!-- Happy Curved Eyes ^.^ -->
+  <path d="M23 34 Q27 29.5 31 34" stroke="#000000" stroke-width="2.8" stroke-linecap="round" fill="none" />
+  <path d="M37 34 Q41 29.5 45 34" stroke="#000000" stroke-width="2.8" stroke-linecap="round" fill="none" />
+
+  <!-- Cute Rosy Blush Cheeks -->
+  <ellipse cx="21" cy="39" rx="4" ry="2.6" fill="#FB7185" />
+  <ellipse cx="47" cy="39" rx="4" ry="2.6" fill="#FB7185" />
+
+  <!-- Tiny Pink Nose & Smile -->
+  <polygon points="33,38 35,38 34,39.6" fill="#F43F5E" />
+  <path d="M34 39.6 Q31.5 42.4 28.5 40.5 M34 39.6 Q36.5 42.4 39.5 40.5" stroke="#000000" stroke-width="2" stroke-linecap="round" fill="none" />
+
+  <!-- Kitty Whiskers -->
+  <path d="M14 36 L6 34 M14 39 L5 39 M14 42 L7 44" stroke="#000000" stroke-width="1.8" stroke-linecap="round" />
+  <path d="M54 36 L62 34 M54 39 L63 39 M54 42 L61 44" stroke="#000000" stroke-width="1.8" stroke-linecap="round" />
+
+  <!-- Paws Peeking at the Bottom -->
+  <ellipse cx="25" cy="51" rx="5.5" ry="3.5" fill="#FFFFFF" stroke="#000000" stroke-width="2.2" />
+  <ellipse cx="43" cy="51" rx="5.5" ry="3.5" fill="#FFFFFF" stroke="#000000" stroke-width="2.2" />
+  <path d="M23 53 L23 50 M26 53 L26 50 M41 53 L41 50 M44 53 L44 50" stroke="#000000" stroke-width="1.6" stroke-linecap="round" />
+</svg>
+

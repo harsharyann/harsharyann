@@ -2,10 +2,10 @@
 
 import * as React from "react"
 import { Certificate } from "@/data/portfolioData"
-import { Award, ShieldCheck, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { Award, ShieldCheck, ArrowUpRight, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react"
 
 /**
- * PolaroidCertificateCarousel — Black & White Sketchbook Polaroid Line Carousel.
+ * PolaroidCertificateCarousel — Colorful Hand-Drawn Sketchbook Polaroid Line Carousel.
  * Instant certificate prints pegged to a sagging hand-drawn ink string.
  * Dragging the line or clicking cards makes them swing on their pegs with physics,
  * settling smoothly with natural overshoot.
@@ -37,6 +37,88 @@ export function nearestAt(off: number, spacing: number, n: number): number {
 
 export function pad2(n: number): string {
   return n < 10 ? "0" + n : String(n)
+}
+
+export function getCertTheme(category: string) {
+  if (category === "Machine Learning") {
+    return {
+      accent: "#8b5cf6",
+      pegColor: "#a855f7",
+      pegShadow: "#6d28d9",
+      stamp: "bg-purple-600 text-white dark:bg-purple-500 dark:text-white",
+      categoryBadge:
+        "bg-purple-100 text-purple-900 border-purple-400 dark:bg-purple-950/60 dark:text-purple-200 dark:border-purple-600",
+      crestBorder: "border-purple-500 shadow-[2px_2px_0_#8b5cf6]",
+      crestBg: "bg-purple-50 dark:bg-stone-800 text-purple-600 dark:text-purple-300",
+      shadow: "shadow-[6px_6px_0_#8b5cf6] dark:shadow-[6px_6px_0_#a855f7]",
+      border: "border-black dark:border-purple-400/80",
+      cardBg:
+        "bg-gradient-to-br from-violet-50/70 via-white to-purple-50/30 dark:from-stone-900 dark:via-purple-950/20 dark:to-stone-900",
+      accentText: "text-purple-700 dark:text-purple-300",
+      skillsPill:
+        "border-purple-300 dark:border-purple-700 bg-white dark:bg-stone-800 text-purple-800 dark:text-purple-200 shadow-[1px_1px_0_#8b5cf6]",
+      printShadow: "#8b5cf6",
+    }
+  }
+  if (category === "Data Science") {
+    return {
+      accent: "#10b981",
+      pegColor: "#10b981",
+      pegShadow: "#047857",
+      stamp: "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-white",
+      categoryBadge:
+        "bg-emerald-100 text-emerald-900 border-emerald-400 dark:bg-emerald-950/60 dark:text-emerald-200 dark:border-emerald-600",
+      crestBorder: "border-emerald-500 shadow-[2px_2px_0_#10b981]",
+      crestBg: "bg-emerald-50 dark:bg-stone-800 text-emerald-600 dark:text-emerald-300",
+      shadow: "shadow-[6px_6px_0_#10b981] dark:shadow-[6px_6px_0_#34d399]",
+      border: "border-black dark:border-emerald-400/80",
+      cardBg:
+        "bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/30 dark:from-stone-900 dark:via-emerald-950/20 dark:to-stone-900",
+      accentText: "text-emerald-700 dark:text-emerald-300",
+      skillsPill:
+        "border-emerald-300 dark:border-emerald-700 bg-white dark:bg-stone-800 text-emerald-800 dark:text-emerald-200 shadow-[1px_1px_0_#10b981]",
+      printShadow: "#10b981",
+    }
+  }
+  if (category === "Programming") {
+    return {
+      accent: "#06b6d4",
+      pegColor: "#06b6d4",
+      pegShadow: "#0e7490",
+      stamp: "bg-sky-600 text-white dark:bg-sky-500 dark:text-white",
+      categoryBadge:
+        "bg-sky-100 text-sky-900 border-sky-400 dark:bg-sky-950/60 dark:text-sky-200 dark:border-sky-600",
+      crestBorder: "border-sky-500 shadow-[2px_2px_0_#0284c7]",
+      crestBg: "bg-sky-50 dark:bg-stone-800 text-sky-600 dark:text-sky-300",
+      shadow: "shadow-[6px_6px_0_#0284c7] dark:shadow-[6px_6px_0_#38bdf8]",
+      border: "border-black dark:border-sky-400/80",
+      cardBg:
+        "bg-gradient-to-br from-sky-50/70 via-white to-cyan-50/30 dark:from-stone-900 dark:via-sky-950/20 dark:to-stone-900",
+      accentText: "text-sky-700 dark:text-sky-300",
+      skillsPill:
+        "border-sky-300 dark:border-sky-700 bg-white dark:bg-stone-800 text-sky-800 dark:text-sky-200 shadow-[1px_1px_0_#0284c7]",
+      printShadow: "#0284c7",
+    }
+  }
+  // Mathematics & Hackathons (or default)
+  return {
+    accent: "#f59e0b",
+    pegColor: "#f59e0b",
+    pegShadow: "#b45309",
+    stamp: "bg-amber-400 text-black dark:bg-amber-400 dark:text-black",
+    categoryBadge:
+      "bg-amber-100 text-amber-900 border-amber-400 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-600",
+    crestBorder: "border-amber-500 shadow-[2px_2px_0_#f59e0b]",
+    crestBg: "bg-amber-50 dark:bg-stone-800 text-amber-600 dark:text-amber-300",
+    shadow: "shadow-[6px_6px_0_#f59e0b] dark:shadow-[6px_6px_0_#fbbf24]",
+    border: "border-black dark:border-amber-400/80",
+    cardBg:
+      "bg-gradient-to-br from-amber-50/70 via-white to-orange-50/30 dark:from-stone-900 dark:via-amber-950/20 dark:to-stone-900",
+    accentText: "text-amber-700 dark:text-amber-300",
+    skillsPill:
+      "border-amber-300 dark:border-amber-700 bg-white dark:bg-stone-800 text-amber-800 dark:text-amber-200 shadow-[1px_1px_0_#f59e0b]",
+    printShadow: "#f59e0b",
+  }
 }
 
 export interface PolaroidCertificateCarouselProps {
@@ -119,120 +201,103 @@ export function PolaroidCertificateCarousel({
 
   // Physics animation loop
   React.useEffect(() => {
-    const root = rootRef.current
-    if (!root || n === 0) return
-    const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    let visible = true
     let raf = 0
-    let prev = performance.now()
-    const S = sim.current
+    let last = performance.now()
+    const s = sim.current
 
     const frame = (now: number) => {
-      raf = 0
-      if (!visible) return
-      const dt = Math.min(0.033, (now - prev) / 1000)
-      prev = now
-      const { w, h, cw } = size
-      const y0 = Math.max(35, h * 0.16)
-      const d = drag.current
-      let lineVel: number
+      raf = requestAnimationFrame(frame)
+      const dt = Math.min(0.04, (now - last) / 1000)
+      last = now
 
-      if (d && d.moved) {
-        lineVel = d.v * 1000
-      } else {
-        const before = S.off
-        ;[S.off, S.vel] = springStep(S.off, S.vel, S.target, dt)
-        lineVel = -(S.off - before) / Math.max(dt, 1e-3)
+      // Autoplay smooth advancement when not interacting
+      if (autoplay > 0 && !drag.current && now - lastTouch.current > autoplay && n > 1) {
+        lastTouch.current = now
+        goTo((activeRef.current + 1) % n)
       }
 
-      const o = opts.current
-      const g = reduce ? 0 : o.swing
-      const near = nearestAt(S.off, spacing, n)
+      if (!drag.current) {
+        const [no, nv] = springStep(s.off, s.vel, s.target, dt, 68)
+        s.off = no
+        s.vel = nv
+      }
 
+      const cx = size.w / 2
+      const y0 = Math.round(size.h * 0.16)
+      const sagPx = opts.current.sag
+
+      // Render clothesline string curve
+      const p = pathRef.current
+      if (p) {
+        const d = `M 0 ${y0} Q ${cx} ${y0 + sagPx * 2} ${size.w} ${y0}`
+        if (p.getAttribute("d") !== d) p.setAttribute("d", d)
+      }
+
+      // Physics positioning for each polaroid print
       for (let i = 0; i < n; i++) {
         const el = cards.current[i]
         if (!el) continue
-        const x = w / 2 + i * spacing - S.off
-        if (x < -cw * 1.5 || x > w + cw * 1.5) {
-          el.style.visibility = "hidden"
+
+        const x = cx + (i * spacing - s.off)
+        const visible = x > -size.cw && x < size.w + size.cw
+        if (!visible) {
+          el.style.display = "none"
           continue
         }
-        el.style.visibility = "visible"
-        let a = S.a[i] || 0
-        let av = S.w[i] || 0
-        ;[a, av] = swingStep(a, av, lineVel, dt, g)
-        if (g) a += Math.sin(now / 1300 + i * 1.7) * 0.0009 * g
-        S.a[i] = a
-        S.w[i] = av
-        const y = stringY(x, w, y0, o.sag) - 6
-        el.style.transform = `translate(${(x - cw / 2).toFixed(1)}px, ${y.toFixed(1)}px) rotate(${a.toFixed(4)}rad)`
-        el.style.zIndex = String(i === near ? n + 2 : n - Math.abs(i - near))
+        el.style.display = ""
+
+        const y = stringY(x, size.w, y0, sagPx)
+        const aTarget = clamp((i * spacing - s.off) * 0.0006, -0.22, 0.22)
+        const curA = s.a[i] ?? aTarget
+        const curW = s.w[i] ?? 0
+        const [na, nw] = swingStep(curA - aTarget, curW, s.vel, dt, opts.current.swing)
+        s.a[i] = na + aTarget
+        s.w[i] = nw
+
+        const deg = (s.a[i] * 180) / Math.PI
+        el.style.transform = `translate3d(${(x - size.cw / 2).toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${deg.toFixed(2)}deg)`
+        el.style.zIndex = String(Math.round(100 - Math.abs(x - cx)))
       }
 
-      pathRef.current?.setAttribute(
-        "d",
-        `M0 ${y0} Q${w / 2} ${y0 + 2 * o.sag} ${w} ${y0}`
-      )
-
-      if (near !== activeRef.current) {
-        activeRef.current = near
-        setActive(near)
+      const nearest = nearestAt(s.off, spacing, n)
+      if (nearest !== activeRef.current) {
+        activeRef.current = nearest
+        setActive(nearest)
       }
-
-      raf = requestAnimationFrame(frame)
     }
 
-    const io = new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting
-      if (visible && !raf) {
-        prev = performance.now()
-        raf = requestAnimationFrame(frame)
-      }
-    })
-    io.observe(root)
     raf = requestAnimationFrame(frame)
-
-    return () => {
-      cancelAnimationFrame(raf)
-      io.disconnect()
-    }
-  }, [size, spacing, n])
-
-  // Autoplay
-  React.useEffect(() => {
-    if (!autoplay || n < 2) return
-    const t = window.setInterval(() => {
-      if (document.hidden || drag.current || performance.now() - lastTouch.current < autoplay) return
-      goTo(activeRef.current >= n - 1 ? 0 : activeRef.current + 1)
-    }, autoplay)
-    return () => window.clearInterval(t)
-  }, [autoplay, n, goTo])
+    return () => cancelAnimationFrame(raf)
+  }, [n, spacing, size, autoplay, goTo])
 
   const onDown = (e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).closest(".pl-cert-controls")) return
     lastTouch.current = performance.now()
-    drag.current = { x: e.clientX, off: sim.current.off, lx: e.clientX, lt: e.timeStamp, v: 0, moved: false }
+    drag.current = {
+      x: e.clientX,
+      off: sim.current.off,
+      lx: e.clientX,
+      lt: performance.now(),
+      v: 0,
+      moved: false,
+    }
+    ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
   }
 
   const onMove = (e: React.PointerEvent) => {
     const d = drag.current
     if (!d) return
     const dx = e.clientX - d.x
-    if (!d.moved && Math.abs(dx) > 5) {
+    if (Math.abs(dx) > 3) {
       d.moved = true
       setDragging(true)
-      rootRef.current?.setPointerCapture(e.pointerId)
     }
-    if (!d.moved) return
-    const dt = Math.max(1, e.timeStamp - d.lt)
-    d.v = 0.7 * ((e.clientX - d.lx) / dt) + 0.3 * d.v
+    const now = performance.now()
+    const dt = Math.max(1, now - d.lt)
+    d.v = (e.clientX - d.lx) / dt
     d.lx = e.clientX
-    d.lt = e.timeStamp
-    const max = (n - 1) * spacing
-    let off = d.off - dx
-    if (off < 0) off *= 0.35
-    if (off > max) off = max + (off - max) * 0.35
-    sim.current.off = off
+    d.lt = now
+    sim.current.off = d.off - dx
+    sim.current.target = sim.current.off
   }
 
   const onUp = (e: React.PointerEvent) => {
@@ -265,6 +330,7 @@ export function PolaroidCertificateCarousel({
   }
 
   const activeCert = certificates[active] || certificates[0]
+  const activeTheme = activeCert ? getCertTheme(activeCert.category) : getCertTheme("Machine Learning")
 
   if (!certificates.length) {
     return (
@@ -303,7 +369,8 @@ export function PolaroidCertificateCarousel({
             ref={pathRef}
             fill="none"
             stroke="#000000"
-            strokeWidth="2.2"
+            className="dark:stroke-white"
+            strokeWidth="2.4"
             strokeLinecap="round"
           />
         </svg>
@@ -311,6 +378,8 @@ export function PolaroidCertificateCarousel({
         {/* Hanging Polaroid Certificate Prints */}
         {certificates.map((cert, i) => {
           const isCurrent = i === active
+          const theme = getCertTheme(cert.category)
+
           return (
             <div
               key={cert.id}
@@ -321,32 +390,41 @@ export function PolaroidCertificateCarousel({
               aria-hidden={isCurrent ? undefined : true}
             >
               {/* Polaroid Paper Frame */}
-              <div className="pl-cert-print">
+              <div
+                className="pl-cert-print"
+                style={{
+                  boxShadow: isCurrent ? `6px 10px 0 ${theme.printShadow}` : undefined,
+                }}
+              >
                 {/* Certificate Emblem Parchment View */}
                 <div className="pl-cert-shot">
                   <div className="pl-cert-parchment">
                     {/* Inner Certificate Border */}
                     <div className="pl-cert-border">
-                      <div className="flex items-center justify-between w-full pb-1 border-b border-black text-[9px] font-mono font-bold uppercase tracking-wider">
+                      <div className="flex items-center justify-between w-full pb-1 border-b border-black dark:border-stone-700 text-[9px] font-mono font-bold uppercase tracking-wider">
                         <span>CERT #{i + 1 < 10 ? `0${i + 1}` : i + 1}</span>
-                        <span>{cert.issueDate}</span>
+                        <span className="font-black text-black dark:text-white">{cert.issueDate}</span>
                       </div>
 
-                      {/* Laurel Crest Emblem */}
+                      {/* Laurel Crest Emblem with Category Color */}
                       <div className="my-auto text-center space-y-1 py-1">
-                        <div className="inline-block p-2 rounded-full border-2 border-black bg-white shadow-[2px_2px_0_#000]">
-                          <Award className="w-6 h-6 text-black" />
+                        <div
+                          className={`inline-block p-2 rounded-full border-2 border-black dark:border-white ${theme.crestBorder} ${theme.crestBg}`}
+                        >
+                          <Award className="w-6 h-6" />
                         </div>
-                        <div className="font-mono text-[9px] font-black uppercase tracking-widest text-black block">
+                        <div className="font-mono text-[9px] font-black uppercase tracking-widest text-black dark:text-white block">
                           VERIFIED CREDENTIAL
                         </div>
-                        <div className="font-editorial font-bold text-xs uppercase line-clamp-1 text-black px-1">
+                        <div className="font-bold text-xs uppercase line-clamp-1 text-black dark:text-white px-1">
                           {cert.issuer}
                         </div>
                       </div>
 
                       {/* Category tag at bottom of photo area */}
-                      <div className="w-full text-center pt-1 border-t border-black font-mono text-[8.5px] font-bold uppercase tracking-wide truncate">
+                      <div
+                        className={`w-full text-center py-0.5 rounded font-mono text-[8.5px] font-black uppercase tracking-wide truncate border ${theme.categoryBadge}`}
+                      >
                         {cert.category}
                       </div>
                     </div>
@@ -359,37 +437,49 @@ export function PolaroidCertificateCarousel({
                 </div>
               </div>
 
-              {/* Handcrafted Clothesline Wooden Peg */}
-              <div className="pl-cert-peg" />
+              {/* Handcrafted Clothesline Wooden Peg with Category Accent */}
+              <div
+                className="pl-cert-peg"
+                style={{
+                  backgroundColor: isCurrent ? theme.pegColor : "#ffffff",
+                  borderColor: "#000000",
+                  boxShadow: isCurrent ? `2px 2px 0 ${theme.pegShadow}` : "2px 2px 0 rgba(0,0,0,0.7)",
+                }}
+              />
             </div>
           )
         })}
       </div>
 
-      {/* Interactive Detail Drawer & Controls */}
+      {/* Interactive Detail Drawer with Dynamic Color-Coding */}
       {activeCert && (
-        <div className="sketch-box p-6 sm:p-8 space-y-6 pl-cert-controls bg-white dark:bg-stone-900">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b-2 border-black dark:border-stone-800">
+        <div
+          className={`p-6 sm:p-8 rounded-xl border-2 ${activeTheme.border} ${activeTheme.cardBg} ${activeTheme.shadow} space-y-6 transition-all duration-300`}
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b-2 border-black/20 dark:border-stone-700">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="sketch-stamp bg-indigo-600 text-white dark:bg-white dark:text-black">
-                  ACTIVE CERTIFICATE 0{active + 1} / 0{n}
+                <span className={`sketch-stamp ${activeTheme.stamp}`}>
+                  ACTIVE CREDENTIAL 0{active + 1} / 0{n}
                 </span>
-                <span className="font-mono text-xs font-bold uppercase text-indigo-600 dark:text-stone-300">
+                <span className={`font-mono text-xs font-black uppercase px-2 py-0.5 rounded-full border ${activeTheme.categoryBadge}`}>
                   {activeCert.category}
                 </span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black uppercase text-black dark:text-white tracking-tight mt-2">
+              <h2 className="text-2xl sm:text-3xl font-black uppercase text-black dark:text-white tracking-tight mt-2 leading-snug">
                 {activeCert.title}
               </h2>
-              <p className="font-mono text-xs font-bold text-stone-700 dark:text-stone-300 mt-1">
-                Issued by {activeCert.issuer} • {activeCert.issueDate}
+              <p className="font-mono text-xs font-bold text-stone-700 dark:text-stone-300 mt-1 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>
+                  Issued by <strong>{activeCert.issuer}</strong> • {activeCert.issueDate}
+                </span>
               </p>
             </div>
 
             {/* Stepper Buttons & Counter */}
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xs font-bold text-black dark:text-white px-3 py-1 border-2 border-black dark:border-white rounded-full bg-stone-50 dark:bg-stone-800">
+              <span className="font-mono text-xs font-black text-black dark:text-white px-3 py-1.5 border-2 border-black dark:border-white rounded-full bg-white dark:bg-stone-800 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]">
                 <b>{pad2(active + 1)}</b> / {pad2(n)}
               </span>
 
@@ -421,14 +511,14 @@ export function PolaroidCertificateCarousel({
 
             {/* Skills Pills */}
             <div className="space-y-1.5 pt-1">
-              <span className="text-[10px] font-mono font-bold uppercase text-stone-500 dark:text-stone-400 block">
+              <span className="text-[10px] font-mono font-black uppercase text-stone-500 dark:text-stone-400 block">
                 SPECIALIZED KNOWLEDGE &amp; SKILLS:
               </span>
               <div className="flex flex-wrap gap-1.5 font-mono text-xs">
                 {activeCert.skillsLearned.map((skill) => (
                   <span
                     key={skill}
-                    className="border border-indigo-200 dark:border-stone-700 px-2.5 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-stone-800 text-indigo-700 dark:text-stone-200"
+                    className={`border px-2.5 py-0.5 rounded-full font-bold ${activeTheme.skillsPill}`}
                   >
                     ✦ {skill}
                   </span>
@@ -438,9 +528,9 @@ export function PolaroidCertificateCarousel({
           </div>
 
           {/* Action Verification Footer */}
-          <div className="pt-4 border-t-2 border-dashed border-black dark:border-stone-800 flex flex-wrap items-center justify-between gap-4">
+          <div className="pt-4 border-t-2 border-dashed border-black/20 dark:border-stone-700 flex flex-wrap items-center justify-between gap-4">
             <div className="font-mono text-xs text-stone-600 dark:text-stone-400">
-              Credential ID: <span className="font-bold text-black dark:text-white">{activeCert.credentialId || "VERIFIED-ON-FILE"}</span>
+              Credential ID: <span className="font-black text-black dark:text-white">{activeCert.credentialId || "VERIFIED-ON-FILE"}</span>
             </div>
 
             {activeCert.credentialUrl ? (
@@ -448,16 +538,16 @@ export function PolaroidCertificateCarousel({
                 href={activeCert.credentialUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="sketch-button-solid text-xs py-2 px-5 inline-flex items-center gap-1.5"
+                className="px-5 py-2 rounded-md font-mono text-xs font-black uppercase tracking-wider bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white shadow-[2.5px_2.5px_0_#8b5cf6] hover:-translate-y-0.5 transition-transform flex items-center gap-2"
               >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Verify Credential on Issuer Site</span>
-                <ArrowUpRight className="w-3 h-3" />
+                <span>Verify Credential</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
               </a>
             ) : (
-              <span className="font-mono text-xs font-bold text-stone-600 dark:text-stone-400">
-                Verified On-Record
-              </span>
+              <div className="inline-flex items-center gap-1.5 font-mono text-xs font-black text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded border border-emerald-300">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Verified by Institution</span>
+              </div>
             )}
           </div>
         </div>
@@ -510,7 +600,7 @@ const POLAROID_CSS = `
   cursor: inherit;
 }
 
-/* Polaroid Print Styling with Black & White Sketchbook look */
+/* Polaroid Print Styling with Sketchbook look */
 .pl-cert-print {
   margin-top: 14px;
   background: #ffffff;
@@ -529,7 +619,6 @@ const POLAROID_CSS = `
 
 .pl-cert-card[data-on='1'] .pl-cert-print {
   transform: scale(1.03);
-  box-shadow: 6px 10px 0 #000000;
 }
 
 /* Inner photo frame */
@@ -582,7 +671,7 @@ const POLAROID_CSS = `
   text-transform: uppercase;
 }
 
-/* Wooden Clothesline Peg in B&W Hand-Drawn style */
+/* Wooden Clothesline Peg */
 .pl-cert-peg {
   position: absolute;
   left: 50%;
@@ -591,10 +680,9 @@ const POLAROID_CSS = `
   height: 30px;
   margin-left: -6px;
   border-radius: 2px;
-  background: #ffffff;
   border: 2px solid #000000;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7);
   z-index: 10;
+  transition: background-color 0.3s ease;
 }
 
 .pl-cert-peg::after {
@@ -611,6 +699,7 @@ const POLAROID_CSS = `
 /* Dark Mode Support */
 html.dark .pl-cert-root {
   border-color: #ffffff;
+  background-color: #0c0c0c;
   background-image: 
     linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
@@ -624,15 +713,6 @@ html.dark .pl-cert-print {
   background: #171717;
   border-color: #ffffff;
   color: #ffffff;
-  box-shadow: 4px 6px 0 #ffffff;
-}
-
-html.dark .pl-cert-card[data-on='0'] .pl-cert-print {
-  box-shadow: 2px 4px 0 rgba(255, 255, 255, 0.35);
-}
-
-html.dark .pl-cert-card[data-on='1'] .pl-cert-print {
-  box-shadow: 6px 10px 0 #ffffff;
 }
 
 html.dark .pl-cert-shot {
@@ -651,19 +731,8 @@ html.dark .pl-cert-border {
   color: #ffffff;
 }
 
-html.dark .pl-cert-border * {
-  color: #ffffff !important;
-  border-color: #ffffff !important;
-}
-
 html.dark .pl-cert-note {
   color: #ffffff;
-}
-
-html.dark .pl-cert-peg {
-  background: #171717;
-  border-color: #ffffff;
-  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.7);
 }
 
 html.dark .pl-cert-peg::after {

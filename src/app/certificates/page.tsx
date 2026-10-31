@@ -1,72 +1,228 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { portfolioData } from "@/data/portfolioData";
-import { Sparkles } from "lucide-react";
-import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCarousel";
+import React, { useState } from "react"
+import { portfolioData } from "@/data/portfolioData"
+import { Sparkles, Award, ShieldCheck, CheckCircle2 } from "lucide-react"
+import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCarousel"
+
+/**
+ * Handcrafted Doodle #1 — The Laurel Medal 🏅
+ */
+function MedalRibbonDoodle({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative inline-flex items-center ${className}`} aria-hidden="true">
+      <svg
+        viewBox="0 0 100 110"
+        className="w-16 h-20 sm:w-20 sm:h-24 drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)] filter overflow-visible"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* Ribbon Sashes */}
+        <path d="M 38 12 L 20 60 L 34 54 L 46 64 L 42 20 Z" fill="#f43f5e" stroke="#000000" className="dark:stroke-white" strokeWidth="2.2" />
+        <path d="M 62 12 L 80 60 L 66 54 L 54 64 L 58 20 Z" fill="#3b82f6" stroke="#000000" className="dark:stroke-white" strokeWidth="2.2" />
+
+        {/* Medal Circular Coin */}
+        <circle cx="50" cy="58" r="24" fill="#fbbf24" stroke="#000000" className="dark:stroke-white" strokeWidth="2.6" />
+        <circle cx="50" cy="58" r="18" fill="#fef08a" stroke="#d97706" strokeWidth="1.6" strokeDasharray="3 2" />
+
+        {/* Star in Center */}
+        <path
+          d="M 50 46 L 53 54 L 61 54 L 55 59 L 57 67 L 50 62 L 43 67 L 45 59 L 39 54 L 47 54 Z"
+          fill="#d97706"
+          stroke="none"
+        />
+
+        {/* Sparkles */}
+        <path d="M 78 40 L 82 44 M 82 40 L 78 44" stroke="#f59e0b" strokeWidth="2" />
+        <path d="M 18 36 L 22 40 M 22 36 L 18 40" stroke="#10b981" strokeWidth="2" />
+      </svg>
+
+      <div
+        className="hidden sm:block ml-2 px-3 py-1.5 bg-amber-100 dark:bg-stone-800 border-2 border-black dark:border-white rounded-xl shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] text-xs font-bold rotate-[2deg]"
+        style={{ fontFamily: "'Patrick Hand', cursive" }}
+      >
+        <span className="text-amber-950 dark:text-amber-200 text-sm">
+          proof of craft 🏅
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Handcrafted Doodle #2 — The Clothesline Clothespin 🧷
+ */
+function ClothespinGuideDoodle({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative inline-flex items-center gap-2 ${className}`} aria-hidden="true">
+      <svg
+        viewBox="0 0 110 50"
+        className="w-24 sm:w-28 h-12 overflow-visible"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* Wire String */}
+        <path d="M 4 20 Q 55 35 106 20" stroke="#8b5cf6" className="dark:stroke-purple-400" strokeWidth="2.4" strokeDasharray="4 3" />
+
+        {/* Hanging Peg */}
+        <g transform="translate(50, 10)">
+          <rect x="-4" y="0" width="8" height="24" rx="2" fill="#facc15" stroke="#000000" className="dark:stroke-white" strokeWidth="2" />
+          <circle cx="0" cy="8" r="1.5" fill="#000000" className="dark:fill-white" stroke="none" />
+        </g>
+
+        {/* Motion Breeze squiggles */}
+        <path d="M 72 32 Q 85 28 95 36" stroke="#06b6d4" strokeWidth="1.8" />
+      </svg>
+      <span
+        className="text-xs sm:text-sm font-bold text-purple-700 dark:text-purple-300 rotate-[-2deg]"
+        style={{ fontFamily: "'Patrick Hand', cursive" }}
+      >
+        drag or swipe the line ✦
+      </span>
+    </div>
+  )
+}
 
 export default function CertificatesPage() {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState("All")
 
   const categories = [
-    "All",
-    "Machine Learning",
-    "Data Science",
-    "Programming",
-    "Mathematics & Hackathons",
-  ];
+    { label: "All", name: "ALL CERTIFICATES", color: "all" },
+    { label: "Machine Learning", name: "MACHINE LEARNING", color: "purple" },
+    { label: "Data Science", name: "DATA SCIENCE", color: "emerald" },
+    { label: "Programming", name: "PROGRAMMING", color: "cyan" },
+    { label: "Mathematics & Hackathons", name: "MATH & HACKATHONS", color: "amber" },
+  ]
 
   const filtered =
     activeCategory === "All"
       ? portfolioData.certificates
-      : portfolioData.certificates.filter((c) => c.category === activeCategory);
+      : portfolioData.certificates.filter((c) => c.category === activeCategory)
 
   return (
-    <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-12">
-      {/* Page Header */}
-      <div className="pb-6 border-b-2 border-black dark:border-stone-800 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <div className="sketch-stamp mb-2 bg-indigo-600 text-white dark:bg-white dark:text-black">
-            CERTIFICATES &amp; CREDENTIALS
+    <div className="py-8 sm:py-14 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-12">
+      {/* =========================================================================
+          PAGE HEADER with Thematic Badge & DOODLE #1 (Medal Ribbon)
+      ========================================================================= */}
+      <div className="pb-6 border-b-2 border-black dark:border-stone-800 space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="inline-flex items-center gap-2">
+            <span className="sketch-stamp bg-amber-400 text-black font-black shadow-[2px_2px_0_#000]">
+              CHAPTER 04 • LAURELS &amp; CERTIFICATES
+            </span>
+            <span className="hidden sm:inline-block font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
+              [VERIFIED CREDENTIALS]
+            </span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white">
-            Certifications &amp; Laurels
-          </h1>
-          <p className="mt-2 text-xs sm:text-sm font-mono text-stone-600 dark:text-stone-400 max-w-xl">
-            Verified technical coursework pegged onto an interactive clothesline. Drag the line, swipe prints, or click any card to inspect credentials.
-          </p>
+
+          {/* Quick Info Tags */}
+          <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-400 text-amber-800 dark:text-amber-300 font-bold">
+              <Award className="w-3 h-3 text-amber-500" />
+              6 Verified Certificates
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-400 text-emerald-800 dark:text-emerald-300 font-bold">
+              <ShieldCheck className="w-3 h-3 text-emerald-500" />
+              Stanford, Imperial &amp; IBM
+            </span>
+          </div>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex flex-wrap gap-2 font-mono text-xs uppercase">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-full border-2 border-black dark:border-white font-bold transition-all cursor-pointer ${
-                activeCategory === cat
-                  ? "bg-indigo-600 text-white dark:bg-white dark:text-black shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-                  : "bg-white text-black dark:bg-stone-900 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#666]"
-              }`}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div className="space-y-2 max-w-2xl">
+            <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white">
+              Certifications &amp; Laurels
+            </h1>
+
+            {/* Hand-drawn comic squiggle underline */}
+            <svg
+              className="w-48 sm:w-64 h-3 text-amber-500 overflow-visible"
+              viewBox="0 0 240 10"
+              fill="none"
+              aria-hidden="true"
             >
-              {cat === "All" ? "ALL CERTIFICATES" : cat}
-            </button>
-          ))}
+              <path
+                d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6"
+                stroke="currentColor"
+                strokeWidth="3.2"
+                strokeLinecap="round"
+              />
+            </svg>
+
+            <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+              Verified technical coursework and hackathon recognitions pegged onto an interactive clothesline. Drag the line, swipe prints, or click any card to inspect credentials.
+            </p>
+          </div>
+
+          {/* BESPOKE DOODLE #1: The Laurel Medal */}
+          <div className="self-start lg:self-end">
+            <MedalRibbonDoodle />
+          </div>
+        </div>
+
+        {/* =========================================================================
+            COLORFUL FILTER PILLS
+        ========================================================================= */}
+        <div className="pt-2 flex flex-wrap items-center gap-2 font-mono text-xs uppercase">
+          {categories.map((cat) => {
+            const count =
+              cat.label === "All"
+                ? portfolioData.certificates.length
+                : portfolioData.certificates.filter((c) => c.category === cat.label).length
+
+            const isActive = activeCategory === cat.label
+
+            let activeStyle = "bg-black text-white shadow-[3px_3px_0_#f59e0b]"
+            if (cat.color === "purple") {
+              activeStyle = "bg-purple-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
+            } else if (cat.color === "emerald") {
+              activeStyle = "bg-emerald-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
+            } else if (cat.color === "cyan") {
+              activeStyle = "bg-sky-600 text-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
+            } else if (cat.color === "amber") {
+              activeStyle = "bg-amber-400 text-black shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
+            }
+
+            return (
+              <button
+                key={cat.label}
+                type="button"
+                onClick={() => setActiveCategory(cat.label)}
+                className={`px-3.5 py-1.5 rounded-full border-2 border-black dark:border-white font-black tracking-wider transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
+                  isActive
+                    ? activeStyle
+                    : "bg-white text-black dark:bg-stone-900 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#666]"
+                }`}
+              >
+                {isActive && <Sparkles className="w-3 h-3 text-amber-300" />}
+                <span>{cat.name}</span>
+                <span className="text-[10px] opacity-75 font-bold">({count})</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
-      {/* Main Interactive Polaroid Clothesline Carousel */}
+      {/* =========================================================================
+          INTERACTIVE POLAROID CLOTHESLINE CAROUSEL
+          (With Doodle #2: Clothesline Clothespin Guide)
+      ========================================================================= */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between text-xs font-mono font-bold text-stone-600 dark:text-stone-400">
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-indigo-600 dark:text-white" />
-            <span>DRAG THE STRING OR CLICK A CARD TO SWING</span>
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold text-stone-600 dark:text-stone-400">
+          <ClothespinGuideDoodle />
+          <span className="text-amber-700 dark:text-amber-300 font-black">
+            {filtered.length} PRINTS HANGING ON THE LINE
           </span>
-          <span className="text-indigo-600 dark:text-white">{filtered.length} PRINTS HANGING</span>
         </div>
 
         <PolaroidCertificateCarousel certificates={filtered} height={520} cardWidth={280} />
       </div>
     </div>
-  );
+  )
 }
