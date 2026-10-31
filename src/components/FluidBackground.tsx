@@ -28,10 +28,10 @@ export function FluidBackground() {
   // Light Mode Colors: Harmonized with Harsh's sketchbook palette (Warm Amber, Lilac Indigo, Coral & Mint Cream)
   const lightColors = [
     "#fafaf9", // Soft Warm Cream Paper
-    "#fbbf24", // Warm Radiant Amber (Brand Gold)
-    "#818cf8", // Electric Indigo / Lilac
-    "#fda4af", // Soft Coral / Peach
-    "#6ee7b7", // Fresh Mint Emerald
+    "#f59e0b", // Warm Radiant Amber (Brand Gold)
+    "#6366f1", // Electric Indigo / Lilac
+    "#fb7185", // Soft Coral Rose
+    "#34d399", // Fresh Mint Emerald
     "#fef3c7", // Sunlight Vanilla Cream
   ];
 
@@ -39,9 +39,9 @@ export function FluidBackground() {
   const darkColors = [
     "#09090b", // Deep Obsidian Canvas
     "#312e81", // Deep Indigo Aurora
-    "#78350f", // Warm Amber Ember (Brand Gold glow)
+    "#b45309", // Warm Amber Ember (Brand Gold glow)
     "#581c87", // Cosmic Violet Shimmer
-    "#0e7490", // Bioluminescent Cyan Accent
+    "#0891b2", // Bioluminescent Cyan Accent
     "#09090b", // Deep Midnight
   ];
 
@@ -56,8 +56,8 @@ export function FluidBackground() {
       <div
         className={`w-full h-full transition-all duration-700 ease-in-out ${
           isDark
-            ? "blur-[54px] sm:blur-[72px] scale-110 opacity-80"
-            : "blur-[30px] sm:blur-[42px] scale-105 opacity-85"
+            ? "blur-[64px] sm:blur-[80px] scale-110 opacity-90"
+            : "blur-[32px] sm:blur-[44px] scale-105 opacity-85"
         }`}
       >
         <GradientWave
