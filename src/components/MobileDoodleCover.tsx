@@ -60,7 +60,7 @@ export function MobileDoodleCover() {
 
   return (
     <section
-      className="fixed inset-0 w-full h-[100dvh] overflow-hidden select-none bg-black text-white z-40 flex flex-col justify-between"
+      className="fixed inset-0 w-full h-[100dvh] overflow-hidden select-none bg-black text-white z-40 flex flex-col justify-end"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -131,8 +131,8 @@ export function MobileDoodleCover() {
         />
 
         {/* Cinematic Multi-Stop Overlays */}
-        {/* Top Vignette for Status & Controls */}
-        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none" />
+        {/* Subtle Top Vignette */}
+        <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
 
         {/* Bottom Rich Gradient for Editorial Readability */}
         <div className="absolute bottom-0 left-0 right-0 h-[72%] bg-gradient-to-t from-black via-black/85 via-50% to-transparent pointer-events-none" />
@@ -141,40 +141,7 @@ export function MobileDoodleCover() {
         <div className="absolute inset-0 ring-1 ring-inset ring-white/10 pointer-events-none" />
       </div>
 
-      {/* ── Top Bar: Active Status Badge, Admin Lock & Cool Theme Switcher (Chennai 2026 removed) ── */}
-      <header className="relative z-20 w-full flex items-center justify-between px-5 pt-6 sm:pt-7">
-        <motion.div
-          initial={{ opacity: 0, y: -15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-xl border border-white/20 shadow-lg"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-          </span>
-          <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-white/90">
-            {portfolio.personal.availability ? "ONLINE" : "ONLINE"}
-          </span>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: -15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-          className="flex items-center gap-2"
-        >
-          <Link
-            href="/admin"
-            aria-label="Admin Portal"
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-black/60 backdrop-blur-xl border border-white/20 text-white/70 hover:text-amber-400 active:scale-95 transition-all"
-            title="Admin Console (Locked)"
-          >
-            <Lock className="w-3.5 h-3.5" />
-          </Link>
-          <ThemeToggle />
-        </motion.div>
-      </header>
+      {/* ── Top Header removed on phone as requested: Clean edge-to-edge portrait visual ── */}
 
       {/* ── Bottom Section: Typography, Sampled Color Role Badge & Social Dock ── */}
       <footer className="relative z-20 w-full flex flex-col items-center text-center px-5 pb-7 pt-4">
@@ -238,12 +205,12 @@ export function MobileDoodleCover() {
           ENTER PORTFOLIO
         </motion.button>
 
-        {/* Social Icons Dock — Email, LinkedIn, GitHub (Replacing the old About/Projects/Certificates/Contact pills) */}
+        {/* Quick Actions & Socials Dock — Email, LinkedIn, GitHub, Theme & Admin */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="flex items-center justify-center gap-3 mt-3.5"
+          className="flex items-center justify-center gap-2.5 mt-3.5"
         >
           {/* GitHub Icon Button */}
           <a
@@ -252,9 +219,9 @@ export function MobileDoodleCover() {
             rel="noopener noreferrer"
             aria-label="GitHub Profile"
             title="GitHub"
-            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-black/60 hover:bg-white text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]"
+            className="group relative flex items-center justify-center w-9 h-9 rounded-full bg-black/60 hover:bg-white text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]"
           >
-            <GithubIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+            <GithubIcon className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
           </a>
 
           {/* LinkedIn Icon Button */}
@@ -264,9 +231,9 @@ export function MobileDoodleCover() {
             rel="noopener noreferrer"
             aria-label="LinkedIn Profile"
             title="LinkedIn"
-            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-black/60 hover:bg-[#0077b5] text-white border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_15px_rgba(0,119,181,0.5)]"
+            className="group relative flex items-center justify-center w-9 h-9 rounded-full bg-black/60 hover:bg-[#0077b5] text-white border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_15px_rgba(0,119,181,0.5)]"
           >
-            <LinkedinIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+            <LinkedinIcon className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
           </a>
 
           {/* Email Icon Button */}
@@ -274,10 +241,25 @@ export function MobileDoodleCover() {
             href={`mailto:${portfolio.personal.email || "harsharyan@outlook.com"}`}
             aria-label="Send Email"
             title="Email Harsh"
-            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-black/60 hover:bg-amber-400 text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_15px_rgba(251,191,36,0.5)]"
+            className="group relative flex items-center justify-center w-9 h-9 rounded-full bg-black/60 hover:bg-amber-400 text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_15px_rgba(251,191,36,0.5)]"
           >
-            <Mail className="w-4 h-4 transition-transform group-hover:scale-110" />
+            <Mail className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
           </a>
+
+          {/* Theme Toggle Button */}
+          <div className="flex items-center scale-90">
+            <ThemeToggle />
+          </div>
+
+          {/* Admin Console Shortcut */}
+          <Link
+            href="/admin"
+            aria-label="Admin Portal"
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-black/60 hover:bg-amber-400 text-white/70 hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md"
+            title="Admin Console"
+          >
+            <Lock className="w-3.5 h-3.5" />
+          </Link>
         </motion.div>
 
         {/* Animated Swipe Up Indicator */}

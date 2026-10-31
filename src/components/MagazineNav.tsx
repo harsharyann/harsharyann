@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Lock, Sparkles, Home, User, FolderGit2, Award, Mail, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
 interface NavPage {
@@ -19,6 +20,40 @@ interface NavPage {
 
 export function MagazineNav() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on route change
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   // Hidden on root cover page
   if (pathname === "/") {
@@ -36,19 +71,7 @@ export function MagazineNav() {
       activeClassLight: "bg-amber-300 text-black shadow-[3px_3px_0_#000]",
       hoverClassLight: "hover:bg-amber-100 hover:text-black hover:-rotate-1",
       icon: (active) => (
-        <svg
-          viewBox="0 0 24 24"
-          className="w-4 h-4 transition-transform group-hover:scale-110"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={active ? "2.6" : "2"}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
+        <User className={`w-4 h-4 transition-transform group-hover:scale-110 ${active ? "stroke-[2.5]" : "stroke-2"}`} />
       ),
     },
     {
@@ -61,18 +84,7 @@ export function MagazineNav() {
       activeClassLight: "bg-indigo-600 text-white shadow-[3px_3px_0_#000]",
       hoverClassLight: "hover:bg-indigo-100 hover:text-indigo-900 hover:rotate-1",
       icon: (active) => (
-        <svg
-          viewBox="0 0 24 24"
-          className="w-4 h-4 transition-transform group-hover:scale-110"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={active ? "2.6" : "2"}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        </svg>
+        <FolderGit2 className={`w-4 h-4 transition-transform group-hover:scale-110 ${active ? "stroke-[2.5]" : "stroke-2"}`} />
       ),
     },
     {
@@ -85,19 +97,7 @@ export function MagazineNav() {
       activeClassLight: "bg-emerald-400 text-black shadow-[3px_3px_0_#000]",
       hoverClassLight: "hover:bg-emerald-100 hover:text-emerald-900 hover:-rotate-1",
       icon: (active) => (
-        <svg
-          viewBox="0 0 24 24"
-          className="w-4 h-4 transition-transform group-hover:scale-110"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={active ? "2.6" : "2"}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="8" r="6" />
-          <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
-        </svg>
+        <Award className={`w-4 h-4 transition-transform group-hover:scale-110 ${active ? "stroke-[2.5]" : "stroke-2"}`} />
       ),
     },
     {
@@ -110,115 +110,186 @@ export function MagazineNav() {
       activeClassLight: "bg-rose-400 text-black shadow-[3px_3px_0_#000]",
       hoverClassLight: "hover:bg-rose-100 hover:text-rose-900 hover:rotate-1",
       icon: (active) => (
-        <svg
-          viewBox="0 0 24 24"
-          className="w-4 h-4 transition-transform group-hover:scale-110"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={active ? "2.6" : "2"}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect width="20" height="16" x="2" y="4" rx="2" />
-          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-        </svg>
+        <Mail className={`w-4 h-4 transition-transform group-hover:scale-110 ${active ? "stroke-[2.5]" : "stroke-2"}`} />
       ),
     },
   ];
 
+  const activePage = pages.find((p) => p.path === pathname);
+
   return (
     <>
-      {/* ── Top Header (Desktop & Mobile) ── */}
-      <header className="w-full sticky top-0 z-40 bg-white/90 dark:bg-stone-950/90 backdrop-blur-md border-b border-black/10 dark:border-stone-800 py-2.5 px-4 sm:px-6 transition-colors duration-200">
-        <div className="max-w-6xl xl:max-w-7xl mx-auto flex items-center justify-between gap-3">
-          {/* Brand Link to Cover */}
-          <Link
-            href="/"
-            className="group relative inline-flex items-center gap-2 font-mono text-xs font-black uppercase bg-black text-white dark:bg-white dark:text-black px-3.5 py-1.5 rounded-full tracking-wider border-2 border-black dark:border-white shadow-[2.5px_2.5px_0_#555] dark:shadow-[2.5px_2.5px_0_#aaa] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none"
-            title="Return to Cover"
+      {/* ── DESKTOP NAVIGATION BUTTON (Zero full-width header clutter on Desktop) ── */}
+      <div className="hidden md:flex fixed top-4 left-0 right-0 z-50 pointer-events-none px-6 lg:px-10 justify-between items-start">
+        {/* Floating Brand Stamp (Return to Cover) */}
+        <Link
+          href="/"
+          className="pointer-events-auto group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white dark:bg-stone-900 text-black dark:text-white px-4 py-2 rounded-full tracking-wider border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none"
+          title="Return to Cover Page"
+        >
+          {/* Mascot Smiley */}
+          <svg
+            viewBox="0 0 24 24"
+            className="w-4 h-4 text-amber-500 dark:text-amber-400 group-hover:rotate-12 transition-transform"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
           >
-            {/* Mascot Smiley */}
-            <svg
-              viewBox="0 0 24 24"
-              className="w-4 h-4 text-amber-300 dark:text-amber-500 group-hover:rotate-12 transition-transform"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="12" r="9" />
-              <path d="M8.5 10h.01" strokeWidth="3" />
-              <path d="M14 9.5c.5.5 1 1.5 1 1.5" />
-              <path d="M8 14c1.5 2 6.5 2 8 0" />
-            </svg>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M8.5 10h.01" strokeWidth="3" />
+            <path d="M14 9.5c.5.5 1 1.5 1 1.5" />
+            <path d="M8 14c1.5 2 6.5 2 8 0" />
+          </svg>
 
-            <span>HARSH ARYAN</span>
+          <span>HARSH ARYAN</span>
 
-            <span className="text-[10px] text-stone-400 group-hover:text-white dark:group-hover:text-black transition-colors font-sans">
-              ↵
+          <span className="text-[10px] text-stone-400 group-hover:text-black dark:group-hover:text-white transition-colors font-sans">
+            ↵
+          </span>
+        </Link>
+
+        {/* Floating Nav Button & Theme Switcher Cluster */}
+        <div ref={dropdownRef} className="pointer-events-auto relative flex items-center gap-2.5">
+          {/* THE NAV BUTTON (Replaces traditional wide navbar) */}
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white dark:bg-stone-900 text-black dark:text-white px-4 py-2 rounded-full border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none cursor-pointer"
+            aria-label="Toggle Navigation Menu"
+            aria-expanded={isOpen}
+          >
+            {/* Active Chapter Dot */}
+            <span
+              className="w-2.5 h-2.5 rounded-full animate-pulse flex-shrink-0"
+              style={{ backgroundColor: activePage?.accentHex || "#f59e0b" }}
+            />
+
+            {/* Dynamic Label */}
+            <span className="tracking-wide">
+              {isOpen ? "CLOSE ✕" : `NAV • ${activePage?.shortLabel || "MENU"} ☰`}
             </span>
-          </Link>
 
-          {/* Desktop Navigation Pills */}
-          <nav
-            className="hidden md:flex items-center gap-2 font-mono text-xs font-bold uppercase"
-            aria-label="Main Navigation"
-          >
-            {pages.map((p) => {
-              const isActive = pathname === p.path;
-              return (
-                <Link
-                  key={p.path}
-                  href={p.path}
-                  className={`group relative px-3.5 py-1.5 rounded-full border-2 border-black dark:border-stone-400 transition-all duration-150 flex items-center gap-1.5 select-none active:translate-x-[1px] active:translate-y-[1px] ${
-                    isActive
-                      ? `${p.activeClassLight} dark:bg-white dark:text-black dark:border-white dark:shadow-[3px_3px_0_#fff] scale-105 z-10 font-black`
-                      : `bg-white dark:bg-stone-900 text-black dark:text-stone-200 shadow-[2.5px_2.5px_0_#000] dark:shadow-[2.5px_2.5px_0_#888] ${p.hoverClassLight} dark:hover:bg-stone-800 dark:hover:text-white hover:-translate-y-0.5`
-                  }`}
-                >
-                  <span
-                    className={`flex items-center justify-center ${
-                      isActive ? "" : "text-black dark:text-stone-300"
-                    }`}
-                  >
-                    {p.icon(isActive)}
-                  </span>
+            {/* Subtle Star */}
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 group-hover:rotate-45 transition-transform" />
+          </button>
 
-                  <span>{p.name}</span>
-
-                  {isActive && (
-                    <span
-                      className="absolute -top-2 -right-1 text-[11px] text-amber-500 dark:text-amber-300 animate-pulse pointer-events-none select-none"
-                      aria-hidden="true"
-                    >
-                      ✦
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-
-            {/* Theme Switcher in Desktop Nav */}
-            <div className="ml-2 pl-2 border-l-2 border-black/20 dark:border-white/20">
-              <ThemeToggle />
-            </div>
-          </nav>
-
-          {/* Mobile Top Header: Theme Toggle (Clean, zero hamburger clutter) */}
-          <div className="flex md:hidden items-center">
+          {/* Theme Switcher Capsule */}
+          <div className="flex items-center">
             <ThemeToggle />
           </div>
-        </div>
-      </header>
 
-      {/* ── iOS-Style Floating Bottom Navigation Dock (Mobile Only) ── */}
+          {/* ── EXPANDABLE SKETCHBOOK DIRECTORY DROPDOWN ── */}
+          {isOpen && (
+            <div
+              className="absolute right-0 top-12 mt-2 w-80 bg-white dark:bg-stone-900 border-2 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] rounded-2xl p-4 z-50 animate-in fade-in zoom-in-95 duration-150 select-none"
+              role="dialog"
+              aria-label="Site Navigation Directory"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-black/10 dark:border-white/10 font-mono text-[11px] font-black uppercase text-stone-500 dark:text-stone-400">
+                <span className="flex items-center gap-1.5">
+                  <span className="text-amber-500">✦</span> CHAPTER DIRECTORY
+                </span>
+                <span className="text-[10px] text-stone-400">[ESC TO CLOSE]</span>
+              </div>
+
+              {/* Navigation Links */}
+              <div className="space-y-1.5">
+                {/* 01 Cover */}
+                <Link
+                  href="/"
+                  className="flex items-center justify-between p-2.5 rounded-xl border border-transparent hover:border-black dark:hover:border-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-all group font-mono text-xs font-bold"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-[10px] text-stone-400 font-extrabold w-5">01</span>
+                    <Home className="w-4 h-4 text-stone-500 group-hover:text-amber-500 transition-colors" />
+                    <span className="text-black dark:text-white uppercase font-black">Cover Screen</span>
+                  </div>
+                  <span className="text-[10px] text-stone-400 font-mono">↵ Intro</span>
+                </Link>
+
+                {/* Chapter Pages */}
+                {pages.map((p) => {
+                  const isActive = pathname === p.path;
+                  return (
+                    <Link
+                      key={p.path}
+                      href={p.path}
+                      className={`flex items-center justify-between p-2.5 rounded-xl border transition-all font-mono text-xs font-bold ${
+                        isActive
+                          ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-[2.5px_2.5px_0_#888]"
+                          : "border-transparent hover:border-black dark:hover:border-white hover:bg-stone-100 dark:hover:bg-stone-800 text-black dark:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className={`text-[10px] font-extrabold w-5 ${isActive ? "text-amber-400 dark:text-amber-600" : "text-stone-400"}`}>
+                          {p.chapter}
+                        </span>
+                        <span className="flex items-center justify-center">
+                          {p.icon(isActive)}
+                        </span>
+                        <span className="uppercase font-black">{p.name}</span>
+                      </div>
+
+                      {isActive ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase text-amber-300 dark:text-amber-700 bg-stone-800 dark:bg-stone-200 px-2 py-0.5 rounded-full">
+                          <span>✦</span> CURRENT
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-stone-400 uppercase font-mono">
+                          {p.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+
+                {/* Admin Portal Shortcut */}
+                <div className="pt-2 mt-2 border-t border-black/10 dark:border-white/10">
+                  <Link
+                    href="/admin"
+                    className="flex items-center justify-between p-2 rounded-xl text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all font-mono text-[11px] font-bold"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Lock className="w-3.5 h-3.5" />
+                      <span>Admin CMS Console</span>
+                    </span>
+                    <span className="text-[9px] bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 px-1.5 py-0.5 rounded">
+                      Locked
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── PHONE NAVIGATION: TOP HEADER REMOVED! (Clean edge-to-edge reading on mobile) ── */}
+      {/* ── PHONE FLOATING BOTTOM DOCK ONLY ── */}
       <nav
-        className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[360px] backdrop-blur-2xl bg-white/85 dark:bg-stone-900/85 border border-black/15 dark:border-white/15 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)] p-1.5 flex items-center justify-between gap-1 select-none"
-        aria-label="iOS Mobile Navigation Bar"
+        className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[390px] backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border-2 border-black dark:border-white rounded-full shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff] p-1.5 flex items-center justify-between gap-1 select-none"
+        aria-label="Mobile Navigation Dock"
       >
+        {/* Home / Cover Link */}
+        <Link
+          href="/"
+          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-full transition-all duration-200 active:scale-90 ${
+            pathname === "/"
+              ? "bg-black text-white dark:bg-white dark:text-black shadow-sm font-bold scale-[1.03]"
+              : "text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white"
+          }`}
+          title="Home Cover"
+        >
+          <Home className="w-4 h-4" />
+          <span className="text-[9.5px] font-mono tracking-tight font-black uppercase mt-0.5">
+            Home
+          </span>
+        </Link>
+
         {/* Inner Pages: About, Projects, Certs, Contact */}
         {pages.map((p) => {
           const isActive = pathname === p.path;
@@ -235,12 +306,17 @@ export function MagazineNav() {
               <span className="flex items-center justify-center">
                 {p.icon(isActive)}
               </span>
-              <span className="text-[10px] font-mono tracking-tight font-bold uppercase mt-0.5">
+              <span className="text-[9.5px] font-mono tracking-tight font-black uppercase mt-0.5">
                 {p.shortLabel}
               </span>
             </Link>
           );
         })}
+
+        {/* Compact Theme Toggle in Mobile Dock */}
+        <div className="flex items-center justify-center pl-1 pr-1 border-l border-black/15 dark:border-white/20 scale-90">
+          <ThemeToggle />
+        </div>
       </nav>
     </>
   );
