@@ -26,13 +26,13 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #ffffff;
+  background-color: transparent;
   color: #000000;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: color 0.25s ease;
 }
 
 html.dark {
-  background-color: #09090b;
+  background-color: transparent;
   color: #ffffff;
 }
 

@@ -40,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="bg-white text-black" suppressHydrationWarning>
+    <html lang="en" className="bg-transparent text-black" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -76,7 +76,7 @@ export default function RootLayout({
             <FluidBackground />
             <ScrollProgressBar />
             <MagazineNav />
-            {children}
+            <div className="relative z-10 flex-1 flex flex-col">{children}</div>
           </PortfolioProvider>
         </ThemeProvider>
       </body>

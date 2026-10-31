@@ -17,7 +17,7 @@ export function FluidBackground() {
   if (!mounted) {
     return (
       <div
-        className="fixed inset-0 pointer-events-none -z-10 overflow-hidden bg-white dark:bg-[#09090b]"
+        className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-transparent"
         aria-hidden="true"
       />
     );
@@ -33,7 +33,7 @@ export function FluidBackground() {
 
   return (
     <div
-      className="fixed inset-0 pointer-events-none -z-10 overflow-hidden select-none"
+      className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
       aria-hidden="true"
     >
       {/* ── WebGL 3D Gradient Wave Texture ── */}
@@ -41,31 +41,28 @@ export function FluidBackground() {
         key={isDark ? "dark-wave" : "light-wave"}
         colors={waveColors}
         isPlaying={true}
-        className="w-full h-full opacity-90 dark:opacity-85"
+        className="w-full h-full opacity-100"
         shadowPower={isDark ? 5 : 7}
         darkenTop={false}
-        noiseSpeed={0.000012}
+        noiseSpeed={0.000015}
         noiseFrequency={[0.0001, 0.0008]}
         deform={{
-          incline: 0.48,
-          noiseAmp: 240,
-          noiseFlow: 4.8,
+          incline: 0.5,
+          noiseAmp: 260,
+          noiseFlow: 5,
           noiseSpeed: 10,
         }}
       />
 
-      {/* Tactile Liquid Caustics & Architectural Fine Paper Grid Overlay */}
+      {/* Tactile Fine Paper Grid Overlay */}
       <div
-        className="absolute inset-0 opacity-40 mix-blend-overlay dark:opacity-30 pointer-events-none"
+        className="absolute inset-0 opacity-25 dark:opacity-20 pointer-events-none"
         style={{
           backgroundImage:
-            "radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px), linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px)",
+            "radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1px), linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px)",
           backgroundSize: "28px 28px, 28px 28px, 28px 28px",
         }}
       />
-
-      {/* Depth Vignette for Edge Readability */}
-      <div className="absolute inset-0 bg-radial-vignette opacity-25 dark:opacity-40 pointer-events-none" />
     </div>
   );
 }

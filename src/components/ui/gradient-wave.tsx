@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 function normalizeColor(hexCode: number): number[] {
   return [
@@ -24,7 +24,7 @@ class MiniGl {
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
-    const gl = this.canvas.getContext("webgl", { antialias: true });
+    const gl = this.canvas.getContext("webgl", { antialias: true, alpha: true });
     if (!gl) throw new Error("WebGL not supported");
     this.gl = gl;
 
@@ -112,7 +112,7 @@ class MiniGl {
 
       attach(e: string, t: WebGLProgram): number {
         const n = context.getAttribLocation(t, e);
-        if (this.target === context.ARRAY_BUFFER) {
+        if (this.target === context.ARRAY_BUFFER && n >= 0) {
           context.bindBuffer(this.target, this.buffer);
           context.enableVertexAttribArray(n);
           context.vertexAttribPointer(
@@ -129,7 +129,7 @@ class MiniGl {
 
       use(e: number): void {
         context.bindBuffer(this.target, this.buffer);
-        if (this.target === context.ARRAY_BUFFER) {
+        if (this.target === context.ARRAY_BUFFER && e >= 0) {
           context.enableVertexAttribArray(e);
           context.vertexAttribPointer(
             e,
@@ -160,8 +160,9 @@ class MiniGl {
           context.shaderSource(shader, source);
           context.compileShader(shader);
           if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) {
-            console.error(context.getShaderInfoLog(shader));
-            throw new Error("Shader compilation error");
+            const info = context.getShaderInfoLog(shader);
+            console.error(info);
+            throw new Error("Shader compilation error: " + info);
           }
           return shader;
         }
@@ -208,8 +209,9 @@ class MiniGl {
         if (
           !context.getProgramParameter(material.program, context.LINK_STATUS)
         ) {
-          console.error(context.getProgramInfoLog(material.program));
-          throw new Error("Program linking error");
+          const info = context.getProgramInfoLog(material.program);
+          console.error(info);
+          throw new Error("Program linking error: " + info);
         }
 
         context.useProgram(material.program);
@@ -415,7 +417,7 @@ class MiniGl {
 
   render(): void {
     this.gl.clearColor(0, 0, 0, 0);
-    this.gl.clearDepth(1);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.meshes.forEach((m) => m.draw());
   }
 }
@@ -448,10 +450,6 @@ class Gradient {
       u_time: new this.minigl.Uniform({ value: 0 }),
       u_shadow_power: new this.minigl.Uniform({ value: 5 }),
       u_darken_top: new this.minigl.Uniform({ value: 0 }),
-      u_active_colors: new this.minigl.Uniform({
-        value: [1, 1, 1, 1],
-        type: "vec4",
-      }),
       u_global: new this.minigl.Uniform({
         value: {
           noiseFreq: new this.minigl.Uniform({
@@ -586,19 +584,16 @@ void main() {
   v_color = u_baseColor;
   
   for (int i = 0; i < u_waveLayers_length; i++) {
-    if (u_active_colors[i + 1] == 1.) {
-      WaveLayers layer = u_waveLayers[i];
-      float layerNoise = smoothstep(
-        layer.noiseFloor,
-        layer.noiseCeil,
-        snoise(vec3(
-          noiseCoord.x * layer.noiseFreq.x + time * layer.noiseFlow,
-          noiseCoord.y * layer.noiseFreq.y,
-          time * layer.noiseSpeed + layer.noiseSeed
-        )) / 2.0 + 0.5
-      );
-      v_color = blendNormal(v_color, layer.color, pow(layerNoise, 4.));
-    }
+    float layerNoise = smoothstep(
+      u_waveLayers[i].noiseFloor,
+      u_waveLayers[i].noiseCeil,
+      snoise(vec3(
+        noiseCoord.x * u_waveLayers[i].noiseFreq.x + time * u_waveLayers[i].noiseFlow,
+        noiseCoord.y * u_waveLayers[i].noiseFreq.y,
+        time * u_waveLayers[i].noiseSpeed + u_waveLayers[i].noiseSeed
+      )) / 2.0 + 0.5
+    );
+    v_color = blendNormal(v_color, u_waveLayers[i].color, pow(layerNoise, 4.0));
   }
   
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -644,6 +639,7 @@ void main() {
   animate = (timestamp: number): void => {
     if (!this.isPlaying) return;
 
+    if (this.last === 0) this.last = timestamp;
     this.time += Math.min(timestamp - this.last, 1000 / 15);
     this.last = timestamp;
     this.mesh.material.uniforms.u_time.value = this.time;
@@ -654,6 +650,7 @@ void main() {
 
   start(): void {
     this.isPlaying = true;
+    this.last = 0;
     this.animationId = requestAnimationFrame(this.animate);
   }
 
