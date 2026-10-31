@@ -1152,21 +1152,35 @@ export function DoodleCrewCover({
 
       {/* Main Cover Canvas */}
       <main className="dcf-main-canvas" ref={worldRef}>
-        {/* Floating Side Flanks (Desktop) to fill the empty screen flanks */}
-        <aside className="dcf-side-flank is-left" aria-hidden="true">
-          <div className="dcf-flank-pin">📌</div>
-          <div className="dcf-flank-tag">ACTIVE ROLE</div>
+        {/* Floating Dossier Stickers (Desktop Bottom Flanks) — Repositioned to bottom corners, ZERO overlap with letters */}
+        <aside className="dcf-side-flank is-left" aria-label="Current Role Information">
+          <div className="dcf-flank-tape" />
+          <div className="dcf-flank-header">
+            <svg className="dcf-flank-pin-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
+              <path d="M13 2L18 7L15 10L14 9L11 12V15L9 17L8 15H5L3 13L6 10L5 9L8 6L10 7L12 4L11 3L13 2Z" fill="#ff2a55" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+              <path d="M9 17L5 20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+            <span className="dcf-flank-tag">ACTIVE ROLE</span>
+          </div>
           <div className="dcf-flank-title">Teaching Assistant</div>
-          <div className="dcf-flank-sub">@ IIT Madras (BS Degree)</div>
+          <div className="dcf-flank-sub">
+            @ IIT Madras <span className="dcf-flank-sub-pill">BS Degree</span>
+          </div>
           <div className="dcf-flank-status">
             <span className="dcf-flank-dot" />
             <span>Available for Collab</span>
           </div>
         </aside>
 
-        <aside className="dcf-side-flank is-right" aria-hidden="true">
-          <div className="dcf-flank-pin">🏷️</div>
-          <div className="dcf-flank-tag">DOSSIER METRICS</div>
+        <aside className="dcf-side-flank is-right" aria-label="Portfolio Quick Dossier">
+          <div className="dcf-flank-tape is-right-tape" />
+          <div className="dcf-flank-header">
+            <svg className="dcf-flank-tag-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
+              <path d="M3 10L10 3H17V10L10 17L3 10Z" fill="#fbbf24" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+              <circle cx="14" cy="6" r="1.5" fill="currentColor" />
+            </svg>
+            <span className="dcf-flank-tag">DOSSIER METRICS</span>
+          </div>
           <div className="dcf-flank-stat-row">
             <span className="dcf-flank-stat-val">6+</span>
             <span className="dcf-flank-stat-lbl">AI &amp; Web Projects</span>
@@ -1176,7 +1190,7 @@ export function DoodleCrewCover({
             <span className="dcf-flank-stat-lbl">DSA &amp; Logic Solved</span>
           </div>
           <div className="dcf-flank-barcode">
-            <span>||| |||| | | |||| ||</span>
+            <span className="dcf-flank-bars">||| |||| | | |||| ||</span>
             <span className="dcf-flank-issn">ISSN 2026-AI</span>
           </div>
         </aside>
@@ -1551,27 +1565,29 @@ const COVER_CSS = `
   text-transform: uppercase;
 }
 
-/* Center: Live Real-Time Clock Badge */
+/* Center: Live Real-Time Clock Badge — Styled in the exact same theme as Brand Stamp */
 .dcf-time-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 5px 14px;
-  background: #ffffff;
-  color: #000000;
-  border: 1.5px solid #000000;
-  border-radius: 999px;
-  box-shadow: 2px 2px 0 #000000;
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #000000;
+  border-radius: 6px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+  transform: rotate(1.2deg);
   font-family: ui-monospace, monospace;
   font-size: 11.5px;
-  font-weight: 800;
+  font-weight: 850;
   letter-spacing: 0.08em;
   user-select: none;
-  transition: transform 0.18s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .dcf-time-badge:hover {
-  transform: translateY(-1px);
+  transform: rotate(0deg) scale(1.04);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
 }
 
 .dcf-live-dot {
@@ -1638,65 +1654,88 @@ const COVER_CSS = `
   box-shadow: 1px 1px 0 #000000;
 }
 
-/* Side Flanks (Desktop) */
+/* Side Flanks (Desktop Bottom Flanks) — Repositioned away from letters to avoid collision */
 .dcf-side-flank {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 175px;
-  padding: 14px 16px;
-  background: #fffdf2;
+  bottom: clamp(24px, 4vh, 48px);
+  top: auto;
+  width: 185px;
+  padding: 16px 16px 14px;
+  background: #fffdf5;
   color: #000000;
   border: 2px solid #000000;
   border-radius: 12px;
   box-shadow: 4px 4px 0 #000000;
-  z-index: 12;
+  z-index: 20;
   pointer-events: auto;
   user-select: none;
   transition: transform 0.22s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.22s ease;
 }
 
 .dcf-side-flank.is-left {
-  left: clamp(16px, 3.5vw, 48px);
-  transform: translateY(-50%) rotate(-2.5deg);
+  left: clamp(20px, 3.5vw, 54px);
+  transform: rotate(-2deg);
 }
 
 .dcf-side-flank.is-left:hover {
-  transform: translateY(-54%) rotate(-0.5deg) scale(1.04);
+  transform: rotate(0deg) translateY(-4px) scale(1.04);
   box-shadow: 6px 6px 0 #000000;
 }
 
 .dcf-side-flank.is-right {
-  right: clamp(16px, 3.5vw, 48px);
-  transform: translateY(-50%) rotate(2.5deg);
+  right: clamp(20px, 3.5vw, 54px);
+  transform: rotate(2deg);
 }
 
 .dcf-side-flank.is-right:hover {
-  transform: translateY(-54%) rotate(0.5deg) scale(1.04);
+  transform: rotate(0deg) translateY(-4px) scale(1.04);
   box-shadow: 6px 6px 0 #000000;
 }
 
-.dcf-flank-pin {
-  font-size: 16px;
+/* Washi tape sticker detail */
+.dcf-flank-tape {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1deg);
+  width: 50px;
+  height: 14px;
+  background: rgba(254, 240, 138, 0.9);
+  border: 1px dashed rgba(0, 0, 0, 0.35);
+  border-radius: 2px;
+}
+
+.dcf-flank-tape.is-right-tape {
+  background: rgba(167, 243, 208, 0.9);
+  transform: translateX(-50%) rotate(1.5deg);
+}
+
+.dcf-flank-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 6px;
-  display: inline-block;
+}
+
+.dcf-flank-pin-svg,
+.dcf-flank-tag-svg {
+  flex-shrink: 0;
 }
 
 .dcf-flank-tag {
   font-family: ui-monospace, monospace;
   font-size: 9.5px;
   font-weight: 850;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #d97706;
-  margin-bottom: 4px;
 }
 
 .dcf-flank-title {
   font-size: 13.5px;
   font-weight: 850;
   line-height: 1.25;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .dcf-flank-sub {
@@ -1704,6 +1743,17 @@ const COVER_CSS = `
   color: #555555;
   margin-bottom: 10px;
   line-height: 1.3;
+}
+
+.dcf-flank-sub-pill {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  background: #f1f5f9;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 999px;
+  margin-left: 3px;
 }
 
 .dcf-flank-status {
@@ -1757,6 +1807,11 @@ const COVER_CSS = `
   font-size: 9px;
   letter-spacing: 0.12em;
   color: #666666;
+}
+
+.dcf-flank-bars {
+  font-weight: 900;
+  letter-spacing: 0.05em;
 }
 
 /* Light Mode: Colourful Character Fills */
@@ -1816,10 +1871,14 @@ html.dark .dcf-edition-tag {
 }
 
 html.dark .dcf-time-badge {
-  background: #141416;
-  color: #ffffff;
+  background: #ffffff;
+  color: #000000;
   border-color: #ffffff;
   box-shadow: 2px 2px 0 #ffffff;
+}
+
+html.dark .dcf-time-badge:hover {
+  box-shadow: 3px 3px 0 #ffffff;
 }
 
 html.dark .dcf-social-link {
@@ -1846,12 +1905,27 @@ html.dark .dcf-side-flank:hover {
   box-shadow: 6px 6px 0 #ffffff;
 }
 
+html.dark .dcf-flank-tape {
+  background: rgba(250, 204, 21, 0.55);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+html.dark .dcf-flank-tape.is-right-tape {
+  background: rgba(52, 211, 153, 0.55);
+}
+
 html.dark .dcf-flank-tag {
   color: #fbbf24;
 }
 
 html.dark .dcf-flank-sub {
   color: #aaaaaa;
+}
+
+html.dark .dcf-flank-sub-pill {
+  background: #27272a;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e4e4e7;
 }
 
 html.dark .dcf-flank-status {
@@ -2551,7 +2625,7 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   50% { transform: translateY(6px); }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1200px), (max-height: 720px) {
   .dcf-side-flank {
     display: none;
   }
