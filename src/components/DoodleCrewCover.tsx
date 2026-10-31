@@ -3,8 +3,10 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { Mail } from "lucide-react"
 import { useTheme } from "./ThemeProvider"
 import { ThemeToggle } from "./ThemeToggle"
+import { GithubIcon, LinkedinIcon } from "./SocialIcons"
 
 /**
  * DoodleCrewCover — A high-energy sketchbook cover page for Harsh Aryan.
@@ -172,6 +174,35 @@ export interface CrewMember {
   says?: string
 }
 
+// Option A: Vibrant Neo-Pop Doodle Palette for "HARSH ARYAN"
+const LETTER_COLORS = [
+  "#FF2A55", // H — Hot Punch Coral Red
+  "#FF9500", // A — Electric Sunshine Tangerine
+  "#10B981", // R — Mint Emerald Green
+  "#8B5CF6", // S — Electric Violet Purple
+  "#06B6D4", // H — Neon Cyan Sky
+  "transparent", // ' ' space
+  "#FF5722", // A — Warm Sunset Tangerine
+  "#FBBF24", // R — Warm Golden Amber
+  "#3B82F6", // Y — Electric Cobalt Blue
+  "#14B8A6", // A — Bright Mint Green
+  "#EC4899", // N — Bubblegum Orchid Pink
+]
+
+const DARK_LETTER_COLORS = [
+  "#FF4D6D", // H — Neon Rose
+  "#FFA726", // A — Warm Amber
+  "#34D399", // R — Neon Mint
+  "#A78BFA", // S — Bright Violet
+  "#38BDF8", // H — Electric Cyan
+  "transparent", // ' ' space
+  "#FB7185", // A — Coral Sunset
+  "#FCD34D", // R — Sunshine Yellow
+  "#60A5FA", // Y — Neon Blue
+  "#2DD4BF", // A — Bright Teal
+  "#F472B6", // N — Neon Pink
+]
+
 // Default crew arranged across "HARSH ARYAN"
 // H (0), A (1), R (2), S (3), H (4), ' ' (5), A (6), R (7), Y (8), A (9), N (10)
 const HARSH_CREW: CrewMember[] = [
@@ -183,7 +214,10 @@ const HARSH_CREW: CrewMember[] = [
   { kind: "cat", letter: 10, seat: "front", offset: 0.35, flip: true, name: "Patch", says: "Clean code & nice cursor." },
 ]
 
-const DOODLE_SET: DoodleKind[] = ["star", "bolt", "sparkle", "flame", "heart", "plane", "spiral", "star", "bolt", "sparkle"]
+const DOODLE_SET: DoodleKind[] = [
+  "star", "bolt", "sparkle", "flame", "heart", "plane", "spiral", "star", "bolt", "sparkle",
+  "star", "heart", "bolt", "sparkle", "flame", "plane", "star", "spiral"
+]
 
 // ---- Black & White Crew Drawings ----
 type Eye = { x: number; y: number; r: number; pupil: number; max: number }
@@ -217,6 +251,9 @@ const ART: { [k: string]: Art } = {
         <path className="n" d="M-38 -124 L-28 -119 M39 -125 L33 -116" />
         <path d="M-44 -2 C-54 -28 -54 -66 -42 -90 C-32 -110 -14 -118 2 -118 C22 -118 40 -108 48 -88 C58 -64 58 -28 48 -2 C30 4 -26 4 -44 -2 Z" />
         <path d="M40 -96 C54 -66 54 -30 46 -4 C40 -2 34 -1 30 0 C40 -30 42 -64 33 -101 Z" fill={hatch} stroke="none" />
+        {/* Cute blush cheeks */}
+        <circle className="dcf-blush" cx="-24" cy="-78" r="5.5" />
+        <circle className="dcf-blush" cx="22" cy="-78" r="5.5" />
         <path className="n" d="M-7 -117 C-5 -126 1 -128 3 -120 C5 -127 11 -126 11 -116" />
         <path className="n thin" d="M-14 -24 l-3 4 M8 -40 l3 4 M14 -46 l3 3 M20 -30 l3 3" />
         <path className="n" d="M-48 -62 C-22 -50 10 -32 49 -26 M-50 -52 C-24 -40 8 -22 49 -16" />
@@ -256,11 +293,16 @@ const ART: { [k: string]: Art } = {
         <circle cx="-17" cy="-58" r="4" />
         <circle cx="17" cy="-58" r="4" />
         <circle cx="0" cy="-60" r="17" />
+        {/* Cute blush cheeks */}
+        <circle className="dcf-blush" cx="-10" cy="-54" r="3.2" />
+        <circle className="dcf-blush" cx="10" cy="-54" r="3.2" />
         <path className="n thin" d="M-11 -52 l2 -2 M-8 -52 l2 -2 M8 -52 l2 -2 M11 -52 l2 -2" />
         <path className="n" d="M-5 -50 C-2 -47 2 -47 5 -50" />
         <path d="M-15 -70 C-14 -87 14 -87 15 -70 Z" />
         <path d="M-27 -68 C-16 -75 16 -75 27 -68 C18 -63 -18 -63 -27 -68 Z" />
         <path className="n thick" d="M-14.5 -74 C-6 -77 6 -77 14.5 -74" />
+        {/* Cute daisy badge on hat */}
+        <circle cx="0" cy="-78" r="2.8" fill="#fbbf24" stroke="#000000" strokeWidth="1" />
       </>
     ),
   },
@@ -279,10 +321,13 @@ const ART: { [k: string]: Art } = {
         <path d="M-17 -16 C-26 -18 -31 -14 -33 -9 C-26 -10 -20 -8 -15 -10 Z" />
         <path d="M-18 -14 C-20 -30 -10 -40 2 -40 C16 -40 22 -28 20 -16 C18 -6 8 -4 0 -4 C-10 -4 -17 -8 -18 -14 Z" />
         <path d="M-11 -25 C-3 -26 1 -18 -3 -13 C-9 -12 -15 -17 -11 -25 Z" fill={hatch} />
+        {/* Cute bird blush cheeks */}
+        <circle className="dcf-blush" cx="-3" cy="-24" r="3.2" />
+        <circle className="dcf-blush" cx="16" cy="-24" r="3.2" />
         <path className="k" d="M19 -30 L29 -27 L19 -23 Z" />
         <path className="k" d="M-3 -38 L4 -59 L12 -37 Z" />
         <path className="n thin" d="M-1 -44 L10 -46 M1 -51 L8 -52" />
-        <circle cx="4" cy="-60" r="2.8" />
+        <circle cx="4" cy="-60" r="3.4" fill="#f43f5e" stroke="#000000" strokeWidth="1.2" />
       </>
     ),
   },
@@ -306,11 +351,19 @@ const ART: { [k: string]: Art } = {
         <path className="k" d="M9 -45 L18 -32 L6 -37 Z" />
         <path d="M-22 -86 L-25 -107 L-7 -96 Z" />
         <path d="M8 -96 L23 -108 L22 -86 Z" />
+        {/* Pink inner ears */}
+        <path d="M-20 -88 L-22 -102 L-10 -94 Z" fill="#f472b6" opacity="0.6" stroke="none" />
+        <path d="M10 -94 L20 -102 L18 -88 Z" fill="#f472b6" opacity="0.6" stroke="none" />
         <path className="n thin" d="M-20 -92 L-21 -101 M18 -101 L18 -92" />
         <path d="M-26 -70 C-28 -88 -16 -98 0 -98 C16 -98 28 -88 26 -70 C24 -56 12 -50 0 -50 C-12 -50 -24 -56 -26 -70 Z" />
+        {/* Cute blush cheeks */}
+        <circle className="dcf-blush" cx="-16" cy="-68" r="3.8" />
+        <circle className="dcf-blush" cx="16" cy="-68" r="3.8" />
         <path className="n thin" d="M-4 -97 L-3 -90 M3 -97 L3 -91" />
         <path className="n" d="M-26 -80 C-14 -83 4 -87 25 -93" />
         <ellipse className="k" cx="-10" cy="-76" rx="7.5" ry="6.5" />
+        {/* Tiny star on pirate eyepatch */}
+        <circle cx="-10" cy="-76" r="2.2" fill="#fbbf24" stroke="none" />
         <path className="k" d="M-2.5 -68 L2.5 -68 L0 -64.5 Z" />
         <path className="n" d="M0 -64.5 C-1 -60.5 -5 -60.5 -6 -62.5 M0 -64.5 C1 -60.5 5 -60.5 6 -62.5" />
         <path className="n thin" d="M-15 -66 L-29 -68 M-15 -63 L-28 -59 M15 -66 L29 -68 M15 -63 L28 -59" />
@@ -331,6 +384,9 @@ const ART: { [k: string]: Art } = {
         <path d="M-23 -14 L-23 -40 C-23 -59 -12 -67 0 -67 C12 -67 23 -59 23 -40 L23 -14 C12 -10 -12 -10 -23 -14 Z" />
         <path d="M13 -61 C21 -54 23 -46 23 -36 L23 -15 L15 -13 L15 -36 C15 -46 15 -54 13 -61 Z" fill={hatch} stroke="none" />
         <path className="n thin" d="M-16 -56 C-12 -61 -6 -63 -2 -63" />
+        {/* Cute ghost blush cheeks */}
+        <circle className="dcf-blush" cx="-15" cy="-38" r="3.5" />
+        <circle className="dcf-blush" cx="15" cy="-38" r="3.5" />
         <path className="k" d="M-5 -33 C-3 -27 4 -27 6 -33 Z" />
         <path className="n thin" d="M-17 -35 l3 -2 M-14 -34 l3 -2 M14 -35 l3 -2 M17 -34 l3 -2" />
       </>
@@ -362,6 +418,9 @@ const ART: { [k: string]: Art } = {
         <circle cx="6" cy="-46" r="3.4" fill="#ffffff" />
         <circle cx="15" cy="-34" r="3" fill="#ffffff" />
         <circle cx="-2" cy="-33" r="2.4" fill="#ffffff" />
+        {/* Cute rosy mushroom blush cheeks */}
+        <circle className="dcf-blush" cx="-8" cy="-12" r="2.8" />
+        <circle className="dcf-blush" cx="8" cy="-12" r="2.8" />
         <path className="n" d="M-2 -10 C-1 -8 1 -8 2 -10" stroke="#000000" />
       </>
     ),
@@ -493,7 +552,6 @@ const DoodleIcon = ({ kind, size = 18, isDark = false }: { kind: DoodleKind; siz
 type Metrics = { advances: number[]; cap: number }
 const FONT_SIZE = 190
 const DEFAULT_FONT = '"Arial Black", "Inter Display", Inter, -apple-system, sans-serif'
-const DEFAULT_SERIF = '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif'
 
 const estimate = (word: string): Metrics => ({
   advances: Array.from(word).map((c) =>
@@ -539,10 +597,9 @@ export interface DoodleCrewCoverProps {
 export function DoodleCrewCover({
   wordmark = "HARSH ARYAN",
   tagline = "DESIGN · CODE · MACHINE LEARNING",
-  statement = "1st Year B.Tech CSE (AI & Data Science) • Building at the intersection of Code, Math & Models.",
   crew = HARSH_CREW,
   doodles = DOODLE_SET,
-  doodleCount = 12,
+  doodleCount = 18,
   interactive = true,
   className,
 }: DoodleCrewCoverProps) {
@@ -551,6 +608,25 @@ export function DoodleCrewCover({
   const isDark = theme === "dark"
   const word = wordmark.toUpperCase()
   const chars = React.useMemo(() => Array.from(word), [word])
+
+  // Live ticking clock (Chennai / User Local Time)
+  const [currentTime, setCurrentTime] = React.useState<string>("")
+  React.useEffect(() => {
+    const update = () => {
+      const now = new Date()
+      setCurrentTime(
+        now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        })
+      )
+    }
+    update()
+    const timer = setInterval(update, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   const rootRef = React.useRef<HTMLDivElement | null>(null)
   const svgRef = React.useRef<SVGSVGElement | null>(null)
@@ -1021,11 +1097,54 @@ export function DoodleCrewCover({
     >
       <style>{COVER_CSS}</style>
 
-      {/* Top Header Bar with Harsh Aryan stamp and Theme Toggle */}
+      {/* Top Header Bar with Harsh Aryan stamp, Live Clock, Social Links and Theme Toggle */}
       <header className="dcf-top-bar">
         <div className="dcf-top-inner">
-          <div className="dcf-brand-stamp">HARSH ARYAN</div>
+          <div className="dcf-top-left">
+            <div className="dcf-brand-stamp">HARSH ARYAN</div>
+            <span className="dcf-edition-tag">VOL. 2026 / ED. 01</span>
+          </div>
+
+          {/* Center: Live Real-Time Clock */}
+          <div className="dcf-time-badge" title="Live Local / Chennai Time">
+            <span className="dcf-live-dot" />
+            <span className="dcf-time-city">CHENNAI</span>
+            <span className="dcf-time-sep">•</span>
+            <span className="dcf-time-digits">{currentTime || "07:00:00 AM"}</span>
+          </div>
+
+          {/* Right: Social Media Links + Theme Toggle */}
           <div className="dcf-top-actions">
+            <div className="dcf-social-group">
+              <a
+                href="https://github.com/harsharyann"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="dcf-social-link"
+                title="GitHub"
+                aria-label="GitHub Profile"
+              >
+                <GithubIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="dcf-social-link"
+                title="LinkedIn"
+                aria-label="LinkedIn Profile"
+              >
+                <LinkedinIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="mailto:harsharyan.dev@gmail.com"
+                className="dcf-social-link"
+                title="Email"
+                aria-label="Send Email"
+              >
+                <Mail className="w-4 h-4" />
+              </a>
+            </div>
             <ThemeToggle showLabel />
           </div>
         </div>
@@ -1033,6 +1152,35 @@ export function DoodleCrewCover({
 
       {/* Main Cover Canvas */}
       <main className="dcf-main-canvas" ref={worldRef}>
+        {/* Floating Side Flanks (Desktop) to fill the empty screen flanks */}
+        <aside className="dcf-side-flank is-left" aria-hidden="true">
+          <div className="dcf-flank-pin">📌</div>
+          <div className="dcf-flank-tag">ACTIVE ROLE</div>
+          <div className="dcf-flank-title">Teaching Assistant</div>
+          <div className="dcf-flank-sub">@ IIT Madras (BS Degree)</div>
+          <div className="dcf-flank-status">
+            <span className="dcf-flank-dot" />
+            <span>Available for Collab</span>
+          </div>
+        </aside>
+
+        <aside className="dcf-side-flank is-right" aria-hidden="true">
+          <div className="dcf-flank-pin">🏷️</div>
+          <div className="dcf-flank-tag">DOSSIER METRICS</div>
+          <div className="dcf-flank-stat-row">
+            <span className="dcf-flank-stat-val">6+</span>
+            <span className="dcf-flank-stat-lbl">AI &amp; Web Projects</span>
+          </div>
+          <div className="dcf-flank-stat-row">
+            <span className="dcf-flank-stat-val">150+</span>
+            <span className="dcf-flank-stat-lbl">DSA &amp; Logic Solved</span>
+          </div>
+          <div className="dcf-flank-barcode">
+            <span>||| |||| | | |||| ||</span>
+            <span className="dcf-flank-issn">ISSN 2026-AI</span>
+          </div>
+        </aside>
+
         {/* Wordmark & Live Doodle Characters Stage */}
         <div className="dcf-stage">
           <h1 className="dcf-sr">HARSH ARYAN</h1>
@@ -1083,17 +1231,33 @@ export function DoodleCrewCover({
               {placed.filter((p) => p.seat === "behind").map((p) => renderCrew(p, "body"))}
             </g>
 
-            {/* Giant Letters stamping down */}
+            {/* Giant Letters stamping down — Option A Neo-Pop Colourful Letters */}
             {chars.map((c, i) =>
               c === " " ? null : (
                 <g key={i} className="dcf-letter" style={{ "--d": tl.letter(i) + "ms", "--r": ((hash(i * 2.3) - 0.5) * 8).toFixed(2) + "deg" } as React.CSSProperties}>
                   <g className="dcf-glyph">
+                    {/* 3D Comic drop shadow */}
+                    <text
+                      x={layout.x[i] + 4.5}
+                      y={4.5}
+                      fontSize={FONT_SIZE}
+                      fontWeight={900}
+                      style={{ fontFamily: DEFAULT_FONT }}
+                      className="dcf-letter-shadow"
+                    >
+                      {c}
+                    </text>
+                    {/* Main Vibrant Letter */}
                     <text
                       x={layout.x[i]}
                       y={0}
                       fontSize={FONT_SIZE}
                       fontWeight={900}
-                      style={{ fontFamily: DEFAULT_FONT }}
+                      style={{
+                        fontFamily: DEFAULT_FONT,
+                        fill: isDark ? DARK_LETTER_COLORS[i % DARK_LETTER_COLORS.length] : LETTER_COLORS[i % LETTER_COLORS.length],
+                      }}
+                      className="dcf-letter-main"
                       filter={`url(#${uid}-ink)`}
                     >
                       {c}
@@ -1281,7 +1445,9 @@ const COVER_CSS = `
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #ffffff;
+  background-color: #ffffff;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
   color: #000000;
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -1346,6 +1512,13 @@ const COVER_CSS = `
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
+}
+
+.dcf-top-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .dcf-brand-stamp {
@@ -1367,6 +1540,223 @@ const COVER_CSS = `
 
 .dcf-brand-stamp:hover {
   transform: rotate(0deg) scale(1.04);
+}
+
+.dcf-edition-tag {
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  color: #666666;
+  text-transform: uppercase;
+}
+
+/* Center: Live Real-Time Clock Badge */
+.dcf-time-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  background: #ffffff;
+  color: #000000;
+  border: 1.5px solid #000000;
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 #000000;
+  font-family: ui-monospace, monospace;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  user-select: none;
+  transition: transform 0.18s ease;
+}
+
+.dcf-time-badge:hover {
+  transform: translateY(-1px);
+}
+
+.dcf-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: dcf-live-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes dcf-live-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.5; }
+}
+
+.dcf-time-city {
+  font-weight: 900;
+}
+
+.dcf-time-sep {
+  opacity: 0.45;
+}
+
+.dcf-time-digits {
+  font-variant-numeric: tabular-nums;
+  font-weight: 850;
+}
+
+/* Right: Actions & Socials */
+.dcf-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dcf-social-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dcf-social-link {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid #000000;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 2px 2px 0 #000000;
+  transition: transform 0.16s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+.dcf-social-link:hover {
+  transform: translate(-1.5px, -1.5px) rotate(-2deg);
+  box-shadow: 3.5px 3.5px 0 #000000;
+  background: #facc15;
+}
+
+.dcf-social-link:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #000000;
+}
+
+/* Side Flanks (Desktop) */
+.dcf-side-flank {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 175px;
+  padding: 14px 16px;
+  background: #fffdf2;
+  color: #000000;
+  border: 2px solid #000000;
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 #000000;
+  z-index: 12;
+  pointer-events: auto;
+  user-select: none;
+  transition: transform 0.22s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.22s ease;
+}
+
+.dcf-side-flank.is-left {
+  left: clamp(16px, 3.5vw, 48px);
+  transform: translateY(-50%) rotate(-2.5deg);
+}
+
+.dcf-side-flank.is-left:hover {
+  transform: translateY(-54%) rotate(-0.5deg) scale(1.04);
+  box-shadow: 6px 6px 0 #000000;
+}
+
+.dcf-side-flank.is-right {
+  right: clamp(16px, 3.5vw, 48px);
+  transform: translateY(-50%) rotate(2.5deg);
+}
+
+.dcf-side-flank.is-right:hover {
+  transform: translateY(-54%) rotate(0.5deg) scale(1.04);
+  box-shadow: 6px 6px 0 #000000;
+}
+
+.dcf-flank-pin {
+  font-size: 16px;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.dcf-flank-tag {
+  font-family: ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #d97706;
+  margin-bottom: 4px;
+}
+
+.dcf-flank-title {
+  font-size: 13.5px;
+  font-weight: 850;
+  line-height: 1.25;
+  margin-bottom: 2px;
+}
+
+.dcf-flank-sub {
+  font-size: 11px;
+  color: #555555;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.dcf-flank-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background: #ecfdf5;
+  border: 1px solid #059669;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 750;
+  color: #065f46;
+}
+
+.dcf-flank-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #10b981;
+  animation: dcf-live-pulse 1.8s ease-in-out infinite;
+}
+
+.dcf-flank-stat-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.dcf-flank-stat-val {
+  font-size: 18px;
+  font-weight: 900;
+  color: #4f46e5;
+}
+
+.dcf-flank-stat-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: #444444;
+}
+
+.dcf-flank-barcode {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: #666666;
 }
 
 /* Light Mode: Colourful Character Fills */
@@ -1395,9 +1785,23 @@ html:not(.dark) .dcf-btn.is-solid:hover {
   box-shadow: 5px 5px 0 #1e1b4b;
 }
 
-/* Dark Mode: Crisp B&W Aesthetic */
+/* Cute blushing cheeks */
+.dcf-blush {
+  fill: #f43f5e;
+  opacity: 0.45;
+}
+
+/* Option A 3D Comic drop shadow */
+.dcf-letter-shadow {
+  fill: #000000;
+  opacity: 0.88;
+}
+
+/* Dark Mode: Crisp B&W Aesthetic with Radiant Neon Wordmark */
 html.dark .dcf-root {
-  background: #0c0c0c;
+  background-color: #0c0c0e;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
   color: #ffffff;
 }
 
@@ -1407,7 +1811,79 @@ html.dark .dcf-brand-stamp {
   box-shadow: 2px 2px 0 #ffffff;
 }
 
-html.dark .dcf-svg text {
+html.dark .dcf-edition-tag {
+  color: #aaaaaa;
+}
+
+html.dark .dcf-time-badge {
+  background: #141416;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 2px 2px 0 #ffffff;
+}
+
+html.dark .dcf-social-link {
+  background: #141416;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 2px 2px 0 #ffffff;
+}
+
+html.dark .dcf-social-link:hover {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 3.5px 3.5px 0 #ffffff;
+}
+
+html.dark .dcf-side-flank {
+  background: #18181b;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 4px 4px 0 #ffffff;
+}
+
+html.dark .dcf-side-flank:hover {
+  box-shadow: 6px 6px 0 #ffffff;
+}
+
+html.dark .dcf-flank-tag {
+  color: #fbbf24;
+}
+
+html.dark .dcf-flank-sub {
+  color: #aaaaaa;
+}
+
+html.dark .dcf-flank-status {
+  background: #064e3b;
+  border-color: #10b981;
+  color: #a7f3d0;
+}
+
+html.dark .dcf-flank-stat-val {
+  color: #818cf8;
+}
+
+html.dark .dcf-flank-stat-lbl {
+  color: #cccccc;
+}
+
+html.dark .dcf-flank-barcode {
+  border-top-color: rgba(255, 255, 255, 0.2);
+  color: #aaaaaa;
+}
+
+html.dark .dcf-blush {
+  fill: #f472b6;
+  opacity: 0.6;
+}
+
+html.dark .dcf-letter-shadow {
+  fill: #000000;
+  opacity: 0.95;
+}
+
+html.dark .dcf-svg text:not(.dcf-letter-main):not(.dcf-letter-shadow) {
   fill: #ffffff;
 }
 
@@ -1561,7 +2037,7 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   overflow: visible;
 }
 
-.dcf-svg text {
+.dcf-svg text:not(.dcf-letter-main):not(.dcf-letter-shadow) {
   fill: #000000;
 }
 
@@ -2073,6 +2549,21 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
 @keyframes dcf-arrow-bob {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(6px); }
+}
+
+@media (max-width: 1200px) {
+  .dcf-side-flank {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .dcf-time-badge {
+    display: none;
+  }
+  .dcf-edition-tag {
+    display: none;
+  }
 }
 
 @media (max-width: 640px) {
