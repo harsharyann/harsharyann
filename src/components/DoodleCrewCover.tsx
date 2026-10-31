@@ -690,8 +690,9 @@ export function DoodleCrewCover({
       t = Math.min(t, p.y + p.art.box.t * p.scale)
       b = Math.max(b, p.y + p.art.box.b * p.scale)
     }
-    const pad = 24
-    return { x: l - pad, y: t - pad, w: r - l + pad * 2, h: b - t + pad * 2 }
+    const padX = 54
+    const padY = 28
+    return { x: l - padX, y: t - padY, w: r - l + padX * 2, h: b - t + padY * 2 }
   }, [layout, placed, cap])
 
   const words = tagline.split(/\s+/).filter(Boolean)
@@ -1099,14 +1100,14 @@ export function DoodleCrewCover({
             </div>
           </div>
 
-          {/* Right: Social Media Links */}
+          {/* Right: Candy Social Links */}
           <div className="dcf-top-actions">
             <div className="dcf-social-group">
               <a
                 href="https://github.com/harsharyann"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="dcf-social-link"
+                className="dcf-social-link is-github"
                 title="GitHub"
                 aria-label="GitHub Profile"
               >
@@ -1116,7 +1117,7 @@ export function DoodleCrewCover({
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="dcf-social-link"
+                className="dcf-social-link is-linkedin"
                 title="LinkedIn"
                 aria-label="LinkedIn Profile"
               >
@@ -1124,13 +1125,21 @@ export function DoodleCrewCover({
               </a>
               <a
                 href="mailto:harsharyan.dev@gmail.com"
-                className="dcf-social-link"
+                className="dcf-social-link is-mail"
                 title="Email"
                 aria-label="Send Email"
               >
                 <Mail className="w-4 h-4" />
               </a>
             </div>
+          </div>
+        </div>
+
+        {/* Mobile-only secondary status strip */}
+        <div className="dcf-mobile-role-strip">
+          <div className="dcf-role-badge is-mobile" title="Teaching Assistant @ IIT Madras • B.Tech CSE (AI & DS)">
+            <span className="dcf-role-dot" />
+            <span className="dcf-role-text">TA @ IIT Madras • CSE (AI &amp; DS)</span>
           </div>
         </div>
       </header>
@@ -1388,18 +1397,18 @@ export function DoodleCrewCover({
 
           {/* High-Craft Action Buttons */}
           <div className="dcf-actions dcf-rise" style={{ "--d": "520ms" } as React.CSSProperties}>
-            <Link href="/projects" className="dcf-btn is-solid">
+            <Link href="/projects" className="dcf-btn is-projects is-solid">
               <DoodleIcon kind="bolt" size={16} isDark={isDark} />
               <span>Explore Projects</span>
               <span className="dcf-btn-arrow">↗</span>
             </Link>
 
-            <Link href="/about" className="dcf-btn is-outline">
+            <Link href="/about" className="dcf-btn is-about is-outline">
               <DoodleIcon kind="star" size={16} isDark={isDark} />
               <span>About &amp; Story</span>
             </Link>
 
-            <Link href="/contact" className="dcf-btn is-outline">
+            <Link href="/contact" className="dcf-btn is-contact is-outline">
               <DoodleIcon kind="plane" size={16} isDark={isDark} />
               <span>Contact Desk</span>
             </Link>
@@ -1861,6 +1870,83 @@ html:not(.dark) .dcf-art[style*="--i: 3"] { fill: #bae6fd; }
 html:not(.dark) .dcf-art[style*="--i: 4"] { fill: #e9d5ff; }
 html:not(.dark) .dcf-art[style*="--i: 5"] { fill: #fed7aa; }
 
+/* Light Mode: Neo-Pop Brand Stamp, Time Gadget, Role & Candy Socials */
+html:not(.dark) .dcf-brand-stamp {
+  background: #fde047;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: 2.5px 2.5px 0 #000000;
+}
+html:not(.dark) .dcf-brand-stamp:hover {
+  background: #facc15;
+  box-shadow: 3.5px 3.5px 0 #000000;
+}
+
+html:not(.dark) .dcf-role-badge {
+  background: #eef2ff;
+  color: #312e81;
+  border: 2px solid #4f46e5;
+  box-shadow: 2.5px 2.5px 0 #4f46e5;
+}
+html:not(.dark) .dcf-role-dot {
+  background: #4f46e5;
+}
+
+html:not(.dark) .dcf-time-badge {
+  background: #fffbeb;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0 #f59e0b;
+}
+html:not(.dark) .dcf-time-city {
+  color: #ea580c;
+  font-weight: 900;
+}
+html:not(.dark) .dcf-time-digits {
+  color: #000000;
+  font-weight: 900;
+}
+html:not(.dark) .dcf-live-dot {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+html:not(.dark) .dcf-social-link.is-github {
+  background: #fef08a;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: 2.5px 2.5px 0 #000000;
+}
+html:not(.dark) .dcf-social-link.is-github:hover {
+  background: #fde047;
+  transform: translate(-1.5px, -1.5px) rotate(-3deg);
+  box-shadow: 3.5px 3.5px 0 #000000;
+}
+
+html:not(.dark) .dcf-social-link.is-linkedin {
+  background: #bae6fd;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: 2.5px 2.5px 0 #000000;
+}
+html:not(.dark) .dcf-social-link.is-linkedin:hover {
+  background: #7dd3fc;
+  transform: translate(-1.5px, -1.5px) rotate(3deg);
+  box-shadow: 3.5px 3.5px 0 #000000;
+}
+
+html:not(.dark) .dcf-social-link.is-mail {
+  background: #fecdd3;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: 2.5px 2.5px 0 #000000;
+}
+html:not(.dark) .dcf-social-link.is-mail:hover {
+  background: #fda4af;
+  transform: translate(-1.5px, -1.5px) rotate(-2deg);
+  box-shadow: 3.5px 3.5px 0 #000000;
+}
+
 /* Light Mode: Neo-Pop Colourful Flank Cards & Badges */
 html:not(.dark) .dcf-side-flank.is-left {
   background: #fffdf5;
@@ -1878,42 +1964,47 @@ html:not(.dark) .dcf-flank-tape.is-right-tape {
 }
 
 /* Light Mode: Tagline & Squiggle & Button Colors */
-html:not(.dark) .dcf-tag-word:nth-of-type(1) { color: #4f46e5; }
-html:not(.dark) .dcf-tag-word:nth-of-type(2) { color: #059669; }
-html:not(.dark) .dcf-tag-word:nth-of-type(3) { color: #e11d48; }
-html:not(.dark) .dcf-tag-dot { color: #f59e0b; }
-html:not(.dark) .dcf-squiggle-line path { stroke: #f97316; }
+html:not(.dark) .dcf-tag-word:nth-of-type(1) { color: #4338ca; }
+html:not(.dark) .dcf-tag-word:nth-of-type(2) { color: #047857; }
+html:not(.dark) .dcf-tag-word:nth-of-type(3) { color: #be123c; }
+html:not(.dark) .dcf-tag-dot { color: #d97706; }
+html:not(.dark) .dcf-squiggle-line path { stroke: #ea580c; }
 
 /* 3 Colourful Action Buttons in Light Mode */
-html:not(.dark) .dcf-actions .dcf-btn:nth-child(1) {
-  background: #4f46e5;
-  border-color: #3730a3;
-  color: #ffffff;
-  box-shadow: 3px 3px 0 #1e1b4b;
+html:not(.dark) .dcf-btn.is-projects {
+  background: #4f46e5 !important;
+  border: 2px solid #3730a3 !important;
+  color: #ffffff !important;
+  box-shadow: 3.5px 3.5px 0 #1e1b4b !important;
+  font-weight: 800;
 }
-html:not(.dark) .dcf-actions .dcf-btn:nth-child(1):hover {
-  background: #4338ca;
-  box-shadow: 5px 5px 0 #1e1b4b;
+html:not(.dark) .dcf-btn.is-projects:hover {
+  background: #4338ca !important;
+  box-shadow: 5px 5px 0 #1e1b4b !important;
 }
-html:not(.dark) .dcf-actions .dcf-btn:nth-child(2) {
-  background: #fef08a;
-  border-color: #000000;
-  color: #000000;
-  box-shadow: 3px 3px 0 #d97706;
+
+html:not(.dark) .dcf-btn.is-about {
+  background: #fef08a !important;
+  border: 2px solid #000000 !important;
+  color: #000000 !important;
+  box-shadow: 3.5px 3.5px 0 #d97706 !important;
+  font-weight: 800;
 }
-html:not(.dark) .dcf-actions .dcf-btn:nth-child(2):hover {
-  background: #fde047;
-  box-shadow: 5px 5px 0 #d97706;
+html:not(.dark) .dcf-btn.is-about:hover {
+  background: #fde047 !important;
+  box-shadow: 5px 5px 0 #d97706 !important;
 }
-html:not(.dark) .dcf-actions .dcf-btn:nth-child(3) {
-  background: #cffafe;
-  border-color: #000000;
-  color: #000000;
-  box-shadow: 3px 3px 0 #0284c7;
+
+html:not(.dark) .dcf-btn.is-contact {
+  background: #cffafe !important;
+  border: 2px solid #000000 !important;
+  color: #000000 !important;
+  box-shadow: 3.5px 3.5px 0 #0284c7 !important;
+  font-weight: 800;
 }
-html:not(.dark) .dcf-actions .dcf-btn:nth-child(3):hover {
-  background: #a5f3fc;
-  box-shadow: 5px 5px 0 #0284c7;
+html:not(.dark) .dcf-btn.is-contact:hover {
+  background: #a5f3fc !important;
+  box-shadow: 5px 5px 0 #0284c7 !important;
 }
 
 /* Cute blushing cheeks */
@@ -2737,28 +2828,54 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   }
 }
 
-@media (max-width: 900px) {
-  .dcf-role-badge {
-    font-size: 10px;
-    padding: 3px 8px;
-  }
-}
-
 @media (max-width: 768px) {
-  .dcf-time-wrapper {
-    display: none;
-  }
-}
-
-@media (max-width: 540px) {
-  .dcf-role-badge {
-    display: none;
-  }
-}
-
-@media (max-width: 640px) {
   .dcf-top-bar {
-    padding: 12px 14px;
+    position: relative;
+    padding: 12px 16px 4px;
+    width: 100%;
+  }
+
+  .dcf-top-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .dcf-top-left {
+    order: 1;
+  }
+
+  .dcf-top-left .dcf-role-badge {
+    display: none;
+  }
+
+  .dcf-top-actions {
+    order: 2;
+  }
+
+  .dcf-top-inner .dcf-time-wrapper {
+    order: 3;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 6px;
+    margin-bottom: 2px;
+  }
+
+  .dcf-mobile-role-strip {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .dcf-mobile-role-strip .dcf-role-badge {
+    display: inline-flex;
+    font-size: 11px;
+    padding: 4px 12px;
   }
 
   .dcf-brand-stamp {
@@ -2767,37 +2884,45 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   }
 
   .dcf-main-canvas {
-    padding: 60px 14px 20px;
+    padding: 14px 12px 24px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 16px;
-    min-height: 100svh;
-    height: 100svh;
+    gap: 14px;
+    min-height: calc(100svh - 100px);
     box-sizing: border-box;
   }
 
   .dcf-stage {
-    margin: 0;
+    margin: 0 auto;
     width: 100%;
+    max-width: 100%;
+    padding: 0 4px;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
   }
 
   .dcf-svg {
-    transform: scale(1.22);
-    transform-origin: center center;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
     overflow: visible;
-    width: 96%;
-    max-width: 420px;
   }
 
   .dcf-hit {
-    transform: scale(1.2);
-    transform-origin: center center;
+    transform: none !important;
   }
+}
+
+@media (min-width: 769px) {
+  .dcf-mobile-role-strip {
+    display: none;
+  }
+}
 
   .dcf-hero-copy {
     margin-top: 4px;
