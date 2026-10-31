@@ -2,10 +2,8 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Mail } from "lucide-react"
 import { useTheme } from "./ThemeProvider"
-import { ThemeToggle } from "./ThemeToggle"
 import { GithubIcon, LinkedinIcon } from "./SocialIcons"
 
 /**
@@ -642,70 +640,6 @@ export function DoodleCrewCover({
   const [hopping, setHopping] = React.useState(-1)
   const talkTimer = React.useRef(0)
 
-  // Smooth gesture / scroll navigation to Chapter 02 (/about)
-  const router = useRouter()
-  const isLeavingRef = React.useRef(false)
-  const [isLeaving, setIsLeaving] = React.useState(false)
-
-  // Prefetch /about so there is ZERO network latency
-  React.useEffect(() => {
-    router.prefetch("/about")
-  }, [router])
-
-  const triggerLeave = React.useCallback(() => {
-    if (isLeavingRef.current) return
-    isLeavingRef.current = true
-    setIsLeaving(true)
-    window.setTimeout(() => {
-      router.push("/about")
-    }, 280)
-  }, [router])
-
-  // Scroll, wheel, swipe gesture listeners for zero-lag page transition
-  React.useEffect(() => {
-    const onWheel = (e: WheelEvent) => {
-      if (isLeavingRef.current) return
-      if (e.deltaY > 20) {
-        triggerLeave()
-      }
-    }
-
-    let touchStartY = 0
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches[0]) {
-        touchStartY = e.touches[0].clientY
-      }
-    }
-
-    const onTouchEnd = (e: TouchEvent) => {
-      if (isLeavingRef.current) return
-      if (e.changedTouches[0]) {
-        const diffY = touchStartY - e.changedTouches[0].clientY
-        if (diffY > 40) {
-          triggerLeave()
-        }
-      }
-    }
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (isLeavingRef.current) return
-      if (e.key === "ArrowDown" || e.key === "PageDown" || (e.key === " " && !e.target)) {
-        triggerLeave()
-      }
-    }
-
-    window.addEventListener("wheel", onWheel, { passive: true })
-    window.addEventListener("touchstart", onTouchStart, { passive: true })
-    window.addEventListener("touchend", onTouchEnd, { passive: true })
-    window.addEventListener("keydown", onKeyDown)
-
-    return () => {
-      window.removeEventListener("wheel", onWheel)
-      window.removeEventListener("touchstart", onTouchStart)
-      window.removeEventListener("touchend", onTouchEnd)
-      window.removeEventListener("keydown", onKeyDown)
-    }
-  }, [triggerLeave])
 
   // Measure font on client
   useIso(() => {
@@ -1088,7 +1022,7 @@ export function DoodleCrewCover({
   return (
     <div
       ref={rootRef}
-      className={`dcf-root ${isLeaving ? "is-leaving" : ""} ${className || ""}`}
+      className={`dcf-root ${className || ""}`}
       data-play={play || reduced ? "1" : "0"}
       data-interactive={interactive ? "1" : "0"}
       onPointerMove={onPointerMove}
@@ -1145,7 +1079,6 @@ export function DoodleCrewCover({
                 <Mail className="w-4 h-4" />
               </a>
             </div>
-            <ThemeToggle showLabel />
           </div>
         </div>
       </header>
@@ -1415,32 +1348,6 @@ export function DoodleCrewCover({
               <DoodleIcon kind="plane" size={16} isDark={isDark} />
               <span>Contact Desk</span>
             </Link>
-          </div>
-
-          {/* Sleek Bouncing Scroll Indicator */}
-          <div className="dcf-scroll-cue dcf-rise" style={{ "--d": "680ms" } as React.CSSProperties}>
-            <button
-              type="button"
-              onClick={triggerLeave}
-              className="dcf-scroll-link"
-              aria-label="Scroll or tap to open sketchbook"
-            >
-              <span className="dcf-scroll-label">SCROLL DOWN TO EXPLORE</span>
-              <div className="dcf-scroll-arrow-box">
-                <svg
-                  viewBox="0 0 16 16"
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M8 2 L8 13 M3 8 L8 13 L13 8" />
-                </svg>
-              </div>
-            </button>
           </div>
         </div>
       </main>

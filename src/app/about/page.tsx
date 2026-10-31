@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { portfolioData } from "@/data/portfolioData";
-import { AutoPageTurn } from "@/components/AutoPageTurn";
 import {
   Brain,
   Code2,
@@ -354,13 +353,6 @@ export default function AboutPage() {
           ))}
         </div>
       </div>
-
-      {/* Automatic Page Turn to Next Section */}
-      <AutoPageTurn
-        nextPath="/projects"
-        nextTitle="Projects & Builds"
-        subtitle="Moving to technical builds, machine learning experiments & code..."
-      />
     </div>
   );
 }

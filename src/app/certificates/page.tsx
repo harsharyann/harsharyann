@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { portfolioData } from "@/data/portfolioData";
 import { Sparkles } from "lucide-react";
 import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCarousel";
-import { AutoPageTurn } from "@/components/AutoPageTurn";
 
 export default function CertificatesPage() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -68,13 +67,6 @@ export default function CertificatesPage() {
 
         <PolaroidCertificateCarousel certificates={filtered} height={520} cardWidth={280} />
       </div>
-
-      {/* Automatic Page Turn to Next Section */}
-      <AutoPageTurn
-        nextPath="/contact"
-        nextTitle="Contact Desk"
-        subtitle="Moving to dispatch, contact correspondence & direct messaging..."
-      />
     </div>
   );
 }

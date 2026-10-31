@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { portfolioData } from "@/data/portfolioData";
 import { ArrowUpRight, ExternalLink } from "lucide-react";
 import { GithubIcon } from "@/components/SocialIcons";
-import { AutoPageTurn } from "@/components/AutoPageTurn";
 
 export default function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -153,13 +152,6 @@ export default function ProjectsPage() {
           </article>
         ))}
       </div>
-
-      {/* Automatic Page Turn to Next Section */}
-      <AutoPageTurn
-        nextPath="/certificates"
-        nextTitle="Certificates & Laurels"
-        subtitle="Moving to verified honors, technical credentials & courses..."
-      />
     </div>
   );
 }
