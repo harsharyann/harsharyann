@@ -121,14 +121,6 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
     <section id={id} className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-10 sm:space-y-12 scroll-mt-14">
       {/* ── HEADER ── */}
       <div className="pb-6 border-b-2 border-black dark:border-stone-800 space-y-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex items-center gap-2">
-            <span className="sketch-stamp bg-amber-400 text-black font-black shadow-[2px_2px_0_#000] font-hero-heading">
-              ✦ LAURELS &amp; CERTIFICATES
-            </span>
-          </div>
-        </div>
-
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading">
