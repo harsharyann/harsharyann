@@ -36,7 +36,7 @@ export function SiteFooter() {
 
           {/* Controls: Theme Color Mode Switcher & Return To Top Button */}
           <div className="flex flex-wrap items-center gap-3">
-            <ThemeToggle showLabel={true} />
+            <ThemeToggle />
             <button
               type="button"
               onClick={scrollToTop}

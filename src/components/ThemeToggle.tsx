@@ -29,21 +29,15 @@ export function ThemeToggle({ className = "", showLabel = false }: ThemeTogglePr
   const isLight = theme === "light";
 
   return (
-    <div className={`inline-flex items-center gap-2.5 font-mono select-none ${className}`}>
-      {showLabel && (
-        <span className="text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300">
-          {isLight ? "B&W: OFF" : "B&W: ON"}
-        </span>
-      )}
-
+    <div className={`inline-flex items-center font-mono select-none ${className}`}>
       {/* ── AUTHENTIC MECHANICAL ON/OFF SLIDER SWITCH ── */}
       <button
         type="button"
         onClick={toggleTheme}
         role="switch"
         aria-checked={!isLight}
-        aria-label={isLight ? "Turn Dark Mode ON" : "Turn Dark Mode OFF"}
-        title={isLight ? "Turn B&W Dark Mode ON" : "Turn Colourful Mode ON"}
+        aria-label={isLight ? "Turn Dark Mode ON" : "Turn Light Mode ON"}
+        title={isLight ? "Dark Mode: OFF (Click to turn ON)" : "Dark Mode: ON (Click to turn OFF)"}
         className={`group relative inline-flex h-8 w-16 shrink-0 cursor-pointer items-center rounded-full border-2 border-black p-0.5 transition-colors duration-300 shadow-[2.5px_2.5px_0_#000] active:translate-y-0.5 active:shadow-[1px_1px_0_#000] ${
           isLight
             ? "bg-amber-300 hover:bg-amber-200"
