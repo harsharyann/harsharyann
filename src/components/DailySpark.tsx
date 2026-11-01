@@ -217,8 +217,14 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
   const [isTyping, setIsTyping] = useState<boolean>(false)
   const [copied, setCopied] = useState<boolean>(false)
 
-  // Determine current day of week (no interval or cascading re-renders)
-  const currentWeekday = typeof window !== "undefined" ? new Date().getDay() : 1
+  // Use stable default (1) during SSR & initial hydration to ensure zero mismatch,
+  // then seamlessly sync to the client's actual day of week in useEffect.
+  const [currentWeekday, setCurrentWeekday] = useState<number>(1)
+
+  useEffect(() => {
+    setCurrentWeekday(new Date().getDay())
+  }, [])
+
   const todaySpark = WEEKLY_SPARKS[currentWeekday] || WEEKLY_SPARKS[1]
 
   const displayText = !mounted
