@@ -712,24 +712,6 @@ const router = useRouter()
     }
   }, [triggerLeave])
 
-  const [currentTime, setCurrentTime] = React.useState<string>("")
-  React.useEffect(() => {
-    const update = () => {
-      const now = new Date()
-      setCurrentTime(
-        now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true,
-        })
-      )
-    }
-    update()
-    const timer = setInterval(update, 1000)
-    return () => clearInterval(timer)
-  }, [])
-
   const rootRef = React.useRef<HTMLDivElement | null>(null)
   const svgRef = React.useRef<SVGSVGElement | null>(null)
   const worldRef = React.useRef<HTMLDivElement | null>(null)
@@ -1187,62 +1169,6 @@ const router = useRouter()
 
       {/* Main Cover Canvas */}
       <main className="dcf-main-canvas" ref={worldRef}>
-        {/* Desk Clock Widget with Cute Kitty Doodle (Bottom-Left) */}
-        <div className="dcf-desk-clock" aria-label="Current Local Time in Chennai">
-          {/* Cute Kitty Doodle Peeking Over Clock */}
-          <div className="dcf-kitty-doodle" aria-hidden="true" title="Meow! Time is ticking in Chennai 🐾">
-            <svg viewBox="0 0 64 48" width="56" height="42" className="dcf-kitty-svg">
-              {/* Wagging Kitty Tail */}
-              <path
-                d="M51 25 C57 19 62 13 58 9 C54 6 48 13 46 21"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                fill="none"
-                className="dcf-kitty-tail"
-              />
-              {/* Left Ear */}
-              <polygon points="14,18 20,4 28,14" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
-              <polygon points="16,16 20,7 26,13" fill="#fca5a5" stroke="none" />
-              {/* Right Ear */}
-              <polygon points="36,14 44,4 50,18" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
-              <polygon points="38,13 44,7 48,16" fill="#fca5a5" stroke="none" />
-              {/* Head */}
-              <ellipse cx="32" cy="22" rx="19" ry="14" fill="#ffffff" stroke="currentColor" strokeWidth="2.2" />
-              {/* Happy curved eyes */}
-              <path d="M22 20 Q26 16 30 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-              <path d="M34 20 Q38 16 42 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-              {/* Blush cheeks */}
-              <ellipse cx="20" cy="24" rx="3.5" ry="2.2" fill="#f43f5e" opacity="0.5" />
-              <ellipse cx="44" cy="24" rx="3.5" ry="2.2" fill="#f43f5e" opacity="0.5" />
-              {/* Tiny nose & mouth */}
-              <polygon points="31,23 33,23 32,24.5" fill="#f43f5e" />
-              <path d="M32 24.5 Q29.5 27 27 25 M32 24.5 Q34.5 27 37 25" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-              {/* Whiskers */}
-              <path d="M12 21 L3 19 M12 24 L2 24 M12 27 L4 29" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              <path d="M52 21 L61 19 M52 24 L62 24 M52 27 L60 29" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              {/* Paws resting on the clock top */}
-              <ellipse cx="24" cy="34" rx="5" ry="3.2" fill="#ffffff" stroke="currentColor" strokeWidth="2" />
-              <ellipse cx="40" cy="34" rx="5" ry="3.2" fill="#ffffff" stroke="currentColor" strokeWidth="2" />
-              <path d="M22 36 L22 33 M25 36 L25 33 M38 36 L38 33 M41 36 L41 33" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-            </svg>
-          </div>
-
-          {/* Sized-Up Real-Time Clock Badge */}
-          <div className="dcf-time-badge" title="Live Local / Chennai Time">
-            <span className="dcf-live-dot" />
-            <span className="dcf-time-city">CHENNAI</span>
-            <span className="dcf-time-sep">•</span>
-            <span className="dcf-time-digits">{currentTime || "07:00:00 AM"}</span>
-          </div>
-
-          {/* Sparkle Doodle near Time */}
-          <div className="dcf-kitty-sparkle" aria-hidden="true">
-            <svg viewBox="0 0 16 16" width="14" height="14" fill="#f59e0b">
-              <path d="M8 0 L9.5 6.5 L16 8 L9.5 9.5 L8 16 L6.5 9.5 L0 8 L6.5 6.5 Z" />
-            </svg>
-          </div>
-        </div>
 
         {/* Portfolio Quick Dossier (Bottom-Right) */}
         <aside className="dcf-side-flank is-right" aria-label="Portfolio Quick Dossier">
