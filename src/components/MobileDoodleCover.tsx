@@ -179,48 +179,33 @@ export function MobileDoodleCover() {
   const router = useRouter();
   const { data: portfolio } = usePortfolio();
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
-  const [touchDeltaY, setTouchDeltaY] = useState(0);
-  const [isLeaving, setIsLeaving] = useState(false);
   const [accentColor, setAccentColor] = useState<string>("#facc15");
 
-  const navigateTo = (path: string = "/about") => {
-    if (isLeaving) return;
-    setIsLeaving(true);
-    setTimeout(() => {
-      router.push(path);
-    }, 380);
+  const scrollDown = () => {
+    const el = document.getElementById("about");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartY(e.touches[0].clientY);
-    setTouchDeltaY(0);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStartY === null) return;
-    const currentY = e.touches[0].clientY;
-    const diff = touchStartY - currentY;
-    if (diff > 0) {
-      setTouchDeltaY(Math.min(diff, 120));
-    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartY === null) return;
     const touchEndY = e.changedTouches[0].clientY;
     const diff = touchStartY - touchEndY;
-    // Swipe up detected (finger moved up by > 45px)
-    if (diff > 45) {
-      navigateTo("/about");
-    } else {
-      setTouchDeltaY(0);
+    // Swipe up detected (finger moved up by > 40px)
+    if (diff > 40) {
+      scrollDown();
     }
     setTouchStartY(null);
   };
 
   const handleWheel = (e: React.WheelEvent) => {
     if (e.deltaY > 20) {
-      navigateTo("/about");
+      scrollDown();
     }
   };
 
@@ -249,23 +234,11 @@ export function MobileDoodleCover() {
 
   return (
     <section
-      className="fixed inset-0 w-full h-[100dvh] overflow-hidden select-none bg-[#090a0f] text-white z-40 flex flex-col justify-between"
+      className="relative w-full h-[100dvh] overflow-hidden select-none bg-[#090a0f] text-white flex flex-col justify-between"
       onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onWheel={handleWheel}
       aria-label="Harsh Aryan 4K Colorful Doodle Cover"
-      style={{
-        transform: isLeaving
-          ? "translateY(-100%)"
-          : `translateY(-${touchDeltaY * 0.35}px)`,
-        opacity: isLeaving ? 0 : 1,
-        transition: isLeaving
-          ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease"
-          : touchStartY === null
-          ? "transform 0.25s ease-out"
-          : "none",
-      }}
     >
       {/* ── 1. PURE ORIGINAL FULLSCREEN HERO PORTRAIT (As Uploaded, 100% Natural) ── */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
@@ -500,7 +473,7 @@ export function MobileDoodleCover() {
         {/* ── COLORFUL NEO-BRUTAL SWIPE UP BUTTON (Dynamically accented with photo color) ── */}
         <motion.button
           type="button"
-          onClick={() => navigateTo("/about")}
+          onClick={scrollDown}
           animate={{ y: [0, -4, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           style={{

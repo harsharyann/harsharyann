@@ -196,28 +196,28 @@ export function CircularProjectsCarousel({
   }
 
   return (
-    <div className={`w-full max-w-7xl mx-auto ${className}`}>
-      {/* 3D Showcase Stage Container with Neo-Brutalist Frame */}
-      <div className="p-6 sm:p-10 lg:p-12 rounded-3xl border-2 border-black dark:border-stone-700 bg-gradient-to-br from-[#f8f6f0] via-white to-[#f5f2ea] dark:from-[#0d0e12] dark:via-[#13141a] dark:to-[#0a0a0d] shadow-[8px_10px_0_#18181b] dark:shadow-[8px_10px_0_#27272a] relative overflow-hidden">
+    <div className={`w-full max-w-6xl mx-auto ${className}`}>
+      {/* 3D Showcase Stage Container with Neo-Brutalist Frame — Compact & Proportional */}
+      <div className="p-4 sm:p-6 lg:p-7 rounded-2xl sm:rounded-3xl border-2 border-black dark:border-stone-700 bg-gradient-to-br from-[#f8f6f0] via-white to-[#f5f2ea] dark:from-[#0d0e12] dark:via-[#13141a] dark:to-[#0a0a0d] shadow-[6px_8px_0_#18181b] dark:shadow-[6px_8px_0_#27272a] relative overflow-hidden">
         
         {/* Subtle Background Studio Grid */}
         <div
           className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10"
           style={{
             backgroundImage: "radial-gradient(#18181b 0.75px, transparent 0.75px)",
-            backgroundSize: "24px 24px",
+            backgroundSize: "20px 20px",
           }}
           aria-hidden="true"
         />
 
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           
           {/* =========================================================================
               LEFT COLUMN: 3D Perspective Card Deck (Perspective 1000px)
           ========================================================================= */}
           <div className="lg:col-span-6 w-full flex flex-col items-center justify-center">
             <div
-              className="relative w-full h-[320px] sm:h-[400px] md:h-[440px] flex items-center justify-center select-none"
+              className="relative w-full h-[250px] sm:h-[285px] md:h-[315px] flex items-center justify-center select-none"
               style={{ perspective: "1000px" }}
               ref={imageContainerRef}
             >
@@ -232,67 +232,67 @@ export function CircularProjectsCarousel({
                       if (!isActive) goTo(idx)
                     }}
                     style={style}
-                    className="absolute inset-0 w-full h-full rounded-2xl sm:rounded-3xl p-1 bg-stone-900 border-2 border-black dark:border-white shadow-[0_20px_45px_-12px_rgba(0,0,0,0.4),4px_6px_0_#000] overflow-hidden flex flex-col justify-between select-none"
+                    className="absolute inset-0 w-full h-full rounded-2xl p-1 bg-stone-900 border-2 border-black dark:border-white shadow-[0_16px_36px_-10px_rgba(0,0,0,0.38),3px_5px_0_#000] overflow-hidden flex flex-col justify-between select-none"
                     title={isActive ? proj.title : `Click to view ${proj.title}`}
                   >
                     {/* Visual Card Canvas with Dynamic Gradient */}
                     <div
-                      className={`relative w-full h-full rounded-xl sm:rounded-2xl p-5 sm:p-6 bg-gradient-to-br ${proj.imageGradient} flex flex-col justify-between overflow-hidden text-white`}
+                      className={`relative w-full h-full rounded-xl p-3.5 sm:p-4 bg-gradient-to-br ${proj.imageGradient} flex flex-col justify-between overflow-hidden text-white`}
                     >
                       {/* Blueprint dot pattern overlay */}
                       <div
                         className="absolute inset-0 opacity-25 pointer-events-none"
                         style={{
                           backgroundImage: "radial-gradient(#ffffff 0.75px, transparent 0.75px)",
-                          backgroundSize: "14px 14px",
+                          backgroundSize: "12px 12px",
                         }}
                       />
 
                       {/* Card Header Bar */}
                       <div className="relative z-10 flex items-center justify-between gap-2">
                         {/* Terminal 3 Dots */}
-                        <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/20">
-                          <span className="w-2 h-2 rounded-full bg-red-400" />
-                          <span className="w-2 h-2 rounded-full bg-amber-400" />
-                          <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/90 ml-1">
+                        <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2 py-1 rounded-full border border-white/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                          <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-white/90 ml-0.5">
                             PROJ #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                           </span>
                         </div>
 
                         {/* Category Badge */}
-                        <div className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono font-black uppercase tracking-wider border border-white/20 text-white flex items-center gap-1.5">
+                        <div className="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[9px] font-mono font-black uppercase tracking-wider border border-white/20 text-white flex items-center gap-1">
                           {getCategoryIcon(proj.category)}
                           <span>{proj.category}</span>
                         </div>
                       </div>
 
                       {/* Card Center Visual: Title & Neural Schematic */}
-                      <div className="relative z-10 my-auto py-4 space-y-2">
-                        <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-inner">
+                      <div className="relative z-10 my-auto py-2 space-y-1.5">
+                        <div className="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-inner">
                           {getCategoryIcon(proj.category)}
                         </div>
-                        <h4 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-white drop-shadow-md line-clamp-2">
+                        <h4 className="text-base sm:text-lg font-black uppercase tracking-tight text-white drop-shadow-md line-clamp-2">
                           {proj.title}
                         </h4>
-                        <p className="text-xs sm:text-sm font-mono text-white/85 line-clamp-2 leading-snug drop-shadow-sm">
+                        <p className="text-[11px] sm:text-xs font-mono text-white/85 line-clamp-2 leading-snug drop-shadow-sm">
                           {proj.tagline}
                         </p>
                       </div>
 
                       {/* Card Footer: Tech Chips */}
-                      <div className="relative z-10 pt-2 border-t border-white/20 flex flex-wrap items-center gap-1.5">
+                      <div className="relative z-10 pt-1.5 border-t border-white/20 flex flex-wrap items-center gap-1">
                         {proj.technologies.slice(0, 3).map((tech) => (
                           <span
                             key={tech}
-                            className="px-2 py-0.5 rounded-md bg-black/40 backdrop-blur-md text-[10px] font-mono font-bold text-white/90 border border-white/15"
+                            className="px-1.5 py-0.5 rounded bg-black/40 backdrop-blur-md text-[9px] font-mono font-bold text-white/90 border border-white/15"
                           >
                             ✦ {tech}
                           </span>
                         ))}
                         {proj.technologies.length > 3 && (
-                          <span className="text-[10px] font-mono text-white/70 font-bold">
-                            +{proj.technologies.length - 3} more
+                          <span className="text-[9px] font-mono text-white/70 font-bold">
+                            +{proj.technologies.length - 3}
                           </span>
                         )}
                       </div>
@@ -304,17 +304,17 @@ export function CircularProjectsCarousel({
 
             {/* Stepper Dots Indicator */}
             {projectsLength > 1 && (
-              <div className="flex items-center gap-2 mt-4 pt-2">
+              <div className="flex items-center gap-1.5 mt-3 pt-1">
                 {projects.map((_, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => goTo(i)}
                     aria-label={`Jump to project ${i + 1}`}
-                    className={`h-2 rounded-full transition-all cursor-pointer ${
+                    className={`h-1.5 rounded-full transition-all cursor-pointer ${
                       i === activeIndex
-                        ? "w-8 bg-black dark:bg-white"
-                        : "w-2 bg-stone-300 dark:bg-stone-700 hover:bg-stone-400"
+                        ? "w-6 bg-black dark:bg-white"
+                        : "w-1.5 bg-stone-300 dark:bg-stone-700 hover:bg-stone-400"
                     }`}
                   />
                 ))}
@@ -325,54 +325,54 @@ export function CircularProjectsCarousel({
           {/* =========================================================================
               RIGHT COLUMN: Animated Project Dossier & Controls (Framer Motion)
           ========================================================================= */}
-          <div className="lg:col-span-6 w-full flex flex-col justify-between space-y-6">
+          <div className="lg:col-span-6 w-full flex flex-col justify-between space-y-4">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeProject.id}
-                initial={{ opacity: 0, y: 18 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -18 }}
-                transition={{ duration: 0.32, ease: "easeInOut" }}
-                className="space-y-5"
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.24, ease: "easeInOut" }}
+                className="space-y-3.5"
               >
                 {/* Header Meta Stamp & Category Tag */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b-2 border-black/15 dark:border-stone-800">
+                <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2.5 border-b-2 border-black/15 dark:border-stone-800">
                   <div className="flex items-center gap-2">
-                    <span className="sketch-stamp bg-black text-white dark:bg-white dark:text-black font-black">
+                    <span className="sketch-stamp text-[10px] bg-black text-white dark:bg-white dark:text-black font-black">
                       FEATURED BUILD 0{activeIndex + 1} / 0{projectsLength}
                     </span>
-                    <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
+                    <span className="font-mono text-[11px] font-bold text-stone-500 dark:text-stone-400">
                       [{activeProject.id}]
                     </span>
                   </div>
 
-                  <span className="font-mono text-xs font-black uppercase px-3 py-1 rounded-full border-2 border-black dark:border-white bg-amber-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]">
+                  <span className="font-mono text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-black dark:border-white bg-amber-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#fff]">
                     {activeProject.category}
                   </span>
                 </div>
 
                 {/* Title & Tagline */}
                 <div>
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase text-black dark:text-white tracking-tight leading-tight">
+                  <h3 className="text-xl sm:text-2xl font-black uppercase text-black dark:text-white tracking-tight leading-snug">
                     {activeProject.title}
                   </h3>
-                  <p className="text-xs sm:text-sm font-mono font-bold text-amber-700 dark:text-amber-400 mt-1.5 flex items-center gap-2">
+                  <p className="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 mt-1 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>{activeProject.tagline}</span>
                   </p>
                 </div>
 
                 {/* Animated Word-by-Word Description */}
-                <p className="text-stone-800 dark:text-stone-200 text-sm leading-relaxed">
+                <p className="text-stone-800 dark:text-stone-200 text-xs sm:text-[13px] leading-relaxed line-clamp-3">
                   {activeProject.description.split(" ").map((word, i) => (
                     <motion.span
                       key={i}
-                      initial={{ filter: "blur(8px)", opacity: 0, y: 4 }}
+                      initial={{ filter: "blur(6px)", opacity: 0, y: 3 }}
                       animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
                       transition={{
-                        duration: 0.2,
+                        duration: 0.18,
                         ease: "easeInOut",
-                        delay: 0.016 * i,
+                        delay: 0.012 * i,
                       }}
                       style={{ display: "inline-block" }}
                     >
@@ -383,15 +383,15 @@ export function CircularProjectsCarousel({
 
                 {/* Highlights Checklist */}
                 {activeProject.features && activeProject.features.length > 0 && (
-                  <div className="space-y-1.5 pt-1">
-                    <span className="text-[10px] font-mono font-black uppercase tracking-wider text-stone-500 dark:text-stone-400 block">
+                  <div className="space-y-1">
+                    <span className="text-[9.5px] font-mono font-black uppercase tracking-wider text-stone-500 dark:text-stone-400 block">
                       ENGINEERING HIGHLIGHTS:
                     </span>
-                    <ul className="space-y-1 text-xs text-stone-800 dark:text-stone-200 font-medium">
-                      {activeProject.features.map((feat, fIdx) => (
-                        <li key={fIdx} className="flex items-start gap-2">
-                          <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                          <span className="leading-snug">{feat}</span>
+                    <ul className="space-y-0.5 text-xs text-stone-800 dark:text-stone-200 font-medium">
+                      {activeProject.features.slice(0, 3).map((feat, fIdx) => (
+                        <li key={fIdx} className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3 h-3 mt-0.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <span className="leading-tight text-[11.5px]">{feat}</span>
                         </li>
                       ))}
                     </ul>
@@ -400,18 +400,18 @@ export function CircularProjectsCarousel({
 
                 {/* Key Observations & Metrics Box */}
                 {activeProject.metrics && activeProject.metrics.length > 0 && (
-                  <div className="p-3.5 rounded-xl border-2 border-black/20 dark:border-stone-700 bg-white dark:bg-stone-900/80 shadow-[3px_3px_0_rgba(0,0,0,0.1)] space-y-1.5">
-                    <div className="flex items-center justify-between font-mono text-[10px] font-black uppercase tracking-wider text-stone-600 dark:text-stone-400">
-                      <span>KEY BENCHMARKS &amp; DATA OBSERVATIONS</span>
+                  <div className="p-2.5 rounded-lg border-2 border-black/20 dark:border-stone-700 bg-white dark:bg-stone-900/80 shadow-[2px_2px_0_rgba(0,0,0,0.1)] space-y-1">
+                    <div className="flex items-center justify-between font-mono text-[9px] font-black uppercase tracking-wider text-stone-600 dark:text-stone-400">
+                      <span>KEY BENCHMARKS</span>
                       <span className="text-xs">📊</span>
                     </div>
-                    <div className="flex flex-wrap gap-2 font-mono text-xs">
+                    <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
                       {activeProject.metrics.map((m, i) => (
                         <span
                           key={i}
-                          className="font-black text-black dark:text-white flex items-center gap-1.5 bg-amber-50 dark:bg-stone-800 px-2.5 py-0.5 rounded border border-amber-300 dark:border-stone-600"
+                          className="font-bold text-black dark:text-white flex items-center gap-1 bg-amber-50 dark:bg-stone-800 px-2 py-0.5 rounded border border-amber-300 dark:border-stone-600"
                         >
-                          <span className="text-amber-600 dark:text-amber-400 text-xs">✦</span>
+                          <span className="text-amber-600 dark:text-amber-400 text-[10px]">✦</span>
                           <span>{m}</span>
                         </span>
                       ))}
@@ -420,15 +420,15 @@ export function CircularProjectsCarousel({
                 )}
 
                 {/* Tech Stack Chips */}
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[10px] font-mono font-black uppercase tracking-wider text-stone-500 dark:text-stone-400 block">
-                    TECH STACK &amp; CORE TOOLS:
+                <div className="space-y-1">
+                  <span className="text-[9.5px] font-mono font-black uppercase tracking-wider text-stone-500 dark:text-stone-400 block">
+                    TECH STACK &amp; TOOLS:
                   </span>
-                  <div className="flex flex-wrap gap-1.5 font-mono text-xs">
+                  <div className="flex flex-wrap gap-1 font-mono text-xs">
                     {activeProject.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="border-2 border-black dark:border-white bg-white dark:bg-stone-800 text-black dark:text-white px-2.5 py-0.5 rounded-full font-bold shadow-[1px_1px_0_#000] dark:shadow-[1px_1px_0_#fff]"
+                        className="border border-black dark:border-white bg-white dark:bg-stone-800 text-black dark:text-white px-2 py-0.5 rounded-full font-bold shadow-[1px_1px_0_#000] dark:shadow-[1px_1px_0_#fff] text-[10px]"
                       >
                         ✦ {tech}
                       </span>
@@ -437,7 +437,7 @@ export function CircularProjectsCarousel({
                 </div>
 
                 {/* Action Buttons: GitHub Repo & Live Demo */}
-                <div className="pt-3 flex flex-wrap sm:flex-nowrap items-center gap-3">
+                <div className="pt-2 flex flex-wrap sm:flex-nowrap items-center gap-2.5">
                   <a
                     href={activeProject.githubUrl}
                     target="_blank"

@@ -414,28 +414,28 @@ export function PolaroidCertificateCarousel({
       )}
 
       {/* =========================================================================
-          UNIFIED POLAROID BENTO CONTAINER
+          UNIFIED POLAROID BENTO CONTAINER — Sleek, Compact & Proportional
           House both the authentic Polaroid Frame & the Intelligence Dossier together
       ========================================================================= */}
       <div
-        className={`relative rounded-3xl border-2 sm:border-3 border-black dark:border-white/20 p-5 sm:p-7 md:p-8 transition-all duration-300 ${activeTheme.shadow} ${activeTheme.cardBg} overflow-hidden`}
+        className={`relative rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black dark:border-white/20 p-4 sm:p-5 md:p-6 transition-all duration-300 ${activeTheme.shadow} ${activeTheme.cardBg} overflow-hidden max-w-6xl mx-auto`}
         style={{
           backgroundImage:
             "radial-gradient(currentColor 0.65px, transparent 0.65px)",
-          backgroundSize: "22px 22px",
+          backgroundSize: "20px 20px",
         }}
       >
         {/* Subtle grid opacity blend */}
         <div className="absolute inset-0 bg-white/70 dark:bg-stone-950/75 pointer-events-none -z-10" />
 
         {/* ── BENTO TOP BAR: Counter Stamp + Category Badge + Stepper Controls ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b-2 border-black/15 dark:border-white/10">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className={`sketch-stamp font-mono text-xs ${activeTheme.stamp} shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b-2 border-black/15 dark:border-white/10">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`sketch-stamp font-mono text-[11px] ${activeTheme.stamp} shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#fff]`}>
               ACTIVE CREDENTIAL {pad2(safeActive + 1)} / {pad2(n)}
             </span>
             <span
-              className={`font-mono text-xs font-black uppercase px-3 py-1 rounded-full border shadow-xs ${activeTheme.categoryBadge}`}
+              className={`font-mono text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full border shadow-xs ${activeTheme.categoryBadge}`}
             >
               ✦ {activeCert.category} ✦
             </span>
@@ -443,7 +443,7 @@ export function PolaroidCertificateCarousel({
 
           {/* Stepper Buttons */}
           <div className="flex items-center gap-2 self-end sm:self-auto">
-            <span className="font-mono text-xs font-black text-black dark:text-white px-3 py-1.5 border-2 border-black dark:border-white rounded-full bg-white dark:bg-stone-800 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]">
+            <span className="font-mono text-xs font-black text-black dark:text-white px-2.5 py-1 border-2 border-black dark:border-white rounded-full bg-white dark:bg-stone-800 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#fff]">
               <b>{pad2(safeActive + 1)}</b> / {pad2(n)}
             </span>
 
@@ -451,46 +451,46 @@ export function PolaroidCertificateCarousel({
               type="button"
               onClick={() => step(-1)}
               disabled={n <= 1}
-              className="w-9 h-9 border-2 border-black dark:border-white rounded-full flex items-center justify-center bg-white dark:bg-stone-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] active:translate-y-0.5 disabled:opacity-40 cursor-pointer"
+              className="w-8 h-8 border-2 border-black dark:border-white rounded-full flex items-center justify-center bg-white dark:bg-stone-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#fff] active:translate-y-0.5 disabled:opacity-40 cursor-pointer"
               aria-label="Previous certificate"
               title="Previous (Arrow Left)"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5" />
             </button>
 
             <button
               type="button"
               onClick={() => step(1)}
               disabled={n <= 1}
-              className="w-9 h-9 border-2 border-black dark:border-white rounded-full flex items-center justify-center bg-white dark:bg-stone-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] active:translate-y-0.5 disabled:opacity-40 cursor-pointer"
+              className="w-8 h-8 border-2 border-black dark:border-white rounded-full flex items-center justify-center bg-white dark:bg-stone-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#fff] active:translate-y-0.5 disabled:opacity-40 cursor-pointer"
               aria-label="Next certificate"
               title="Next (Arrow Right)"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         {/* ── BENTO MAIN BODY: Split 2-Column Grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center pt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center pt-4">
           {/* =======================================================================
               COLUMN 1 (LEFT): THE AUTHENTIC POLAROID FRAME (Widescreen Landscape)
           ======================================================================= */}
           <div className="lg:col-span-6 flex flex-col items-center justify-center relative w-full">
             {/* Hanging Clothesline Wire with Brass Wall Studs at top of the photo card */}
-            <div className="relative w-full max-w-[460px] h-10 pointer-events-none select-none overflow-visible">
-              <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 460 36">
+            <div className="relative w-full max-w-[390px] h-8 pointer-events-none select-none overflow-visible">
+              <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 390 30">
                 <path
-                  d="M 12 12 Q 230 32 448 12"
+                  d="M 10 10 Q 195 26 380 10"
                   fill="none"
                   stroke="#18181b"
-                  strokeWidth="2.8"
+                  strokeWidth="2.4"
                   strokeLinecap="round"
                   className="dark:stroke-stone-300"
                 />
                 {/* Brass Wall Mount Studs */}
-                <circle cx="12" cy="12" r="5" fill="#18181b" stroke="#f59e0b" strokeWidth="2.2" />
-                <circle cx="448" cy="12" r="5" fill="#18181b" stroke="#f59e0b" strokeWidth="2.2" />
+                <circle cx="10" cy="10" r="4" fill="#18181b" stroke="#f59e0b" strokeWidth="2" />
+                <circle cx="380" cy="10" r="4" fill="#18181b" stroke="#f59e0b" strokeWidth="2" />
               </svg>
             </div>
 
@@ -502,7 +502,7 @@ export function PolaroidCertificateCarousel({
                 animate={{ opacity: 1, scale: 1, rotate: -1 }}
                 exit={{ opacity: 0, scale: 0.96, rotate: 1 }}
                 transition={{ duration: 0.28, ease: "easeOut" }}
-                className="relative w-full max-w-[460px] cursor-pointer group"
+                className="relative w-full max-w-[390px] cursor-pointer group"
                 onClick={() => openZoomModal(safeActive)}
                 title="Click to Zoom & Inspect Certificate"
               >
@@ -512,7 +512,7 @@ export function PolaroidCertificateCarousel({
                   style={{
                     backgroundColor: activeTheme.pegColor || "#c2884a",
                     borderColor: "#18181b",
-                    boxShadow: `2px 2px 0 ${activeTheme.pegShadow || "#78350f"}`,
+                    boxShadow: `1.5px 1.5px 0 ${activeTheme.pegShadow || "#78350f"}`,
                   }}
                 />
                 <div
@@ -520,7 +520,7 @@ export function PolaroidCertificateCarousel({
                   style={{
                     backgroundColor: activeTheme.pegColor || "#c2884a",
                     borderColor: "#18181b",
-                    boxShadow: `2px 2px 0 ${activeTheme.pegShadow || "#78350f"}`,
+                    boxShadow: `1.5px 1.5px 0 ${activeTheme.pegShadow || "#78350f"}`,
                   }}
                 />
 
@@ -528,7 +528,7 @@ export function PolaroidCertificateCarousel({
                 <div
                   className="pl-cert-print group-hover:rotate-0 group-hover:scale-[1.015] transition-transform duration-300"
                   style={{
-                    boxShadow: `0 18px 36px -10px rgba(0, 0, 0, 0.35), 7px 9px 0 ${activeTheme.printShadow || "#18181b"}`,
+                    boxShadow: `0 14px 30px -8px rgba(0, 0, 0, 0.3), 5px 7px 0 ${activeTheme.printShadow || "#18181b"}`,
                   }}
                 >
                   {/* Inner Photo Window (Aspect Ratio 1.48 / 16:11) */}
@@ -551,7 +551,7 @@ export function PolaroidCertificateCarousel({
                           draggable={false}
                           onDragStart={(e) => e.preventDefault()}
                           referrerPolicy="no-referrer"
-                          className="w-full h-full object-contain p-2 select-none pointer-events-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.65)]"
+                          className="w-full h-full object-contain p-1.5 select-none pointer-events-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.65)]"
                           onError={(e) => {
                             const target = e.currentTarget
                             if (!target.dataset.triedFallback && isGoogleDriveUrl(activeCert.imageUrl)) {
@@ -564,7 +564,7 @@ export function PolaroidCertificateCarousel({
                         />
 
                         {/* Top-Left Stamp: #01 */}
-                        <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full bg-black/85 backdrop-blur-md text-amber-400 font-mono text-[9px] font-black uppercase tracking-wider border border-white/20 shadow-sm select-none z-20">
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/85 backdrop-blur-md text-amber-400 font-mono text-[8.5px] font-black uppercase tracking-wider border border-white/20 shadow-sm select-none z-20">
                           #{pad2(safeActive + 1)}
                         </div>
 
@@ -575,15 +575,15 @@ export function PolaroidCertificateCarousel({
                             e.stopPropagation()
                             openZoomModal(safeActive)
                           }}
-                          className="absolute top-2.5 right-2.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:brightness-110 text-black font-mono text-[9.5px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow-[2px_2px_0_#000] transition-all hover:scale-105 active:scale-95 cursor-pointer z-20"
+                          className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:brightness-110 text-black font-mono text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-[1.5px_1.5px_0_#000] transition-all hover:scale-105 active:scale-95 cursor-pointer z-20"
                           title="Click to Zoom & Inspect"
                         >
-                          <ZoomIn className="w-3.5 h-3.5 text-black" />
+                          <ZoomIn className="w-3 h-3 text-black" />
                           <span>ZOOM</span>
                         </button>
 
                         {/* Bottom Foil Ribbon: Category */}
-                        <div className="absolute bottom-2 left-4 right-4 text-center py-0.5 rounded-full font-mono text-[9px] font-black uppercase tracking-widest truncate border shadow-md bg-black/85 text-amber-300 backdrop-blur-md border-amber-400/40 z-20">
+                        <div className="absolute bottom-1.5 left-3 right-3 text-center py-0.5 rounded-full font-mono text-[8.5px] font-black uppercase tracking-widest truncate border shadow-md bg-black/85 text-amber-300 backdrop-blur-md border-amber-400/40 z-20">
                           ✦ {activeCert.category} ✦
                         </div>
 
@@ -604,11 +604,11 @@ export function PolaroidCertificateCarousel({
 
                           <div className="my-auto text-center space-y-1 py-1">
                             <div
-                              className={`inline-block p-2 rounded-full border-2 border-white/40 ${activeTheme.crestBorder} ${activeTheme.crestBg}`}
+                              className={`inline-block p-1.5 rounded-full border-2 border-white/40 ${activeTheme.crestBorder} ${activeTheme.crestBg}`}
                             >
-                              <Award className="w-6 h-6 text-amber-400" />
+                              <Award className="w-5 h-5 text-amber-400" />
                             </div>
-                            <div className="font-mono text-[9px] font-black uppercase tracking-widest text-amber-300 block truncate max-w-[200px]">
+                            <div className="font-mono text-[8.5px] font-black uppercase tracking-widest text-amber-300 block truncate max-w-[180px]">
                               {formatVerificationText(activeCert)}
                             </div>
                             <div className="font-bold text-xs uppercase line-clamp-1 text-white px-1">
@@ -616,7 +616,7 @@ export function PolaroidCertificateCarousel({
                             </div>
                           </div>
 
-                          <div className="w-full text-center py-0.5 rounded-full font-mono text-[8.5px] font-black uppercase tracking-wider truncate border border-amber-400/40 bg-black/60 text-amber-300">
+                          <div className="w-full text-center py-0.5 rounded-full font-mono text-[8px] font-black uppercase tracking-wider truncate border border-amber-400/40 bg-black/60 text-amber-300">
                             {activeCert.category}
                           </div>
                         </div>
@@ -626,10 +626,10 @@ export function PolaroidCertificateCarousel({
 
                   {/* Iconic Polaroid Bottom Chin */}
                   <div className="pl-cert-note">
-                    <span className="truncate block font-black text-xs sm:text-sm text-stone-900 dark:text-stone-100 uppercase tracking-tight font-mono">
+                    <span className="truncate block font-black text-xs sm:text-[13px] text-stone-900 dark:text-stone-100 uppercase tracking-tight font-mono">
                       {activeCert.title}
                     </span>
-                    <span className="text-[10px] text-amber-800 dark:text-amber-400 block truncate font-mono font-bold flex items-center justify-center gap-1 mt-0.5">
+                    <span className="text-[9.5px] text-amber-800 dark:text-amber-400 block truncate font-mono font-bold flex items-center justify-center gap-1 mt-0.5">
                       <span>✦</span>
                       <span>{activeCert.issuer}</span>
                       <span>•</span>
@@ -641,7 +641,7 @@ export function PolaroidCertificateCarousel({
             </AnimatePresence>
 
             {/* Click to inspect subtitle guide */}
-            <span className="mt-3 font-mono text-[10px] font-bold text-stone-500 dark:text-stone-400 flex items-center gap-1">
+            <span className="mt-2.5 font-mono text-[9.5px] font-bold text-stone-500 dark:text-stone-400 flex items-center gap-1">
               <Maximize2 className="w-3 h-3 text-amber-500" />
               <span>Tap print or click zoom to inspect full resolution</span>
             </span>
@@ -650,7 +650,7 @@ export function PolaroidCertificateCarousel({
           {/* =======================================================================
               COLUMN 2 (RIGHT): THE INTELLIGENCE & VERIFICATION DOSSIER
           ======================================================================= */}
-          <div className="lg:col-span-6 flex flex-col justify-between space-y-5">
+          <div className="lg:col-span-6 flex flex-col justify-between space-y-3.5">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeCert.id || safeActive}
@@ -658,15 +658,15 @@ export function PolaroidCertificateCarousel({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.24, ease: "easeOut" }}
-                className="space-y-4"
+                className="space-y-3"
               >
                 {/* Title & Issuer Heading */}
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-black uppercase text-black dark:text-white tracking-tight leading-tight">
+                  <h2 className="text-xl sm:text-2xl font-black uppercase text-black dark:text-white tracking-tight leading-snug">
                     {activeCert.title}
                   </h2>
-                  <p className="font-mono text-xs font-bold text-stone-700 dark:text-stone-300 mt-1.5 flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <p className="font-mono text-xs font-bold text-stone-700 dark:text-stone-300 mt-1 flex items-center gap-2">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>
                       Issued by <strong>{activeCert.issuer}</strong> • {activeCert.issueDate}
                     </span>
@@ -674,21 +674,21 @@ export function PolaroidCertificateCarousel({
                 </div>
 
                 {/* Description Paragraph */}
-                <p className="text-stone-800 dark:text-stone-200 text-sm leading-relaxed">
+                <p className="text-stone-800 dark:text-stone-200 text-xs sm:text-[13px] leading-relaxed line-clamp-3">
                   {activeCert.description}
                 </p>
 
                 {/* Specialized Knowledge & Skills Pills */}
                 {activeCert.skillsLearned && activeCert.skillsLearned.length > 0 && (
-                  <div className="space-y-1.5 pt-1">
-                    <span className="text-[10px] font-mono font-black uppercase text-stone-500 dark:text-stone-400 block tracking-wider">
+                  <div className="space-y-1">
+                    <span className="text-[9.5px] font-mono font-black uppercase text-stone-500 dark:text-stone-400 block tracking-wider">
                       SPECIALIZED KNOWLEDGE &amp; SKILLS:
                     </span>
-                    <div className="flex flex-wrap gap-1.5 font-mono text-xs">
+                    <div className="flex flex-wrap gap-1 font-mono text-[11px]">
                       {activeCert.skillsLearned.map((skill) => (
                         <span
                           key={skill}
-                          className={`border px-3 py-1 rounded-full font-bold ${activeTheme.skillsPill}`}
+                          className={`border px-2.5 py-0.5 rounded-full font-bold ${activeTheme.skillsPill}`}
                         >
                           ✦ {skill}
                         </span>
@@ -699,13 +699,13 @@ export function PolaroidCertificateCarousel({
 
                 {/* Interactive Zoom & Inspect Preview Card */}
                 {activeCert.imageUrl && (
-                  <div className="pt-2">
+                  <div className="pt-1">
                     <button
                       type="button"
                       onClick={() => openZoomModal(safeActive)}
-                      className="w-full sm:w-auto inline-flex items-center gap-3 p-3 rounded-2xl border-2 border-black dark:border-stone-600 bg-white dark:bg-stone-800 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] hover:-translate-y-0.5 hover:bg-amber-50 dark:hover:bg-stone-700 transition-all group cursor-pointer text-left"
+                      className="w-full sm:w-auto inline-flex items-center gap-2.5 p-2 rounded-xl border-2 border-black dark:border-stone-600 bg-white dark:bg-stone-800 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] hover:-translate-y-0.5 hover:bg-amber-50 dark:hover:bg-stone-700 transition-all group cursor-pointer text-left"
                     >
-                      <div className="w-16 h-12 rounded-lg overflow-hidden border border-stone-300 bg-stone-100 shrink-0 relative">
+                      <div className="w-12 h-9 rounded-md overflow-hidden border border-stone-300 bg-stone-100 shrink-0 relative">
                         <img
                           src={formatGoogleDriveImageUrl(activeCert.imageUrl)}
                           alt={activeCert.title}
@@ -724,12 +724,12 @@ export function PolaroidCertificateCarousel({
                         <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
                       </div>
                       <div className="font-mono text-xs">
-                        <span className="font-black text-black dark:text-white flex items-center gap-1.5 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                          <ZoomIn className="w-4 h-4 text-amber-500" />
+                        <span className="font-black text-black dark:text-white flex items-center gap-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors text-[11px]">
+                          <ZoomIn className="w-3.5 h-3.5 text-amber-500" />
                           <span>Zoom &amp; Inspect Certificate</span>
                         </span>
-                        <span className="text-stone-500 dark:text-stone-400 text-[10px] block font-mono">
-                          High-Resolution Protected In-Place Inspector
+                        <span className="text-stone-500 dark:text-stone-400 text-[9px] block font-mono">
+                          Protected In-Place High-Res Inspector
                         </span>
                       </div>
                     </button>
@@ -737,40 +737,40 @@ export function PolaroidCertificateCarousel({
                 )}
 
                 {/* Action Verification Footer */}
-                <div className="pt-4 border-t-2 border-dashed border-black/20 dark:border-stone-700 flex flex-wrap items-center justify-between gap-3">
-                  <div className="font-mono text-xs text-stone-600 dark:text-stone-400">
-                    Credential ID:{" "}
+                <div className="pt-3 border-t-2 border-dashed border-black/20 dark:border-stone-700 flex flex-wrap items-center justify-between gap-2.5">
+                  <div className="font-mono text-[11px] text-stone-600 dark:text-stone-400">
+                    ID:{" "}
                     <span className="font-black text-black dark:text-white">
                       {activeCert.credentialId || "VERIFIED-ON-FILE"}
                     </span>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="flex flex-wrap items-center gap-2">
                     {/* Primary Button */}
                     {activeCert.credentialUrl && !isGoogleDriveUrl(activeCert.credentialUrl) ? (
                       <a
                         href={activeCert.credentialUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-4 py-2 rounded-xl font-mono text-xs font-black uppercase tracking-wider bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white shadow-[2.5px_2.5px_0_#8b5cf6] hover:-translate-y-0.5 transition-transform flex items-center gap-1.5"
+                        className="px-3 py-1.5 rounded-lg font-mono text-[11px] font-black uppercase tracking-wider bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white shadow-[2px_2px_0_#8b5cf6] hover:-translate-y-0.5 transition-transform flex items-center gap-1"
                       >
-                        <span>Verify on Website</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Verify on Site</span>
+                        <ExternalLink className="w-3 h-3" />
                       </a>
                     ) : (
                       <button
                         type="button"
                         onClick={() => openZoomModal(safeActive)}
-                        className="px-4 py-2 rounded-xl font-mono text-xs font-black uppercase tracking-wider bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white shadow-[2.5px_2.5px_0_#f59e0b] hover:-translate-y-0.5 transition-transform flex items-center gap-1.5 cursor-pointer"
+                        className="px-3 py-1.5 rounded-lg font-mono text-[11px] font-black uppercase tracking-wider bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white shadow-[2px_2px_0_#f59e0b] hover:-translate-y-0.5 transition-transform flex items-center gap-1 cursor-pointer"
                       >
-                        <ZoomIn className="w-3.5 h-3.5 text-amber-400" />
+                        <ZoomIn className="w-3 h-3 text-amber-400" />
                         <span>Zoom &amp; Inspect</span>
                       </button>
                     )}
 
                     {/* Verified Status Badge */}
-                    <div className="inline-flex items-center gap-1.5 font-mono text-xs font-black text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-xl border border-emerald-300 dark:border-emerald-700 shadow-xs">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <div className="inline-flex items-center gap-1 font-mono text-[10.5px] font-black text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-700 shadow-xs">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
                       <span>{formatVerificationText(activeCert)}</span>
                     </div>
                   </div>
@@ -784,19 +784,19 @@ export function PolaroidCertificateCarousel({
             BOTTOM TIER INSIDE BENTO: MINI POLAROID FILMSTRIP SELECTOR
         ======================================================================= */}
         {n > 1 && (
-          <div className="mt-8 pt-6 border-t-2 border-black/15 dark:border-white/10 space-y-3">
+          <div className="mt-5 pt-4 border-t-2 border-black/15 dark:border-white/10 space-y-2.5">
             <div className="flex items-center justify-between text-xs font-mono font-bold">
-              <span className="flex items-center gap-1.5 text-stone-700 dark:text-stone-300 uppercase tracking-wider text-[11px]">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span className="flex items-center gap-1.5 text-stone-700 dark:text-stone-300 uppercase tracking-wider text-[10.5px]">
+                <Sparkles className="w-3 h-3 text-amber-500" />
                 <span>POLAROID FILMSTRIP RACK ({pad2(safeActive + 1)} OF {pad2(n)})</span>
               </span>
-              <span className="text-[10px] text-stone-500 dark:text-stone-400 hidden sm:inline">
+              <span className="text-[9.5px] text-stone-500 dark:text-stone-400 hidden sm:inline">
                 Click any mini print to select
               </span>
             </div>
 
             {/* Horizontally scrollable filmstrip row */}
-            <div className="flex items-center gap-3 overflow-x-auto pb-3 pt-2 select-none scrollbar-thin">
+            <div className="flex items-center gap-2.5 overflow-x-auto pb-2 pt-1 select-none scrollbar-thin">
               {certificates.map((cert, idx) => {
                 const isCurrent = idx === safeActive
                 return (
@@ -804,15 +804,15 @@ export function PolaroidCertificateCarousel({
                     key={cert.id || idx}
                     type="button"
                     onClick={() => setActive(idx)}
-                    className={`shrink-0 text-left transition-all duration-200 cursor-pointer group relative p-1.5 rounded-xl border-2 ${
+                    className={`shrink-0 text-left transition-all duration-200 cursor-pointer group relative p-1 rounded-lg border-2 ${
                       isCurrent
-                        ? "bg-white dark:bg-stone-800 border-black dark:border-amber-400 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#f59e0b] -translate-y-1 scale-105"
-                        : "bg-stone-100/90 dark:bg-stone-900 border-stone-300 dark:border-stone-700 opacity-75 hover:opacity-100 hover:-translate-y-0.5 shadow-sm"
+                        ? "bg-white dark:bg-stone-800 border-black dark:border-amber-400 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#f59e0b] -translate-y-0.5 scale-105"
+                        : "bg-stone-100/90 dark:bg-stone-900 border-stone-300 dark:border-stone-700 opacity-75 hover:opacity-100 hover:-translate-y-0.5 shadow-xs"
                     }`}
-                    style={{ width: "135px" }}
+                    style={{ width: "110px" }}
                   >
                     {/* Mini Polaroid Photo Area */}
-                    <div className="relative aspect-[16/11] rounded-lg overflow-hidden bg-black border border-stone-300 dark:border-stone-700">
+                    <div className="relative aspect-[16/11] rounded overflow-hidden bg-black border border-stone-300 dark:border-stone-700">
                       {cert.imageUrl ? (
                         <img
                           src={formatGoogleDriveImageUrl(cert.imageUrl)}
@@ -829,19 +829,19 @@ export function PolaroidCertificateCarousel({
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-stone-800 text-amber-400">
-                          <Award className="w-5 h-5" />
+                          <Award className="w-4 h-4" />
                         </div>
                       )}
-                      <div className="absolute top-1 left-1 px-1.5 py-0.2 rounded bg-black/80 text-white font-mono text-[8px] font-black">
+                      <div className="absolute top-0.5 left-0.5 px-1 py-0.1 rounded bg-black/80 text-white font-mono text-[7.5px] font-black">
                         #{pad2(idx + 1)}
                       </div>
                     </div>
                     {/* Mini Title */}
                     <div className="mt-1 px-0.5">
-                      <span className="block text-[10px] font-mono font-black truncate text-black dark:text-white">
+                      <span className="block text-[9.5px] font-mono font-black truncate text-black dark:text-white">
                         {cert.title}
                       </span>
-                      <span className="block text-[8.5px] font-mono text-stone-500 dark:text-stone-400 truncate">
+                      <span className="block text-[8px] font-mono text-stone-500 dark:text-stone-400 truncate">
                         {cert.issuer}
                       </span>
                     </div>
@@ -1093,12 +1093,12 @@ const POLAROID_BENTO_CSS = `
 
 /* Note typography at bottom chin of polaroid */
 .pl-cert-note {
-  height: 48px;
+  height: 42px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5px 8px 0;
+  padding: 4px 6px 0;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -1108,16 +1108,16 @@ const POLAROID_BENTO_CSS = `
 /* Handcrafted Realistic Wooden Clothesline Pegs */
 .pl-cert-peg {
   position: absolute;
-  top: -14px;
-  width: 13px;
-  height: 30px;
-  margin-left: -6.5px;
-  border-radius: 3px;
-  border: 2px solid #18181b;
+  top: -11px;
+  width: 11px;
+  height: 25px;
+  margin-left: -5.5px;
+  border-radius: 2.5px;
+  border: 1.8px solid #18181b;
   z-index: 25;
   transition: transform 0.2s ease;
   background: linear-gradient(180deg, #d97706 0%, #b45309 60%, #92400e 100%);
-  box-shadow: 2px 2px 0 #78350f, 0 3px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 1.5px 1.5px 0 #78350f, 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .pl-cert-peg-left {
@@ -1132,10 +1132,10 @@ const POLAROID_BENTO_CSS = `
 .pl-cert-peg::before {
   content: '';
   position: absolute;
-  left: -2px;
-  top: 10px;
-  right: -2px;
-  height: 4px;
+  left: -1.5px;
+  top: 8px;
+  right: -1.5px;
+  height: 3.5px;
   background: linear-gradient(90deg, #a1a1aa, #f4f4f5, #71717a);
   border-top: 1px solid #18181b;
   border-bottom: 1px solid #18181b;
@@ -1146,10 +1146,10 @@ const POLAROID_BENTO_CSS = `
 .pl-cert-peg::after {
   content: '';
   position: absolute;
-  left: 3.5px;
+  left: 3px;
   bottom: 0;
-  width: 2px;
-  height: 8px;
+  width: 1.8px;
+  height: 7px;
   background: #451a03;
   border-radius: 1px 1px 0 0;
 }

@@ -618,7 +618,7 @@ const router = useRouter()
   const [isLeaving, setIsLeaving] = React.useState(false)
 
   React.useEffect(() => {
-    router.prefetch("/about")
+    // In single-page mode, about is an in-page section
   }, [router])
 
   const triggerLeave = React.useCallback(() => {
@@ -626,7 +626,7 @@ const router = useRouter()
     isLeavingRef.current = true
     setIsLeaving(true)
     window.setTimeout(() => {
-      router.push("/about")
+      const el = document.getElementById("about"); if (el) el.scrollIntoView({ behavior: "smooth" });
     }, 280)
   }, [router])
 
@@ -1177,9 +1177,9 @@ const router = useRouter()
               >
                 <Mail className="w-4 h-4" />
               </a>
-              <Link href="/admin" className="dcf-social-link is-admin" title="Admin Control Center (Locked)" aria-label="Admin Control Center">
+              <a href="/admin" className="dcf-social-link is-admin" title="Admin Control Center (Locked)" aria-label="Admin Control Center">
                 <Lock className="w-4 h-4" />
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -1462,21 +1462,21 @@ const router = useRouter()
           </div>
 
           <div className="dcf-actions dcf-rise" style={{ "--d": "520ms" } as React.CSSProperties}>
-            <Link href="/projects" className="dcf-btn is-projects is-solid">
+            <a href="#projects" onClick={(e) => { e.preventDefault(); document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }); }} className="dcf-btn is-projects is-solid cursor-pointer">
               <DoodleIcon kind="bolt" size={16} isDark={isDark} />
               <span>Explore Projects</span>
               <span className="dcf-btn-arrow">↗</span>
-            </Link>
+            </a>
 
-            <Link href="/about" className="dcf-btn is-about is-outline">
+            <a href="#about" onClick={(e) => { e.preventDefault(); document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); }} className="dcf-btn is-about is-outline cursor-pointer">
               <DoodleIcon kind="star" size={16} isDark={isDark} />
               <span>About &amp; Story</span>
-            </Link>
+            </a>
 
-            <Link href="/contact" className="dcf-btn is-contact is-outline">
+            <a href="#contact" onClick={(e) => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }} className="dcf-btn is-contact is-outline cursor-pointer">
               <DoodleIcon kind="plane" size={16} isDark={isDark} />
               <span>Contact Desk</span>
-            </Link>
+            </a>
           </div>
 
           {/* THE DAILY SPARK ✦ - 7 Days, 7 Quotes */}
@@ -1509,7 +1509,7 @@ const COVER_CSS = `
   position: relative;
   isolation: isolate;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: visible;
   width: 100%;
   min-height: 100svh;
   box-sizing: border-box;
