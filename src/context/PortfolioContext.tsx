@@ -9,6 +9,9 @@ interface PortfolioContextType {
   updateData: (newData: PortfolioData) => Promise<boolean>;
   resetData: () => Promise<boolean>;
   refreshData: () => Promise<void>;
+  isCoverOpen: boolean;
+  openCover: () => void;
+  closeCover: () => void;
 }
 
 const PortfolioContext = createContext<PortfolioContextType>({
@@ -17,6 +20,9 @@ const PortfolioContext = createContext<PortfolioContextType>({
   updateData: async () => false,
   resetData: async () => false,
   refreshData: async () => {},
+  isCoverOpen: true,
+  openCover: () => {},
+  closeCover: () => {},
 });
 
 const LOCAL_STORAGE_KEY = "socius_portfolio_data";
@@ -24,6 +30,31 @@ const LOCAL_STORAGE_KEY = "socius_portfolio_data";
 export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<PortfolioData>(initialDefaultData);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCoverOpen, setIsCoverOpen] = useState<boolean>(true);
+
+  // Check initial hash on mount - if directly navigating to a section like #projects or #about, bypass cover
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash;
+      if (hash && hash !== "#cover" && hash !== "#") {
+        setIsCoverOpen(false);
+      }
+    }
+  }, []);
+
+  const openCover = () => {
+    setIsCoverOpen(true);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      if (window.history && window.location.hash) {
+        window.history.pushState(null, "", "/");
+      }
+    }
+  };
+
+  const closeCover = () => {
+    setIsCoverOpen(false);
+  };
 
   const refreshData = async () => {
     // 1. Instantly read from local storage if available so there is zero flash of old data
@@ -126,7 +157,18 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <PortfolioContext.Provider value={{ data, isLoading, updateData, resetData, refreshData }}>
+    <PortfolioContext.Provider
+      value={{
+        data,
+        isLoading,
+        updateData,
+        resetData,
+        refreshData,
+        isCoverOpen,
+        openCover,
+        closeCover,
+      }}
+    >
       {children}
     </PortfolioContext.Provider>
   );

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Lock, Sparkles, Home, User, FolderGit2, Award, Mail } from "lucide-react";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 interface NavSection {
   name: string;
@@ -18,6 +19,7 @@ interface NavSection {
 
 export function MagazineNav() {
   const pathname = usePathname();
+  const { isCoverOpen, openCover } = usePortfolio();
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("cover");
   const [isScrolled, setIsScrolled] = useState(false);
@@ -156,7 +158,7 @@ export function MagazineNav() {
     setIsOpen(false);
 
     if (targetId === "cover") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      openCover();
       setActiveSection("cover");
       if (typeof window !== "undefined" && window.history) {
         window.history.pushState(null, "", "/");
@@ -177,7 +179,7 @@ export function MagazineNav() {
   };
 
   const activePage = sections.find((s) => s.id === activeSection);
-  const showMobileDock = isScrolled || activeSection !== "cover";
+  const showMobileDock = !isCoverOpen && (isScrolled || activeSection !== "cover");
 
   return (
     <>

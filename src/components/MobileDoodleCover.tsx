@@ -138,7 +138,7 @@ function SparkleStarDoodle({ className = "", color = "#38bdf8" }: { className?: 
 }
 
 export function MobileDoodleCover() {
-  const { data: portfolio } = usePortfolio();
+  const { data: portfolio, closeCover } = usePortfolio();
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [hasMoved, setHasMoved] = useState<boolean>(false);
@@ -164,20 +164,15 @@ export function MobileDoodleCover() {
     }, 850);
   };
 
-  const scrollDown = () => {
-    const el = document.getElementById("about");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   const handleCoverClick = (e: React.MouseEvent<HTMLElement>) => {
     if (ignoreNextClickRef.current) {
       ignoreNextClickRef.current = false;
       return;
     }
     triggerRipple(e.clientX, e.clientY, e.currentTarget);
-    scrollDown();
+    setTimeout(() => {
+      closeCover();
+    }, 240);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -209,7 +204,9 @@ export function MobileDoodleCover() {
         ignoreNextClickRef.current = false;
       }, 500);
       triggerRipple(endX, endY, e.currentTarget);
-      scrollDown();
+      setTimeout(() => {
+        closeCover();
+      }, 240);
     }
 
     setTouchStartX(null);
@@ -246,7 +243,11 @@ export function MobileDoodleCover() {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative w-full min-h-[100dvh] select-none bg-[#090a0f] text-white flex flex-col justify-between cursor-pointer overflow-hidden"
+      onWheel={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      className="relative w-full h-full min-h-[100dvh] touch-none select-none bg-[#090a0f] text-white flex flex-col justify-between cursor-pointer overflow-hidden"
       aria-label="Harsh Aryan Mobile Sketchbook Cover"
     >
       {/* ── EXPANDING NEON TAP RIPPLE EFFECT ── */}

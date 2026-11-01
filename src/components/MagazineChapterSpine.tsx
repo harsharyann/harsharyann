@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, Compass } from "lucide-react";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 interface ChapterSpineItem {
   id: string;
@@ -22,6 +23,7 @@ const CHAPTERS: ChapterSpineItem[] = [
 ];
 
 export function MagazineChapterSpine() {
+  const { openCover } = usePortfolio();
   const [activeId, setActiveId] = useState<string>("cover");
   const [scrollPercent, setScrollPercent] = useState<number>(0);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -68,7 +70,7 @@ export function MagazineChapterSpine() {
 
   const scrollTo = (id: string) => {
     if (id === "cover") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      openCover();
       return;
     }
     const el = document.getElementById(id);

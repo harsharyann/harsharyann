@@ -608,7 +608,7 @@ export function DoodleCrewCover({
   const uid = React.useId().replace(/[^a-zA-Z0-9_-]/g, "")
   const { theme } = useTheme()
   const isDark = theme === "dark"
-  const { data: portfolio } = usePortfolio()
+  const { data: portfolio, closeCover } = usePortfolio()
   const word = (portfolio?.personal?.desktopWordmark || portfolio?.personal?.name || wordmark).toUpperCase()
   const chars = React.useMemo(() => Array.from(word), [word])
 
@@ -621,9 +621,10 @@ export function DoodleCrewCover({
   }, [router])
 
   const triggerLeave = React.useCallback(() => {
+    closeCover();
     const el = document.getElementById("about");
     if (el) el.scrollIntoView({ behavior: "smooth" });
-  }, [])
+  }, [closeCover])
 
   // Clean native scroll: no event hijacking or wheel trapping
 
@@ -1324,18 +1325,48 @@ export function DoodleCrewCover({
           </div>
 
           <div className="dcf-actions dcf-rise" style={{ "--d": "520ms" } as React.CSSProperties}>
-            <a href="#projects" onClick={(e) => { e.preventDefault(); document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }); }} className="dcf-btn is-projects is-solid cursor-pointer">
+            <a
+              href="#projects"
+              onClick={(e) => {
+                e.preventDefault();
+                closeCover();
+                setTimeout(() => {
+                  document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+              className="dcf-btn is-projects is-solid cursor-pointer"
+            >
               <DoodleIcon kind="bolt" size={16} isDark={isDark} />
               <span>Explore Projects</span>
               <span className="dcf-btn-arrow">↗</span>
             </a>
 
-            <a href="#about" onClick={(e) => { e.preventDefault(); document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); }} className="dcf-btn is-about is-outline cursor-pointer">
+            <a
+              href="#about"
+              onClick={(e) => {
+                e.preventDefault();
+                closeCover();
+                setTimeout(() => {
+                  document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+              className="dcf-btn is-about is-outline cursor-pointer"
+            >
               <DoodleIcon kind="star" size={16} isDark={isDark} />
               <span>About &amp; Story</span>
             </a>
 
-            <a href="#contact" onClick={(e) => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }} className="dcf-btn is-contact is-outline cursor-pointer">
+            <a
+              href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                closeCover();
+                setTimeout(() => {
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+              className="dcf-btn is-contact is-outline cursor-pointer"
+            >
               <DoodleIcon kind="plane" size={16} isDark={isDark} />
               <span>Contact Desk</span>
             </a>

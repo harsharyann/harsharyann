@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { DoodleCrewCover } from "@/components/DoodleCrewCover";
 import { MobileDoodleCover } from "@/components/MobileDoodleCover";
 import { Scroll3DSection } from "@/components/Scroll3DSection";
@@ -10,90 +11,125 @@ import { CertificatesSection } from "@/components/sections/CertificatesSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MagazineChapterSpine } from "@/components/MagazineChapterSpine";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 export default function Home() {
+  const { isCoverOpen, closeCover } = usePortfolio();
+
+  // Lock document scroll completely while the Cover Portal is active so scrolling CANNOT reach About
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (isCoverOpen) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+    } else {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
+  }, [isCoverOpen]);
+
   // Support direct anchor jumps on initial page load (e.g., /#about, /#projects)
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash) {
       const id = window.location.hash.replace("#", "");
-      const timer = setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 250);
-      return () => clearTimeout(timer);
+      if (id && id !== "cover") {
+        closeCover();
+        const timer = setTimeout(() => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 250);
+        return () => clearTimeout(timer);
+      }
     }
-  }, []);
+  }, [closeCover]);
 
   return (
     <main className="w-full min-h-screen bg-transparent text-black dark:text-white selection:bg-indigo-600 selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200">
-      {/* ── 3D MAGAZINE CHAPTER SPINE (Idea #1: Interactive Floating Right Dock) ── */}
-      <MagazineChapterSpine />
+      {/* ── 3D MAGAZINE CHAPTER SPINE (Visible once cover is dismissed) ── */}
+      {!isCoverOpen && <MagazineChapterSpine />}
 
-      {/* ── 01. COVER SCREEN (Dedicated Mobile & Desktop Versions) ── */}
-      <section id="cover" className="relative w-full">
-        {/* Phone Cover (iOS & Android) — Dedicated Clean Portrait Layout */}
-        <div className="block md:hidden w-full">
-          <MobileDoodleCover />
-        </div>
+      {/* ── 01. COVER SCREEN (Dedicated Mobile & Desktop Versions - Fully Dismissable Portal) ── */}
+      <AnimatePresence mode="wait">
+        {isCoverOpen && (
+          <motion.div
+            key="cover-portal-screen"
+            id="cover"
+            initial={{ opacity: 1 }}
+            exit={{
+              opacity: 0,
+              y: -25,
+              transition: { duration: 0.35, ease: "easeInOut" },
+            }}
+            className="fixed inset-0 z-50 w-full h-[100dvh] overflow-hidden touch-none select-none bg-[#090a0f]"
+          >
+            {/* Phone Cover (iOS & Android) — Dedicated Clean Portrait Layout */}
+            <div className="block md:hidden w-full h-full">
+              <MobileDoodleCover />
+            </div>
 
-        {/* Desktop Cover (Tablet & Laptop) — Full Interactive Doodle Crew */}
-        <div className="hidden md:block w-full">
-          <DoodleCrewCover />
-        </div>
-      </section>
+            {/* Desktop Cover (Tablet & Laptop) — Full Interactive Doodle Crew */}
+            <div className="hidden md:block w-full h-full">
+              <DoodleCrewCover />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* ── 02. CHAPTER 02: ABOUT & BIO (3D Scroll Perspective) ── */}
-      <Scroll3DSection
-        id="about"
-        chapterNumber="02"
-        chapterName="The Architect & Mind"
-        accentColor="#f59e0b"
+      {/* ── PORTFOLIO MAIN BODY (Only visible & scrollable when Cover is dismissed) ── */}
+      <div
+        className={`w-full transition-opacity duration-300 ${
+          isCoverOpen ? "invisible h-0 overflow-hidden pointer-events-none" : "visible"
+        }`}
       >
-        <AboutSection id="about-content" />
-      </Scroll3DSection>
+        {/* ── 02. CHAPTER 02: ABOUT & BIO (3D Scroll Perspective) ── */}
+        <Scroll3DSection
+          id="about"
+          chapterNumber="02"
+          chapterName="The Architect & Mind"
+          accentColor="#f59e0b"
+        >
+          <AboutSection id="about-content" />
+        </Scroll3DSection>
 
-      {/* ── 03. CHAPTER 03: PROJECTS & BUILDS (3D Scroll Perspective) ── */}
-      <Scroll3DSection
-        id="projects"
-        chapterNumber="03"
-        chapterName="Project Lab & Code"
-        accentColor="#6366f1"
-      >
-        <ProjectsSection id="projects-content" />
-      </Scroll3DSection>
+        {/* ── 03. CHAPTER 03: PROJECTS & BUILDS (3D Scroll Perspective) ── */}
+        <Scroll3DSection
+          id="projects"
+          chapterNumber="03"
+          chapterName="Project Lab & Code"
+          accentColor="#6366f1"
+        >
+          <ProjectsSection id="projects-content" />
+        </Scroll3DSection>
 
-      {/* ── 04. CHAPTER 04: CERTIFICATES & LAURELS (3D Scroll Perspective) ── */}
-      <Scroll3DSection
-        id="certificates"
-        chapterNumber="04"
-        chapterName="Credential Archive"
-        accentColor="#10b981"
-      >
-        <CertificatesSection id="certificates-content" />
-      </Scroll3DSection>
+        {/* ── 04. CHAPTER 04: CERTIFICATES & LAURELS (3D Scroll Perspective) ── */}
+        <Scroll3DSection
+          id="certificates"
+          chapterNumber="04"
+          chapterName="Credential Archive"
+          accentColor="#10b981"
+        >
+          <CertificatesSection id="certificates-content" />
+        </Scroll3DSection>
 
-      {/* ── 05. CHAPTER 05: CONTACT & DISPATCH (3D Scroll Perspective) ── */}
-      <Scroll3DSection
-        id="contact"
-        chapterNumber="05"
-        chapterName="Direct Comms & Dispatch"
-        accentColor="#f43f5e"
-      >
-        <ContactSection id="contact-content" />
-      </Scroll3DSection>
-      <Scroll3DSection
-        id="contact"
-        chapterNumber="05"
-        chapterName="Direct Comms & Dispatch"
-        accentColor="#f43f5e"
-      >
-        <ContactSection id="contact-content" />
-      </Scroll3DSection>
+        {/* ── 05. CHAPTER 05: CONTACT & DISPATCH (3D Scroll Perspective) ── */}
+        <Scroll3DSection
+          id="contact"
+          chapterNumber="05"
+          chapterName="Direct Comms & Dispatch"
+          accentColor="#f43f5e"
+        >
+          <ContactSection id="contact-content" />
+        </Scroll3DSection>
 
-      {/* ── FINAL ARCHITECTURAL FOOTER (At the very end of the website) ── */}
-      <SiteFooter />
+        {/* ── FINAL ARCHITECTURAL FOOTER (At the very end of the website) ── */}
+        <SiteFooter />
+      </div>
     </main>
   );
 }

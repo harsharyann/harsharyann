@@ -9,7 +9,7 @@ import { usePortfolio } from "@/context/PortfolioContext";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function SiteFooter() {
-  const { data: portfolio } = usePortfolio();
+  const { data: portfolio, openCover } = usePortfolio();
   const personal = portfolio?.personal;
   const socialLinks = portfolio?.socialLinks;
   const router = useRouter();
@@ -41,12 +41,26 @@ export function SiteFooter() {
   };
 
   const directoryItems = [
-    { label: "cover", href: "/" },
-    { label: "about", href: "/#about" },
-    { label: "project", href: "/#projects" },
-    { label: "credentials", href: "/#certificates" },
-    { label: "dispatch desk", href: "/#contact" },
+    { id: "cover", label: "Cover", href: "#cover" },
+    { id: "about", label: "About", href: "/#about" },
+    { id: "projects", label: "Projects", href: "/#projects" },
+    { id: "certificates", label: "Certificates", href: "/#certificates" },
+    { id: "contact", label: "Dispatch Desk", href: "/#contact" },
   ];
+
+  const handleDirectoryClick = (e: React.MouseEvent, item: typeof directoryItems[0]) => {
+    if (item.id === "cover") {
+      e.preventDefault();
+      openCover();
+      scrollToTop();
+      return;
+    }
+    const target = document.getElementById(item.id);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <footer className="w-full mt-12 sm:mt-16 pt-7 pb-8 border-t-2 border-black/15 dark:border-white/10 bg-stone-100/70 dark:bg-[#0c0d12]/80 backdrop-blur-xl text-black dark:text-white transition-colors duration-200">
@@ -69,10 +83,11 @@ export function SiteFooter() {
           <nav aria-label="Site Directory Thread" className="overflow-x-auto py-1 scrollbar-none">
             <div className="inline-flex items-center gap-1 font-mono text-xs whitespace-nowrap">
               {directoryItems.map((item, idx, arr) => (
-                <React.Fragment key={item.label}>
+                <React.Fragment key={item.id}>
                   <Link
                     href={item.href}
-                    className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 font-bold transition-all duration-150"
+                    onClick={(e) => handleDirectoryClick(e, item)}
+                    className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 font-bold transition-all duration-150 cursor-pointer"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-600 group-hover:bg-amber-500 group-hover:scale-125 transition-all" />
                     <span>{item.label}</span>
