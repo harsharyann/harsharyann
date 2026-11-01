@@ -26,11 +26,11 @@ export function Scroll3DSection({
     <div
       ref={sectionRef}
       id={id}
-      className={`relative w-full scroll-mt-6 sm:scroll-mt-10 ${className}`}
+      className={`relative w-full scroll-mt-12 sm:scroll-mt-16 ${className}`}
     >
       {/* ── 3D CHAPTER BOOKMARK RIBBON (Visual Transition Bridge) ── */}
       {chapterNumber && chapterName && (
-        <div className="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-2 flex items-center justify-center">
+        <div className="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-2 flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 16 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -57,14 +57,14 @@ export function Scroll3DSection({
 
       {/* ── SECTION REVEAL CONTAINER (Hardware-Accelerated) ── */}
       <motion.div
-        initial={{ opacity: 0, y: 28, scale: 0.99 }}
+        initial={{ opacity: 0, y: 22, scale: 0.99 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
-        viewport={{ once: true, amount: 0.05 }}
+        viewport={{ once: true, amount: 0.04 }}
         transition={{
-          duration: 0.6,
+          duration: 0.5,
           ease: [0.16, 1, 0.3, 1],
         }}
-        className="w-full"
+        className="w-full transform-gpu"
       >
         {children}
       </motion.div>
