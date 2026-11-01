@@ -150,7 +150,7 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
             </svg>
 
             <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
-              Verified academic achievements, hackathon laurels, and institutional recognitions presented in compact widescreen landscape prints. Tap any certificate to zoom and securely inspect high-resolution details.
+              Verified academic achievements, hackathon laurels, and institutional recognitions presented in compact widescreen landscape prints.
             </p>
           </div>
 

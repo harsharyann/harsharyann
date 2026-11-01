@@ -309,28 +309,11 @@ export function MagazineNav() {
 
       {/* ── PHONE NAVIGATION: FLOATING BOTTOM DOCK ── */}
       <nav
-        className={`md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[360px] backdrop-blur-2xl bg-white/75 dark:bg-stone-900/75 border-2 border-black dark:border-white rounded-full shadow-[4px_4px_0_#000,inset_0_1px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[4px_4px_0_#fff,inset_0_1px_1.5px_0_rgba(255,255,255,0.18)] p-1.5 flex items-center justify-between gap-1 select-none transition-all duration-300 ${
+        className={`md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[340px] backdrop-blur-2xl bg-white/70 dark:bg-stone-900/70 border-2 border-black dark:border-white/50 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2),inset_0_1.5px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1.5px_1.5px_0_rgba(255,255,255,0.2)] p-1.5 flex items-center justify-between gap-1 select-none transition-all duration-300 ${
           showMobileDock ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-6 pointer-events-none"
         }`}
         aria-label="Mobile Navigation Dock"
       >
-        {/* Cover Link */}
-        <button
-          type="button"
-          onClick={(e) => handleNavClick("cover", e)}
-          className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-full transition-all duration-200 active:scale-90 cursor-pointer ${
-            activeSection === "cover"
-              ? "bg-black text-white dark:bg-white dark:text-black shadow-xs font-bold scale-[1.03]"
-              : "text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white"
-          }`}
-          title="Home Cover"
-        >
-          <Home className="w-3.5 h-3.5" />
-          <span className="text-[9px] font-mono tracking-tight font-black uppercase mt-0.5">
-            Cover
-          </span>
-        </button>
-
         {/* Section Links */}
         {sections.map((s) => {
           const isActive = activeSection === s.id;
@@ -339,18 +322,34 @@ export function MagazineNav() {
               key={s.id}
               type="button"
               onClick={(e) => handleNavClick(s.id, e)}
-              className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-full transition-all duration-200 active:scale-90 cursor-pointer ${
+              className={`flex-1 relative flex flex-col items-center justify-center py-1.5 px-2 rounded-full transition-all duration-300 active:scale-90 cursor-pointer overflow-hidden ${
                 isActive
-                  ? "bg-black text-white dark:bg-white dark:text-black shadow-xs font-bold scale-[1.03]"
-                  : "text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white"
+                  ? "text-black dark:text-white font-black shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.7),0_2px_8px_rgba(0,0,0,0.12)] bg-white/90 dark:bg-white/20 backdrop-blur-xl border border-white/60 dark:border-white/20"
+                  : "text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10"
               }`}
             >
-              <span className="flex items-center justify-center">
+              {/* iOS Liquid Sheen Tint when Active */}
+              {isActive && (
+                <span
+                  className="absolute inset-0 rounded-full opacity-25 pointer-events-none"
+                  style={{ backgroundColor: s.accentHex }}
+                />
+              )}
+
+              <span className="relative z-10 flex items-center justify-center transition-transform" style={{ color: isActive ? s.accentHex : undefined }}>
                 {s.icon(isActive)}
               </span>
-              <span className="text-[9px] font-mono tracking-tight font-black uppercase mt-0.5">
+              <span className="relative z-10 text-[9.5px] font-mono tracking-tight font-black uppercase mt-0.5">
                 {s.shortLabel}
               </span>
+
+              {/* Tiny glowing dot below active tab */}
+              {isActive && (
+                <span
+                  className="w-1 h-1 rounded-full mt-0.5"
+                  style={{ backgroundColor: s.accentHex }}
+                />
+              )}
             </button>
           );
         })}
