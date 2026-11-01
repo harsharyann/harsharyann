@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUp, Mail, ExternalLink, Sparkles, Terminal, Code2 } from "lucide-react";
 import { GithubIcon, LinkedinIcon, LeetCodeIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function SiteFooter() {
   const { data: portfolio } = usePortfolio();
@@ -33,16 +34,19 @@ export function SiteFooter() {
             </span>
           </div>
 
-          {/* Quick Return To Top Button */}
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className="group inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-mono text-xs font-black uppercase tracking-wider bg-amber-400 hover:bg-amber-300 text-black border-2 border-black shadow-[2.5px_2.5px_0_#000] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_#000] transition-all cursor-pointer"
-            title="Return to the top of the page"
-          >
-            <span>Back to Top</span>
-            <ArrowUp className="w-3.5 h-3.5 stroke-[2.5] group-hover:-translate-y-0.5 transition-transform" />
-          </button>
+          {/* Controls: Theme Color Mode Switcher & Return To Top Button */}
+          <div className="flex flex-wrap items-center gap-3">
+            <ThemeToggle showLabel={true} />
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="group inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-mono text-xs font-black uppercase tracking-wider bg-amber-400 hover:bg-amber-300 text-black border-2 border-black shadow-[2.5px_2.5px_0_#000] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_#000] transition-all cursor-pointer"
+              title="Return to the top of the page"
+            >
+              <span>Back to Top</span>
+              <ArrowUp className="w-3.5 h-3.5 stroke-[2.5] group-hover:-translate-y-0.5 transition-transform" />
+            </button>
+          </div>
         </div>
 
         {/* ── MIDDLE TIER: 3-COLUMN ARCHITECTURAL DOSSIER GRID ── */}
