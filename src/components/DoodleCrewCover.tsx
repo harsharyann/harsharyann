@@ -620,7 +620,10 @@ export function DoodleCrewCover({
     // In single-page mode, about is an in-page section
   }, [router])
 
+  const hasLeftRef = React.useRef(false);
   const triggerLeave = React.useCallback(() => {
+    if (hasLeftRef.current) return;
+    hasLeftRef.current = true;
     closeCover();
     const el = document.getElementById("about");
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -630,19 +633,17 @@ export function DoodleCrewCover({
   const [countdown, setCountdown] = React.useState(8);
 
   React.useEffect(() => {
+    if (countdown <= 0) {
+      triggerLeave();
+      return;
+    }
+
     const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          triggerLeave();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setCountdown((prev) => prev - 1);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [triggerLeave]);
+  }, [countdown, triggerLeave]);
 
   // Clean native scroll: no event hijacking or wheel trapping
 

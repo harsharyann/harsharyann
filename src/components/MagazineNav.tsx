@@ -107,7 +107,7 @@ export function MagazineNav() {
       name: "About",
       id: "about",
       path: "/#about",
-      chapter: "02",
+      chapter: "01",
       badge: "Bio",
       shortLabel: "About",
       accentHex: "#f59e0b",
@@ -119,7 +119,7 @@ export function MagazineNav() {
       name: "Projects",
       id: "projects",
       path: "/#projects",
-      chapter: "03",
+      chapter: "02",
       badge: "Work",
       shortLabel: "Projects",
       accentHex: "#6366f1",
@@ -131,8 +131,8 @@ export function MagazineNav() {
       name: "Certificates",
       id: "certificates",
       path: "/#certificates",
-      chapter: "04",
-      badge: "Awards",
+      chapter: "03",
+      badge: "Laurels",
       shortLabel: "Certificates",
       accentHex: "#10b981",
       icon: (active) => (
@@ -143,8 +143,8 @@ export function MagazineNav() {
       name: "Contact",
       id: "contact",
       path: "/#contact",
-      chapter: "05",
-      badge: "Say Hi",
+      chapter: "04",
+      badge: "Dispatch",
       shortLabel: "Contact",
       accentHex: "#f43f5e",
       icon: (active) => (
@@ -183,15 +183,17 @@ export function MagazineNav() {
 
   return (
     <>
-      {/* ── DESKTOP BOTTOM-RIGHT FLOATING MENU BUTTON ── */}
+      {/* ── DESKTOP TOP-RIGHT FLOATING MENU BUTTON ── */}
       <div
         ref={dropdownRef}
-        className="hidden md:flex fixed bottom-6 right-6 lg:right-8 z-50 items-center gap-3 select-none"
+        className={`hidden md:flex fixed top-6 right-6 lg:right-8 z-50 items-center gap-3 select-none transition-all duration-300 ${
+          isCoverOpen ? "opacity-0 pointer-events-none -translate-y-4" : "opacity-100 pointer-events-auto translate-y-0"
+        }`}
       >
         {/* EXPANDABLE SKETCHBOOK DIRECTORY POPUP */}
         {isOpen && (
           <div
-            className="absolute right-0 bottom-full mb-3 w-80 bg-white/75 dark:bg-stone-900/75 backdrop-blur-2xl border-2 border-black dark:border-white shadow-[6px_6px_0_#000,inset_0_1px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[6px_6px_0_#fff,inset_0_1px_1.5px_0_rgba(255,255,255,0.18)] rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-bottom-3 duration-150 select-none"
+            className="absolute right-0 top-full mt-3 w-80 bg-white/75 dark:bg-stone-900/75 backdrop-blur-2xl border-2 border-black dark:border-white shadow-[6px_6px_0_#000,inset_0_1px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[6px_6px_0_#fff,inset_0_1px_1.5px_0_rgba(255,255,255,0.18)] rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-top-3 duration-150 select-none"
             role="dialog"
             aria-label="Site Navigation Directory"
           >
@@ -205,7 +207,7 @@ export function MagazineNav() {
 
             {/* Navigation Links */}
             <div className="space-y-1.5">
-              {/* 01 Cover */}
+              {/* 00 Cover */}
               <button
                 type="button"
                 onClick={(e) => handleNavClick("cover", e)}
@@ -217,7 +219,7 @@ export function MagazineNav() {
               >
                 <div className="flex items-center gap-2.5">
                   <span className={`text-[10px] font-extrabold w-5 ${activeSection === "cover" ? "text-amber-400 dark:text-amber-600" : "text-stone-400"}`}>
-                    01
+                    00
                   </span>
                   <Home className="w-4 h-4 text-stone-500 group-hover:text-amber-500 transition-colors" />
                   <span className="uppercase font-black">Cover Screen</span>

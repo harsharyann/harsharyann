@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { portfolioData as initialDefaultData, PortfolioData } from "@/data/portfolioData";
 
 interface PortfolioContextType {
@@ -41,19 +41,19 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const openCover = () => {
-    setIsCoverOpen(true);
+  const openCover = useCallback(() => {
+    setIsCoverOpen((prev) => (prev ? prev : true));
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "instant" });
       if (window.history && window.location.hash) {
         window.history.pushState(null, "", "/");
       }
     }
-  };
+  }, []);
 
-  const closeCover = () => {
-    setIsCoverOpen(false);
-  };
+  const closeCover = useCallback(() => {
+    setIsCoverOpen((prev) => (prev ? false : prev));
+  }, []);
 
   const refreshData = async () => {
     // 1. Instantly read from local storage if available so there is zero flash of old data
