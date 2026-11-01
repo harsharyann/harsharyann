@@ -167,7 +167,7 @@ export function MagazineChapterSpine() {
                 <button
                   type="button"
                   onClick={() => scrollTo(ch.id)}
-                  aria-label={`Jump to Zone ${ch.num}: ${ch.name}`}
+                  aria-label={`Jump to Chapter ${ch.num}: ${ch.name}`}
                   className={`group relative flex items-center justify-center w-8 h-8 rounded-xl font-mono text-xs font-black border-2 transition-all cursor-pointer ${
                     isActive
                       ? "border-black dark:border-white text-black scale-105"

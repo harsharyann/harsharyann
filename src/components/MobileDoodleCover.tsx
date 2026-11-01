@@ -455,14 +455,16 @@ export function MobileDoodleCover() {
         )}
 
         {/* Punchy Narrative Tagline */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.26 }}
-          className="text-stone-300 text-xs sm:text-sm font-drawing-kids text-sm font-medium tracking-[0.12em] drop-shadow mb-5 max-w-[320px]"
-        >
-          {portfolio?.personal?.mobileTagline || "Teaching Machines To Learn • Building Scientific Software"}
-        </motion.p>
+        {portfolio?.personal?.mobileTagline !== "" && (
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.26 }}
+            className="text-stone-300 text-xs sm:text-sm font-drawing-kids font-medium tracking-[0.12em] drop-shadow mb-5 max-w-[320px]"
+          >
+            {portfolio?.personal?.mobileTagline ?? "Teaching Machines To Learn • Building Scientific Software"}
+          </motion.p>
+        )}
 
         {/* ── LIQUID GLASS BUBBLE EXPLORE BUTTON ── */}
         <motion.button

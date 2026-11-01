@@ -58,8 +58,37 @@ export function CircularProjectsCarousel({
 
   const imageContainerRef = useRef<HTMLDivElement>(null)
   const autoplayTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const touchStartXRef = useRef<number | null>(null)
+  const touchStartYRef = useRef<number | null>(null)
 
   const projectsLength = projects.length
+
+  // Touch Swipe Handlers for Buttery Mobile Experience
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!e.touches || e.touches.length === 0) return
+    touchStartXRef.current = e.touches[0].clientX
+    touchStartYRef.current = e.touches[0].clientY
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return
+    if (!e.changedTouches || e.changedTouches.length === 0) return
+    const touchEndX = e.changedTouches[0].clientX
+    const touchEndY = e.changedTouches[0].clientY
+    const diffX = touchStartXRef.current - touchEndX
+    const diffY = (touchStartYRef.current || 0) - touchEndY
+
+    // Only trigger if horizontal swipe exceeds vertical drag
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 35) {
+      if (diffX > 0) {
+        handleNext()
+      } else {
+        handlePrev()
+      }
+    }
+    touchStartXRef.current = null
+    touchStartYRef.current = null
+  }
 
   // Safety clamp activeIndex if projects list changes
   useEffect(() => {
@@ -122,13 +151,13 @@ export function CircularProjectsCarousel({
 
   // Compute 3D perspective transforms for each project card
   function getCard3DStyle(index: number): React.CSSProperties {
-    const transformTransition = "transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease"
+    const transformTransition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease"
     if (projectsLength <= 1) {
       return {
         zIndex: 3,
         opacity: 1,
         pointerEvents: "auto",
-        transform: "translateX(0px) translateY(0px) scale(1) rotateY(0deg)",
+        transform: "translateX(0px) translateY(0px) scale(1)",
         transition: transformTransition,
       }
     }
@@ -138,13 +167,14 @@ export function CircularProjectsCarousel({
     const isActive = index === activeIndex
     const isLeft = (activeIndex - 1 + projectsLength) % projectsLength === index
     const isRight = (activeIndex + 1) % projectsLength === index
+    const isMobile = containerWidth < 640
 
     if (isActive) {
       return {
         zIndex: 3,
         opacity: 1,
         pointerEvents: "auto",
-        transform: "translateX(0px) translateY(0px) scale(1) rotateY(0deg)",
+        transform: "translateX(0px) translateY(0px) scale(1)",
         transition: transformTransition,
       }
     }
@@ -153,7 +183,9 @@ export function CircularProjectsCarousel({
         zIndex: 2,
         opacity: 0.85,
         pointerEvents: "auto",
-        transform: `translateX(-${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(16deg)`,
+        transform: isMobile
+          ? `translateX(-${gap * 0.65}px) translateY(-${maxStickUp * 0.4}px) scale(0.9)`
+          : `translateX(-${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(16deg)`,
         transition: transformTransition,
         cursor: "pointer",
       }
@@ -163,18 +195,21 @@ export function CircularProjectsCarousel({
         zIndex: 2,
         opacity: 0.85,
         pointerEvents: "auto",
-        transform: `translateX(${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(-16deg)`,
+        transform: isMobile
+          ? `translateX(${gap * 0.65}px) translateY(-${maxStickUp * 0.4}px) scale(0.9)`
+          : `translateX(${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(-16deg)`,
         transition: transformTransition,
         cursor: "pointer",
       }
     }
 
-    // Hidden cards
+    // Hidden cards - completely skipped from rasterization for max FPS
     return {
       zIndex: 1,
       opacity: 0,
       pointerEvents: "none",
-      transform: "translateX(0px) translateY(0px) scale(0.7) rotateY(0deg)",
+      visibility: "hidden",
+      transform: "translateX(0px) translateY(0px) scale(0.7)",
       transition: transformTransition,
     }
   }
@@ -255,9 +290,11 @@ export function CircularProjectsCarousel({
           ========================================================================= */}
           <div className="lg:col-span-6 w-full flex flex-col items-center justify-center">
             <div
-              className="relative w-full h-[265px] sm:h-[295px] md:h-[325px] flex items-center justify-center select-none"
+              className="relative w-full h-[265px] sm:h-[295px] md:h-[325px] flex items-center justify-center select-none touch-pan-y"
               style={{ perspective: "1000px" }}
               ref={imageContainerRef}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
             >
               {projects.map((proj, idx) => {
                 const isActive = idx === activeIndex
@@ -273,10 +310,10 @@ export function CircularProjectsCarousel({
                     style={{
                       ...style,
                       boxShadow: isActive
-                        ? `0 20px 42px -12px rgba(0,0,0,0.6), 4px 6px 0 #000, 0 0 28px ${theme.accentGlow}`
-                        : "0 12px 28px -10px rgba(0,0,0,0.5), 3px 4px 0 #000",
+                        ? `0 14px 32px -10px rgba(0,0,0,0.5), 3px 4px 0 #000, 0 0 20px ${theme.accentGlow}`
+                        : "0 8px 20px -8px rgba(0,0,0,0.4), 2px 3px 0 #000",
                     }}
-                    className={`absolute inset-0 w-full h-full rounded-[28px] p-1 bg-stone-950/90 backdrop-blur-md border border-white/20 transition-all duration-300 overflow-hidden flex flex-col justify-between select-none ${
+                    className={`absolute inset-0 w-full h-full rounded-[28px] p-1 bg-stone-950/90 sm:backdrop-blur-md border border-white/20 transition-all duration-300 overflow-hidden flex flex-col justify-between select-none ${
                       isActive
                         ? "border-stone-900 dark:border-white ring-1 ring-white/25 shadow-2xl"
                         : "border-black/50 dark:border-stone-700/60"
@@ -295,7 +332,7 @@ export function CircularProjectsCarousel({
 
                       {/* Ambient Radial Flare behind the Icon Plate */}
                       <div
-                        className="absolute -top-12 -left-12 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-35"
+                        className="hidden sm:block absolute -top-12 -left-12 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-35"
                         style={{ background: theme.accent }}
                       />
 
@@ -560,23 +597,9 @@ export function CircularProjectsCarousel({
                   </p>
                 </div>
 
-                {/* Animated Word-by-Word Description */}
-                <p className="text-stone-800 dark:text-stone-200 text-xs sm:text-[13px] leading-relaxed line-clamp-3">
-                  {activeProject.description.split(" ").map((word, i) => (
-                    <motion.span
-                      key={i}
-                      initial={{ filter: "blur(6px)", opacity: 0, y: 3 }}
-                      animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.18,
-                        ease: "easeInOut",
-                        delay: 0.012 * i,
-                      }}
-                      style={{ display: "inline-block" }}
-                    >
-                      {word}&nbsp;
-                    </motion.span>
-                  ))}
+                {/* Project Description */}
+                <p className="text-stone-800 dark:text-stone-200 text-xs sm:text-[13px] leading-relaxed line-clamp-3 font-normal">
+                  {activeProject.description}
                 </p>
 
                 {/* Highlights Checklist */}

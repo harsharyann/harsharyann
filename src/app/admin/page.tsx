@@ -31,7 +31,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
-import { Project, Certificate, PortfolioData } from "@/data/portfolioData";
+import { Project, Certificate, PortfolioData, TimelineMilestone } from "@/data/portfolioData";
 import {
   extractGoogleDriveId,
   isGoogleDriveUrl,
@@ -216,6 +216,62 @@ export default function AdminPage() {
   };
 
   // Milestones Handlers
+  const handleAddMilestone = () => {
+    setPortfolio((prev) => {
+      const current = prev.milestones && prev.milestones.length > 0 ? [...prev.milestones] : [
+        { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+        { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+        { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+      ];
+      const nextNum = current.length + 1;
+      const newMilestone: TimelineMilestone = {
+        phaseNumber: String(nextNum).padStart(2, "0"),
+        period: `Phase ${nextNum}`,
+        title: "New Trajectory Phase",
+        subtitle: "Key Focus & Technologies",
+        description: "Describe the key focus, achievements, algorithms, or systems built in this phase.",
+      };
+      return { ...prev, milestones: [...current, newMilestone] };
+    });
+  };
+
+  const handleRemoveMilestone = (index: number) => {
+    setPortfolio((prev) => {
+      const current = prev.milestones && prev.milestones.length > 0 ? [...prev.milestones] : [
+        { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+        { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+        { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+      ];
+      const filtered = current.filter((_, i) => i !== index);
+      const reindexed = filtered.map((m, idx) => ({
+        ...m,
+        phaseNumber: String(idx + 1).padStart(2, "0"),
+      }));
+      return { ...prev, milestones: reindexed };
+    });
+  };
+
+  const handleMoveMilestone = (index: number, direction: "up" | "down") => {
+    setPortfolio((prev) => {
+      const current = prev.milestones && prev.milestones.length > 0 ? [...prev.milestones] : [
+        { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+        { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+        { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+      ];
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= current.length) return prev;
+      const updated = [...current];
+      const temp = updated[index];
+      updated[index] = updated[targetIndex];
+      updated[targetIndex] = temp;
+      const reindexed = updated.map((m, idx) => ({
+        ...m,
+        phaseNumber: String(idx + 1).padStart(2, "0"),
+      }));
+      return { ...prev, milestones: reindexed };
+    });
+  };
+
   const handleUpdateMilestone = (index: number, field: string, val: string) => {
     setPortfolio((prev) => {
       const current = prev.milestones && prev.milestones.length > 0 ? [...prev.milestones] : [
@@ -1139,7 +1195,7 @@ export default function AdminPage() {
                     <textarea
                       rows={2}
                       placeholder="e.g. Teaching Machines To Learn • Building Scientific Software"
-                      value={portfolio.personal.mobileTagline || "Teaching Machines To Learn • Building Scientific Software"}
+                      value={portfolio.personal.mobileTagline ?? "Teaching Machines To Learn • Building Scientific Software"}
                       onChange={(e) =>
                         setPortfolio((prev) => ({
                           ...prev,
@@ -1660,18 +1716,10 @@ export default function AdminPage() {
                         <div className="absolute top-1 right-1 w-2.5 h-2.5 border-t border-r border-black/60 pointer-events-none" />
                         <div className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b border-l border-black/60 pointer-events-none" />
                         <div className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b border-r border-black/60 pointer-events-none" />
-                        {/* Corner Ribbon Tag */}
-                        <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-amber-400 text-black border border-black rounded font-mono text-[8.5px] font-black uppercase shadow-[1.5px_1.5px_0_#000]">
-                          {portfolio.personal.aboutPhotoTag || "✦ TA @ IIT MADRAS"}
-                        </div>
                       </div>
 
                       {/* Integrated Chin Details */}
-                      <div className="pt-1.5 border-t-2 border-dashed border-stone-300 space-y-1.5">
-                        <div className="flex items-center justify-between text-[8px] font-mono text-amber-700 font-bold uppercase">
-                          <span>ARCHIVAL RECORD</span>
-                          <span>#HA-2026</span>
-                        </div>
+                      <div className="pt-2 border-t-2 border-dashed border-stone-300 space-y-2">
                         <div className="font-['Space_Grotesk'] text-base font-black uppercase text-black leading-none truncate">
                           {portfolio.personal.name || "HARSH ARYAN"}
                         </div>
@@ -1687,7 +1735,7 @@ export default function AdminPage() {
                         </div>
                         <div className="flex items-center justify-between pt-1 border-t border-stone-200 text-[9px] font-mono text-stone-500">
                           <span>📍 {portfolio.personal.location || "India"}</span>
-                          <span style={{ fontFamily: "'Patrick Hand', cursive" }} className="font-bold text-stone-800 text-xs">harsh aryan ✍️</span>
+                          <span>🎓 {portfolio.personal.degree || "BS Degree"}</span>
                         </div>
                       </div>
                     </div>
@@ -1718,7 +1766,7 @@ export default function AdminPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                    Zone Badge Stamp:
+                    Section Header Badge Stamp:
                   </label>
                   <input
                     type="text"
@@ -2156,7 +2204,7 @@ export default function AdminPage() {
 
             {/* ── 5. ROADMAP & MILESTONES MANAGER ── */}
             <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-3">
                 <div className="flex items-center gap-2.5">
                   <span className="p-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-sm">
                     🚀
@@ -2166,10 +2214,19 @@ export default function AdminPage() {
                       Development Trajectory (Roadmap Milestones)
                     </h3>
                     <p className="font-mono text-xs text-stone-500">
-                      About page ke 3 Trajectory phases (Foundations, Data &amp; Math, Frontiers) ka text edit karein.
+                      About page ke Trajectory phases ko edit, add ya remove karein.
                     </p>
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddMilestone}
+                  className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5 shrink-0"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Trajectory Phase</span>
+                </button>
               </div>
 
               <div className="space-y-4">
@@ -2180,21 +2237,53 @@ export default function AdminPage() {
                       { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
                       { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
                     ]
-                ).map((m, mIdx) => (
+                ).map((m, mIdx, arr) => (
                   <div
                     key={mIdx}
-                    className="p-4 sm:p-5 rounded-2xl bg-stone-50 border border-stone-300 space-y-3"
+                    className="p-4 sm:p-5 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3"
                   >
                     <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                      <span className="font-mono text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
-                        PHASE {m.phaseNumber || `0${mIdx + 1}`}
-                      </span>
-                      <input
-                        type="text"
-                        value={m.period}
-                        onChange={(e) => handleUpdateMilestone(mIdx, "period", e.target.value)}
-                        className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
-                      />
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-lg border border-emerald-300">
+                          PHASE {m.phaseNumber || `0${mIdx + 1}`}
+                        </span>
+                        <input
+                          type="text"
+                          value={m.period}
+                          placeholder="e.g. Foundations, Data & Math"
+                          onChange={(e) => handleUpdateMilestone(mIdx, "period", e.target.value)}
+                          className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleMoveMilestone(mIdx, "up")}
+                          disabled={mIdx === 0}
+                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                          title="Move Up"
+                        >
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleMoveMilestone(mIdx, "down")}
+                          disabled={mIdx === arr.length - 1}
+                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                          title="Move Down"
+                        >
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMilestone(mIdx)}
+                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 cursor-pointer ml-1"
+                          title="Delete Phase"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

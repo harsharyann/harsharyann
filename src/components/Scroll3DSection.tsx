@@ -45,7 +45,7 @@ export function Scroll3DSection({
               className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase text-white tracking-widest"
               style={{ backgroundColor: accentColor }}
             >
-              ZONE {chapterNumber}
+              #{chapterNumber}
             </span>
             <span className="font-hero-heading text-sm sm:text-base uppercase tracking-wider text-black dark:text-white">
               {chapterName}

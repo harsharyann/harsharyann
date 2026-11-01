@@ -385,31 +385,15 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                 className="object-cover object-top group-hover:scale-105 transition-transform duration-500 select-none"
               />
 
-              {/* Photo Corner Mounting Brackets (Archival retro photo corners) */}
+              {/* Photo Corner Mounting Brackets */}
               <div className="absolute top-1.5 left-1.5 w-3.5 h-3.5 border-t-2 border-l-2 border-black/60 dark:border-white/60 pointer-events-none" />
               <div className="absolute top-1.5 right-1.5 w-3.5 h-3.5 border-t-2 border-r-2 border-black/60 dark:border-white/60 pointer-events-none" />
               <div className="absolute bottom-1.5 left-1.5 w-3.5 h-3.5 border-b-2 border-l-2 border-black/60 dark:border-white/60 pointer-events-none" />
               <div className="absolute bottom-1.5 right-1.5 w-3.5 h-3.5 border-b-2 border-r-2 border-black/60 dark:border-white/60 pointer-events-none" />
-
-              {/* Gold Ribbon Stamp Badge */}
-              <div className="absolute bottom-3 right-3 px-3 py-1 bg-amber-400 text-black border-2 border-black rounded-lg font-mono text-[10px] font-black uppercase shadow-[2px_2px_0_#000] rotate-[1.5deg] select-none">
-                {personal.aboutPhotoTag || "✦ TA @ IIT MADRAS"}
-              </div>
             </div>
 
             {/* ── Integrated Lower Chin (Inside the SAME frame) ── */}
             <div className="pt-2 border-t-2 border-dashed border-stone-300 dark:border-stone-700/80 space-y-3">
-              {/* Archival Serial Header */}
-              <div className="flex items-center justify-between text-[9px] font-mono font-black uppercase text-amber-800 dark:text-amber-400 tracking-widest">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>ARCHIVAL IDENTITY RECORD</span>
-                </span>
-                <span className="text-stone-400 dark:text-stone-500 font-bold">
-                  #HA-2026
-                </span>
-              </div>
-
               {/* Name */}
               <div>
                 <h3 className="font-['Space_Grotesk'] text-2xl font-black uppercase tracking-tight text-black dark:text-white leading-none">
@@ -432,25 +416,16 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                 </div>
               </div>
 
-              {/* Secondary Details: Location, Degree & Hand Signature */}
-              <div className="pt-1 border-t border-stone-200 dark:border-stone-800/80 space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] font-mono text-stone-600 dark:text-stone-400">
-                  <span className="flex items-center gap-1 truncate">
-                    <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
-                    <span>{personal.location}</span>
-                  </span>
-                  <span
-                    className="font-bold text-stone-800 dark:text-stone-200 text-base rotate-[-2deg]"
-                    style={{ fontFamily: "'Patrick Hand', cursive" }}
-                  >
-                    harsh aryan ✍️
-                  </span>
-                </div>
-
-                <div className="text-[10px] font-mono text-stone-500 dark:text-stone-400 flex items-center gap-1">
-                  <GraduationCap className="w-3 h-3 text-indigo-500 shrink-0" />
-                  <span className="truncate">{personal.degree}</span>
-                </div>
+              {/* Secondary Details: Location & Degree */}
+              <div className="pt-2 border-t border-stone-200 dark:border-stone-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-stone-600 dark:text-stone-400">
+                <span className="flex items-center gap-1 truncate">
+                  <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <span>{personal.location}</span>
+                </span>
+                <span className="flex items-center gap-1 truncate text-stone-500 dark:text-stone-400">
+                  <GraduationCap className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                  <span>{personal.degree}</span>
+                </span>
               </div>
             </div>
           </div>
