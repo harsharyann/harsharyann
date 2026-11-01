@@ -25,6 +25,10 @@ import {
   EyeOff,
   Image as ImageIcon,
   Sparkles,
+  ChevronUp,
+  ChevronDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Project, Certificate, PortfolioData } from "@/data/portfolioData";
@@ -82,7 +86,7 @@ export default function AdminPage() {
 
   // CMS Form State
   const [portfolio, setPortfolio] = useState<PortfolioData>(initialData);
-  const [activeTab, setActiveTab] = useState<"cover" | "about" | "projects" | "certificates" | "contact">("projects");
+  const [activeTab, setActiveTab] = useState<"cover" | "about" | "projects" | "certificates" | "contact">("cover");
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState("");
@@ -96,6 +100,133 @@ export default function AdminPage() {
   // Category Management Inputs
   const [newProjectCatInput, setNewProjectCatInput] = useState("");
   const [newCertCatInput, setNewCertCatInput] = useState("");
+
+  // About Skills & Highlighter Refs
+  const bioTextareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const headlineInputRef = React.useRef<HTMLInputElement>(null);
+  const [newSkillCatName, setNewSkillCatName] = useState("");
+  const [skillTagInputs, setSkillTagInputs] = useState<Record<number, string>>({});
+
+  const wrapTextSelection = (
+    ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement | null>,
+    prefix: string,
+    suffix: string,
+    defaultText: string,
+    currentValue: string,
+    setter: (val: string) => void
+  ) => {
+    const el = ref.current;
+    if (!el) {
+      setter(currentValue ? (currentValue + " " + prefix + defaultText + suffix) : (prefix + defaultText + suffix));
+      return;
+    }
+    const start = el.selectionStart ?? 0;
+    const end = el.selectionEnd ?? 0;
+    const selected = currentValue.substring(start, end);
+    const replacement = selected ? (prefix + selected + suffix) : (prefix + defaultText + suffix);
+    const nextVal = currentValue.substring(0, start) + replacement + currentValue.substring(end);
+    setter(nextVal);
+    setTimeout(() => {
+      el.focus();
+      el.setSelectionRange(start + prefix.length, start + prefix.length + (selected ? selected.length : defaultText.length));
+    }, 0);
+  };
+
+  // Quick Stats Capsule Handlers
+  const handleAddQuickStat = () => {
+    setPortfolio((prev) => ({
+      ...prev,
+      quickStats: [
+        ...(prev.quickStats || []),
+        { value: "10+", label: "NEW BENCHMARK", sublabel: "Metric details" },
+      ],
+    }));
+  };
+
+  const handleRemoveQuickStat = (index: number) => {
+    setPortfolio((prev) => ({
+      ...prev,
+      quickStats: prev.quickStats.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleUpdateQuickStat = (index: number, field: "value" | "label" | "sublabel", val: string) => {
+    setPortfolio((prev) => {
+      const updated = [...(prev.quickStats || [])];
+      updated[index] = { ...updated[index], [field]: val };
+      return { ...prev, quickStats: updated };
+    });
+  };
+
+  const handleMoveQuickStat = (index: number, direction: "up" | "down") => {
+    setPortfolio((prev) => {
+      const updated = [...(prev.quickStats || [])];
+      const target = direction === "up" ? index - 1 : index + 1;
+      if (target < 0 || target >= updated.length) return prev;
+      const temp = updated[index];
+      updated[index] = updated[target];
+      updated[target] = temp;
+      return { ...prev, quickStats: updated };
+    });
+  };
+
+  // Skills Handlers
+  const handleAddSkillItem = (catIdx: number, item: string) => {
+    if (!item.trim()) return;
+    setPortfolio((prev) => {
+      const updated = [...(prev.skills || [])];
+      updated[catIdx] = {
+        ...updated[catIdx],
+        items: [...(updated[catIdx].items || []), item.trim()],
+      };
+      return { ...prev, skills: updated };
+    });
+    setSkillTagInputs((prev) => ({ ...prev, [catIdx]: "" }));
+  };
+
+  const handleRemoveSkillItem = (catIdx: number, itemIdx: number) => {
+    setPortfolio((prev) => {
+      const updated = [...(prev.skills || [])];
+      updated[catIdx] = {
+        ...updated[catIdx],
+        items: updated[catIdx].items.filter((_, i) => i !== itemIdx),
+      };
+      return { ...prev, skills: updated };
+    });
+  };
+
+  const handleAddSkillCategory = () => {
+    if (!newSkillCatName.trim()) return;
+    setPortfolio((prev) => ({
+      ...prev,
+      skills: [
+        ...(prev.skills || []),
+        { category: newSkillCatName.trim(), items: [] },
+      ],
+    }));
+    setNewSkillCatName("");
+  };
+
+  const handleRemoveSkillCategory = (catIdx: number) => {
+    if (!confirm("Are you sure you want to delete this skills category?")) return;
+    setPortfolio((prev) => ({
+      ...prev,
+      skills: prev.skills.filter((_, i) => i !== catIdx),
+    }));
+  };
+
+  // Milestones Handlers
+  const handleUpdateMilestone = (index: number, field: string, val: string) => {
+    setPortfolio((prev) => {
+      const current = prev.milestones && prev.milestones.length > 0 ? [...prev.milestones] : [
+        { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+        { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+        { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+      ];
+      current[index] = { ...current[index], [field]: val };
+      return { ...prev, milestones: current };
+    });
+  };
 
   // Messages Inbox State
   const [messages, setMessages] = useState<ContactMessage[]>([]);
@@ -706,10 +837,10 @@ export default function AdminPage() {
           {/* Center: Glassmorphism NavTabs (Pill Buttons) */}
           <nav className="flex items-center gap-1 p-1 rounded-xl sm:rounded-full bg-stone-100/90 border border-stone-200/80 overflow-x-auto max-w-full">
             {[
-              { id: "projects", label: "Projects", icon: FolderGit2, count: portfolio.projects.length },
-              { id: "certificates", label: "Certificates", icon: Award, count: portfolio.certificates.length },
               { id: "cover", label: "Cover", icon: Sliders },
               { id: "about", label: "About", icon: User },
+              { id: "projects", label: "Projects", icon: FolderGit2, count: portfolio.projects.length },
+              { id: "certificates", label: "Certificates", icon: Award, count: portfolio.certificates.length },
               { id: "contact", label: "Inquiries", icon: Send, count: messages.filter((m) => !m.read).length || undefined },
             ].map((tab) => {
               const Icon = tab.icon;
@@ -773,6 +904,1328 @@ export default function AdminPage() {
 
       {/* ── Main Content Area ── */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+
+        {/* ── TAB: COVER HERO MANAGER (LAPTOP & PHONE DEDICATED SECTIONS) ── */}
+        {activeTab === "cover" && (
+          <div className="space-y-8">
+            {/* Header intro */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <Sliders className="w-6 h-6 text-amber-500" />
+                  <span>Cover Page Manager</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-1">
+                  Yahan se aap <strong>Big Screen / Laptop</strong> aur <strong>Mobile Phone</strong> dono covers ka text, pills, aur photos alag-alag customize kar sakte hain.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer shrink-0 flex items-center gap-1.5 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save All Cover Changes"}</span>
+              </button>
+            </div>
+
+            {/* ── 1. LAPTOP / BIG SCREEN COVER CONFIG ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-indigo-100 text-indigo-900 border border-indigo-300">
+                    💻
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      Laptop &amp; Big Screen Cover (Desktop View)
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      Tablets, Laptops aur Desktop screens par ye interactive Doodle Crew cover show hota hai.
+                    </p>
+                  </div>
+                </div>
+                <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-indigo-50 text-indigo-800 border border-indigo-200 px-2.5 py-1 rounded-full">
+                  Desktop &bull; Large Screen
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                    Giant Stamped Ink Wordmark:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. HARSH ARYAN"
+                    value={portfolio.personal.desktopWordmark || portfolio.personal.name || ""}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, desktopWordmark: e.target.value },
+                      }))
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-sm focus:border-black focus:bg-white focus:outline-none transition-all"
+                  />
+                  <span className="block font-mono text-[10px] text-stone-400 mt-1">
+                    Characters is giant wordmark ke letters par baithte hain.
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                    Desktop Role Badge:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Teaching Assistant • IIT Madras"
+                    value={portfolio.personal.desktopRole || portfolio.personal.role || ""}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, desktopRole: e.target.value },
+                      }))
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-sm focus:border-black focus:bg-white focus:outline-none transition-all"
+                  />
+                  <span className="block font-mono text-[10px] text-stone-400 mt-1">
+                    Hero section me green live-dot ke sath pill me show hota hai.
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                  Desktop Headline / Subtitle:
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Exploring Data Science, Machine Learning Foundations & Scientific Computing."
+                  value={portfolio.personal.desktopHeadline || portfolio.personal.headline || ""}
+                  onChange={(e) =>
+                    setPortfolio((prev) => ({
+                      ...prev,
+                      personal: { ...prev.personal, desktopHeadline: e.target.value },
+                    }))
+                  }
+                  className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                  Architecture Tagline:
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. DESIGN · CODE · MACHINE LEARNING"
+                  value={portfolio.personal.desktopTagline || "DESIGN · CODE · MACHINE LEARNING"}
+                  onChange={(e) =>
+                    setPortfolio((prev) => ({
+                      ...prev,
+                      personal: { ...prev.personal, desktopTagline: e.target.value },
+                    }))
+                  }
+                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            {/* ── 2. PHONE / MOBILE COVER CONFIG (With Badges & Tagline) ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300">
+                    📱
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      Mobile Phone Cover (Portrait Photo &amp; Highlighter Pills)
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      Smartphones par fullscreen hero portrait ke upar Highlighter Pills aur Tagline show hoti hain.
+                    </p>
+                  </div>
+                </div>
+                <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full">
+                  Mobile &bull; Portrait View
+                </span>
+              </div>
+
+              {/* Editable Name & Badges */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                <div className="md:col-span-8 space-y-4">
+                  {/* Hero Name */}
+                  <div>
+                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                      Phone Hero Name (Permanent Marker):
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. HARSH ARYAN"
+                      value={portfolio.personal.name || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, name: e.target.value },
+                        }))
+                      }
+                      className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-sm focus:border-black focus:bg-white focus:outline-none transition-all"
+                    />
+                  </div>
+
+                  {/* Highlighter Pills Side by Side */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-amber-900 mb-1.5 flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full bg-[#fef08a] border border-black inline-block" />
+                        <span>Highlight Badge 1 (Yellow Pill):</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. TA IIT Madras"
+                        value={portfolio.personal.mobileBadge1 || "TA IIT Madras"}
+                        onChange={(e) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, mobileBadge1: e.target.value },
+                          }))
+                        }
+                        className="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-cyan-900 mb-1.5 flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full bg-[#a5f3fc] border border-black inline-block" />
+                        <span>Highlight Badge 2 (Cyan Pill):</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. AI & Data Science"
+                        value={portfolio.personal.mobileBadge2 || "AI & Data Science"}
+                        onChange={(e) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, mobileBadge2: e.target.value },
+                          }))
+                        }
+                        className="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Punchy Narrative Tagline */}
+                  <div>
+                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5 flex items-center gap-1.5">
+                      <span>✍️</span>
+                      <span>Mobile Narrative Tagline:</span>
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="e.g. Teaching Machines To Learn • Building Scientific Software"
+                      value={portfolio.personal.mobileTagline || "Teaching Machines To Learn • Building Scientific Software"}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, mobileTagline: e.target.value },
+                        }))
+                      }
+                      className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all"
+                    />
+                    <span className="block font-mono text-[10px] text-stone-400 mt-1">
+                      Highlighter pills ke theek neeche handwritten font me show hota hai.
+                    </span>
+                  </div>
+
+                  {/* Mobile Cover Photo Manager */}
+                  <div className="pt-2 space-y-3">
+                    <label className="block font-mono text-xs font-bold text-stone-700">
+                      Mobile Cover Photo (Google Drive ya Direct Link):
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        type="text"
+                        placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
+                        value={portfolio.personal.coverPhotoUrl || ""}
+                        onChange={(e) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, coverPhotoUrl: e.target.value },
+                          }))
+                        }
+                        className="flex-1 px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                      />
+                      {portfolio.personal.coverPhotoUrl && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, coverPhotoUrl: "" },
+                            }))
+                          }
+                          className="px-3 py-2 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 font-mono text-xs cursor-pointer"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Google Drive Status */}
+                    {isGoogleDriveUrl(portfolio.personal.coverPhotoUrl) && (
+                      <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                        <div>
+                          <div className="font-bold">Google Drive link detected!</div>
+                          <div className="text-[11px] text-emerald-700">
+                            Drive ID: <span className="font-mono font-bold">{extractGoogleDriveId(portfolio.personal.coverPhotoUrl)}</span> — Auto-converted into high-speed CDN image link.
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Upload button */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
+                        <span>📁 Select Image from Device</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                setIsSaving(true);
+                                setToastMessage("Optimizing & compressing image for mobile...");
+                                const compressed = await compressImageFile(file);
+                                const updated = {
+                                  ...portfolio,
+                                  personal: {
+                                    ...portfolio.personal,
+                                    coverPhotoUrl: compressed,
+                                  },
+                                };
+                                setPortfolio(updated);
+                                await saveInstantly(updated, "✅ Cover photo uploaded & saved successfully!");
+                              } catch (err) {
+                                alert("Failed to process image. Please try another image file.");
+                              } finally {
+                                setIsSaving(false);
+                              }
+                            }
+                          }}
+                        />
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const updated = {
+                            ...portfolio,
+                            personal: { ...portfolio.personal, coverPhotoUrl: "/harsh-cover.jpg" },
+                          };
+                          setPortfolio(updated);
+                          await saveInstantly(updated, "✅ Reset to default /harsh-cover.jpg!");
+                        }}
+                        className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer active:translate-y-0.5"
+                      >
+                        Reset to Default (/harsh-cover.jpg)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 📱 Real-Time Live Phone Mockup Preview */}
+                <div className="md:col-span-4 flex flex-col items-center">
+                  <div className="font-mono text-[11px] font-bold text-stone-500 mb-1.5">
+                    Live Phone Mockup Preview:
+                  </div>
+                  <div className="relative w-44 h-80 rounded-3xl p-1 bg-stone-900 border-2 border-stone-700 shadow-xl overflow-hidden flex flex-col">
+                    <div className="relative w-full h-full rounded-[22px] overflow-hidden bg-stone-800 flex flex-col justify-between">
+                      <img
+                        src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl) || "/harsh-cover.jpg"}
+                        alt="Cover Preview"
+                        className="absolute inset-0 w-full h-full object-cover object-[center_16%]"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 via-48% to-transparent pointer-events-none" />
+
+                      {/* Top Bar inside Mockup */}
+                      <div className="relative z-10 w-full px-2 pt-2 flex justify-end">
+                        <span className="font-mono text-[7px] text-white bg-black/75 px-1.5 py-0.5 rounded-full border border-stone-600">
+                          ADMIN
+                        </span>
+                      </div>
+
+                      {/* Bottom Details inside Mockup */}
+                      <div className="relative z-10 p-2 text-center flex flex-col items-center">
+                        <svg viewBox="0 0 54 34" className="w-5 h-3.5 mb-1" fill="none" stroke="#000" strokeWidth="2.5">
+                          <path d="M 6 28 L 48 28 L 46 11 L 35 19 L 27 6 L 19 19 L 8 11 Z" fill={coverAccentColor} />
+                        </svg>
+
+                        <span
+                          className="font-['Permanent_Marker',cursive] text-[13px] text-white tracking-wide leading-none select-none mb-1.5"
+                          style={{
+                            textShadow: `1px 1px 0 #000, -1px -1px 0 #000, 2px 2px 0 ${coverAccentColor}`,
+                          }}
+                        >
+                          {portfolio.personal.name || "HARSH ARYAN"}
+                        </span>
+
+                        {/* Live Badges Preview */}
+                        <div className="flex flex-wrap items-center justify-center gap-1 mb-1">
+                          <span className="px-1.5 py-0.5 rounded-full bg-[#fef08a] text-black font-hero-heading text-[8px] font-black uppercase tracking-wider border border-black shadow-[1px_1px_0_#000]">
+                            {portfolio.personal.mobileBadge1 || "TA IIT Madras"}
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded-full bg-[#a5f3fc] text-black font-hero-heading text-[8px] font-black uppercase tracking-wider border border-black shadow-[1px_1px_0_#000]">
+                            ✦ {portfolio.personal.mobileBadge2 || "AI & Data Science"}
+                          </span>
+                        </div>
+
+                        {/* Live Tagline Preview */}
+                        <p className="text-stone-300 text-[8px] font-drawing-kids tracking-wider line-clamp-2 max-w-[140px]">
+                          {portfolio.personal.mobileTagline || "Teaching Machines To Learn • Building Scientific Software"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-2 flex items-center gap-1.5 font-mono text-[10px] text-stone-600 bg-stone-100 px-2.5 py-1 rounded-full border border-stone-200">
+                    <span className="w-2.5 h-2.5 rounded-full border border-black shadow-[1px_1px_0_#000]" style={{ backgroundColor: coverAccentColor }} />
+                    <span>Auto Accent: <strong className="font-bold">{coverAccentColor}</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── 3. SOCIAL & CONTACT LINKS (Both Devices) ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
+              <h3 className="font-mono text-sm font-black uppercase text-stone-900">
+                Primary Social &amp; Contact Links
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">GitHub URL:</label>
+                  <input
+                    type="text"
+                    value={portfolio.socialLinks.github}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        socialLinks: { ...prev.socialLinks, github: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">LinkedIn URL:</label>
+                  <input
+                    type="text"
+                    value={portfolio.socialLinks.linkedin}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        socialLinks: { ...prev.socialLinks, linkedin: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Save Bar */}
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-8 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-sm font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Apply & Save All Cover Settings"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: ABOUT & DOSSIER MANAGER ── */}
+        {activeTab === "about" && (
+          <div className="space-y-8">
+            {/* Header intro & Save CTA */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <User className="w-6 h-6 text-amber-500" />
+                  <span>About Page &amp; Dossier Manager</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-1">
+                  Yahan se aap About page ki <strong>Framed Photo</strong>, <strong>OG Plaque (Name, Work &amp; Workplace)</strong>, <strong>Content Highlights</strong>, <strong>Quick Stats Capsules</strong>, <strong>Skills</strong>, aur <strong>Roadmap Milestones</strong> edit kar sakte hain.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer shrink-0 flex items-center gap-1.5 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save All About Changes"}</span>
+              </button>
+            </div>
+
+            {/* ── 1. FRAMED PHOTO & "OG" EXHIBITION PLAQUE ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-stone-900 text-amber-300 border border-black text-sm">
+                    🖼️
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      Framing Photo &amp; &quot;OG&quot; Exhibition Plaque
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      Classic dark moulding frame, archival ivory mat, photo corner tag, aur frame ke theek neeche authentic identity plaque.
+                    </p>
+                  </div>
+                </div>
+                <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-stone-100 text-stone-800 border border-stone-300 px-2.5 py-1 rounded-full">
+                  Exhibition Mount
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                {/* Photo Inputs & Plaque Fields (Left 7 cols) */}
+                <div className="md:col-span-7 space-y-4">
+                  {/* Photo Link Input */}
+                  <div>
+                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                      About Photo (Google Drive ya Direct Image URL):
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
+                        value={portfolio.personal.aboutPhotoUrl || ""}
+                        onChange={(e) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, aboutPhotoUrl: e.target.value },
+                          }))
+                        }
+                        className="flex-1 px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                      />
+                      {portfolio.personal.aboutPhotoUrl && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, aboutPhotoUrl: "" },
+                            }))
+                          }
+                          className="px-3 py-1.5 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 font-mono text-xs cursor-pointer"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Device Upload / Reset */}
+                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                    <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
+                      <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
+                      <span>📁 Select Image from Device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              setIsSaving(true);
+                              setToastMessage("Compressing & saving image...");
+                              const compressed = await compressImageFile(file);
+                              const updated = {
+                                ...portfolio,
+                                personal: { ...portfolio.personal, aboutPhotoUrl: compressed },
+                              };
+                              setPortfolio(updated);
+                              await saveInstantly(updated, "✅ About photo uploaded & saved!");
+                            } catch {
+                              alert("Failed to process image.");
+                            } finally {
+                              setIsSaving(false);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const updated = {
+                          ...portfolio,
+                          personal: { ...portfolio.personal, aboutPhotoUrl: "/harsh-cover.jpg" },
+                        };
+                        setPortfolio(updated);
+                        await saveInstantly(updated, "✅ Reset to /harsh-cover.jpg!");
+                      }}
+                      className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer"
+                    >
+                      Reset Default
+                    </button>
+                  </div>
+
+                  {/* Corner Photo Tag */}
+                  <div>
+                    <label className="block font-mono text-xs font-bold text-amber-900 mb-1.5 flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-400 border border-black inline-block" />
+                      <span>Photo Corner Tag / Badge (Right bottom of photo):</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. ✦ TA @ IIT MADRAS"
+                      value={portfolio.personal.aboutPhotoTag ?? "✦ TA @ IIT MADRAS"}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, aboutPhotoTag: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-amber-50/50 border border-amber-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                    />
+                    <span className="block font-mono text-[10px] text-stone-400 mt-1">
+                      Framed photo ke bottom-right corner me gold ribbon badge ki tarah show hota hai.
+                    </span>
+                  </div>
+
+                  {/* ── OG PLAQUE DETAILS (Under the frame) ── */}
+                  <div className="p-4 rounded-2xl bg-stone-50 border border-stone-300 space-y-3.5">
+                    <div className="font-mono text-xs font-black uppercase text-stone-900 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <span>🏛️</span>
+                        <span>OG Exhibition Plaque Details (Frame Ke Niche):</span>
+                      </span>
+                      <span className="text-[10px] text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+                        Live Displayed
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Plaque Name:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.name || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, name: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Current Work / Role:
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Teaching Assistant"
+                          value={portfolio.personal.aboutCurrentWork ?? "Teaching Assistant"}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, aboutCurrentWork: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Work Place / Org:
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. IIT Madras"
+                          value={portfolio.personal.aboutWorkPlace ?? "IIT Madras"}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, aboutWorkPlace: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Location:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.location || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, location: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Degree &amp; Major:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.degree || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, degree: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Live Preview Framed Photo & Plaque (Right 5 cols) */}
+                <div className="md:col-span-5 flex flex-col items-center">
+                  <div className="font-mono text-[11px] font-bold text-stone-500 mb-2">
+                    Live Framing &amp; Plaque Preview:
+                  </div>
+
+                  {/* The Frame Preview */}
+                  <div className="w-full max-w-[260px] rounded-2xl border-[5px] border-stone-900 bg-[#16171d] shadow-[6px_6px_0_#000] p-2.5">
+                    {/* Archival Mat */}
+                    <div className="relative rounded-xl bg-[#faf8f3] border border-stone-300 p-2">
+                      <div className="relative aspect-[3/4] w-full rounded-lg overflow-hidden border border-black/20 bg-stone-100">
+                        <img
+                          src={formatGoogleDriveImageUrl(portfolio.personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
+                          alt="About Frame Preview"
+                          className="w-full h-full object-cover object-top"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
+                          }}
+                        />
+                      </div>
+                      {/* Corner Tag */}
+                      <div className="absolute bottom-3 right-3 px-2 py-0.5 bg-amber-400 text-black border border-black rounded font-mono text-[9px] font-black uppercase shadow-[1.5px_1.5px_0_#000]">
+                        {portfolio.personal.aboutPhotoTag || "✦ TA @ IIT MADRAS"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* The Plaque Preview */}
+                  <div className="mt-2.5 w-full max-w-[260px] p-3 rounded-xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-1.5">
+                    <div className="flex items-center justify-between border-b border-stone-200 pb-1 text-[8px] font-mono text-amber-700 font-bold uppercase">
+                      <span>EXHIBIT · DOSSIER</span>
+                      <span>#HA-01</span>
+                    </div>
+                    <div className="font-['Space_Grotesk'] text-sm font-black uppercase text-black truncate">
+                      {portfolio.personal.name || "HARSH ARYAN"}
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap text-[10px] font-mono font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-stone-100 border border-stone-300 text-stone-900 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}</span>
+                      </span>
+                      <span>•</span>
+                      <span className="px-1.5 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-950">
+                        🏛️ {portfolio.personal.aboutWorkPlace || portfolio.personal.college || "IIT Madras"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── 2. PERSONAL STATEMENT, BIO & LIVE HIGHLIGHTER ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
+                    ✍️
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      Statement, Bio &amp; Content Highlighter
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      Apne words aur names ko highlight karein (Yellow marker, Cyan marker, ya Bold).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Header Zone & Title Customization */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                    Zone Badge Stamp:
+                  </label>
+                  <input
+                    type="text"
+                    value={portfolio.personal.aboutZoneBadge ?? "ZONE 02 • THE ARCHITECT & MIND"}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, aboutZoneBadge: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                    Section Heading:
+                  </label>
+                  <input
+                    type="text"
+                    value={portfolio.personal.aboutHeading ?? "Behind the Terminal"}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, aboutHeading: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Subtitle / Description */}
+              <div>
+                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                  Section Subtitle / Description:
+                </label>
+                <input
+                  type="text"
+                  value={portfolio.personal.aboutSubtitle ?? "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed."}
+                  onChange={(e) =>
+                    setPortfolio((prev) => ({
+                      ...prev,
+                      personal: { ...prev.personal, aboutSubtitle: e.target.value },
+                    }))
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:outline-none"
+                />
+              </div>
+
+              {/* Headline / Big Statement */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="font-mono text-xs font-bold text-stone-700">
+                    Personal Headline (Bold Statement):
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        wrapTextSelection(
+                          headlineInputRef,
+                          "==",
+                          "==",
+                          "highlighted",
+                          portfolio.personal.headline || "",
+                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, headline: val } }))
+                        )
+                      }
+                      className="px-2 py-0.5 rounded-md bg-amber-200 hover:bg-amber-300 text-stone-900 font-mono text-[10px] font-bold border border-amber-400 cursor-pointer"
+                      title="Wrap selection in Yellow highlight"
+                    >
+                      🟡 Yellow ==text==
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        wrapTextSelection(
+                          headlineInputRef,
+                          "^^",
+                          "^^",
+                          "highlighted",
+                          portfolio.personal.headline || "",
+                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, headline: val } }))
+                        )
+                      }
+                      className="px-2 py-0.5 rounded-md bg-cyan-200 hover:bg-cyan-300 text-stone-900 font-mono text-[10px] font-bold border border-cyan-400 cursor-pointer"
+                      title="Wrap selection in Cyan highlight"
+                    >
+                      🔵 Cyan ^^text^^
+                    </button>
+                  </div>
+                </div>
+                <input
+                  ref={headlineInputRef}
+                  type="text"
+                  value={portfolio.personal.headline || ""}
+                  onChange={(e) =>
+                    setPortfolio((prev) => ({
+                      ...prev,
+                      personal: { ...prev.personal, headline: e.target.value },
+                    }))
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:outline-none"
+                />
+              </div>
+
+              {/* Bio Narrative */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="font-mono text-xs font-bold text-stone-700">
+                    About Me Narrative Bio:
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        wrapTextSelection(
+                          bioTextareaRef,
+                          "==",
+                          "==",
+                          "highlighted",
+                          portfolio.personal.bio || "",
+                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, bio: val } }))
+                        )
+                      }
+                      className="px-2.5 py-1 rounded-md bg-amber-200 hover:bg-amber-300 text-stone-900 font-mono text-[10px] font-bold border border-amber-400 cursor-pointer"
+                      title="Wrap selection in Yellow highlight"
+                    >
+                      🟡 Yellow Highlight (==word==)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        wrapTextSelection(
+                          bioTextareaRef,
+                          "^^",
+                          "^^",
+                          "highlighted",
+                          portfolio.personal.bio || "",
+                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, bio: val } }))
+                        )
+                      }
+                      className="px-2.5 py-1 rounded-md bg-cyan-200 hover:bg-cyan-300 text-stone-900 font-mono text-[10px] font-bold border border-cyan-400 cursor-pointer"
+                      title="Wrap selection in Cyan highlight"
+                    >
+                      🔵 Cyan Highlight (^^word^^)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        wrapTextSelection(
+                          bioTextareaRef,
+                          "**",
+                          "**",
+                          "bold",
+                          portfolio.personal.bio || "",
+                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, bio: val } }))
+                        )
+                      }
+                      className="px-2.5 py-1 rounded-md bg-stone-200 hover:bg-stone-300 text-stone-900 font-mono text-[10px] font-bold border border-stone-400 cursor-pointer"
+                      title="Wrap selection in Bold"
+                    >
+                      𝗕 Bold (**word**)
+                    </button>
+                  </div>
+                </div>
+                <textarea
+                  ref={bioTextareaRef}
+                  rows={5}
+                  value={portfolio.personal.bio || ""}
+                  onChange={(e) =>
+                    setPortfolio((prev) => ({
+                      ...prev,
+                      personal: { ...prev.personal, bio: e.target.value },
+                    }))
+                  }
+                  className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all leading-relaxed"
+                />
+              </div>
+
+              {/* Dedicated Auto-Highlight Keywords */}
+              <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-2">
+                <label className="block font-mono text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                  <span>✨</span>
+                  <span>Auto-Highlight Keywords (Comma Separated):</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"
+                  value={portfolio.personal.aboutHighlightedWords ?? "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"}
+                  onChange={(e) =>
+                    setPortfolio((prev) => ({
+                      ...prev,
+                      personal: { ...prev.personal, aboutHighlightedWords: e.target.value },
+                    }))
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-300 text-stone-900 font-mono text-xs focus:border-black focus:outline-none font-bold"
+                />
+                <p className="font-mono text-[11px] text-amber-800">
+                  💡 In keywords me se jo bhi aapke headline ya bio me aayenge, wo automatically hand-drawn yellow marker highlight ho jayenge.
+                </p>
+              </div>
+            </div>
+
+            {/* ── 3. QUICK STATS CAPSULES (FROM SCREENSHOT) ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-cyan-100 text-cyan-900 border border-cyan-300 text-sm">
+                    ⚡
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      Quick Stats Capsules (Screenshot Items Manager)
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      About page par show hone wale white metric capsules ko add, edit, ya delete karein.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddQuickStat}
+                  className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Stat Capsule</span>
+                </button>
+              </div>
+
+              {/* List of Quick Stat Capsules */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+                {(portfolio.quickStats || []).map((stat, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3"
+                  >
+                    <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                      <span className="font-mono text-xs font-black uppercase text-stone-500">
+                        Capsule #{idx + 1}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleMoveQuickStat(idx, "up")}
+                          disabled={idx === 0}
+                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                          title="Move Up"
+                        >
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleMoveQuickStat(idx, "down")}
+                          disabled={idx === (portfolio.quickStats?.length || 0) - 1}
+                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                          title="Move Down"
+                        >
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveQuickStat(idx)}
+                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 cursor-pointer ml-1"
+                          title="Delete Capsule"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Big Value (e.g. AI &amp; DS, 6+, 150+):
+                        </label>
+                        <input
+                          type="text"
+                          value={stat.value}
+                          onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
+                          className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Label (e.g. SPECIALIZATION):
+                        </label>
+                        <input
+                          type="text"
+                          value={stat.label}
+                          onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
+                          className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-[10px] font-bold text-stone-500 mb-1">
+                        Sublabel (Optional context):
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Machine Learning & Analytics"
+                        value={stat.sublabel || ""}
+                        onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
+                        className="w-full px-3 py-1 rounded-lg bg-white border border-stone-200 font-mono text-xs text-stone-700 focus:border-black focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── 4. TECHNICAL ARSENAL (SKILLS & CAPABILITIES) ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-indigo-100 text-indigo-900 border border-indigo-300 text-sm">
+                    💻
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      Technical Arsenal (Core Capabilities)
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      Skills categories aur har category ke tags ko customize karein.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {(portfolio.skills || []).map((cat, cIdx) => (
+                  <div
+                    key={cIdx}
+                    className="p-4 rounded-2xl bg-stone-50 border border-stone-300 space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 max-w-sm">
+                        <input
+                          type="text"
+                          value={cat.category}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPortfolio((prev) => {
+                              const updated = [...(prev.skills || [])];
+                              updated[cIdx] = { ...updated[cIdx], category: val };
+                              return { ...prev, skills: updated };
+                            });
+                          }}
+                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black text-stone-900 focus:border-black focus:outline-none uppercase"
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSkillCategory(cIdx)}
+                        className="p-1.5 rounded-lg border border-stone-300 text-stone-500 hover:text-red-600 hover:border-red-400 bg-white cursor-pointer ml-2"
+                        title="Delete Category"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {/* Skill Tags */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {cat.items?.map((item, iIdx) => (
+                        <span
+                          key={iIdx}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-stone-300 text-stone-900 font-mono text-xs font-bold shadow-2xs"
+                        >
+                          <span>✦ {item}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSkillItem(cIdx, iIdx)}
+                            className="text-stone-400 hover:text-red-600 text-[10px] ml-0.5 cursor-pointer font-bold"
+                            title="Remove tag"
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Add Skill to this Category */}
+                    <div className="flex gap-2 pt-1 max-w-md">
+                      <input
+                        type="text"
+                        placeholder="e.g. Scikit-Learn, PyTorch..."
+                        value={skillTagInputs[cIdx] || ""}
+                        onChange={(e) =>
+                          setSkillTagInputs((prev) => ({ ...prev, [cIdx]: e.target.value }))
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleAddSkillItem(cIdx, skillTagInputs[cIdx] || "");
+                          }
+                        }}
+                        className="flex-1 px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleAddSkillItem(cIdx, skillTagInputs[cIdx] || "")}
+                        className="px-3 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold cursor-pointer shrink-0"
+                      >
+                        + Add Tag
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Add New Category */}
+                <div className="flex gap-2 pt-2 max-w-md">
+                  <input
+                    type="text"
+                    placeholder="New Category Name (e.g. Cloud &amp; MLOps)..."
+                    value={newSkillCatName}
+                    onChange={(e) => setNewSkillCatName(e.target.value)}
+                    className="flex-1 px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddSkillCategory}
+                    className="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 font-mono text-xs font-bold cursor-pointer shrink-0"
+                  >
+                    + Add Category
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* ── 5. ROADMAP & MILESTONES MANAGER ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-sm">
+                    🚀
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      Development Trajectory (Roadmap Milestones)
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      About page ke 3 Trajectory phases (Foundations, Data &amp; Math, Frontiers) ka text edit karein.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {(portfolio.milestones && portfolio.milestones.length > 0
+                  ? portfolio.milestones
+                  : [
+                      { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+                      { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+                      { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+                    ]
+                ).map((m, mIdx) => (
+                  <div
+                    key={mIdx}
+                    className="p-4 sm:p-5 rounded-2xl bg-stone-50 border border-stone-300 space-y-3"
+                  >
+                    <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                      <span className="font-mono text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+                        PHASE {m.phaseNumber || `0${mIdx + 1}`}
+                      </span>
+                      <input
+                        type="text"
+                        value={m.period}
+                        onChange={(e) => handleUpdateMilestone(mIdx, "period", e.target.value)}
+                        className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Phase Title:
+                        </label>
+                        <input
+                          type="text"
+                          value={m.title}
+                          onChange={(e) => handleUpdateMilestone(mIdx, "title", e.target.value)}
+                          className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Phase Subtitle:
+                        </label>
+                        <input
+                          type="text"
+                          value={m.subtitle}
+                          onChange={(e) => handleUpdateMilestone(mIdx, "subtitle", e.target.value)}
+                          className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                        Phase Description:
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={m.description}
+                        onChange={(e) => handleUpdateMilestone(mIdx, "description", e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs text-stone-800 focus:border-black focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Final Save Button */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save All About Page Changes"}</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ── TAB: PROJECTS MANAGER ── */}
         {activeTab === "projects" && (
@@ -1115,533 +2568,6 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── TAB: COVER HERO MANAGER ── */}
-        {activeTab === "cover" && (
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-6">
-            <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-              <Sliders className="w-6 h-6 text-amber-500" />
-              <span>Cover &amp; Hero Section Content</span>
-            </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                  Display Full Name:
-                </label>
-                <input
-                  type="text"
-                  value={portfolio.personal.name}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, name: e.target.value },
-                    }))
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-sm focus:border-black focus:bg-white focus:outline-none transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                  Role / Specialization:
-                </label>
-                <input
-                  type="text"
-                  value={portfolio.personal.role}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, role: e.target.value },
-                    }))
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-sm focus:border-black focus:bg-white focus:outline-none transition-all"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                Cover Page Headline / Subtitle:
-              </label>
-              <textarea
-                rows={2}
-                value={portfolio.personal.headline}
-                onChange={(e) =>
-                  setPortfolio((prev) => ({
-                    ...prev,
-                    personal: { ...prev.personal, headline: e.target.value },
-                  }))
-                }
-                className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all"
-              />
-            </div>
-
-            {/* Social Links */}
-            <div className="pt-4 border-t border-stone-200 space-y-4">
-              <h3 className="font-mono text-sm font-black uppercase text-stone-900">
-                Primary Social &amp; Contact Links
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">GitHub URL:</label>
-                  <input
-                    type="text"
-                    value={portfolio.socialLinks.github}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        socialLinks: { ...prev.socialLinks, github: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">LinkedIn URL:</label>
-                  <input
-                    type="text"
-                    value={portfolio.socialLinks.linkedin}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        socialLinks: { ...prev.socialLinks, linkedin: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* ── Mobile Cover Photo Manager ── */}
-            <div className="pt-4 border-t border-stone-200 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-mono text-sm font-black uppercase text-stone-900 flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-purple-600" />
-                    <span>Mobile Phone Cover Photo</span>
-                  </h3>
-                  <p className="font-mono text-xs text-stone-500">
-                    Phone view (mobile devices) pe ye photo fullscreen ambient drift background me show hoti hai.
-                  </p>
-                </div>
-                {portfolio.personal.coverPhotoUrl && (
-                  <span className="font-mono text-[10px] bg-purple-100 text-purple-800 font-bold px-2.5 py-0.5 rounded-full border border-purple-300">
-                    Custom Photo Set
-                  </span>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                {/* Inputs & Controls (Left 8 cols) */}
-                <div className="md:col-span-8 space-y-3">
-                  <div>
-                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                      Google Drive Link ya Direct Image URL:
-                    </label>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input
-                        type="text"
-                        placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
-                        value={portfolio.personal.coverPhotoUrl || ""}
-                        onChange={(e) =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, coverPhotoUrl: e.target.value },
-                          }))
-                        }
-                        className="flex-1 px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                      />
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={handleSaveAll}
-                          disabled={isSaving}
-                          className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-bold border border-black shadow-[1.5px_1.5px_0_#000] cursor-pointer shrink-0 flex items-center justify-center gap-1.5 active:translate-y-0.5"
-                        >
-                          <Save className="w-3.5 h-3.5" />
-                          <span>{isSaving ? "Saving..." : "Apply & Save"}</span>
-                        </button>
-                        {portfolio.personal.coverPhotoUrl && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: { ...prev.personal, coverPhotoUrl: "" },
-                              }))
-                            }
-                            className="px-3 py-2 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 font-mono text-xs cursor-pointer"
-                            title="Clear input"
-                          >
-                            Clear
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Google Drive Status Notification */}
-                  {isGoogleDriveUrl(portfolio.personal.coverPhotoUrl) && (
-                    <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                      <div>
-                        <div className="font-bold">Google Drive link detected!</div>
-                        <div className="text-[11px] text-emerald-700">
-                          Drive ID: <span className="font-mono font-bold">{extractGoogleDriveId(portfolio.personal.coverPhotoUrl)}</span> — Auto-converted into high-speed CDN image link.
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Or Upload From Computer / Phone */}
-                  <div className="pt-2 flex flex-wrap items-center gap-2">
-                    <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
-                      <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
-                      <span>📁 Select Image from Device</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            try {
-                              setIsSaving(true);
-                              setToastMessage("Optimizing & compressing image for mobile...");
-                              const compressed = await compressImageFile(file);
-                              const updated = {
-                                ...portfolio,
-                                personal: {
-                                  ...portfolio.personal,
-                                  coverPhotoUrl: compressed,
-                                },
-                              };
-                              setPortfolio(updated);
-                              await saveInstantly(updated, "✅ Cover photo uploaded & saved successfully!");
-                            } catch (err) {
-                              alert("Failed to process image. Please try another image file.");
-                            } finally {
-                              setIsSaving(false);
-                            }
-                          }
-                        }}
-                      />
-                    </label>
-
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        const updated = {
-                          ...portfolio,
-                          personal: { ...portfolio.personal, coverPhotoUrl: "/harsh-cover.jpg" },
-                        };
-                        setPortfolio(updated);
-                        await saveInstantly(updated, "✅ Reset to default /harsh-cover.jpg!");
-                      }}
-                      className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer active:translate-y-0.5"
-                    >
-                      Reset to Default (/harsh-cover.jpg)
-                    </button>
-                  </div>
-
-                  <p className="font-mono text-[11px] text-stone-500">
-                    💡 <strong>Drive Tip:</strong> Google Drive me image link copy karte waqt ensure karein ki access <em>&quot;Anyone with the link can view&quot;</em> pe set ho.
-                  </p>
-                </div>
-
-                {/* Live Preview Mockup (Right 4 cols) */}
-                <div className="md:col-span-4 flex flex-col items-center">
-                  <div className="font-mono text-[11px] font-bold text-stone-500 mb-1.5">
-                    Live Phone Mockup Preview:
-                  </div>
-                  <div className="relative w-36 h-64 rounded-3xl p-1 bg-stone-900 border-2 border-stone-700 shadow-lg overflow-hidden flex flex-col">
-                    <div className="relative w-full h-full rounded-[20px] overflow-hidden bg-stone-800">
-                      <img
-                        src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl) || "/harsh-cover.jpg"}
-                        alt="Cover Preview"
-                        className="w-full h-full object-cover object-[center_16%]"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 pointer-events-none" />
-                      <div className="absolute bottom-3 left-2 right-2 text-center flex flex-col items-center">
-                        <svg viewBox="0 0 54 34" className="w-5 h-3.5 mb-1" fill="none" stroke="#000" strokeWidth="2.5">
-                          <path d="M 6 28 L 48 28 L 46 11 L 35 19 L 27 6 L 19 19 L 8 11 Z" fill={coverAccentColor} />
-                        </svg>
-                        <span
-                          className="font-['Permanent_Marker',cursive] text-[12px] text-white tracking-wide leading-none select-none"
-                          style={{
-                            textShadow: `1px 1px 0 #000, -1px -1px 0 #000, 2px 2px 0 ${coverAccentColor}`,
-                          }}
-                        >
-                          {portfolio.personal.name || "Preview"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-2 flex items-center gap-1.5 font-mono text-[10px] text-stone-600 bg-stone-100 px-2.5 py-1 rounded-full border border-stone-200">
-                    <span className="w-2.5 h-2.5 rounded-full border border-black shadow-[1px_1px_0_#000]" style={{ backgroundColor: coverAccentColor }} />
-                    <span>Auto Accent: <strong className="font-bold">{coverAccentColor}</strong></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleSaveAll}
-              className="px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer"
-            >
-              Save Cover Settings
-            </button>
-          </div>
-        )}
-
-        {/* ── TAB: ABOUT & DOSSIER MANAGER ── */}
-        {activeTab === "about" && (
-          <div className="space-y-6">
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-5">
-              <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                <User className="w-6 h-6 text-amber-500" />
-                <span>Biography &amp; Academic Dossier</span>
-              </h2>
-
-              <div>
-                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                  About Me Narrative:
-                </label>
-                <textarea
-                  rows={4}
-                  value={portfolio.personal.bio}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, bio: e.target.value },
-                    }))
-                  }
-                  className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all leading-relaxed"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                    University / College:
-                  </label>
-                  <input
-                    type="text"
-                    value={portfolio.personal.college}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, college: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                    Degree &amp; Specialization:
-                  </label>
-                  <input
-                    type="text"
-                    value={portfolio.personal.degree}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, degree: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                    Academic Year / Status:
-                  </label>
-                  <input
-                    type="text"
-                    value={portfolio.personal.year}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, year: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* ── About Page Polaroid Photo Manager ── */}
-              <div className="pt-4 border-t border-stone-200 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-mono text-sm font-black uppercase text-stone-900 flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4 text-amber-500" />
-                      <span>About Page Polaroid Photo</span>
-                    </h3>
-                    <p className="font-mono text-xs text-stone-500">
-                      About page (`/about`) me right side ke sketchbook Polaroid frame me show hone wali photo.
-                    </p>
-                  </div>
-                  {portfolio.personal.aboutPhotoUrl && (
-                    <span className="font-mono text-[10px] bg-amber-100 text-amber-900 font-bold px-2.5 py-0.5 rounded-full border border-amber-300">
-                      Custom Photo Set
-                    </span>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                  {/* Inputs & Controls (Left 8 cols) */}
-                  <div className="md:col-span-8 space-y-3">
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Google Drive Link ya Direct Image URL:
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
-                          value={portfolio.personal.aboutPhotoUrl || ""}
-                          onChange={(e) =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, aboutPhotoUrl: e.target.value },
-                            }))
-                          }
-                          className="flex-1 px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        />
-                        {portfolio.personal.aboutPhotoUrl && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: { ...prev.personal, aboutPhotoUrl: "" },
-                              }))
-                            }
-                            className="px-3 py-1.5 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 font-mono text-xs cursor-pointer"
-                            title="Clear input"
-                          >
-                            Clear
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Google Drive Status Notification */}
-                    {isGoogleDriveUrl(portfolio.personal.aboutPhotoUrl) && (
-                      <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                        <div>
-                          <div className="font-bold">Google Drive link detected!</div>
-                          <div className="text-[11px] text-emerald-700">
-                            Drive ID: <span className="font-mono font-bold">{extractGoogleDriveId(portfolio.personal.aboutPhotoUrl)}</span> — Auto-converted into direct high-res CDN image link.
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Or Upload From Computer / Phone */}
-                    <div className="pt-2 flex flex-wrap items-center gap-2">
-                      <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
-                        <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
-                        <span>📁 Select Image from Device</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              try {
-                                setIsSaving(true);
-                                setToastMessage("Optimizing & compressing image for mobile...");
-                                const compressed = await compressImageFile(file);
-                                const updated = {
-                                  ...portfolio,
-                                  personal: {
-                                    ...portfolio.personal,
-                                    aboutPhotoUrl: compressed,
-                                  },
-                                };
-                                setPortfolio(updated);
-                                await saveInstantly(updated, "✅ About photo uploaded & saved successfully!");
-                              } catch (err) {
-                                alert("Failed to process image. Please try another image file.");
-                              } finally {
-                                setIsSaving(false);
-                              }
-                            }
-                          }}
-                        />
-                      </label>
-
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const updated = {
-                            ...portfolio,
-                            personal: { ...portfolio.personal, aboutPhotoUrl: "/harsh-cover.jpg" },
-                          };
-                          setPortfolio(updated);
-                          await saveInstantly(updated, "✅ Reset to default /harsh-cover.jpg!");
-                        }}
-                        className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer active:translate-y-0.5"
-                      >
-                        Reset to Default (/harsh-cover.jpg)
-                      </button>
-                    </div>
-
-                    <p className="font-mono text-[11px] text-stone-500">
-                      💡 <strong>Drive Tip:</strong> Google Drive me image link copy karte waqt ensure karein ki access <em>&quot;Anyone with the link can view&quot;</em> pe set ho.
-                    </p>
-                  </div>
-
-                  {/* Live Preview Polaroid Mockup (Right 4 cols) */}
-                  <div className="md:col-span-4 flex flex-col items-center">
-                    <div className="font-mono text-[11px] font-bold text-stone-500 mb-1.5">
-                      Live Polaroid Mockup Preview:
-                    </div>
-                    <div className="p-3 bg-white border-2 border-black rounded-lg shadow-[4px_4px_0_#8b5cf6] w-36 sm:w-44 rotate-[-1deg]">
-                      <div className="relative aspect-[4/5] w-full overflow-hidden border border-black rounded bg-stone-100">
-                        <img
-                          src={formatGoogleDriveImageUrl(portfolio.personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
-                          alt="About Photo Preview"
-                          className="w-full h-full object-cover object-top"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
-                          }}
-                        />
-                        <div className="absolute bottom-1 right-1 bg-black/80 text-white text-[8px] font-mono px-1.5 py-0.5 rounded">
-                          PREVIEW
-                        </div>
-                      </div>
-                      <div className="pt-2 text-center font-mono font-bold text-[10px] text-stone-900 truncate">
-                        {portfolio.personal.name || "Harsh Aryan"}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                className="px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer"
-              >
-                Save About Details
-              </button>
             </div>
           </div>
         )}

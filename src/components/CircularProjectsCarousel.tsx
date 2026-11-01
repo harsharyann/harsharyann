@@ -122,13 +122,14 @@ export function CircularProjectsCarousel({
 
   // Compute 3D perspective transforms for each project card
   function getCard3DStyle(index: number): React.CSSProperties {
+    const transformTransition = "transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease"
     if (projectsLength <= 1) {
       return {
         zIndex: 3,
         opacity: 1,
         pointerEvents: "auto",
         transform: "translateX(0px) translateY(0px) scale(1) rotateY(0deg)",
-        transition: "all 0.8s cubic-bezier(.4, 2, .3, 1)",
+        transition: transformTransition,
       }
     }
 
@@ -144,7 +145,7 @@ export function CircularProjectsCarousel({
         opacity: 1,
         pointerEvents: "auto",
         transform: "translateX(0px) translateY(0px) scale(1) rotateY(0deg)",
-        transition: "all 0.8s cubic-bezier(.4, 2, .3, 1)",
+        transition: transformTransition,
       }
     }
     if (isLeft) {
@@ -153,7 +154,7 @@ export function CircularProjectsCarousel({
         opacity: 0.85,
         pointerEvents: "auto",
         transform: `translateX(-${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(16deg)`,
-        transition: "all 0.8s cubic-bezier(.4, 2, .3, 1)",
+        transition: transformTransition,
         cursor: "pointer",
       }
     }
@@ -163,7 +164,7 @@ export function CircularProjectsCarousel({
         opacity: 0.85,
         pointerEvents: "auto",
         transform: `translateX(${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(-16deg)`,
-        transition: "all 0.8s cubic-bezier(.4, 2, .3, 1)",
+        transition: transformTransition,
         cursor: "pointer",
       }
     }
@@ -174,7 +175,7 @@ export function CircularProjectsCarousel({
       opacity: 0,
       pointerEvents: "none",
       transform: "translateX(0px) translateY(0px) scale(0.7) rotateY(0deg)",
-      transition: "all 0.8s cubic-bezier(.4, 2, .3, 1)",
+      transition: transformTransition,
     }
   }
 
@@ -275,7 +276,7 @@ export function CircularProjectsCarousel({
                         ? `0 20px 42px -12px rgba(0,0,0,0.6), 4px 6px 0 #000, 0 0 28px ${theme.accentGlow}`
                         : "0 12px 28px -10px rgba(0,0,0,0.5), 3px 4px 0 #000",
                     }}
-                    className={`absolute inset-0 w-full h-full rounded-[28px] p-1 bg-stone-950/80 backdrop-blur-xl border border-white/20 transition-all duration-500 overflow-hidden flex flex-col justify-between select-none ${
+                    className={`absolute inset-0 w-full h-full rounded-[28px] p-1 bg-stone-950/90 backdrop-blur-md border border-white/20 transition-all duration-300 overflow-hidden flex flex-col justify-between select-none ${
                       isActive
                         ? "border-stone-900 dark:border-white ring-1 ring-white/25 shadow-2xl"
                         : "border-black/50 dark:border-stone-700/60"

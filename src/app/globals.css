@@ -65,15 +65,15 @@ html.dark .bg-news-texture {
   background-image: none;
 }
 
-/* ── Apple iOS Liquid Glass Design Language ── */
+/* ── Apple iOS Liquid Glass Design Language (High Performance GPU-Tuned) ── */
 .liquid-glass {
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.70) 0%,
     rgba(255, 255, 255, 0.45) 100%
   );
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 
     0 20px 40px -15px rgba(0, 0, 0, 0.07),
@@ -88,8 +88,8 @@ html.dark .liquid-glass {
     rgba(25, 26, 32, 0.70) 0%,
     rgba(14, 15, 20, 0.55) 100%
   );
-  backdrop-filter: blur(32px) saturate(210%);
-  -webkit-backdrop-filter: blur(32px) saturate(210%);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: 
     0 24px 48px -12px rgba(0, 0, 0, 0.55),
@@ -99,17 +99,17 @@ html.dark .liquid-glass {
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 html.dark .glass-panel {
-  background: rgba(18, 18, 22, 0.65);
-  backdrop-filter: blur(28px) saturate(210%);
-  -webkit-backdrop-filter: blur(28px) saturate(210%);
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+  background: rgba(18, 19, 26, 0.82);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* ── 1. Apple Liquid Glass Water Orbs Keyframes ── */
@@ -167,37 +167,38 @@ html.dark .glass-panel {
   }
 }
 
-/* ── 2. Apple iOS Liquid Glass Bento Card Surface ── */
+/* ── 2. Apple iOS Liquid Glass Bento Card Surface (Hardware Accelerated) ── */
 .liquid-bento-card {
   position: relative;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.40);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 
-    0 20px 40px -15px rgba(0, 0, 0, 0.07),
+    0 20px 40px -15px rgba(0, 0, 0, 0.06),
     0 1px 3px 0 rgba(0, 0, 0, 0.04),
-    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.85),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.9),
     inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  transform: translateZ(0);
 }
 
 html.dark .liquid-bento-card {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(28px) saturate(200%);
-  -webkit-backdrop-filter: blur(28px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(22, 23, 30, 0.75);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 
-    0 24px 48px -12px rgba(0, 0, 0, 0.5),
+    0 24px 48px -12px rgba(0, 0, 0, 0.55),
     0 1px 2px 0 rgba(0, 0, 0, 0.25),
-    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.28),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.15),
     inset 0 -1px 1px 0 rgba(0, 0, 0, 0.3);
 }
 
 /* Fallback for browsers without backdrop-filter */
-@supports not ((-webkit-backdrop-filter: blur(24px)) or (backdrop-filter: blur(24px))) {
+@supports not ((-webkit-backdrop-filter: blur(12px)) or (backdrop-filter: blur(12px))) {
   .liquid-bento-card {
     background: rgba(255, 255, 255, 0.92);
   }

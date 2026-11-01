@@ -27,7 +27,6 @@ export function Scroll3DSection({
       ref={sectionRef}
       id={id}
       className={`relative w-full scroll-mt-6 sm:scroll-mt-10 ${className}`}
-      style={{ perspective: "1200px" }}
     >
       {/* ── 3D CHAPTER BOOKMARK RIBBON (Visual Transition Bridge) ── */}
       {chapterNumber && chapterName && (
@@ -36,8 +35,8 @@ export function Scroll3DSection({
             initial={{ opacity: 0, scale: 0.9, y: 16 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="group relative inline-flex items-center gap-3 px-4 sm:px-5 py-2 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-2xl border-2 border-black dark:border-white select-none transition-transform hover:-translate-y-0.5"
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="group relative inline-flex items-center gap-3 px-4 sm:px-5 py-2 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-xl border-2 border-black dark:border-white select-none transition-transform hover:-translate-y-0.5"
             style={{
               boxShadow: `4px 4px 0 ${accentColor}, inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.7)`, 
             }}
@@ -56,20 +55,16 @@ export function Scroll3DSection({
         </div>
       )}
 
-      {/* ── 3D SECTION REVEAL CONTAINER ── */}
+      {/* ── SECTION REVEAL CONTAINER (Hardware-Accelerated) ── */}
       <motion.div
-        initial={{ opacity: 0, y: 35, rotateX: 6, scale: 0.98 }}
-        whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
-        viewport={{ once: true, amount: 0.08 }}
+        initial={{ opacity: 0, y: 28, scale: 0.99 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, amount: 0.05 }}
         transition={{
-          duration: 0.7,
+          duration: 0.6,
           ease: [0.16, 1, 0.3, 1],
         }}
-        style={{
-          transformOrigin: "center top",
-          transformStyle: "preserve-3d",
-        }}
-        className="w-full will-change-transform"
+        className="w-full"
       >
         {children}
       </motion.div>

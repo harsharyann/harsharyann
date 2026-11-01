@@ -26,6 +26,14 @@ export interface Certificate {
   verificationSource?: string;
 }
 
+export interface TimelineMilestone {
+  phaseNumber: string;
+  period: string;
+  title: string;
+  subtitle: string;
+  description: string;
+}
+
 export interface PortfolioData {
   personal: {
     name: string;
@@ -42,6 +50,20 @@ export interface PortfolioData {
     resumeUrl: string;
     aboutPhotoUrl?: string;
     coverPhotoUrl?: string;
+    desktopWordmark?: string;
+    desktopRole?: string;
+    desktopHeadline?: string;
+    desktopTagline?: string;
+    mobileBadge1?: string;
+    mobileBadge2?: string;
+    mobileTagline?: string;
+    aboutPhotoTag?: string;
+    aboutCurrentWork?: string;
+    aboutWorkPlace?: string;
+    aboutHighlightedWords?: string;
+    aboutZoneBadge?: string;
+    aboutHeading?: string;
+    aboutSubtitle?: string;
   };
   socialLinks: {
     github: string;
@@ -76,6 +98,7 @@ export interface PortfolioData {
     category: string;
     items: string[];
   }[];
+  milestones?: TimelineMilestone[];
   certificateCategories?: string[];
   certificates: Certificate[];
 }
@@ -96,6 +119,20 @@ export const portfolioData: PortfolioData = {
     resumeUrl: "/Harsh_Aryan_Resume.pdf",
     aboutPhotoUrl: "/harsh-cover.jpg",
     coverPhotoUrl: "/harsh-cover.jpg",
+    desktopWordmark: "HARSH ARYAN",
+    desktopRole: "Teaching Assistant • IIT Madras",
+    desktopHeadline: "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",
+    desktopTagline: "DESIGN · CODE · MACHINE LEARNING",
+    mobileBadge1: "TA IIT Madras",
+    mobileBadge2: "AI & Data Science",
+    mobileTagline: "Teaching Machines To Learn • Building Scientific Software",
+    aboutPhotoTag: "✦ TA @ IIT MADRAS",
+    aboutCurrentWork: "Teaching Assistant",
+    aboutWorkPlace: "IIT Madras",
+    aboutHighlightedWords: "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning",
+    aboutZoneBadge: "ZONE 02 • THE ARCHITECT & MIND",
+    aboutHeading: "Behind the Terminal",
+    aboutSubtitle: "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed.",
   },
 
   socialLinks: {
@@ -348,6 +385,32 @@ export const portfolioData: PortfolioData = {
       category: "Mathematics & Hackathons",
       skillsLearned: ["Fast Prototyping", "Streamlit", "Team Collaboration", "Pitching to Faculty Judges"],
       description: "Built and pitched CampusIQ student assistant within 24 hours among 45+ competing teams, awarded Best Freshman Innovation.",
+    },
+  ],
+  milestones: [
+    {
+      phaseNumber: "01",
+      period: "Foundations",
+      title: "Algorithmic Intuition & Logic",
+      subtitle: "Python, C & Core Problem Solving",
+      description:
+        "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems.",
+    },
+    {
+      phaseNumber: "02",
+      period: "Data & Math",
+      title: "Exploratory Modeling & Linear Algebra",
+      subtitle: "Vectorized Computations & Analytics",
+      description:
+        "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks.",
+    },
+    {
+      phaseNumber: "03",
+      period: "Frontiers",
+      title: "Modern AI Systems & Interactive Tools",
+      subtitle: "Full-Stack AI Prototypes & Deployment",
+      description:
+        "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows.",
     },
   ],
 };

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, ArrowUp } from "lucide-react";
+import { Mail, ChevronDown, Sparkles } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { formatGoogleDriveImageUrl, isGoogleDriveUrl } from "@/lib/googleDrive";
@@ -237,8 +237,8 @@ export function MobileDoodleCover() {
       className="relative w-full min-h-[100dvh] select-none bg-[#090a0f] text-white flex flex-col justify-between"
       aria-label="Harsh Aryan 4K Colorful Doodle Cover"
     >
-      {/* ── 1. PURE ORIGINAL FULLSCREEN HERO PORTRAIT (As Uploaded, 100% Natural) ── */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+      {/* ── 1. PURE ORIGINAL FULLSCREEN HERO PORTRAIT (Hardware Accelerated) ── */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden" style={{ contain: "strict" }}>
         <motion.div
           className="relative w-full h-full"
           initial={{ scale: 1 }}
@@ -252,6 +252,7 @@ export function MobileDoodleCover() {
             repeatType: "reverse",
             ease: "easeInOut",
           }}
+          style={{ transform: "translateZ(0)" }}
         >
           {/* Pure High-Definition Photo As Uploaded (Zero Filters, Zero Artificial Overlays) */}
           <Image
@@ -405,13 +406,13 @@ export function MobileDoodleCover() {
         >
           {/* Yellow Highlighter Pill */}
           <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#fef08a] text-black font-hero-heading text-[12px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
-            <span>TA IIT Madras</span>
+            <span>{portfolio?.personal?.mobileBadge1 || "TA IIT Madras"}</span>
           </span>
 
           {/* Electric Cyan Highlighter Pill */}
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#a5f3fc] text-black font-hero-heading text-[12px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
             <span>✦</span>
-            <span>AI &amp; Data Science</span>
+            <span>{portfolio?.personal?.mobileBadge2 || "AI & Data Science"}</span>
           </span>
         </motion.div>
 
@@ -422,7 +423,7 @@ export function MobileDoodleCover() {
           transition={{ duration: 0.6, delay: 0.26 }}
           className="text-stone-300 text-xs sm:text-sm font-drawing-kids text-sm font-medium tracking-[0.12em] drop-shadow mb-4 max-w-[320px]"
         >
-          Teaching Machines To Learn • Building Scientific Software
+          {portfolio?.personal?.mobileTagline || "Teaching Machines To Learn • Building Scientific Software"}
         </motion.p>
 
         {/* ── COLORFUL NEO-BRUTALIST SOCIAL DOCK ── */}
@@ -467,24 +468,31 @@ export function MobileDoodleCover() {
           </a>
         </motion.div>
 
-        {/* ── COLORFUL NEO-BRUTAL SWIPE UP BUTTON (Dynamically accented with photo color) ── */}
+        {/* ── LIQUID GLASS BUBBLE EXPLORE BUTTON ── */}
         <motion.button
           type="button"
           onClick={scrollDown}
-          animate={{ y: [0, -4, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            backgroundColor: accentColor,
-            boxShadow: "4px 4px 0 #000",
-            transition: "background-color 0.4s ease, transform 0.15s ease",
-          }}
-          className="group flex items-center gap-2 px-6 py-2.5 rounded-full text-black border-2 border-black active:translate-y-0.5 active:shadow-[1px_1px_0_#000] cursor-pointer"
-          aria-label="Swipe up to explore portfolio"
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          className="group relative flex items-center gap-2.5 px-6 py-2.5 rounded-full text-white backdrop-blur-2xl bg-white/20 hover:bg-white/30 border border-white/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.37),inset_0_1.5px_1.5px_0_rgba(255,255,255,0.7)] active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden"
+          aria-label="Scroll down to explore portfolio"
         >
-          <span className="font-['Space_Grotesk'] text-[11.5px] font-black uppercase tracking-[0.2em]">
-            Swipe Up To Explore
+          {/* Subtle liquid sheen reflection inside bubble */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+
+          {/* Glowing pulse dot */}
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-300" />
           </span>
-          <ArrowUp className="w-4 h-4 text-black group-hover:-translate-y-0.5 transition-transform" />
+
+          <span className="font-['Space_Grotesk'] text-[11px] font-black uppercase tracking-[0.22em] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+            Explore Portfolio
+          </span>
+
+          <div className="flex items-center justify-center w-5 h-5 rounded-full bg-white/25 border border-white/40 text-white shadow-xs group-hover:translate-y-0.5 transition-transform">
+            <ChevronDown className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+          </div>
         </motion.button>
       </footer>
     </section>

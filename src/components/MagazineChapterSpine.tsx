@@ -27,28 +27,38 @@ export function MagazineChapterSpine() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = docHeight > 0 ? Math.min(100, Math.max(0, Math.round((scrollY / docHeight) * 100))) : 0;
-      setScrollPercent(pct);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = docHeight > 0 ? Math.min(100, Math.max(0, Math.round((scrollY / docHeight) * 100))) : 0;
+        setScrollPercent((prev) => (prev !== pct ? pct : prev));
 
-      if (scrollY < 140) {
-        setActiveId("cover");
-        return;
-      }
+        if (scrollY < 140) {
+          setActiveId((prev) => (prev !== "cover" ? "cover" : prev));
+          ticking = false;
+          return;
+        }
 
-      const sectionIds = ["contact", "certificates", "projects", "about"];
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= window.innerHeight * 0.45 && rect.bottom >= window.innerHeight * 0.15) {
-            setActiveId(id);
-            return;
+        const sectionIds = ["contact", "certificates", "projects", "about"];
+        const midTop = window.innerHeight * 0.45;
+        const midBottom = window.innerHeight * 0.15;
+        for (const id of sectionIds) {
+          const el = document.getElementById(id);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top <= midTop && rect.bottom >= midBottom) {
+              setActiveId((prev) => (prev !== id ? id : prev));
+              ticking = false;
+              return;
+            }
           }
         }
-      }
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });

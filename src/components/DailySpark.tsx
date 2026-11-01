@@ -211,45 +211,15 @@ const getReducedMotionSnapshot = () => {
 }
 
 export function DailySpark({ isDark = false }: { isDark?: boolean }) {
-  const [now, setNow] = useState<Date | null>(null)
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false)
   const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotionSnapshot, () => false)
   const [typedText, setTypedText] = useState<string>("")
   const [isTyping, setIsTyping] = useState<boolean>(false)
   const [copied, setCopied] = useState<boolean>(false)
 
-  // Real-time ticking clock & day detection on client mount
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setNow(new Date())
-    }, 1000)
-
-    const initTimer = setTimeout(() => {
-      setNow(new Date())
-    }, 0)
-
-    return () => {
-      clearInterval(timer)
-      clearTimeout(initTimer)
-    }
-  }, [])
-
-  // Automatically determine today's quote based on current weekday
-  const currentWeekdayIndex = now ? now.getDay() : 1
-  const todaySpark = WEEKLY_SPARKS[currentWeekdayIndex] || WEEKLY_SPARKS[1]
-
-  // Formatted day, date, and live time
-  const dayName = now
-    ? now.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase()
-    : "TODAY"
-
-  const formattedDate = now
-    ? now.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }).toUpperCase()
-    : "31 OCT 2026"
-
-  const formattedTime = now
-    ? now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })
-    : "10:20:00 PM"
+  // Determine current day of week (no interval or cascading re-renders)
+  const currentWeekday = typeof window !== "undefined" ? new Date().getDay() : 1
+  const todaySpark = WEEKLY_SPARKS[currentWeekday] || WEEKLY_SPARKS[1]
 
   const displayText = !mounted
     ? todaySpark.quote
@@ -282,7 +252,7 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
       clearTimeout(startTimer)
       clearInterval(timer)
     }
-  }, [mounted, currentWeekdayIndex, todaySpark.quote, reducedMotion])
+  }, [mounted, currentWeekday, todaySpark.quote, reducedMotion])
 
   // Copy quote to clipboard + confetti celebration
   const handleCopyQuote = useCallback(async () => {

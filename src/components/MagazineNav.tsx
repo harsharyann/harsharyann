@@ -20,7 +20,7 @@ export function MagazineNav() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("cover");
-  const [scrollY, setScrollY] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on route change
@@ -55,28 +55,39 @@ export function MagazineNav() {
     };
   }, [isOpen]);
 
-  // Scroll Spy for Single Page Architecture (Viewport Intersection)
+  // Scroll Spy for Single Page Architecture (Throttled with requestAnimationFrame)
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const y = window.scrollY;
-      setScrollY(y);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const pastCover = y > 120;
+        setIsScrolled((prev) => (prev !== pastCover ? pastCover : prev));
 
-      if (y < 120) {
-        setActiveSection("cover");
-        return;
-      }
+        if (y < 120) {
+          setActiveSection((prev) => (prev !== "cover" ? "cover" : prev));
+          ticking = false;
+          return;
+        }
 
-      const sectionIds = ["contact", "certificates", "projects", "about"];
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= window.innerHeight * 0.45 && rect.bottom >= window.innerHeight * 0.15) {
-            setActiveSection(id);
-            return;
+        const sectionIds = ["contact", "certificates", "projects", "about"];
+        const midTop = window.innerHeight * 0.45;
+        const midBottom = window.innerHeight * 0.15;
+        for (const id of sectionIds) {
+          const el = document.getElementById(id);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top <= midTop && rect.bottom >= midBottom) {
+              setActiveSection((prev) => (prev !== id ? id : prev));
+              ticking = false;
+              return;
+            }
           }
         }
-      }
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -166,7 +177,7 @@ export function MagazineNav() {
   };
 
   const activePage = sections.find((s) => s.id === activeSection);
-  const showMobileDock = scrollY > 120 || activeSection !== "cover";
+  const showMobileDock = isScrolled || activeSection !== "cover";
 
   return (
     <>

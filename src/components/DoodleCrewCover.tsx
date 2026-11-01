@@ -608,12 +608,11 @@ export function DoodleCrewCover({
   const uid = React.useId().replace(/[^a-zA-Z0-9_-]/g, "")
   const { theme } = useTheme()
   const isDark = theme === "dark"
-  const word = wordmark.toUpperCase()
+  const { data: portfolio } = usePortfolio()
+  const word = (portfolio?.personal?.desktopWordmark || portfolio?.personal?.name || wordmark).toUpperCase()
   const chars = React.useMemo(() => Array.from(word), [word])
 
-  // Live ticking clock (Chennai / User Local Time)
-    const { data: portfolio } = usePortfolio()
-const router = useRouter()
+  const router = useRouter()
   const isLeavingRef = React.useRef(false)
   const [isLeaving, setIsLeaving] = React.useState(false)
 
@@ -697,7 +696,8 @@ const router = useRouter()
     return { x: l - padX, y: t - padY, w: r - l + padX * 2, h: b - t + padY * 2 }
   }, [layout, placed, cap])
 
-  const words = tagline.split(/\s+/).filter(Boolean)
+  const effectiveTagline = portfolio?.personal?.desktopTagline || tagline || "DESIGN · CODE · MACHINE LEARNING"
+  const words = effectiveTagline.split(/\s+/).filter(Boolean)
   const tl = timeline(chars.length, placed.length, words.length)
 
   const ground = React.useMemo(() => {
@@ -765,6 +765,8 @@ const router = useRouter()
     floaters: [] as Floater[],
     w: 0,
     h: 0,
+    worldLeft: 0,
+    worldTop: 0,
     px: NaN,
     py: NaN,
     inside: false,
@@ -800,6 +802,8 @@ const router = useRouter()
     const s = sim.current
     const size = () => {
       const r = el.getBoundingClientRect()
+      s.worldLeft = r.left
+      s.worldTop = r.top
       const ow = s.w
       const oh = s.h
       s.w = r.width
@@ -841,9 +845,19 @@ const router = useRouter()
     return () => mq.removeEventListener?.("change", on)
   }, [])
 
-  // Auto trigger entrance animation
+  // Auto trigger entrance animation & pause loop when off-screen to save 100% idle CPU
   React.useEffect(() => {
     sim.current.start = performance.now()
+    const el = rootRef.current
+    if (!el || typeof IntersectionObserver === "undefined") return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        sim.current.visible = entry.isIntersecting
+      },
+      { threshold: 0.02 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [])
 
   // Living loop: gaze, blinking, doodles, 8fps line boil
@@ -921,20 +935,19 @@ const router = useRouter()
         }
       }
 
-      // doodles
+      // doodles (zero getBoundingClientRect inside RAF)
       if (world && s.floaters.length) {
         const started = play && s.start ? now - s.start > tl.doodles || reduced : false
         if (started) {
-          const r = world.getBoundingClientRect()
-          const px = s.inside && interactive ? s.px - r.left : NaN
-          const py = s.inside && interactive ? s.py - r.top : NaN
+          const px = s.inside && interactive ? s.px - s.worldLeft : NaN
+          const py = s.inside && interactive ? s.py - s.worldTop : NaN
           if (!reduced) for (const f of s.floaters) stepFloater(f, dt, t, s.w, s.h, px, py, 110, rand)
           paintDoodles()
         }
       }
 
-      // 8fps line boil
-      if (!reduced && now - boilAt > 125) {
+      // 8fps line boil - active on hover/interaction to preserve GPU raster pipeline
+      if (!reduced && s.inside && now - boilAt > 130) {
         boilAt = now
         boil = (boil + 1) % 3
         const f = "url(#" + uid + "-boil" + boil + ")"
@@ -952,6 +965,13 @@ const router = useRouter()
     s.px = e.clientX
     s.py = e.clientY
     s.inside = true
+    if (!s.worldLeft || !s.worldTop) {
+      const r = e.currentTarget?.getBoundingClientRect?.()
+      if (r) {
+        s.worldLeft = r.left
+        s.worldTop = r.top
+      }
+    }
   }
   const onPointerLeave = () => {
     sim.current.inside = false
@@ -1038,7 +1058,7 @@ const router = useRouter()
       <header className="dcf-top-bar">
         <div className="dcf-top-inner">
           <div className="dcf-top-left">
-            <div className="dcf-brand-stamp">HARSH ARYAN</div>
+            <div className="dcf-brand-stamp">{portfolio?.personal?.desktopWordmark || portfolio?.personal?.name || "HARSH ARYAN"}</div>
           </div>
 
           {/* Right: Candy Social Links */}
@@ -1292,14 +1312,14 @@ const router = useRouter()
           <div className="dcf-hero-roles dcf-rise" style={{ "--d": "460ms" } as React.CSSProperties} aria-label="Harsh Aryan - Current Role">
             <div className="dcf-hero-role-pill is-ta group cursor-default" title="Teaching Assistant • IIT Madras">
               <span className="dcf-role-live-dot" aria-hidden="true" />
-              <span className="dcf-role-text-bold">{portfolio.personal.role || "Teaching Assistant • IIT Madras"}</span>
+              <span className="dcf-role-text-bold">{portfolio?.personal?.desktopRole || portfolio?.personal?.role || "Teaching Assistant • IIT Madras"}</span>
             </div>
           </div>
 
           {/* Clean Modern Subtitle (Dynamic from CMS) */}
           <div className="dcf-sub-copy dcf-rise" style={{ "--d": "490ms" } as React.CSSProperties}>
             <p className="dcf-hero-headline-text">
-              {portfolio.personal.headline || "Exploring Data Science, Machine Learning Foundations & Scientific Computing"}
+              {portfolio?.personal?.desktopHeadline || portfolio?.personal?.headline || "Exploring Data Science, Machine Learning Foundations & Scientific Computing"}
             </p>
           </div>
 

@@ -12,8 +12,22 @@
     "availability": "Seeking Summer 2026 Early Internships & Hackathon Collaborations",
     "email": "harsharyan@outlook.com",
     "resumeUrl": "/Harsh_Aryan_Resume.pdf",
-    "aboutPhotoUrl": "/harsh-cover.jpg",
-    "coverPhotoUrl": "/harsh-cover.jpg"
+    "aboutPhotoUrl": "https://drive.google.com/file/d/1xLUZJagj-wfrrB2I3KAg-OLb95feTxHA/view?usp=sharing",
+    "coverPhotoUrl": "https://drive.google.com/file/d/1xLUZJagj-wfrrB2I3KAg-OLb95feTxHA/view?usp=sharing",
+    "desktopWordmark": "HARSH ARYAN",
+    "desktopRole": "Teaching Assistant • IIT Madras",
+    "desktopHeadline": "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",
+    "desktopTagline": "DESIGN · CODE · MACHINE LEARNING",
+    "mobileBadge1": "Teaching Assistant • IIT Madras",
+    "mobileBadge2": "📍Chennai,IND",
+    "mobileTagline": "Teaching Machines To Learn • Building Scientific Software",
+    "aboutPhotoTag": "✦ TA @ IIT MADRAS",
+    "aboutCurrentWork": "Teaching Assistant",
+    "aboutWorkPlace": "IIT Madras",
+    "aboutHighlightedWords": "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning",
+    "aboutZoneBadge": "ZONE 02 • THE ARCHITECT & MIND",
+    "aboutHeading": "Behind the Terminal",
+    "aboutSubtitle": "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed."
   },
   "socialLinks": {
     "github": "https://github.com",
@@ -342,5 +356,28 @@
     "Extra Caricullam",
     "Programing",
     "AI"
+  ],
+  "milestones": [
+    {
+      "phaseNumber": "01",
+      "period": "Foundations",
+      "title": "Algorithmic Intuition & Logic",
+      "subtitle": "Python, C & Core Problem Solving",
+      "description": "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems."
+    },
+    {
+      "phaseNumber": "02",
+      "period": "Data & Math",
+      "title": "Exploratory Modeling & Linear Algebra",
+      "subtitle": "Vectorized Computations & Analytics",
+      "description": "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks."
+    },
+    {
+      "phaseNumber": "03",
+      "period": "Frontiers",
+      "title": "Modern AI Systems & Interactive Tools",
+      "subtitle": "Full-Stack AI Prototypes & Deployment",
+      "description": "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows."
+    }
   ]
 }
