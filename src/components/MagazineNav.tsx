@@ -131,7 +131,7 @@ export function MagazineNav() {
       path: "/#certificates",
       chapter: "04",
       badge: "Awards",
-      shortLabel: "Certs",
+      shortLabel: "Certificates",
       accentHex: "#10b981",
       icon: (active) => (
         <Award className={`w-4 h-4 transition-transform group-hover:scale-110 ${active ? "stroke-[2.5]" : "stroke-2"}`} />
@@ -309,7 +309,7 @@ export function MagazineNav() {
 
       {/* ── PHONE NAVIGATION: FLOATING BOTTOM DOCK ── */}
       <nav
-        className={`md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[340px] backdrop-blur-2xl bg-white/70 dark:bg-stone-900/70 border-2 border-black dark:border-white/50 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2),inset_0_1.5px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1.5px_1.5px_0_rgba(255,255,255,0.2)] p-1.5 flex items-center justify-between gap-1 select-none transition-all duration-300 ${
+        className={`md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-[375px] backdrop-blur-2xl bg-white/70 dark:bg-stone-900/70 border-2 border-black dark:border-white/50 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2),inset_0_1.5px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1.5px_1.5px_0_rgba(255,255,255,0.2)] p-1.5 flex items-center justify-between gap-1 select-none transition-all duration-300 ${
           showMobileDock ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-6 pointer-events-none"
         }`}
         aria-label="Mobile Navigation Dock"
