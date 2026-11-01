@@ -29,6 +29,8 @@ import {
   ChevronDown,
   ArrowUp,
   ArrowDown,
+  Layers,
+  Code2,
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Project, Certificate, PortfolioData, TimelineMilestone } from "@/data/portfolioData";
@@ -86,7 +88,8 @@ export default function AdminPage() {
 
   // CMS Form State
   const [portfolio, setPortfolio] = useState<PortfolioData>(initialData);
-  const [activeTab, setActiveTab] = useState<"cover" | "about" | "projects" | "certificates" | "contact">("cover");
+  type AdminTab = "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
+  const [activeTab, setActiveTab] = useState<AdminTab>("cover");
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState("");
@@ -891,12 +894,15 @@ export default function AdminPage() {
           </div>
 
           {/* Center: Glassmorphism NavTabs (Pill Buttons) */}
-          <nav className="flex items-center gap-1 p-1 rounded-xl sm:rounded-full bg-stone-100/90 border border-stone-200/80 overflow-x-auto max-w-full">
+          <nav className="flex items-center gap-1.5 p-1 rounded-xl sm:rounded-full bg-stone-100/90 border border-stone-200/80 overflow-x-auto max-w-full">
             {[
               { id: "cover", label: "Cover", icon: Sliders },
-              { id: "about", label: "About", icon: User },
+              { id: "about", label: "Profile", icon: User },
+              { id: "highlights", label: "Highlights", icon: Sparkles },
               { id: "projects", label: "Projects", icon: FolderGit2, count: portfolio.projects.length },
               { id: "certificates", label: "Certificates", icon: Award, count: portfolio.certificates.length },
+              { id: "milestones", label: "Milestones", icon: Layers, count: (portfolio.milestones || []).length || 3 },
+              { id: "skills", label: "Skills", icon: Code2, count: portfolio.skills.length },
               { id: "contact", label: "Inquiries", icon: Send, count: messages.filter((m) => !m.read).length || undefined },
             ].map((tab) => {
               const Icon = tab.icon;
@@ -904,10 +910,10 @@ export default function AdminPage() {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id as AdminTab)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg sm:rounded-full font-mono text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                     isActive
-                      ? "bg-black text-white shadow-sm"
+                      ? "bg-black text-white shadow-sm font-black"
                       : "text-stone-600 hover:text-black hover:bg-white/80"
                   }`}
                 >
@@ -915,7 +921,7 @@ export default function AdminPage() {
                   <span>{tab.label}</span>
                   {tab.count !== undefined && (
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                         isActive ? "bg-white/20 text-white" : "bg-stone-200 text-stone-700"
                       }`}
                     >
@@ -1947,12 +1953,138 @@ export default function AdminPage() {
                   className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all leading-relaxed"
                 />
               </div>
+            </div>
 
-              {/* Dedicated Auto-Highlight Keywords & Color */}
-              <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
-                <label className="block font-mono text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                  <span>✨</span>
-                  <span>Auto-Highlight Keywords (Comma Separated):</span>
+            {/* Bottom Final Save Button for Profile */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save Profile Changes"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: HIGHLIGHTS & KEY METRICS ── */}
+        {activeTab === "highlights" && (
+          <div className="space-y-8">
+            {/* Header intro & Save CTA */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <Sparkles className="w-6 h-6 text-amber-500" />
+                  <span>Highlights &amp; Section Metrics</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-1">
+                  Section Header stamps, Auto-highlighted words &amp; custom colors (without boxes), aur Quick Stats capsules.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer shrink-0 flex items-center gap-1.5 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save Highlights"}</span>
+              </button>
+            </div>
+
+            {/* ── 1. SECTION HEADINGS & ZONE STAMP ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+              <div className="flex items-center gap-2.5 pb-4 border-b border-stone-200">
+                <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
+                  🏷️
+                </span>
+                <div>
+                  <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                    Section Header Stamp &amp; Titles
+                  </h3>
+                  <p className="font-mono text-xs text-stone-500">
+                    Portfolio ke About section ka zone badge, main heading aur subtitle customize karein.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                    Section Header Badge Stamp:
+                  </label>
+                  <input
+                    type="text"
+                    value={portfolio.personal.aboutZoneBadge ?? "✦ THE ARCHITECT & MIND"}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, aboutZoneBadge: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                    Section Heading:
+                  </label>
+                  <input
+                    type="text"
+                    value={portfolio.personal.aboutHeading ?? "Behind the Terminal"}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, aboutHeading: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                  Section Subtitle / Description:
+                </label>
+                <input
+                  type="text"
+                  value={portfolio.personal.aboutSubtitle ?? "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed."}
+                  onChange={(e) =>
+                    setPortfolio((prev) => ({
+                      ...prev,
+                      personal: { ...prev.personal, aboutSubtitle: e.target.value },
+                    }))
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* ── 2. AUTO-HIGHLIGHT KEYWORDS & COLOR PICKER ── */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+              <div className="flex items-center gap-2.5 pb-4 border-b border-stone-200">
+                <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
+                  ✨
+                </span>
+                <div>
+                  <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                    Auto-Highlight Keywords &amp; Custom Color
+                  </h3>
+                  <p className="font-mono text-xs text-stone-500">
+                    Jo words comma ke sath likhenge, wo portfolio bio me bina background box ke directly is custom text color me highlight ho jayenge.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                  Auto-Highlight Keywords (Comma Separated):
                 </label>
                 <input
                   type="text"
@@ -1964,94 +2096,122 @@ export default function AdminPage() {
                       personal: { ...prev.personal, aboutHighlightedWords: e.target.value },
                     }))
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-300 text-stone-900 font-mono text-xs focus:border-black focus:outline-none font-bold"
+                  className="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none font-bold"
                 />
+              </div>
 
-                {/* Highlight Text Color Selector */}
-                <div className="pt-2 border-t border-amber-200/80 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="font-mono text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                      <span>🎨</span>
-                      <span>Highlight Text Color (No background box):</span>
-                    </label>
+              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/90 space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="font-mono text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                    <span>🎨</span>
+                    <span>Highlight Text Color:</span>
+                  </label>
+                  <span
+                    className="px-2.5 py-1 rounded-lg font-mono text-xs font-black text-white shadow-xs"
+                    style={{ backgroundColor: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
+                  >
+                    {portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="relative flex items-center gap-2 p-1.5 rounded-xl bg-white border border-amber-300 shadow-2xs">
+                    <input
+                      type="color"
+                      value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, aboutHighlightColor: e.target.value },
+                        }))
+                      }
+                      className="w-8 h-8 rounded-lg cursor-pointer border-0 p-0 bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, aboutHighlightColor: e.target.value },
+                        }))
+                      }
+                      placeholder="#f59e0b"
+                      className="w-24 px-2 py-1 font-mono text-xs font-bold text-stone-900 focus:outline-none uppercase"
+                    />
+                  </div>
+
+                  {/* 8 Curated Quick Preset Color Chips */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {[
+                      { name: "Warm Amber", hex: "#f59e0b" },
+                      { name: "Fresh Emerald", hex: "#10b981" },
+                      { name: "Royal Indigo", hex: "#6366f1" },
+                      { name: "Coral Rose", hex: "#f43f5e" },
+                      { name: "Electric Purple", hex: "#a855f7" },
+                      { name: "Ocean Cyan", hex: "#06b6d4" },
+                      { name: "Sunset Orange", hex: "#f97316" },
+                      { name: "Golden Yellow", hex: "#eab308" },
+                    ].map((preset) => (
+                      <button
+                        key={preset.hex}
+                        type="button"
+                        onClick={() =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, aboutHighlightColor: preset.hex },
+                          }))
+                        }
+                        className={`px-2.5 py-1.5 rounded-xl font-mono text-[10px] font-bold border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5 ${
+                          (portfolio.personal.aboutHighlightColor || "#f59e0b").toLowerCase() === preset.hex.toLowerCase()
+                            ? "border-black bg-stone-900 text-white shadow-xs font-black"
+                            : "border-stone-300 bg-white text-stone-700 hover:border-black"
+                        }`}
+                      >
+                        <span
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: preset.hex }}
+                        />
+                        <span>{preset.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Live Text Sample Preview */}
+                <div className="p-3.5 rounded-xl bg-white border border-amber-200/90 shadow-2xs">
+                  <span className="font-mono text-[10px] uppercase font-bold text-stone-400 block mb-1">
+                    Live Sample Preview:
+                  </span>
+                  <p className="font-['Space_Grotesk'] text-sm text-stone-800 font-semibold leading-relaxed">
+                    Undergraduate in AI &amp; Data Science at{" "}
                     <span
-                      className="px-2 py-0.5 rounded font-mono text-[10px] font-black text-white shadow-xs"
-                      style={{ backgroundColor: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
+                      style={{ color: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
+                      className="font-bold underline decoration-wavy underline-offset-4"
                     >
-                      {portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                      IIT Madras
                     </span>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="relative flex items-center gap-2 p-1.5 rounded-xl bg-white border border-amber-300">
-                      <input
-                        type="color"
-                        value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
-                        onChange={(e) =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, aboutHighlightColor: e.target.value },
-                          }))
-                        }
-                        className="w-8 h-8 rounded-lg cursor-pointer border-0 p-0 bg-transparent"
-                      />
-                      <input
-                        type="text"
-                        value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
-                        onChange={(e) =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, aboutHighlightColor: e.target.value },
-                          }))
-                        }
-                        placeholder="#f59e0b"
-                        className="w-24 px-2 py-1 font-mono text-xs font-bold text-stone-900 focus:outline-none"
-                      />
-                    </div>
-
-                    {/* Quick Preset Color Chips */}
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {[
-                        { name: "Amber", hex: "#f59e0b" },
-                        { name: "Emerald", hex: "#10b981" },
-                        { name: "Indigo", hex: "#6366f1" },
-                        { name: "Rose", hex: "#f43f5e" },
-                        { name: "Purple", hex: "#a855f7" },
-                        { name: "Cyan", hex: "#06b6d4" },
-                      ].map((preset) => (
-                        <button
-                          key={preset.hex}
-                          type="button"
-                          onClick={() =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, aboutHighlightColor: preset.hex },
-                            }))
-                          }
-                          className={`px-2 py-1 rounded-lg font-mono text-[10px] font-bold border transition-transform hover:scale-105 active:scale-95 cursor-pointer ${
-                            (portfolio.personal.aboutHighlightColor || "#f59e0b") === preset.hex
-                              ? "border-black bg-stone-900 text-white shadow-xs font-black"
-                              : "border-stone-300 bg-white text-stone-700 hover:border-black"
-                          }`}
-                        >
-                          <span
-                            className="inline-block w-2 h-2 rounded-full mr-1 align-middle"
-                            style={{ backgroundColor: preset.hex }}
-                          />
-                          {preset.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <p className="font-mono text-[11px] text-amber-800">
-                    💡 Keywords ka background box nahi aayega, sirf text ka color change hoga. Aap yahan se color picker ya presets se color set kar sakte hain.
+                    , specializing in{" "}
+                    <span
+                      style={{ color: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
+                      className="font-bold"
+                    >
+                      Machine Learning
+                    </span>{" "}
+                    and{" "}
+                    <span
+                      style={{ color: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
+                      className="font-bold"
+                    >
+                      Scientific Computing
+                    </span>
+                    .
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* ── 3. QUICK STATS CAPSULES (FROM SCREENSHOT) ── */}
+            {/* ── 3. QUICK STATS CAPSULES ── */}
             <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
                 <div className="flex items-center gap-2.5">
@@ -2060,10 +2220,10 @@ export default function AdminPage() {
                   </span>
                   <div>
                     <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      Quick Stats Capsules (Screenshot Items Manager)
+                      Quick Stats Capsules (4 Metrix Badges)
                     </h3>
                     <p className="font-mono text-xs text-stone-500">
-                      About page par show hone wale white metric capsules ko add, edit, ya delete karein.
+                      About page par show hone wale metric capsules ko add, edit, reorder, ya delete karein.
                     </p>
                   </div>
                 </div>
@@ -2079,7 +2239,7 @@ export default function AdminPage() {
               </div>
 
               {/* List of Quick Stat Capsules */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {(portfolio.quickStats || []).map((stat, idx) => (
                   <div
                     key={idx}
@@ -2162,7 +2322,48 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* ── 4. TECHNICAL ARSENAL (SKILLS & CAPABILITIES) ── */}
+            {/* Bottom Final Save Button for Highlights */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save Highlights Changes"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: TECHNICAL ARSENAL & SKILLS ── */}
+        {activeTab === "skills" && (
+          <div className="space-y-8">
+            {/* Header intro & Save CTA */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <Code2 className="w-6 h-6 text-amber-500" />
+                  <span>Technical Arsenal &amp; Skills ({portfolio.skills.length} Categories)</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-1">
+                  Skills categories aur har category ke toolchips ko customize karein.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer shrink-0 flex items-center gap-1.5 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save Skills"}</span>
+              </button>
+            </div>
+
+            {/* Technical Arsenal Block */}
             <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
                 <div className="flex items-center gap-2.5">
@@ -2281,7 +2482,58 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* ── 5. ROADMAP & MILESTONES MANAGER ── */}
+            {/* Bottom Final Save Button for Skills */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save Skills Changes"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: ROADMAP & MILESTONES ── */}
+        {activeTab === "milestones" && (
+          <div className="space-y-8">
+            {/* Header intro & Save CTA */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <Layers className="w-6 h-6 text-amber-500" />
+                  <span>Development Trajectory ({(portfolio.milestones || []).length || 3} Phases)</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-1">
+                  Sequential roadmap phases showcasing foundations, mathematical modeling, and AI system engineering.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleAddMilestone}
+                  className="px-3.5 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Trajectory Phase</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveAll}
+                  disabled={isSaving}
+                  className="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{isSaving ? "Saving..." : "Save Milestones"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Milestones Cards */}
             <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-3">
                 <div className="flex items-center gap-2.5">
@@ -2297,15 +2549,6 @@ export default function AdminPage() {
                     </p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleAddMilestone}
-                  className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5 shrink-0"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Trajectory Phase</span>
-                </button>
               </div>
 
               <div className="space-y-4">
@@ -2407,7 +2650,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Bottom Final Save Button */}
+            {/* Bottom Final Save Button for Milestones */}
             <div className="flex justify-end pt-2">
               <button
                 type="button"
@@ -2416,7 +2659,7 @@ export default function AdminPage() {
                 className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
               >
                 <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save All About Page Changes"}</span>
+                <span>{isSaving ? "Saving..." : "Save Milestones Changes"}</span>
               </button>
             </div>
           </div>
