@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import confetti from "canvas-confetti"
 import { portfolioData } from "@/data/portfolioData"
 import { usePortfolio } from "@/context/PortfolioContext"
@@ -23,7 +24,41 @@ import { GithubIcon, LinkedinIcon, LeetCodeIcon } from "@/components/SocialIcons
 /**
  * Handcrafted Doodle #1 — The Airmail Flying Letter 💌
  */
-function AirmailLetterDoodle({ className = "" }: { className?: string }) {
+function AirmailLetterDoodle({ className = "", isPhone = false }: { className?: string; isPhone?: boolean }) {
+  if (isPhone) {
+    return (
+      <div className={`relative inline-flex items-center ${className}`} aria-hidden="true">
+        <svg
+          viewBox="0 0 70 55"
+          className="w-8 h-8 drop-shadow-[1.5px_1.5px_0_rgba(0,0,0,0.15)] filter overflow-visible"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <g transform="translate(10, 8) rotate(8)">
+            <rect
+              x="0"
+              y="0"
+              width="44"
+              height="30"
+              rx="3"
+              fill="#ffffff"
+              stroke="#000000"
+              className="dark:fill-stone-800 dark:stroke-white"
+              strokeWidth="2.4"
+            />
+            <path d="M 0 0 L 22 17 L 44 0" stroke="#000000" className="dark:stroke-white" strokeWidth="2.2" />
+            <path d="M 0 30 L 15 15" stroke="#000000" className="dark:stroke-white" strokeWidth="1.8" />
+            <path d="M 44 30 L 29 15" stroke="#000000" className="dark:stroke-white" strokeWidth="1.8" />
+            <circle cx="22" cy="17" r="4.5" fill="#f43f5e" stroke="none" />
+          </g>
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <div className={`relative inline-flex items-center ${className}`} aria-hidden="true">
       <svg
@@ -111,6 +146,72 @@ function PostalMailboxDoodle({ className = "" }: { className?: string }) {
   )
 }
 
+/**
+ * Handcrafted Doodle #3 — The Flying Origami Paper Plane (Takeoff Animation) ✈️
+ */
+function FlyingPaperPlaneAnimation({ isFlying }: { isFlying: boolean }) {
+  return (
+    <AnimatePresence>
+      {isFlying && (
+        <div className="pointer-events-none fixed inset-0 z-[100001] overflow-hidden select-none">
+          <motion.div
+            initial={{ x: "-15vw", y: "85vh", rotate: -35, scale: 0.6, opacity: 0 }}
+            animate={{
+              x: ["-5vw", "25vw", "60vw", "115vw"],
+              y: ["85vh", "45vh", "22vh", "-18vh"],
+              rotate: [-35, -15, -28, -8],
+              scale: [0.6, 1.15, 1.25, 0.85],
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{
+              duration: 2.9,
+              ease: [0.25, 1, 0.5, 1],
+              times: [0, 0.28, 0.7, 1],
+            }}
+            className="relative flex items-center gap-3"
+          >
+            {/* Trailing Wind Vapor Trail */}
+            <svg
+              viewBox="0 0 160 50"
+              className="w-28 sm:w-36 h-10 overflow-visible opacity-75"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="2.5"
+              strokeDasharray="4 4"
+            >
+              <path d="M 0 25 Q 40 10 80 25 T 160 25" strokeLinecap="round" />
+            </svg>
+
+            {/* Handcrafted Origami Paper Plane */}
+            <div className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.4)]">
+              <svg
+                viewBox="0 0 90 70"
+                className="w-16 sm:w-22 h-14 sm:h-18 overflow-visible"
+                fill="none"
+                stroke="#000000"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="10,35 85,10 45,45 10,35" fill="#ffffff" className="dark:fill-stone-100" />
+                <polygon points="45,45 85,10 50,60 45,45" fill="#e0f2fe" className="dark:fill-sky-200" />
+                <polygon points="45,45 85,10 80,35 45,45" fill="#bae6fd" className="dark:fill-sky-300" />
+                <circle cx="58" cy="28" r="4.5" fill="#f43f5e" stroke="none" />
+              </svg>
+              <span
+                className="absolute -top-3.5 left-8 text-xs font-black uppercase text-rose-600 dark:text-rose-400 whitespace-nowrap bg-white/95 dark:bg-stone-900/95 px-2.5 py-0.5 rounded-full border border-rose-300 shadow-[2px_2px_0_#f43f5e]"
+                style={{ fontFamily: "'Patrick Hand', cursive" }}
+              >
+                Dispatch in flight ✈️✨
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export function ContactSection({ id = "contact" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
   const [formData, setFormData] = useState({
@@ -121,6 +222,7 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
   })
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle")
   const [copied, setCopied] = useState(false)
+  const [showFlight, setShowFlight] = useState(false)
 
   const emailToUse = portfolio?.personal?.email || portfolioData.personal.email
   const locationToUse = portfolio?.personal?.location || portfolioData.personal.location
@@ -144,6 +246,8 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
 
       if (res.ok) {
         setStatus("success")
+        setShowFlight(true)
+        setTimeout(() => setShowFlight(false), 3400)
         setFormData({ name: "", email: "", subject: "", message: "" })
         confetti({
           particleCount: 80,
@@ -160,13 +264,20 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
   }
 
   return (
-    <section id={id} className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-10 sm:space-y-12 scroll-mt-14">
+    <section id={id} className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-6xl xl:max-w-7xl mx-auto space-y-10 sm:space-y-12 scroll-mt-14 relative">
+      {/* ── HIGH-FLYING PAPER AIRPLANE DISPATCH ANIMATION ── */}
+      <FlyingPaperPlaneAnimation isFlying={showFlight} />
+
       {/* ── HEADER ── */}
       <div className="pb-6 border-b-2 border-black dark:border-stone-800 space-y-5">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading">
-              Send a Dispatch
+            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading inline-flex items-center gap-2 sm:gap-3 flex-wrap">
+              <span>Send a Dispatch</span>
+              {/* On phone: Cute airmail letter doodle placed directly next to 'DISPATCH' */}
+              <span className="inline-flex lg:hidden shrink-0 -mt-1 sm:-mt-2">
+                <AirmailLetterDoodle isPhone />
+              </span>
             </h2>
 
             <svg
@@ -188,7 +299,8 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
             </p>
           </div>
 
-          <div className="self-start lg:self-end">
+          {/* On laptop & desktop: keep the right-hand Airmail Doodle with speech bubble */}
+          <div className="hidden lg:block self-start lg:self-end">
             <AirmailLetterDoodle />
           </div>
         </div>

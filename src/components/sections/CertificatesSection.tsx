@@ -9,7 +9,35 @@ import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCar
 /**
  * Handcrafted Doodle #1 — The Laurel Medal 🏅
  */
-function MedalRibbonDoodle({ className = "" }: { className?: string }) {
+function MedalRibbonDoodle({ className = "", isPhone = false }: { className?: string; isPhone?: boolean }) {
+  if (isPhone) {
+    return (
+      <div className={`relative inline-flex items-center ${className}`} aria-hidden="true">
+        <svg
+          viewBox="0 0 100 110"
+          className="w-8 h-10 drop-shadow-[1.5px_1.5px_0_rgba(0,0,0,0.15)] filter overflow-visible"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M 38 12 L 20 60 L 34 54 L 46 64 L 42 20 Z" fill="#f43f5e" stroke="#000000" className="dark:stroke-white" strokeWidth="2.2" />
+          <path d="M 62 12 L 80 60 L 66 54 L 54 64 L 58 20 Z" fill="#3b82f6" stroke="#000000" className="dark:stroke-white" strokeWidth="2.2" />
+          <circle cx="50" cy="58" r="24" fill="#fbbf24" stroke="#000000" className="dark:stroke-white" strokeWidth="2.6" />
+          <circle cx="50" cy="58" r="18" fill="#fef08a" stroke="#d97706" strokeWidth="1.6" strokeDasharray="3 2" />
+          <path
+            d="M 50 46 L 53 54 L 61 54 L 55 59 L 57 67 L 50 62 L 43 67 L 45 59 L 39 54 L 47 54 Z"
+            fill="#d97706"
+            stroke="none"
+          />
+          <path d="M 78 40 L 82 44 M 82 40 L 78 44" stroke="#f59e0b" strokeWidth="2" />
+          <path d="M 18 36 L 22 40 M 22 36 L 18 40" stroke="#10b981" strokeWidth="2" />
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <div className={`relative inline-flex items-center ${className}`} aria-hidden="true">
       <svg
@@ -123,8 +151,12 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
       <div className="pb-6 border-b-2 border-black dark:border-stone-800 space-y-5">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading">
-              Certifications &amp; Laurels
+            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading inline-flex items-center gap-2 sm:gap-3 flex-wrap">
+              <span>Certifications &amp; Laurels</span>
+              {/* On phone: Cute laurel medal doodle placed directly next to 'LAURELS' */}
+              <span className="inline-flex lg:hidden shrink-0 -mt-1 sm:-mt-2">
+                <MedalRibbonDoodle isPhone />
+              </span>
             </h2>
 
             <svg
@@ -146,7 +178,8 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
             </p>
           </div>
 
-          <div className="self-start lg:self-end">
+          {/* On laptop & desktop: keep the right-hand Medal Doodle with speech bubble */}
+          <div className="hidden lg:block self-start lg:self-end">
             <MedalRibbonDoodle />
           </div>
         </div>

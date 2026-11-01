@@ -474,11 +474,8 @@ export function CircularProjectsCarousel({
                           </div>
 
                           <div className="flex flex-col">
-                            <span className="text-[9px] font-mono uppercase tracking-widest text-stone-300 flex items-center gap-1">
-                              <span style={{ color: theme.accent }}>//</span> PIPELINE SPEC
-                            </span>
-                            <span className="text-[10px] font-mono font-bold text-white/80">
-                              ID: {proj.id.toUpperCase()}
+                            <span className="text-[11px] font-hero-heading uppercase tracking-wider text-white drop-shadow-sm">
+                              {proj.category}
                             </span>
                           </div>
                         </div>

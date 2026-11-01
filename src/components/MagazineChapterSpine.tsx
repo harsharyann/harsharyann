@@ -15,11 +15,11 @@ interface ChapterSpineItem {
 }
 
 const CHAPTERS: ChapterSpineItem[] = [
-  { id: "cover", num: "01", name: "Cover Portal", label: "Cover", color: "#facc15", shadow: "#ca8a04" },
-  { id: "about", num: "02", name: "Architect Bio", label: "Bio", color: "#f59e0b", shadow: "#d97706" },
-  { id: "projects", num: "03", name: "Project Lab", label: "Lab", color: "#6366f1", shadow: "#4f46e5" },
-  { id: "certificates", num: "04", name: "Laurel Vault", label: "Vault", color: "#10b981", shadow: "#059669" },
-  { id: "contact", num: "05", name: "Dispatch Desk", label: "Comms", color: "#f43f5e", shadow: "#e11d48" },
+  { id: "cover", num: "00", name: "Cover Portal", label: "Cover", color: "#facc15", shadow: "#ca8a04" },
+  { id: "about", num: "01", name: "The Architect & Mind", label: "Bio", color: "#f59e0b", shadow: "#d97706" },
+  { id: "projects", num: "02", name: "Project Lab & Code", label: "Lab", color: "#6366f1", shadow: "#4f46e5" },
+  { id: "certificates", num: "03", name: "Certifications & Laurels", label: "Laurels", color: "#10b981", shadow: "#059669" },
+  { id: "contact", num: "04", name: "Direct Communications", label: "Communications", color: "#f43f5e", shadow: "#e11d48" },
 ];
 
 export function MagazineChapterSpine() {

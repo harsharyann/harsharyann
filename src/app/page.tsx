@@ -92,41 +92,41 @@ export default function Home() {
           isCoverOpen ? "invisible h-0 overflow-hidden pointer-events-none" : "visible"
         }`}
       >
-        {/* ── 02. CHAPTER 02: ABOUT & BIO (3D Scroll Perspective) ── */}
+        {/* ── 01. CHAPTER 01: ABOUT & BIO (3D Scroll Perspective) ── */}
         <Scroll3DSection
           id="about"
-          chapterNumber="02"
+          chapterNumber="01"
           chapterName="The Architect & Mind"
           accentColor="#f59e0b"
         >
           <AboutSection id="about-content" />
         </Scroll3DSection>
 
-        {/* ── 03. CHAPTER 03: PROJECTS & BUILDS (3D Scroll Perspective) ── */}
+        {/* ── 02. CHAPTER 02: PROJECTS & BUILDS (3D Scroll Perspective) ── */}
         <Scroll3DSection
           id="projects"
-          chapterNumber="03"
+          chapterNumber="02"
           chapterName="Project Lab & Code"
           accentColor="#6366f1"
         >
           <ProjectsSection id="projects-content" />
         </Scroll3DSection>
 
-        {/* ── 04. CHAPTER 04: CERTIFICATES & LAURELS (3D Scroll Perspective) ── */}
+        {/* ── 03. CHAPTER 03: CERTIFICATES & LAURELS (3D Scroll Perspective) ── */}
         <Scroll3DSection
           id="certificates"
-          chapterNumber="04"
-          chapterName="Credential Archive"
+          chapterNumber="03"
+          chapterName="Certifications & Laurels"
           accentColor="#10b981"
         >
           <CertificatesSection id="certificates-content" />
         </Scroll3DSection>
 
-        {/* ── 05. CHAPTER 05: CONTACT & DISPATCH (3D Scroll Perspective) ── */}
+        {/* ── 04. CHAPTER 04: CONTACT & DISPATCH (3D Scroll Perspective) ── */}
         <Scroll3DSection
           id="contact"
-          chapterNumber="05"
-          chapterName="Direct Comms & Dispatch"
+          chapterNumber="04"
+          chapterName="Direct Communications & Dispatch"
           accentColor="#f43f5e"
         >
           <ContactSection id="contact-content" />

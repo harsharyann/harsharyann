@@ -266,9 +266,39 @@ export function PolaroidCertificateCarousel({
     setIsPanning(false)
   }, [])
 
-  const step = (dir: number) => {
-    if (n <= 1) return
-    setActive((prev) => (prev + dir + n) % n)
+  const [slideDir, setSlideDir] = React.useState<number>(1)
+  const isDraggingRef = React.useRef(false)
+  const touchStartX = React.useRef<number | null>(null)
+  const touchStartY = React.useRef<number | null>(null)
+
+  const step = React.useCallback(
+    (dir: number) => {
+      if (n <= 1) return
+      setSlideDir(dir)
+      setActive((prev) => (prev + dir + n) % n)
+    },
+    [n]
+  )
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return
+    const diffX = touchStartX.current - e.changedTouches[0].clientX
+    const diffY = touchStartY.current - e.changedTouches[0].clientY
+
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 35) {
+      if (diffX > 0) {
+        step(1)
+      } else {
+        step(-1)
+      }
+    }
+    touchStartX.current = null
+    touchStartY.current = null
   }
 
   // --- Zoom Controls ---
@@ -418,7 +448,9 @@ export function PolaroidCertificateCarousel({
           House both the authentic Polaroid Frame & the Intelligence Dossier together
       ========================================================================= */}
       <div
-        className="relative rounded-[28px] sm:rounded-[32px] p-4 sm:p-5 md:p-6 transition-all duration-300 liquid-bento-card max-w-6xl mx-auto overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="relative rounded-[28px] sm:rounded-[32px] p-4 sm:p-5 md:p-6 transition-all duration-300 liquid-bento-card max-w-6xl mx-auto overflow-hidden touch-pan-y"
       >
 
         {/* ── BENTO TOP BAR: Counter Stamp + Category Badge + Stepper Controls ── */}
@@ -487,17 +519,38 @@ export function PolaroidCertificateCarousel({
               </svg>
             </div>
 
-            {/* Polaroid Photo Frame with Wooden Pegs */}
+            {/* Polaroid Photo Frame with Wooden Pegs & Drag/Swipe Gestures */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeCert.id || safeActive}
-                initial={{ opacity: 0, scale: 0.96, rotate: -2 }}
-                animate={{ opacity: 1, scale: 1, rotate: -1 }}
-                exit={{ opacity: 0, scale: 0.96, rotate: 1 }}
+                initial={{ opacity: 0, scale: 0.96, x: slideDir > 0 ? 30 : -30, rotate: -2 }}
+                animate={{ opacity: 1, scale: 1, x: 0, rotate: -1 }}
+                exit={{ opacity: 0, scale: 0.96, x: slideDir > 0 ? -30 : 30, rotate: 1 }}
                 transition={{ duration: 0.28, ease: "easeOut" }}
-                className="relative w-full max-w-[390px] cursor-pointer group"
-                onClick={() => openZoomModal(safeActive)}
-                title="Click to Zoom & Inspect Certificate"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragStart={() => {
+                  isDraggingRef.current = true
+                }}
+                onDragEnd={(_e, { offset, velocity }) => {
+                  const swipe = offset.x + velocity.x * 0.2
+                  if (swipe < -35) {
+                    step(1)
+                  } else if (swipe > 35) {
+                    step(-1)
+                  }
+                  setTimeout(() => {
+                    isDraggingRef.current = false
+                  }, 120)
+                }}
+                onClick={() => {
+                  if (!isDraggingRef.current) {
+                    openZoomModal(safeActive)
+                  }
+                }}
+                className="relative w-full max-w-[390px] cursor-grab active:cursor-grabbing group select-none touch-pan-y"
+                title="Click to Zoom or Swipe Left/Right to Slide"
               >
                 {/* Handcrafted Dual Wooden Clothesline Pegs */}
                 <div
@@ -516,6 +569,36 @@ export function PolaroidCertificateCarousel({
                     boxShadow: `1.5px 1.5px 0 ${activeTheme.pegShadow || "#78350f"}`,
                   }}
                 />
+
+                {/* Direct Prev / Next Quick Stepper Arrow Buttons on Frame */}
+                {n > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        step(-1)
+                      }}
+                      className="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white dark:bg-stone-900 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center justify-center text-black dark:text-white hover:scale-110 active:scale-95 transition-all z-30 cursor-pointer"
+                      title="Previous Certificate"
+                      aria-label="Previous Certificate"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        step(1)
+                      }}
+                      className="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white dark:bg-stone-900 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center justify-center text-black dark:text-white hover:scale-110 active:scale-95 transition-all z-30 cursor-pointer"
+                      title="Next Certificate"
+                      aria-label="Next Certificate"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
 
                 {/* Polaroid Print Body */}
                 <div
@@ -555,19 +638,13 @@ export function PolaroidCertificateCarousel({
                           #{pad2(safeActive + 1)}
                         </div>
 
-                        {/* Top-Right Pill: Golden Metallic ZOOM */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            openZoomModal(safeActive)
-                          }}
-                          className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:brightness-110 text-black font-mono text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-[1.5px_1.5px_0_#000] transition-all hover:scale-105 active:scale-95 cursor-pointer z-20"
-                          title="Click to Zoom & Inspect"
+                        {/* Top-Right: Subtle minimal expand view icon */}
+                        <div
+                          className="absolute top-2 right-2 p-1 rounded-full bg-black/75 backdrop-blur-md text-amber-300 border border-white/20 shadow-xs z-20 pointer-events-none"
+                          aria-hidden="true"
                         >
-                          <ZoomIn className="w-3 h-3 text-black" />
-                          <span>ZOOM</span>
-                        </button>
+                          <Maximize2 className="w-2.5 h-2.5 text-amber-300" />
+                        </div>
 
                         {/* Bottom Foil Ribbon: Category */}
                         <div className="absolute bottom-1.5 left-3 right-3 text-center py-0.5 rounded-full font-mono text-[8.5px] font-black uppercase tracking-widest truncate border shadow-md bg-black/85 text-amber-300 backdrop-blur-md border-amber-400/40 z-20">
@@ -678,44 +755,6 @@ export function PolaroidCertificateCarousel({
                   </div>
                 )}
 
-                {/* Interactive Zoom & Inspect Preview Card */}
-                {activeCert.imageUrl && (
-                  <div className="pt-1">
-                    <button
-                      type="button"
-                      onClick={() => openZoomModal(safeActive)}
-                      className="w-full sm:w-auto inline-flex items-center gap-2.5 p-2 rounded-xl border-2 border-black dark:border-stone-600 bg-white dark:bg-stone-800 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] hover:-translate-y-0.5 hover:bg-amber-50 dark:hover:bg-stone-700 transition-all group cursor-pointer text-left"
-                    >
-                      <div className="w-12 h-9 rounded-md overflow-hidden border border-stone-300 bg-stone-100 shrink-0 relative">
-                        <img
-                          src={formatGoogleDriveImageUrl(activeCert.imageUrl)}
-                          alt={activeCert.title}
-                          draggable={false}
-                          onDragStart={(e) => e.preventDefault()}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform pointer-events-none select-none"
-                          onError={(e) => {
-                            const target = e.currentTarget
-                            if (!target.dataset.triedFallback && isGoogleDriveUrl(activeCert.imageUrl)) {
-                              target.dataset.triedFallback = "true"
-                              target.src = formatGoogleDriveThumbnailUrl(activeCert.imageUrl)
-                            }
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
-                      </div>
-                      <div className="font-mono text-xs">
-                        <span className="font-black text-black dark:text-white flex items-center gap-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors text-[11px]">
-                          <ZoomIn className="w-3.5 h-3.5 text-amber-500" />
-                          <span>Zoom &amp; Inspect Certificate</span>
-                        </span>
-                        <span className="text-stone-500 dark:text-stone-400 text-[9px] block font-mono">
-                          Protected In-Place High-Res Inspector
-                        </span>
-                      </div>
-                    </button>
-                  </div>
-                )}
 
                 {/* Action Verification Footer */}
                 <div className="pt-3 border-t-2 border-dashed border-black/20 dark:border-stone-700 flex flex-wrap items-center justify-between gap-2.5">
