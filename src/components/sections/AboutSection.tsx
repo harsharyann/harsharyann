@@ -258,9 +258,6 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             <span className="sketch-stamp bg-amber-400 text-black font-black shadow-[2px_2px_0_#000]">
               CHAPTER 02 • THE ARCHITECT &amp; MIND
             </span>
-            <span className="hidden sm:inline-block font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
-              [DOSSIER &amp; PHILOSOPHY]
-            </span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
