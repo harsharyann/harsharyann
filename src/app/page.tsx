@@ -55,18 +55,23 @@ export default function Home() {
       {!isCoverOpen && <MagazineChapterSpine />}
 
       {/* ── 01. COVER SCREEN (Dedicated Mobile & Desktop Versions - Fully Dismissable Portal) ── */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         {isCoverOpen && (
           <motion.div
             key="cover-portal-screen"
             id="cover"
-            initial={{ opacity: 1 }}
-            exit={{
-              opacity: 0,
-              y: -25,
-              transition: { duration: 0.35, ease: "easeInOut" },
+            initial={{ y: "-100%", opacity: 0 }}
+            animate={{
+              y: 0,
+              opacity: 1,
+              transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
             }}
-            className="fixed inset-0 z-50 w-full h-[100dvh] overflow-hidden touch-none select-none bg-[#090a0f]"
+            exit={{
+              y: "-100%",
+              opacity: 0,
+              transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+            }}
+            className="fixed inset-0 z-50 w-full h-[100dvh] overflow-hidden touch-none select-none bg-[#edf6fa] dark:bg-[#090a0f] text-black dark:text-white transition-colors duration-300"
           >
             {/* Phone Cover (iOS & Android) — Dedicated Clean Portrait Layout */}
             <div className="block md:hidden w-full h-full">

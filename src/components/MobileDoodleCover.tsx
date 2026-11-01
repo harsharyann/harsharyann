@@ -392,17 +392,37 @@ export function MobileDoodleCover() {
 
         {/* ── SKETCHBOOK STICKER NOTE (Role, Quote & Social Icons All-In-One) ── */}
         <div
-          onClick={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
-          onTouchEnd={(e) => e.stopPropagation()}
-          className="relative w-full max-w-[340px] mt-2 mb-2 select-none cursor-default"
+          onClick={(e) => {
+            triggerRipple(e.clientX, e.clientY, e.currentTarget);
+            setTimeout(() => {
+              closeCover();
+            }, 240);
+          }}
+          className="relative w-full max-w-[340px] mt-3 mb-2 select-none cursor-pointer"
         >
           {/* Realistic Washi Tape at Top */}
           <div
             className="w-24 h-4 bg-amber-300/90 dark:bg-amber-400/85 border-y border-black/30 shadow-xs rotate-[-2deg] mx-auto -mb-2 z-20 relative rounded-xs backdrop-blur-xs"
             aria-hidden="true"
           />
+
+          {/* Comic Doodle Speech Bubble: "CLICK HERE 👇" */}
+          <div className="absolute -top-4 right-1.5 z-30 pointer-events-none">
+            <motion.div
+              animate={{
+                y: [0, -3.5, 0],
+                rotate: [6, 3, 6],
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="relative px-2.5 py-1 bg-yellow-300 text-black border-2 border-black rounded-full font-mono text-[10px] font-black uppercase tracking-wider shadow-[2.5px_2.5px_0_#000] flex items-center gap-1.5 select-none"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping shrink-0" />
+              <span>CLICK HERE</span>
+              <span className="text-xs">👇</span>
+              {/* Comic bubble pointer tail */}
+              <div className="absolute -bottom-1.5 right-6 w-2.5 h-2.5 bg-yellow-300 border-r-2 border-b-2 border-black rotate-45" />
+            </motion.div>
+          </div>
 
           {/* Sticky Note Body (Liquid sketchbook post-it note) */}
           <motion.div
@@ -443,6 +463,9 @@ export function MobileDoodleCover() {
                 href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
                 aria-label="GitHub Profile"
                 title="GitHub"
                 className="flex items-center justify-center w-8 h-8 rounded-full bg-stone-900 text-white dark:bg-white dark:text-black border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-105 cursor-pointer"
@@ -453,6 +476,9 @@ export function MobileDoodleCover() {
                 href={portfolio?.socialLinks?.linkedin || "https://linkedin.com"}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
                 aria-label="LinkedIn Profile"
                 title="LinkedIn"
                 className="flex items-center justify-center w-8 h-8 rounded-full bg-[#0077b5] text-white border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-105 cursor-pointer"
@@ -461,6 +487,9 @@ export function MobileDoodleCover() {
               </a>
               <a
                 href={`mailto:${portfolio?.personal?.email || "harsharyan@outlook.com"}`}
+                onClick={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
                 aria-label="Send Email"
                 title="Email Harsh"
                 className="flex items-center justify-center w-8 h-8 rounded-full bg-[#f59e0b] text-white border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-105 cursor-pointer"

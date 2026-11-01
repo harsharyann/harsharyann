@@ -1375,15 +1375,15 @@ export function DoodleCrewCover({
           {/* THE DAILY SPARK ✦ - 7 Days, 7 Quotes */}
           <DailySpark isDark={isDark} />
 
-          {/* Scroll Cue down to About page */}
+          {/* Enter Portfolio Action Link */}
           <div className="dcf-scroll-cue dcf-rise" style={{ "--d": "600ms" } as React.CSSProperties}>
             <button
               type="button"
               onClick={triggerLeave}
-              className="dcf-scroll-link"
-              aria-label="Scroll down or click to explore about story"
+              className="dcf-scroll-link cursor-pointer"
+              aria-label="Click to explore portfolio"
             >
-              <span className="dcf-scroll-label font-mono">SCROLL DOWN TO EXPLORE</span>
+              <span className="dcf-scroll-label font-mono">CLICK TO ENTER PORTFOLIO ✦</span>
               <div className="dcf-scroll-arrow-box">
                 <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M8 2 L8 13 M3 8 L8 13 L13 8" />
