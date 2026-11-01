@@ -35,6 +35,7 @@ import {
   formatGoogleDriveThumbnailUrl,
   formatGoogleDriveViewUrl,
 } from "@/lib/googleDrive";
+import { extractVibrantColor } from "@/lib/colorExtractor";
 
 interface ContactMessage {
   id: string;
@@ -84,6 +85,12 @@ export default function AdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState("");
+  const [coverAccentColor, setCoverAccentColor] = useState<string>("#facc15");
+
+  useEffect(() => {
+    const photo = formatGoogleDriveImageUrl(portfolio.personal?.coverPhotoUrl) || "/harsh-cover.jpg";
+    extractVibrantColor(photo, "#facc15").then(setCoverAccentColor);
+  }, [portfolio.personal?.coverPhotoUrl]);
 
   // Category Management Inputs
   const [newProjectCatInput, setNewProjectCatInput] = useState("");
@@ -1243,7 +1250,7 @@ export default function AdminPage() {
                     <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
                       Google Drive Link ya Direct Image URL:
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <input
                         type="text"
                         placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
@@ -1256,21 +1263,32 @@ export default function AdminPage() {
                         }
                         className="flex-1 px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
                       />
-                      {portfolio.personal.coverPhotoUrl && (
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, coverPhotoUrl: "" },
-                            }))
-                          }
-                          className="px-3 py-1.5 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 font-mono text-xs cursor-pointer"
-                          title="Clear input"
+                          onClick={handleSaveAll}
+                          disabled={isSaving}
+                          className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-bold border border-black shadow-[1.5px_1.5px_0_#000] cursor-pointer shrink-0 flex items-center justify-center gap-1.5 active:translate-y-0.5"
                         >
-                          Clear
+                          <Save className="w-3.5 h-3.5" />
+                          <span>{isSaving ? "Saving..." : "Apply & Save"}</span>
                         </button>
-                      )}
+                        {portfolio.personal.coverPhotoUrl && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, coverPhotoUrl: "" },
+                              }))
+                            }
+                            className="px-3 py-2 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 font-mono text-xs cursor-pointer"
+                            title="Clear input"
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -1351,13 +1369,25 @@ export default function AdminPage() {
                           (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
-                      <div className="absolute bottom-2 left-2 right-2 text-center">
-                        <span className="text-[9px] font-mono font-bold text-white uppercase bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 pointer-events-none" />
+                      <div className="absolute bottom-3 left-2 right-2 text-center flex flex-col items-center">
+                        <svg viewBox="0 0 54 34" className="w-5 h-3.5 mb-1" fill="none" stroke="#000" strokeWidth="2.5">
+                          <path d="M 6 28 L 48 28 L 46 11 L 35 19 L 27 6 L 19 19 L 8 11 Z" fill={coverAccentColor} />
+                        </svg>
+                        <span
+                          className="font-['Permanent_Marker',cursive] text-[12px] text-white tracking-wide leading-none select-none"
+                          style={{
+                            textShadow: `1px 1px 0 #000, -1px -1px 0 #000, 2px 2px 0 ${coverAccentColor}`,
+                          }}
+                        >
                           {portfolio.personal.name || "Preview"}
                         </span>
                       </div>
                     </div>
+                  </div>
+                  <div className="mt-2 flex items-center gap-1.5 font-mono text-[10px] text-stone-600 bg-stone-100 px-2.5 py-1 rounded-full border border-stone-200">
+                    <span className="w-2.5 h-2.5 rounded-full border border-black shadow-[1px_1px_0_#000]" style={{ backgroundColor: coverAccentColor }} />
+                    <span>Auto Accent: <strong className="font-bold">{coverAccentColor}</strong></span>
                   </div>
                 </div>
               </div>

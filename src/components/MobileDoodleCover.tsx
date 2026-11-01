@@ -1,98 +1,176 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Shield } from "lucide-react";
+import { Mail, ArrowUp } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { formatGoogleDriveImageUrl, isGoogleDriveUrl } from "@/lib/googleDrive";
+import { extractVibrantColor } from "@/lib/colorExtractor";
 
-/* ── Hand-Drawn Mural-Adaptive SVG Doodles (Sampled from the background graffiti wall) ── */
+/* ── Rich 4K Handcrafted Colorful Vector Doodles (Posca Marker & Comic Style) ── */
 
-function MuralCrownDoodle({ className = "" }: { className?: string }) {
+function ColorfulCrownDoodle({
+  className = "",
+  fill = "#facc15",
+}: {
+  className?: string;
+  fill?: string;
+}) {
   return (
     <svg
-      viewBox="0 0 40 24"
+      viewBox="0 0 54 34"
       className={className}
-      fill="#fbbf24"
+      fill="none"
       stroke="#000000"
-      strokeWidth="2.2"
-      strokeLinejoin="round"
+      strokeWidth="2.4"
       strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M 4 20 L 36 20 L 34 8 L 26 14 L 20 4 L 14 14 L 6 8 Z" />
-      <circle cx="20" cy="4" r="1.6" fill="#ffffff" stroke="#000" strokeWidth="1.2" />
-      <circle cx="6" cy="8" r="1.4" fill="#ffffff" stroke="#000" strokeWidth="1.2" />
-      <circle cx="34" cy="8" r="1.4" fill="#ffffff" stroke="#000" strokeWidth="1.2" />
+      {/* Crown Base & Peaks with dynamic adaptive fill */}
+      <path
+        d="M 6 28 L 48 28 L 46 11 L 35 19 L 27 6 L 19 19 L 8 11 Z"
+        fill={fill}
+      />
+      {/* Gem Jewels */}
+      <circle cx="27" cy="6" r="2.8" fill="#ec4899" stroke="#000000" strokeWidth="1.6" />
+      <circle cx="8" cy="11" r="2.4" fill="#06b6d4" stroke="#000000" strokeWidth="1.6" />
+      <circle cx="46" cy="11" r="2.4" fill="#3b82f6" stroke="#000000" strokeWidth="1.6" />
+      {/* Bottom Trim Line with Pattern */}
+      <line x1="10" y1="24" x2="44" y2="24" stroke="#000000" strokeWidth="1.8" strokeDasharray="3 2" />
+      <circle cx="20" cy="24" r="1.5" fill="#ffffff" stroke="none" />
+      <circle cx="27" cy="24" r="1.5" fill="#ffffff" stroke="none" />
+      <circle cx="34" cy="24" r="1.5" fill="#ffffff" stroke="none" />
     </svg>
   );
 }
 
-function MuralStarDoodle({ className = "" }: { className?: string }) {
+function CuteBlinkingStarDoodle({ className = "" }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 36 36"
+      viewBox="0 0 46 46"
+      className={className}
+      fill="none"
+      stroke="#000000"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {/* Star Shape */}
+      <path
+        d="M23 3 L28 15 L41 17 L31 27 L34 40 L23 33 L12 40 L15 27 L5 17 L18 15 Z"
+        fill="#fde047"
+      />
+      {/* Happy Cartoon Eyes */}
+      <circle cx="19" cy="22" r="1.8" fill="#000000" stroke="none" />
+      <circle cx="27" cy="22" r="1.8" fill="#000000" stroke="none" />
+      <circle cx="18.5" cy="21.2" r="0.6" fill="#ffffff" stroke="none" />
+      <circle cx="26.5" cy="21.2" r="0.6" fill="#ffffff" stroke="none" />
+      {/* Cheerful Smile */}
+      <path d="M20 26 Q23 29 26 26" stroke="#000000" strokeWidth="1.8" fill="none" />
+      {/* Cute Rosy Blushing Cheeks */}
+      <circle cx="15.5" cy="26" r="1.8" fill="#f43f5e" opacity="0.85" stroke="none" />
+      <circle cx="30.5" cy="26" r="1.8" fill="#f43f5e" opacity="0.85" stroke="none" />
+    </svg>
+  );
+}
+
+function NeonNeuralNetworkDoodle({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 70 55"
+      className={className}
+      fill="none"
+      stroke="#000000"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {/* Synapse Connecting Lines */}
+      <line x1="12" y1="12" x2="36" y2="28" stroke="#38bdf8" strokeWidth="2.5" />
+      <line x1="12" y1="42" x2="36" y2="28" stroke="#a855f7" strokeWidth="2.5" />
+      <line x1="36" y1="28" x2="60" y2="18" stroke="#34d399" strokeWidth="2.5" />
+      <line x1="36" y1="28" x2="58" y2="40" stroke="#f59e0b" strokeWidth="2.5" />
+      {/* Synapse Nodes */}
+      <circle cx="12" cy="12" r="6" fill="#38bdf8" stroke="#000000" strokeWidth="2" />
+      <circle cx="12" cy="42" r="6" fill="#c084fc" stroke="#000000" strokeWidth="2" />
+      <circle cx="36" cy="28" r="8" fill="#facc15" stroke="#000000" strokeWidth="2.2" />
+      <circle cx="60" cy="18" r="5.5" fill="#34d399" stroke="#000000" strokeWidth="2" />
+      <circle cx="58" cy="40" r="5.5" fill="#fb7185" stroke="#000000" strokeWidth="2" />
+      {/* Tiny Spark Dots */}
+      <circle cx="36" cy="28" r="2.5" fill="#ffffff" stroke="none" />
+    </svg>
+  );
+}
+
+function ColorfulRocketDoodle({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 46 54"
+      className={className}
+      fill="none"
+      stroke="#000000"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {/* Launch Fire & Smoke */}
+      <path d="M18 38 Q23 52 23 52 Q23 52 28 38 Z" fill="#f97316" stroke="#ea580c" />
+      <path d="M20 38 Q23 46 23 46 Q23 46 26 38 Z" fill="#fde047" stroke="none" />
+      {/* Smoke Clouds */}
+      <circle cx="12" cy="45" r="4.5" fill="#e0e7ff" stroke="#000" strokeWidth="1.8" />
+      <circle cx="34" cy="45" r="4.5" fill="#e0e7ff" stroke="#000" strokeWidth="1.8" />
+      {/* Rocket Fins */}
+      <path d="M14 26 L5 34 L14 36 Z" fill="#8b5cf6" />
+      <path d="M32 26 L41 34 L32 36 Z" fill="#8b5cf6" />
+      {/* Rocket Body */}
+      <path
+        d="M23 4 C14 14 14 30 15 36 L31 36 C32 30 32 14 23 4 Z"
+        fill="#ffffff"
+      />
+      {/* Cyan Porthole Window */}
+      <circle cx="23" cy="19" r="4.5" fill="#38bdf8" stroke="#000000" strokeWidth="2" />
+      <circle cx="24.5" cy="17.5" r="1.4" fill="#ffffff" stroke="none" />
+    </svg>
+  );
+}
+
+function NeonLightningDoodle({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 28 42"
       className={className}
       fill="#fde047"
       stroke="#000000"
-      strokeWidth="2.2"
+      strokeWidth="2.4"
+      strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M18 2 L22 12 L33 13 L25 21 L28 32 L18 26 L8 32 L11 21 L3 13 L14 12 Z" />
-      {/* Cute cartoon eyes */}
-      <circle cx="15" cy="18" r="1.4" fill="#000000" />
-      <circle cx="21" cy="18" r="1.4" fill="#000000" />
-      {/* Little blushing cheeks */}
-      <circle cx="12" cy="21" r="1.2" fill="#f43f5e" opacity="0.8" />
-      <circle cx="24" cy="21" r="1.2" fill="#f43f5e" opacity="0.8" />
+      <path d="M17 2 L4 21 L14 21 L10 40 L24 17 L14 17 Z" />
     </svg>
   );
 }
 
-function MuralSparkleDoodle({ className = "" }: { className?: string }) {
+function SparkleStarDoodle({ className = "", color = "#38bdf8" }: { className?: string; color?: string }) {
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 26 26"
       className={className}
-      fill="#facc15"
+      fill={color}
       stroke="#000000"
       strokeWidth="2"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M12 0 Q12 12 0 12 Q12 12 12 24 Q12 12 24 12 Q12 12 12 0 Z" />
-    </svg>
-  );
-}
-
-function MuralIdeaDoodle({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 32 38"
-      className={className}
-      fill="#a7f3d0"
-      stroke="#000000"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {/* Glow rays */}
-      <path d="M16 2 L16 5" stroke="#f59e0b" strokeWidth="2.5" />
-      <path d="M6 7 L9 10" stroke="#f59e0b" strokeWidth="2.5" />
-      <path d="M26 7 L23 10" stroke="#f59e0b" strokeWidth="2.5" />
-      {/* Bulb body */}
-      <path d="M10 24 C6 20 4 15 6 10 C8 5 12 3 16 3 C20 3 24 5 26 10 C28 15 26 20 22 24 L22 29 L10 29 Z" />
-      <path d="M12 33 L20 33" strokeWidth="2.5" />
-      {/* Cute face inside bulb */}
-      <circle cx="13" cy="14" r="1.2" fill="#000000" />
-      <circle cx="19" cy="14" r="1.2" fill="#000000" />
-      <path d="M14 18 Q16 20 18 18" stroke="#000000" strokeWidth="1.5" fill="none" />
+      <path d="M13 0 Q13 13 0 13 Q13 13 13 26 Q13 13 26 13 Q13 13 13 0 Z" />
     </svg>
   );
 }
@@ -103,6 +181,7 @@ export function MobileDoodleCover() {
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [touchDeltaY, setTouchDeltaY] = useState(0);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [accentColor, setAccentColor] = useState<string>("#facc15");
 
   const navigateTo = (path: string = "/about") => {
     if (isLeaving) return;
@@ -122,7 +201,7 @@ export function MobileDoodleCover() {
     const currentY = e.touches[0].clientY;
     const diff = touchStartY - currentY;
     if (diff > 0) {
-      setTouchDeltaY(Math.min(diff, 100));
+      setTouchDeltaY(Math.min(diff, 120));
     }
   };
 
@@ -145,14 +224,31 @@ export function MobileDoodleCover() {
     }
   };
 
+  const photoSrc =
+    formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl) ||
+    "/harsh-cover.jpg";
+
+  // Automatically extract dominant vibrant accent color from the photo
+  useEffect(() => {
+    let isMounted = true;
+    extractVibrantColor(photoSrc, "#facc15").then((color) => {
+      if (isMounted) {
+        setAccentColor(color);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [photoSrc]);
+
   return (
     <section
-      className="fixed inset-0 w-full h-[100dvh] overflow-hidden select-none bg-black text-white z-40 flex flex-col justify-between"
+      className="fixed inset-0 w-full h-[100dvh] overflow-hidden select-none bg-[#090a0f] text-white z-40 flex flex-col justify-between"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onWheel={handleWheel}
-      aria-label="Harsh Aryan Mobile Portfolio Cover"
+      aria-label="Harsh Aryan 4K Colorful Doodle Cover"
       style={{
         transform: isLeaving
           ? "translateY(-100%)"
@@ -165,241 +261,248 @@ export function MobileDoodleCover() {
           : "none",
       }}
     >
-      {/* ── Fullscreen Animated Photo (Ken Burns Ambient Drift) ── */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+      {/* ── 1. PURE ORIGINAL FULLSCREEN HERO PORTRAIT (As Uploaded, 100% Natural) ── */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
         <motion.div
           className="relative w-full h-full"
           initial={{ scale: 1 }}
           animate={{
-            scale: [1, 1.08, 1.03, 1],
-            y: [0, -12, -4, 0],
+            scale: [1, 1.04, 1.01, 1],
+            y: [0, -6, -2, 0],
           }}
           transition={{
-            duration: 18,
+            duration: 22,
             repeat: Infinity,
             repeatType: "reverse",
             ease: "easeInOut",
           }}
         >
+          {/* Pure High-Definition Photo As Uploaded (Zero Filters, Zero Artificial Overlays) */}
           <Image
-            src={formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl) || "/harsh-cover.jpg"}
+            src={photoSrc}
             alt={portfolio?.personal?.name || "Harsh Aryan"}
             fill
             priority
-            unoptimized={isGoogleDriveUrl(portfolio?.personal?.coverPhotoUrl) || (portfolio?.personal?.coverPhotoUrl?.startsWith("data:") ?? false)}
+            unoptimized={
+              isGoogleDriveUrl(portfolio?.personal?.coverPhotoUrl) ||
+              (portfolio?.personal?.coverPhotoUrl?.startsWith("data:") ?? false)
+            }
             sizes="100vw"
             className="object-cover object-[center_16%]"
           />
         </motion.div>
 
-        {/* Ambient Floating 3D Atmosphere Orbs (Mural gold & sage green) */}
-        <motion.div
-          className="absolute top-1/4 -right-16 w-64 h-64 rounded-full bg-amber-500/25 blur-3xl pointer-events-none"
-          animate={{
-            scale: [1, 1.25, 1],
-            opacity: [0.2, 0.35, 0.2],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/3 -left-20 w-72 h-72 rounded-full bg-emerald-600/20 blur-3xl pointer-events-none"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.2, 0.38, 0.2],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-
-        {/* Cinematic Multi-Stop Overlays */}
-        <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-[76%] bg-gradient-to-t from-black via-black/90 via-55% to-transparent pointer-events-none" />
-        <div className="absolute inset-0 ring-1 ring-inset ring-white/10 pointer-events-none" />
+        {/* ── Clean Soft Bottom Fade (Ensures text legibility while keeping photo 100% clear) ── */}
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-[62%] bg-gradient-to-t from-black via-black/85 via-48% to-transparent pointer-events-none" />
       </div>
 
-      {/* ── TOP BAR: Small Discreet Admin Link (Requested by user) ── */}
-      <div className="relative z-30 w-full flex items-center justify-end px-5 pt-5">
+      {/* ── 2. TOP BAR: Admin Lock ── */}
+      <header className="relative z-30 w-full px-5 pt-4 flex items-center justify-end">
+        {/* Admin Link */}
         <Link
           href="/admin"
-          className="group inline-flex items-center gap-1.5 font-mono text-[10px] font-bold tracking-widest uppercase text-white/50 hover:text-white bg-black/40 hover:bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 hover:border-amber-400/50 transition-all shadow-sm active:scale-95"
+          className="inline-flex items-center gap-1 font-mono text-[9px] font-bold tracking-widest uppercase text-white/70 hover:text-white bg-black/60 hover:bg-black backdrop-blur-md px-3 py-1 rounded-full border-2 border-white/20 hover:border-amber-400 transition-all active:scale-95 shadow-[2px_2px_0_#000]"
           title="Admin CMS Console"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-          <span>admin</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+          <span>ADMIN</span>
         </Link>
+      </header>
+
+      {/* ── 3. FLOATING 4K COLORFUL VECTOR DOODLES OVER PORTRAIT ── */}
+      <div className="relative z-20 flex-1 w-full pointer-events-none overflow-visible">
+        {/* Colorful Neural Network Graph (Left Side floating) */}
+        <motion.div
+          animate={{
+            y: [0, -6, 0],
+            rotate: [-4, 2, -4],
+          }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-12 -left-2 sm:left-4"
+        >
+          <NeonNeuralNetworkDoodle className="w-18 h-14 sm:w-22 sm:h-16 filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" />
+        </motion.div>
+
+        {/* Cute Blinking Star Doodle with Pink Cheeks (Right Side) */}
+        <motion.div
+          animate={{
+            rotate: [10, 18, 10],
+            y: [0, -5, 0],
+          }}
+          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-10 right-3 sm:right-6"
+        >
+          <CuteBlinkingStarDoodle className="w-11 h-11 sm:w-13 sm:h-13 filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" />
+        </motion.div>
+
+        {/* Electric Lightning Bolt Doodle (Floating near arm) */}
+        <motion.div
+          animate={{
+            scale: [0.9, 1.15, 0.9],
+            rotate: [-12, -4, -12],
+          }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-44 -left-1"
+        >
+          <NeonLightningDoodle className="w-7 h-10 filter drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)]" />
+        </motion.div>
+
+        {/* Colorful Mini Rocket Blasting Off (Floating near right side) */}
+        <motion.div
+          animate={{
+            y: [0, -8, 0],
+            x: [0, 3, 0],
+          }}
+          transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-48 right-2 sm:right-5"
+        >
+          <ColorfulRocketDoodle className="w-11 h-13 filter drop-shadow-[0_5px_14px_rgba(0,0,0,0.85)]" />
+        </motion.div>
+
+        {/* Cyan & Magenta Sparkle Stars */}
+        <motion.div
+          animate={{ scale: [0.8, 1.25, 0.8], rotate: [0, 90, 0] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-28 right-16"
+        >
+          <SparkleStarDoodle className="w-5 h-5 filter drop-shadow" color="#38bdf8" />
+        </motion.div>
+        <motion.div
+          animate={{ scale: [1, 0.75, 1], rotate: [0, -90, 0] }}
+          transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-36 left-12"
+        >
+          <SparkleStarDoodle className="w-4 h-4 filter drop-shadow" color="#f472b6" />
+        </motion.div>
       </div>
 
-      {/* ── Bottom Section: Redesigned Cool Editorial Hero Typography & Mural Doodles ── */}
-      <footer className="relative z-20 w-full flex flex-col items-center text-center px-6 pb-7 pt-2">
-        {/* Title Container with Adaptive Mural Doodles */}
-        <div className="relative inline-block mb-1">
-          {/* Doodle Crown resting on the name with playful tilt */}
+      {/* ── 4. COLORFUL SKETCH HERO & TYPOGRAPHY (Neo-Brutalist Posca Art) ── */}
+      <footer className="relative z-30 w-full px-5 pb-5 pt-1 flex flex-col items-center text-center">
+        {/* Name Container with 4K Colorful Crown */}
+        <div className="relative inline-block mb-2">
+          {/* Posca Gold Crown with Ruby & Sapphire Gems (Dynamically adapts to photo accent color) */}
           <motion.div
-            initial={{ scale: 0, rotate: -15 }}
-            animate={{ scale: 1, rotate: [-10, -6, -10] }}
+            initial={{ scale: 0, rotate: -16 }}
+            animate={{ scale: 1, rotate: [-14, -8, -14], y: [0, -2, 0] }}
             transition={{
-              scale: { duration: 0.5, delay: 0.2 },
+              scale: { duration: 0.5, delay: 0.15 },
               rotate: { duration: 3.5, repeat: Infinity, ease: "easeInOut" },
+              y: { duration: 2.5, repeat: Infinity, ease: "easeInOut" },
             }}
-            className="absolute -top-6 -left-3 pointer-events-none z-10"
+            className="absolute -top-8 -left-4 pointer-events-none z-10"
           >
-            <MuralCrownDoodle className="w-8 h-6 filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]" />
+            <ColorfulCrownDoodle
+              fill={accentColor}
+              className="w-13 h-8 sm:w-14 sm:h-9 filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] transition-colors duration-500"
+            />
           </motion.div>
 
-          {/* Bobbing Cute Star Doodle on the top right */}
-          <motion.div
-            initial={{ scale: 0, rotate: 12 }}
-            animate={{
-              scale: 1,
-              rotate: [12, 18, 12],
-              y: [0, -3, 0],
-            }}
-            transition={{
-              scale: { duration: 0.5, delay: 0.28 },
-              rotate: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-              y: { duration: 2.8, repeat: Infinity, ease: "easeInOut" },
-            }}
-            className="absolute -top-5 -right-5 pointer-events-none z-10"
-          >
-            <MuralStarDoodle className="w-7 h-7 filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" />
-          </motion.div>
-
-          {/* Sparkle Glint Doodle */}
-          <motion.div
-            animate={{
-              scale: [0.85, 1.15, 0.85],
-              rotate: [0, 45, 0],
-            }}
-            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -bottom-2 -left-6 pointer-events-none"
-          >
-            <MuralSparkleDoodle className="w-4 h-4 filter drop-shadow" />
-          </motion.div>
-
-          {/* Idea Spark Doodle on Right Side */}
-          <motion.div
-            animate={{
-              y: [0, -4, 0],
-              rotate: [-5, 5, -5],
-            }}
-            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -bottom-3 -right-7 pointer-events-none"
-          >
-            <MuralIdeaDoodle className="w-6 h-7 filter drop-shadow" />
-          </motion.div>
-
-          {/* Bold Display Name — Space Grotesk Black */}
+          {/* Monumental Name in Cool Doodle Permanent Marker with 3D Pop-Art Shadow matching Photo */}
           <motion.h1
-            initial={{ opacity: 0, y: 22 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.15, ease: "easeOut" }}
-            className="font-['Space_Grotesk'] text-[2.75rem] sm:text-5xl font-black tracking-[-0.035em] uppercase text-white drop-shadow-[0_6px_30px_rgba(0,0,0,0.95)] px-2"
+            transition={{ duration: 0.65, delay: 0.1, ease: "easeOut" }}
+            className="font-['Permanent_Marker',cursive] text-[2.85rem] sm:text-6xl text-white tracking-wide px-2 leading-none select-none"
+            style={{
+              textShadow: `3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 5px 6px 0 #000, 7px 8px 0 ${accentColor}`,
+              transition: "text-shadow 0.4s ease",
+            }}
           >
-            {portfolio.personal.name || "HARSH ARYAN"}
+            {portfolio?.personal?.name || "HARSH ARYAN"}
           </motion.h1>
         </div>
 
-        {/* Teaching Assistant Badge — Sleek Glass Capsule directly below the name */}
+        {/* ── 2 COLORFUL HIGHLIGHTER SKETCH PILLS (Posca Marker Style) ── */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.22, ease: "easeOut" }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/60 backdrop-blur-2xl border border-amber-400/60 text-amber-300 font-['Space_Grotesk'] text-[11px] sm:text-xs font-bold tracking-wider uppercase mt-1.5 mb-2 shadow-[0_0_24px_rgba(245,158,11,0.3)]"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex flex-wrap items-center justify-center gap-2 mb-2.5 max-w-[340px]"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-          <span>Teaching Assistant • IIT Madras</span>
-        </motion.div>
+          {/* Yellow Highlighter Pill */}
+          <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#fef08a] text-black font-['Space_Grotesk'] text-[11px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
+            <span>TA IIT Madras</span>
+          </span>
 
-        {/* Specialty Subtitle — Clean, Unclipped Space Grotesk Tag */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.28, ease: "easeOut" }}
-          className="relative inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-xl mb-2.5 max-w-[340px]"
-        >
-          <span className="font-['Space_Grotesk'] text-[11.5px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-stone-200 drop-shadow">
-            AI &amp; Data Science Specialist
+          {/* Electric Cyan Highlighter Pill */}
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#a5f3fc] text-black font-['Space_Grotesk'] text-[11px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
+            <span>✦</span>
+            <span>AI &amp; Data Science</span>
           </span>
         </motion.div>
 
-        {/* Editorial Subtitle Tagline */}
+        {/* Punchy Narrative Tagline */}
         <motion.p
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.34, ease: "easeOut" }}
-          className="text-stone-300/85 text-[12px] sm:text-[13px] max-w-[310px] leading-relaxed drop-shadow font-sans mb-4 font-normal"
+          transition={{ duration: 0.6, delay: 0.26 }}
+          className="text-stone-300 text-xs sm:text-sm font-['Space_Grotesk'] font-medium uppercase tracking-[0.12em] drop-shadow mb-4 max-w-[320px]"
         >
-          Teaching machines to learn. Building intelligent neural models &amp; software.
+          Teaching Machines To Learn • Building Scientific Software
         </motion.p>
 
-        {/* Social Icons Dock — Email, LinkedIn, GitHub (Clean Minimal Glass Circles) */}
+        {/* ── COLORFUL NEO-BRUTALIST SOCIAL DOCK ── */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ duration: 0.5, delay: 0.32 }}
           className="flex items-center justify-center gap-3.5 mb-4"
         >
-          {/* GitHub Icon Button */}
+          {/* GitHub (Electric White with Cyan Shadow) */}
           <a
-            href={portfolio.socialLinks.github || "https://github.com/harsharyann"}
+            href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub Profile"
             title="GitHub"
-            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-black text-black hover:text-white border-2 border-black shadow-[2.5px_2.5px_0_#38bdf8] transition-all duration-200 active:scale-90"
           >
-            <GithubIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+            <GithubIcon className="w-4 h-4" />
           </a>
 
-          {/* LinkedIn Icon Button */}
+          {/* LinkedIn (Blue with Yellow Shadow) */}
           <a
-            href={portfolio.socialLinks.linkedin || "https://linkedin.com"}
+            href={portfolio?.socialLinks?.linkedin || "https://linkedin.com"}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn Profile"
             title="LinkedIn"
-            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-[#0077b5] text-white border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_20px_rgba(0,119,181,0.5)]"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0077b5] text-white border-2 border-black shadow-[2.5px_2.5px_0_#fde047] transition-all duration-200 active:scale-90"
           >
-            <LinkedinIcon className="w-4 h-4 transition-transform group-hover:scale-110" />
+            <LinkedinIcon className="w-4 h-4" />
           </a>
 
-          {/* Email Icon Button */}
+          {/* Email (Amber with Purple Shadow) */}
           <a
-            href={`mailto:${portfolio.personal.email || "harsharyan@outlook.com"}`}
+            href={`mailto:${portfolio?.personal?.email || "harsharyan@outlook.com"}`}
             aria-label="Send Email"
             title="Email Harsh"
-            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-amber-400 text-white hover:text-black border border-white/25 backdrop-blur-xl transition-all duration-200 active:scale-90 shadow-md hover:shadow-[0_0_20px_rgba(251,191,36,0.5)]"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-[#fbbf24] text-black border-2 border-black shadow-[2.5px_2.5px_0_#c084fc] transition-all duration-200 active:scale-90"
           >
-            <Mail className="w-4 h-4 transition-transform group-hover:scale-110" />
+            <Mail className="w-4 h-4" />
           </a>
         </motion.div>
 
-        {/* Sleek Animated Swipe Up Indicator Capsule */}
-        <motion.div
+        {/* ── COLORFUL NEO-BRUTAL SWIPE UP BUTTON (Dynamically accented with photo color) ── */}
+        <motion.button
+          type="button"
           onClick={() => navigateTo("/about")}
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center cursor-pointer pt-1 group"
-          role="button"
-          tabIndex={0}
+          animate={{ y: [0, -4, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            backgroundColor: accentColor,
+            boxShadow: "4px 4px 0 #000",
+            transition: "background-color 0.4s ease, transform 0.15s ease",
+          }}
+          className="group flex items-center gap-2 px-6 py-2.5 rounded-full text-black border-2 border-black active:translate-y-0.5 active:shadow-[1px_1px_0_#000] cursor-pointer"
           aria-label="Swipe up to explore portfolio"
         >
-          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-xl transition-all shadow-[0_2px_12px_rgba(0,0,0,0.4)]">
-            <span className="font-['Space_Grotesk'] text-[10.5px] font-bold uppercase tracking-[0.22em] text-white/90">
-              Swipe up to explore
-            </span>
-            <span className="text-amber-400 text-xs group-hover:-translate-y-0.5 transition-transform">
-              ↑
-            </span>
-          </div>
-        </motion.div>
+          <span className="font-['Space_Grotesk'] text-[11.5px] font-black uppercase tracking-[0.2em]">
+            Swipe Up To Explore
+          </span>
+          <ArrowUp className="w-4 h-4 text-black group-hover:-translate-y-0.5 transition-transform" />
+        </motion.button>
       </footer>
     </section>
   );
