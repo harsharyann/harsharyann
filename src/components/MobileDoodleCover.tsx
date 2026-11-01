@@ -303,15 +303,22 @@ export function MobileDoodleCover() {
         <div className="absolute bottom-0 left-0 right-0 h-[62%] bg-gradient-to-t from-black via-black/85 via-48% to-transparent pointer-events-none" />
       </div>
 
-      {/* ── 2. TOP BAR: Admin Lock ── */}
+      {/* ── 2. TOP BAR: Admin Lock (Dynamically adapts border & dot to photo accent color) ── */}
       <header className="relative z-30 w-full px-5 pt-4 flex items-center justify-end">
         {/* Admin Link */}
         <Link
           href="/admin"
-          className="inline-flex items-center gap-1 font-mono text-[9px] font-bold tracking-widest uppercase text-white/70 hover:text-white bg-black/60 hover:bg-black backdrop-blur-md px-3 py-1 rounded-full border-2 border-white/20 hover:border-amber-400 transition-all active:scale-95 shadow-[2px_2px_0_#000]"
+          className="inline-flex items-center gap-1.5 font-mono text-[9px] font-bold tracking-widest uppercase text-white bg-black/75 hover:bg-black backdrop-blur-md px-3 py-1 rounded-full border-2 transition-all active:scale-95 shadow-[2px_2px_0_#000]"
+          style={{
+            borderColor: accentColor,
+            transition: "border-color 0.4s ease, box-shadow 0.4s ease",
+          }}
           title="Admin CMS Console"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+          <span
+            className="w-1.5 h-1.5 rounded-full transition-colors duration-400"
+            style={{ backgroundColor: accentColor }}
+          />
           <span>ADMIN</span>
         </Link>
       </header>
