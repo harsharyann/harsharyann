@@ -10,7 +10,6 @@ import { CertificatesSection } from "@/components/sections/CertificatesSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MagazineChapterSpine } from "@/components/MagazineChapterSpine";
-import { ChapterTransitionBridge } from "@/components/ChapterTransitionBridge";
 
 export default function Home() {
   // Support direct anchor jumps on initial page load (e.g., /#about, /#projects)
@@ -55,19 +54,6 @@ export default function Home() {
         <AboutSection id="about-content" />
       </Scroll3DSection>
 
-      {/* ── TRANSITION 02 ➔ 03: ABOUT TO PROJECTS ── */}
-      <ChapterTransitionBridge
-        fromChapter="02"
-        fromName="The Architect & Mind"
-        toChapter="03"
-        toName="Project Lab & Code"
-        targetId="projects"
-        accentFrom="#f59e0b"
-        accentTo="#6366f1"
-        icon="🧪"
-        tagline="From core mathematics & algorithmic intuition into full-stack machine learning builds."
-      />
-
       {/* ── 03. CHAPTER 03: PROJECTS & BUILDS (3D Scroll Perspective) ── */}
       <Scroll3DSection
         id="projects"
@@ -77,19 +63,6 @@ export default function Home() {
       >
         <ProjectsSection id="projects-content" />
       </Scroll3DSection>
-
-      {/* ── TRANSITION 03 ➔ 04: PROJECTS TO CERTIFICATES ── */}
-      <ChapterTransitionBridge
-        fromChapter="03"
-        fromName="Project Lab & Code"
-        toChapter="04"
-        toName="Credential Archive"
-        targetId="certificates"
-        accentFrom="#6366f1"
-        accentTo="#10b981"
-        icon="🏆"
-        tagline="From code experiments to verified institutional credentials, hackathons & laurels."
-      />
 
       {/* ── 04. CHAPTER 04: CERTIFICATES & LAURELS (3D Scroll Perspective) ── */}
       <Scroll3DSection
@@ -101,20 +74,15 @@ export default function Home() {
         <CertificatesSection id="certificates-content" />
       </Scroll3DSection>
 
-      {/* ── TRANSITION 04 ➔ 05: CERTIFICATES TO CONTACT ── */}
-      <ChapterTransitionBridge
-        fromChapter="04"
-        fromName="Credential Archive"
-        toChapter="05"
-        toName="Direct Comms & Dispatch"
-        targetId="contact"
-        accentFrom="#10b981"
-        accentTo="#f43f5e"
-        icon="📬"
-        tagline="Got a question, opportunity, or collaboration in mind? Let's connect directly."
-      />
-
       {/* ── 05. CHAPTER 05: CONTACT & DISPATCH (3D Scroll Perspective) ── */}
+      <Scroll3DSection
+        id="contact"
+        chapterNumber="05"
+        chapterName="Direct Comms & Dispatch"
+        accentColor="#f43f5e"
+      >
+        <ContactSection id="contact-content" />
+      </Scroll3DSection>
       <Scroll3DSection
         id="contact"
         chapterNumber="05"
