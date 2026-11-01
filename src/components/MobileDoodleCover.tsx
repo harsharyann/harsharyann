@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, ChevronDown, Sparkles } from "lucide-react";
+import { Mail, Sparkles } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { formatGoogleDriveImageUrl, isGoogleDriveUrl } from "@/lib/googleDrive";
@@ -181,6 +181,25 @@ export function MobileDoodleCover() {
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [accentColor, setAccentColor] = useState<string>("#facc15");
 
+  // Tap Ripple Animation State
+  interface RippleEffect {
+    id: number;
+    x: number;
+    y: number;
+  }
+  const [ripples, setRipples] = useState<RippleEffect[]>([]);
+
+  const triggerRipple = (clientX: number, clientY: number, currentTarget: HTMLElement) => {
+    const rect = currentTarget.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const id = Date.now();
+    setRipples((prev) => [...prev.slice(-2), { id, x, y }]);
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((r) => r.id !== id));
+    }, 850);
+  };
+
   const scrollDown = () => {
     const el = document.getElementById("about");
     if (el) {
@@ -188,16 +207,25 @@ export function MobileDoodleCover() {
     }
   };
 
+  const handleCoverClick = (e: React.MouseEvent<HTMLElement>) => {
+    triggerRipple(e.clientX, e.clientY, e.currentTarget);
+    scrollDown();
+  };
+
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartY(e.touches[0].clientY);
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const handleTouchEnd = (e: React.TouchEvent<HTMLElement>) => {
     if (touchStartY === null) return;
     const touchEndY = e.changedTouches[0].clientY;
     const diff = touchStartY - touchEndY;
     // Swipe up detected (finger moved up by > 40px)
     if (diff > 40) {
+      scrollDown();
+    } else if (Math.abs(diff) < 15) {
+      // Tap anywhere detected!
+      triggerRipple(e.changedTouches[0].clientX, e.changedTouches[0].clientY, e.currentTarget);
       scrollDown();
     }
     setTouchStartY(null);
@@ -234,9 +262,30 @@ export function MobileDoodleCover() {
 
   return (
     <section
-      className="relative w-full min-h-[100dvh] select-none bg-[#090a0f] text-white flex flex-col justify-between"
-      aria-label="Harsh Aryan 4K Colorful Doodle Cover"
+      onClick={handleCoverClick}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onWheel={handleWheel}
+      className="relative w-full min-h-[100dvh] select-none bg-[#090a0f] text-white flex flex-col justify-between cursor-pointer overflow-hidden"
+      aria-label="Harsh Aryan 4K Colorful Doodle Cover - Tap Anywhere to Explore"
     >
+      {/* ── EXPANDING NEON TAP RIPPLE EFFECT ── */}
+      {ripples.map((r) => (
+        <motion.span
+          key={r.id}
+          initial={{ scale: 0.1, opacity: 0.9 }}
+          animate={{ scale: 4.5, opacity: 0 }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="pointer-events-none absolute rounded-full border-2 border-white/80 z-40"
+          style={{
+            left: r.x - 35,
+            top: r.y - 35,
+            width: 70,
+            height: 70,
+            boxShadow: `0 0 35px ${accentColor}, inset 0 0 20px ${accentColor}`,
+          }}
+        />
+      ))}
       {/* ── 1. PURE ORIGINAL FULLSCREEN HERO PORTRAIT (Hardware Accelerated) ── */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden" style={{ contain: "strict" }}>
         <motion.div
@@ -276,7 +325,12 @@ export function MobileDoodleCover() {
       </div>
 
       {/* ── FIXED FROSTED GLASS SOCIAL DOCK (Right Side Background) ── */}
-      <div className="absolute right-3.5 top-[36%] -translate-y-1/2 z-30 flex flex-col gap-2.5 backdrop-blur-2xl bg-black/45 p-1.5 rounded-full border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
+        className="absolute right-3.5 top-[36%] -translate-y-1/2 z-30 flex flex-col gap-2.5 backdrop-blur-2xl bg-black/45 p-1.5 rounded-full border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.6)] cursor-default"
+      >
         <a
           href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
           target="_blank"
@@ -440,38 +494,11 @@ export function MobileDoodleCover() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.26 }}
-            className="text-stone-300 text-xs sm:text-sm font-drawing-kids font-medium tracking-[0.12em] drop-shadow mb-5 max-w-[320px]"
+            className="text-stone-300 text-xs sm:text-sm font-drawing-kids font-medium tracking-[0.12em] drop-shadow mb-8 max-w-[320px]"
           >
             {portfolio?.personal?.mobileTagline ?? "Teaching Machines To Learn • Building Scientific Software"}
           </motion.p>
         )}
-
-        {/* ── LIQUID GLASS BUBBLE EXPLORE BUTTON ── */}
-        <motion.button
-          type="button"
-          onClick={scrollDown}
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-          className="group relative flex items-center gap-2.5 px-6 py-2.5 rounded-full text-white backdrop-blur-2xl bg-white/20 hover:bg-white/30 border border-white/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.37),inset_0_1.5px_1.5px_0_rgba(255,255,255,0.7)] active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden"
-          aria-label="Scroll down to explore portfolio"
-        >
-          {/* Subtle liquid sheen reflection inside bubble */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-
-          {/* Glowing pulse dot */}
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-300" />
-          </span>
-
-          <span className="font-['Space_Grotesk'] text-[11px] font-black uppercase tracking-[0.22em] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-            Explore Portfolio
-          </span>
-
-          <div className="flex items-center justify-center w-5 h-5 rounded-full bg-white/25 border border-white/40 text-white shadow-xs group-hover:translate-y-0.5 transition-transform">
-            <ChevronDown className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-          </div>
-        </motion.button>
       </footer>
     </section>
   );
