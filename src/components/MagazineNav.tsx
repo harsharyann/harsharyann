@@ -55,22 +55,27 @@ export function MagazineNav() {
     };
   }, [isOpen]);
 
-  // Scroll Spy for Single Page Architecture
+  // Scroll Spy for Single Page Architecture (Viewport Intersection)
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
-      const currentPos = window.scrollY + 280;
+      const y = window.scrollY;
+      setScrollY(y);
 
-      const sectionIds = ["contact", "certificates", "projects", "about", "cover"];
+      if (y < 120) {
+        setActiveSection("cover");
+        return;
+      }
+
+      const sectionIds = ["contact", "certificates", "projects", "about"];
       for (const id of sectionIds) {
         const el = document.getElementById(id);
-        if (el && el.offsetTop <= currentPos) {
-          setActiveSection(id);
-          break;
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= window.innerHeight * 0.45 && rect.bottom >= window.innerHeight * 0.15) {
+            setActiveSection(id);
+            return;
+          }
         }
-      }
-      if (window.scrollY < 120) {
-        setActiveSection("cover");
       }
     };
 

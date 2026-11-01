@@ -234,10 +234,7 @@ export function MobileDoodleCover() {
 
   return (
     <section
-      className="relative w-full h-[100dvh] overflow-hidden select-none bg-[#090a0f] text-white flex flex-col justify-between"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onWheel={handleWheel}
+      className="relative w-full min-h-[100dvh] select-none bg-[#090a0f] text-white flex flex-col justify-between"
       aria-label="Harsh Aryan 4K Colorful Doodle Cover"
     >
       {/* ── 1. PURE ORIGINAL FULLSCREEN HERO PORTRAIT (As Uploaded, 100% Natural) ── */}
