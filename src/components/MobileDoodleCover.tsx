@@ -1,53 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Sparkles } from "lucide-react";
+import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
-import { formatGoogleDriveImageUrl, isGoogleDriveUrl } from "@/lib/googleDrive";
+import { formatGoogleDriveImageUrl } from "@/lib/googleDrive";
 import { extractVibrantColor } from "@/lib/colorExtractor";
 
 /* ── Rich 4K Handcrafted Colorful Vector Doodles (Posca Marker & Comic Style) ── */
-
-function ColorfulCrownDoodle({
-  className = "",
-  fill = "#facc15",
-}: {
-  className?: string;
-  fill?: string;
-}) {
-  return (
-    <svg
-      viewBox="0 0 54 34"
-      className={className}
-      fill="none"
-      stroke="#000000"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {/* Crown Base & Peaks with dynamic adaptive fill */}
-      <path
-        d="M 6 28 L 48 28 L 46 11 L 35 19 L 27 6 L 19 19 L 8 11 Z"
-        fill={fill}
-      />
-      {/* Gem Jewels */}
-      <circle cx="27" cy="6" r="2.8" fill="#ec4899" stroke="#000000" strokeWidth="1.6" />
-      <circle cx="8" cy="11" r="2.4" fill="#06b6d4" stroke="#000000" strokeWidth="1.6" />
-      <circle cx="46" cy="11" r="2.4" fill="#3b82f6" stroke="#000000" strokeWidth="1.6" />
-      {/* Bottom Trim Line with Pattern */}
-      <line x1="10" y1="24" x2="44" y2="24" stroke="#000000" strokeWidth="1.8" strokeDasharray="3 2" />
-      <circle cx="20" cy="24" r="1.5" fill="#ffffff" stroke="none" />
-      <circle cx="27" cy="24" r="1.5" fill="#ffffff" stroke="none" />
-      <circle cx="34" cy="24" r="1.5" fill="#ffffff" stroke="none" />
-    </svg>
-  );
-}
 
 function CuteBlinkingStarDoodle({ className = "" }: { className?: string }) {
   return (
@@ -176,10 +138,12 @@ function SparkleStarDoodle({ className = "", color = "#38bdf8" }: { className?: 
 }
 
 export function MobileDoodleCover() {
-  const router = useRouter();
   const { data: portfolio } = usePortfolio();
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [hasMoved, setHasMoved] = useState<boolean>(false);
   const [accentColor, setAccentColor] = useState<string>("#facc15");
+  const ignoreNextClickRef = useRef(false);
 
   // Tap Ripple Animation State
   interface RippleEffect {
@@ -208,33 +172,49 @@ export function MobileDoodleCover() {
   };
 
   const handleCoverClick = (e: React.MouseEvent<HTMLElement>) => {
+    if (ignoreNextClickRef.current) {
+      ignoreNextClickRef.current = false;
+      return;
+    }
     triggerRipple(e.clientX, e.clientY, e.currentTarget);
     scrollDown();
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
     setTouchStartY(e.touches[0].clientY);
+    setHasMoved(false);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX === null || touchStartY === null) return;
+    const diffX = Math.abs(e.touches[0].clientX - touchStartX);
+    const diffY = Math.abs(e.touches[0].clientY - touchStartY);
+    if (diffX > 10 || diffY > 10) {
+      setHasMoved(true);
+    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent<HTMLElement>) => {
-    if (touchStartY === null) return;
-    const touchEndY = e.changedTouches[0].clientY;
-    const diff = touchStartY - touchEndY;
-    // Swipe up detected (finger moved up by > 40px)
-    if (diff > 40) {
-      scrollDown();
-    } else if (Math.abs(diff) < 15) {
-      // Tap anywhere detected!
-      triggerRipple(e.changedTouches[0].clientX, e.changedTouches[0].clientY, e.currentTarget);
-      scrollDown();
-    }
-    setTouchStartY(null);
-  };
+    if (touchStartY === null || touchStartX === null) return;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const diffX = Math.abs(endX - touchStartX);
+    const diffY = Math.abs(endY - touchStartY);
 
-  const handleWheel = (e: React.WheelEvent) => {
-    if (e.deltaY > 20) {
+    // ONLY stationary tap (finger moved < 10px)! Sliding/scrolling will NOT open About page!
+    if (!hasMoved && diffX < 10 && diffY < 10) {
+      ignoreNextClickRef.current = true;
+      setTimeout(() => {
+        ignoreNextClickRef.current = false;
+      }, 500);
+      triggerRipple(endX, endY, e.currentTarget);
       scrollDown();
     }
+
+    setTouchStartX(null);
+    setTouchStartY(null);
+    setHasMoved(false);
   };
 
   const photoSrc =
@@ -264,10 +244,10 @@ export function MobileDoodleCover() {
     <section
       onClick={handleCoverClick}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      onWheel={handleWheel}
       className="relative w-full min-h-[100dvh] select-none bg-[#090a0f] text-white flex flex-col justify-between cursor-pointer overflow-hidden"
-      aria-label="Harsh Aryan 4K Colorful Doodle Cover - Tap Anywhere to Explore"
+      aria-label="Harsh Aryan Mobile Sketchbook Cover"
     >
       {/* ── EXPANDING NEON TAP RIPPLE EFFECT ── */}
       {ripples.map((r) => (
@@ -286,6 +266,7 @@ export function MobileDoodleCover() {
           }}
         />
       ))}
+
       {/* ── 1. PURE ORIGINAL FULLSCREEN HERO PORTRAIT (Hardware Accelerated) ── */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden" style={{ contain: "strict" }}>
         <motion.div
@@ -303,7 +284,6 @@ export function MobileDoodleCover() {
           }}
           style={{ transform: "translateZ(0)" }}
         >
-          {/* Pure High-Definition Photo As Uploaded (Zero Filters, Zero Artificial Overlays) */}
           <Image
             src={displayPhotoSrc}
             alt={portfolio?.personal?.name || "Harsh Aryan"}
@@ -324,44 +304,7 @@ export function MobileDoodleCover() {
         <div className="absolute bottom-0 left-0 right-0 h-[68%] bg-gradient-to-t from-black via-black/90 via-48% to-transparent pointer-events-none" />
       </div>
 
-      {/* ── FIXED FROSTED GLASS SOCIAL DOCK (Right Side Background) ── */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        onTouchStart={(e) => e.stopPropagation()}
-        onTouchEnd={(e) => e.stopPropagation()}
-        className="absolute right-3.5 top-[36%] -translate-y-1/2 z-30 flex flex-col gap-2.5 backdrop-blur-2xl bg-black/45 p-1.5 rounded-full border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.6)] cursor-default"
-      >
-        <a
-          href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub Profile"
-          title="GitHub"
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 text-white border border-white/20 shadow-xs transition-all active:scale-90"
-        >
-          <GithubIcon className="w-3.5 h-3.5" />
-        </a>
-        <a
-          href={portfolio?.socialLinks?.linkedin || "https://linkedin.com"}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="LinkedIn Profile"
-          title="LinkedIn"
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-[#0077b5]/30 hover:bg-[#0077b5]/60 text-white border border-white/20 shadow-xs transition-all active:scale-90"
-        >
-          <LinkedinIcon className="w-3.5 h-3.5" />
-        </a>
-        <a
-          href={`mailto:${portfolio?.personal?.email || "harsharyan@outlook.com"}`}
-          aria-label="Send Email"
-          title="Email Harsh"
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-[#f59e0b]/30 hover:bg-[#f59e0b]/60 text-white border border-white/20 shadow-xs transition-all active:scale-90"
-        >
-          <Mail className="w-3.5 h-3.5" />
-        </a>
-      </div>
-
-      {/* ── 3. FLOATING 4K COLORFUL VECTOR DOODLES OVER PORTRAIT ── */}
+      {/* ── 2. FLOATING 4K COLORFUL VECTOR DOODLES OVER PORTRAIT ── */}
       <div className="relative z-20 flex-1 w-full pointer-events-none overflow-visible">
         {/* Colorful Neural Network Graph (Left Side floating) */}
         <motion.div
@@ -428,28 +371,10 @@ export function MobileDoodleCover() {
         </motion.div>
       </div>
 
-      {/* ── 4. COLORFUL SKETCH HERO & TYPOGRAPHY (Neo-Brutalist Posca Art) ── */}
-      <footer className="relative z-30 w-full px-5 pb-5 pt-1 flex flex-col items-center text-center">
-        {/* Name Container with 4K Colorful Crown */}
-        <div className="relative inline-block mb-2">
-          {/* Posca Gold Crown with Ruby & Sapphire Gems (Dynamically adapts to photo accent color) */}
-          <motion.div
-            initial={{ scale: 0, rotate: -16 }}
-            animate={{ scale: 1, rotate: [-14, -8, -14], y: [0, -2, 0] }}
-            transition={{
-              scale: { duration: 0.5, delay: 0.15 },
-              rotate: { duration: 3.5, repeat: Infinity, ease: "easeInOut" },
-              y: { duration: 2.5, repeat: Infinity, ease: "easeInOut" },
-            }}
-            className="absolute -top-8 -left-4 pointer-events-none z-10"
-          >
-            <ColorfulCrownDoodle
-              fill={accentColor}
-              className="w-13 h-8 sm:w-14 sm:h-9 filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] transition-colors duration-500"
-            />
-          </motion.div>
-
-          {/* Monumental Name in Cool Doodle Permanent Marker with 3D Pop-Art Shadow matching Photo */}
+      {/* ── 3. COLORFUL SKETCH HERO & TYPOGRAPHY WITH STICKER NOTE ── */}
+      <footer className="relative z-30 w-full px-5 pb-6 pt-1 flex flex-col items-center text-center">
+        {/* Name Container (Clean - Crown Removed as requested) */}
+        <div className="relative inline-block mb-1">
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -464,41 +389,86 @@ export function MobileDoodleCover() {
           </motion.h1>
         </div>
 
-        {/* ── CURRENT ROLE / INTERNSHIP BADGE (Single Focused Status - Toggleable) ── */}
-        {portfolio?.personal?.showMobileCurrentRole !== false && (
+        {/* ── SKETCHBOOK STICKER NOTE (Role, Quote & Social Icons All-In-One) ── */}
+        <div
+          onClick={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+          className="relative w-full max-w-[340px] mt-2 mb-2 select-none cursor-default"
+        >
+          {/* Realistic Washi Tape at Top */}
+          <div
+            className="w-24 h-4 bg-amber-300/90 dark:bg-amber-400/85 border-y border-black/30 shadow-xs rotate-[-2deg] mx-auto -mb-2 z-20 relative rounded-xs backdrop-blur-xs"
+            aria-hidden="true"
+          />
+
+          {/* Sticky Note Body (Liquid sketchbook post-it note) */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex items-center justify-center mb-3 max-w-[340px]"
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="relative rounded-2xl p-4 bg-[#fffef5]/95 dark:bg-[#181922]/95 backdrop-blur-xl border-2 border-black dark:border-white shadow-[5px_5px_0_#000] dark:shadow-[5px_5px_0_#fff] text-stone-900 dark:text-stone-100 flex flex-col items-center gap-2.5 rotate-[0.5deg]"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/85 backdrop-blur-md border border-emerald-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.7),0_0_14px_rgba(16,185,129,0.25)]">
-              <span className="flex h-2 w-2 relative shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-              </span>
-              <span className="font-mono text-[9px] font-black uppercase tracking-widest text-emerald-400">
-                CURRENT ROLE
-              </span>
-              <span className="text-white/30 text-xs font-bold">•</span>
-              <span className="font-['Space_Grotesk'] text-xs font-bold text-white tracking-wide">
-                {portfolio?.personal?.mobileBadge1 || "Teaching Assistant • IIT Madras"}
-              </span>
+            {/* 1. CURRENT ROLE BADGE (Toggleable via admin) */}
+            {portfolio?.personal?.showMobileCurrentRole !== false && (
+              <div className="flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-stone-900 dark:text-stone-100 font-mono text-xs font-bold max-w-full">
+                <span className="flex h-2 w-2 relative shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 shrink-0">
+                  CURRENT ROLE:
+                </span>
+                <span className="font-['Space_Grotesk'] text-xs font-bold truncate">
+                  {portfolio?.personal?.mobileBadge1 || "Teaching Assistant • IIT Madras"}
+                </span>
+              </div>
+            )}
+
+            {/* 2. PUNCHY QUOTE / NARRATIVE TAGLINE */}
+            {portfolio?.personal?.mobileTagline !== "" && (
+              <p
+                className="text-stone-700 dark:text-stone-300 text-xs sm:text-sm font-bold italic leading-snug text-center px-1"
+                style={{ fontFamily: "'Patrick Hand', cursive" }}
+              >
+                &ldquo;{portfolio?.personal?.mobileTagline ?? "Teaching Machines To Learn • Building Scientific Software"}&rdquo;
+              </p>
+            )}
+
+            {/* 3. INTEGRATED SOCIAL CONNECT ICONS */}
+            <div className="flex items-center justify-center gap-3 pt-2 w-full border-t border-dashed border-stone-300 dark:border-stone-700">
+              <a
+                href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub Profile"
+                title="GitHub"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-stone-900 text-white dark:bg-white dark:text-black border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-105 cursor-pointer"
+              >
+                <GithubIcon className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href={portfolio?.socialLinks?.linkedin || "https://linkedin.com"}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn Profile"
+                title="LinkedIn"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-[#0077b5] text-white border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-105 cursor-pointer"
+              >
+                <LinkedinIcon className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href={`mailto:${portfolio?.personal?.email || "harsharyan@outlook.com"}`}
+                aria-label="Send Email"
+                title="Email Harsh"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-[#f59e0b] text-white border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-105 cursor-pointer"
+              >
+                <Mail className="w-3.5 h-3.5" />
+              </a>
             </div>
           </motion.div>
-        )}
-
-        {/* Punchy Narrative Tagline */}
-        {portfolio?.personal?.mobileTagline !== "" && (
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.26 }}
-            className="text-stone-300 text-xs sm:text-sm font-drawing-kids font-medium tracking-[0.12em] drop-shadow mb-8 max-w-[320px]"
-          >
-            {portfolio?.personal?.mobileTagline ?? "Teaching Machines To Learn • Building Scientific Software"}
-          </motion.p>
-        )}
+        </div>
       </footer>
     </section>
   );
