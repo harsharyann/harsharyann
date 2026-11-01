@@ -178,14 +178,14 @@ export function MagazineNav() {
         {/* EXPANDABLE SKETCHBOOK DIRECTORY POPUP */}
         {isOpen && (
           <div
-            className="absolute right-0 bottom-full mb-3 w-80 bg-white dark:bg-stone-900 border-2 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-bottom-3 duration-150 select-none"
+            className="absolute right-0 bottom-full mb-3 w-80 bg-white/75 dark:bg-stone-900/75 backdrop-blur-2xl border-2 border-black dark:border-white shadow-[6px_6px_0_#000,inset_0_1px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[6px_6px_0_#fff,inset_0_1px_1.5px_0_rgba(255,255,255,0.18)] rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-bottom-3 duration-150 select-none"
             role="dialog"
             aria-label="Site Navigation Directory"
           >
             {/* Header */}
             <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-black/10 dark:border-white/10 font-mono text-[11px] font-black uppercase text-stone-500 dark:text-stone-400">
               <span className="flex items-center gap-1.5">
-                <span className="text-amber-500">✦</span> CHAPTER DIRECTORY
+                <span className="text-amber-500">✦</span> EXPLORE INDEX
               </span>
               <span className="text-[10px] text-stone-400">[ESC TO CLOSE]</span>
             </div>
@@ -278,7 +278,7 @@ export function MagazineNav() {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white dark:bg-stone-900 text-black dark:text-white px-4 py-2.5 rounded-full border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none cursor-pointer"
+          className="group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white/75 dark:bg-stone-900/75 backdrop-blur-2xl text-black dark:text-white px-4 py-2.5 rounded-full border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000,inset_0_1px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[3.5px_3.5px_0_#fff,inset_0_1px_1.5px_0_rgba(255,255,255,0.18)] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none cursor-pointer"
           aria-label="Toggle Menu"
           aria-expanded={isOpen}
         >
@@ -298,7 +298,7 @@ export function MagazineNav() {
 
       {/* ── PHONE NAVIGATION: FLOATING BOTTOM DOCK ── */}
       <nav
-        className={`md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[360px] backdrop-blur-2xl bg-white/95 dark:bg-stone-900/95 border-2 border-black dark:border-white rounded-full shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff] p-1.5 flex items-center justify-between gap-1 select-none transition-all duration-300 ${
+        className={`md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[360px] backdrop-blur-2xl bg-white/75 dark:bg-stone-900/75 border-2 border-black dark:border-white rounded-full shadow-[4px_4px_0_#000,inset_0_1px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[4px_4px_0_#fff,inset_0_1px_1.5px_0_rgba(255,255,255,0.18)] p-1.5 flex items-center justify-between gap-1 select-none transition-all duration-300 ${
           showMobileDock ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-6 pointer-events-none"
         }`}
         aria-label="Mobile Navigation Dock"

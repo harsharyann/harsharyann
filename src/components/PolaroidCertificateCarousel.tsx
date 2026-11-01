@@ -418,15 +418,8 @@ export function PolaroidCertificateCarousel({
           House both the authentic Polaroid Frame & the Intelligence Dossier together
       ========================================================================= */}
       <div
-        className={`relative rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black dark:border-white/20 p-4 sm:p-5 md:p-6 transition-all duration-300 ${activeTheme.shadow} ${activeTheme.cardBg} overflow-hidden max-w-6xl mx-auto`}
-        style={{
-          backgroundImage:
-            "radial-gradient(currentColor 0.65px, transparent 0.65px)",
-          backgroundSize: "20px 20px",
-        }}
+        className="relative rounded-[28px] sm:rounded-[32px] p-4 sm:p-5 md:p-6 transition-all duration-300 liquid-bento-card max-w-6xl mx-auto overflow-hidden"
       >
-        {/* Subtle grid opacity blend */}
-        <div className="absolute inset-0 bg-white/70 dark:bg-stone-950/75 pointer-events-none -z-10" />
 
         {/* ── BENTO TOP BAR: Counter Stamp + Category Badge + Stepper Controls ── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b-2 border-black/15 dark:border-white/10">
@@ -535,14 +528,8 @@ export function PolaroidCertificateCarousel({
                   <div className="pl-cert-shot relative overflow-hidden">
                     {activeCert.imageUrl ? (
                       <div className="relative w-full h-full bg-[#0a0d14] dark:bg-[#05070c] rounded-lg overflow-hidden flex flex-col justify-between">
-                        {/* Subtle dark museum matboard texture */}
-                        <div
-                          className="absolute inset-0 opacity-15 pointer-events-none"
-                          style={{
-                            backgroundImage: "radial-gradient(#ffffff 0.6px, transparent 0.6px)",
-                            backgroundSize: "10px 10px",
-                          }}
-                        />
+                        {/* Subtle glass reflection sheen */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-white/[0.04] pointer-events-none" />
 
                         {/* Certificate Image */}
                         <img
@@ -1073,8 +1060,8 @@ const POLAROID_BENTO_CSS = `
   padding: 10px;
   display: flex;
   background-color: #0a0d14;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 0.75px, transparent 0.75px);
-  background-size: 14px 14px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .pl-cert-border {

@@ -1359,8 +1359,7 @@ const COVER_CSS = `
   flex-direction: column;
   justify-content: center;
   background-color: transparent;
-  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1.2px, transparent 1.2px);
-  background-size: 24px 24px;
+  background-image: none;
   color: #000000;
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -1430,7 +1429,7 @@ const COVER_CSS = `
 }
 
 .dcf-brand-stamp {
-  font-family: ui-monospace, monospace;
+  font-family: 'Amanojaku', 'Permanent Marker', cursive, sans-serif;
   font-weight: 900;
   font-size: 13.5px;
   letter-spacing: 0.1em;
@@ -1469,7 +1468,7 @@ const COVER_CSS = `
   align-items: center;
   gap: 7px;
   padding: 6.5px 16px;
-  font-family: ui-monospace, monospace;
+  font-family: 'DrawingKids', 'Space Grotesk', sans-serif;
   font-size: 12.5px;
   font-weight: 800;
   border-radius: 999px;
@@ -1749,7 +1748,7 @@ const COVER_CSS = `
 }
 
 .dcf-flank-tag {
-  font-family: ui-monospace, monospace;
+  font-family: 'Amanojaku', sans-serif;
   font-size: 9.5px;
   font-weight: 850;
   letter-spacing: 0.12em;
@@ -1824,12 +1823,14 @@ const COVER_CSS = `
 .dcf-flank-stat-val {
   font-size: 18px;
   font-weight: 900;
+  font-family: 'Amanojaku', sans-serif;
   color: #4f46e5;
 }
 
 .dcf-flank-stat-lbl {
   font-size: 11px;
   font-weight: 700;
+  font-family: 'DrawingKids', sans-serif;
   color: #444444;
 }
 
@@ -2011,8 +2012,7 @@ html:not(.dark) .dcf-btn.is-contact:hover {
 /* Dark Mode: Crisp B&W Aesthetic with Radiant Neon Wordmark */
 html.dark .dcf-root {
   background-color: transparent;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
-  background-size: 24px 24px;
+  background-image: none;
   color: #ffffff;
 }
 
@@ -2300,7 +2300,7 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
 
 .dcf-eyebrow-pill {
   display: inline-block;
-  font-family: ui-monospace, monospace;
+  font-family: 'Amanojaku', 'Permanent Marker', sans-serif;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -2585,7 +2585,8 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   padding: 0 22px;
   border-radius: 999px;
   border: 2px solid #000000;
-  font-size: 14px;
+  font-family: 'DrawingKids', 'Space Grotesk', sans-serif;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: -0.01em;
   text-decoration: none;

@@ -404,12 +404,12 @@ export function MobileDoodleCover() {
           className="flex flex-wrap items-center justify-center gap-2 mb-2.5 max-w-[340px]"
         >
           {/* Yellow Highlighter Pill */}
-          <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#fef08a] text-black font-['Space_Grotesk'] text-[11px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
+          <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#fef08a] text-black font-hero-heading text-[12px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
             <span>TA IIT Madras</span>
           </span>
 
           {/* Electric Cyan Highlighter Pill */}
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#a5f3fc] text-black font-['Space_Grotesk'] text-[11px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#a5f3fc] text-black font-hero-heading text-[12px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
             <span>✦</span>
             <span>AI &amp; Data Science</span>
           </span>
@@ -420,7 +420,7 @@ export function MobileDoodleCover() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.26 }}
-          className="text-stone-300 text-xs sm:text-sm font-['Space_Grotesk'] font-medium uppercase tracking-[0.12em] drop-shadow mb-4 max-w-[320px]"
+          className="text-stone-300 text-xs sm:text-sm font-drawing-kids text-sm font-medium tracking-[0.12em] drop-shadow mb-4 max-w-[320px]"
         >
           Teaching Machines To Learn • Building Scientific Software
         </motion.p>

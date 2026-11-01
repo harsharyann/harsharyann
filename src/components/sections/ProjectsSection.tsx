@@ -270,18 +270,7 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2">
             <span className="sketch-stamp bg-purple-600 text-white font-black shadow-[2px_2px_0_#000] font-hero-heading">
-              CHAPTER 03 • LAB EXPERIMENTS &amp; BUILDS
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/40 border border-purple-400 text-purple-800 dark:text-purple-300 font-bold">
-              <Code2 className="w-3 h-3 text-purple-500" />
-              {projectsList.length} Hands-On Projects
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-400 text-emerald-800 dark:text-emerald-300 font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              100% Reproducible
+              ZONE 03 • LAB EXPERIMENTS &amp; BUILDS
             </span>
           </div>
         </div>
@@ -418,7 +407,7 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
               <article
                 key={proj.id}
                 id={proj.id}
-                className={`scroll-mt-28 p-4 sm:p-5 rounded-2xl border-2 ${t.border} ${t.cardBg} ${t.shadow} flex flex-col justify-between group space-y-4 relative transition-all duration-200 hover:-translate-y-0.5`}
+                className="scroll-mt-28 p-4 sm:p-5 rounded-[28px] liquid-bento-card flex flex-col justify-between group space-y-4 relative transition-all duration-200"
               >
                 {/* Washi tape sticker */}
                 <div

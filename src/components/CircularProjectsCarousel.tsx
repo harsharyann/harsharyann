@@ -178,6 +178,53 @@ export function CircularProjectsCarousel({
     }
   }
 
+  // Category visual themes & neon accents
+  const getCategoryTheme = (cat: string) => {
+    const c = (cat || "").toLowerCase()
+    if (c.includes("machine learning") || c.includes("ai")) {
+      return {
+        accent: "#c084fc", // Neon Purple
+        accentBorder: "border-purple-400/50",
+        accentGlow: "rgba(192, 132, 252, 0.45)",
+        badgeBg: "bg-purple-950/70 border-purple-500/40 text-purple-200",
+        neonDot: "bg-purple-400",
+        gradient: "from-purple-950 via-slate-900 to-indigo-950",
+        schematicType: "ai" as const,
+      }
+    }
+    if (c.includes("data") || c.includes("analytics")) {
+      return {
+        accent: "#34d399", // Neon Emerald
+        accentBorder: "border-emerald-400/50",
+        accentGlow: "rgba(52, 211, 153, 0.45)",
+        badgeBg: "bg-emerald-950/70 border-emerald-500/40 text-emerald-200",
+        neonDot: "bg-emerald-400",
+        gradient: "from-emerald-950 via-zinc-900 to-teal-950",
+        schematicType: "data" as const,
+      }
+    }
+    if (c.includes("web") || c.includes("tool")) {
+      return {
+        accent: "#38bdf8", // Neon Sky
+        accentBorder: "border-sky-400/50",
+        accentGlow: "rgba(56, 189, 248, 0.45)",
+        badgeBg: "bg-sky-950/70 border-sky-500/40 text-sky-200",
+        neonDot: "bg-sky-400",
+        gradient: "from-sky-950 via-zinc-900 to-blue-950",
+        schematicType: "web" as const,
+      }
+    }
+    return {
+      accent: "#fbbf24", // Neon Amber
+      accentBorder: "border-amber-400/50",
+      accentGlow: "rgba(251, 191, 36, 0.45)",
+      badgeBg: "bg-amber-950/70 border-amber-500/40 text-amber-200",
+      neonDot: "bg-amber-400",
+      gradient: "from-amber-950 via-zinc-900 to-stone-900",
+      schematicType: "code" as const,
+    }
+  }
+
   // Helper icon based on category
   const getCategoryIcon = (cat: string) => {
     const c = (cat || "").toLowerCase()
@@ -197,18 +244,8 @@ export function CircularProjectsCarousel({
 
   return (
     <div className={`w-full max-w-6xl mx-auto ${className}`}>
-      {/* 3D Showcase Stage Container with Neo-Brutalist Frame — Compact & Proportional */}
-      <div className="p-4 sm:p-6 lg:p-7 rounded-2xl sm:rounded-3xl border-2 border-black dark:border-stone-700 bg-gradient-to-br from-[#f8f6f0] via-white to-[#f5f2ea] dark:from-[#0d0e12] dark:via-[#13141a] dark:to-[#0a0a0d] shadow-[6px_8px_0_#18181b] dark:shadow-[6px_8px_0_#27272a] relative overflow-hidden">
-        
-        {/* Subtle Background Studio Grid */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10"
-          style={{
-            backgroundImage: "radial-gradient(#18181b 0.75px, transparent 0.75px)",
-            backgroundSize: "20px 20px",
-          }}
-          aria-hidden="true"
-        />
+      {/* 3D Showcase Stage Bento Container — Liquid Glass Surface */}
+      <div className="p-4 sm:p-6 lg:p-7 rounded-[28px] sm:rounded-[32px] liquid-bento-card relative overflow-hidden">
 
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           
@@ -217,13 +254,14 @@ export function CircularProjectsCarousel({
           ========================================================================= */}
           <div className="lg:col-span-6 w-full flex flex-col items-center justify-center">
             <div
-              className="relative w-full h-[250px] sm:h-[285px] md:h-[315px] flex items-center justify-center select-none"
+              className="relative w-full h-[265px] sm:h-[295px] md:h-[325px] flex items-center justify-center select-none"
               style={{ perspective: "1000px" }}
               ref={imageContainerRef}
             >
               {projects.map((proj, idx) => {
                 const isActive = idx === activeIndex
                 const style = getCard3DStyle(idx)
+                const theme = getCategoryTheme(proj.category)
 
                 return (
                   <div
@@ -231,69 +269,228 @@ export function CircularProjectsCarousel({
                     onClick={() => {
                       if (!isActive) goTo(idx)
                     }}
-                    style={style}
-                    className="absolute inset-0 w-full h-full rounded-2xl p-1 bg-stone-900 border-2 border-black dark:border-white shadow-[0_16px_36px_-10px_rgba(0,0,0,0.38),3px_5px_0_#000] overflow-hidden flex flex-col justify-between select-none"
+                    style={{
+                      ...style,
+                      boxShadow: isActive
+                        ? `0 20px 42px -12px rgba(0,0,0,0.6), 4px 6px 0 #000, 0 0 28px ${theme.accentGlow}`
+                        : "0 12px 28px -10px rgba(0,0,0,0.5), 3px 4px 0 #000",
+                    }}
+                    className={`absolute inset-0 w-full h-full rounded-[28px] p-1 bg-stone-950/80 backdrop-blur-xl border border-white/20 transition-all duration-500 overflow-hidden flex flex-col justify-between select-none ${
+                      isActive
+                        ? "border-stone-900 dark:border-white ring-1 ring-white/25 shadow-2xl"
+                        : "border-black/50 dark:border-stone-700/60"
+                    }`}
                     title={isActive ? proj.title : `Click to view ${proj.title}`}
                   >
-                    {/* Visual Card Canvas with Dynamic Gradient */}
+                    {/* Visual Card Canvas with Dynamic Deep Cyber Gradient */}
                     <div
-                      className={`relative w-full h-full rounded-xl p-3.5 sm:p-4 bg-gradient-to-br ${proj.imageGradient} flex flex-col justify-between overflow-hidden text-white`}
+                      className={`relative w-full h-full rounded-[24px] p-3.5 sm:p-4 bg-gradient-to-br ${theme.gradient} flex flex-col justify-between overflow-hidden text-white`}
                     >
-                      {/* Blueprint dot pattern overlay */}
+                      {/* Clean Glass Reflection Sheen */}
                       <div
-                        className="absolute inset-0 opacity-25 pointer-events-none"
-                        style={{
-                          backgroundImage: "radial-gradient(#ffffff 0.75px, transparent 0.75px)",
-                          backgroundSize: "12px 12px",
-                        }}
+                        className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-white/[0.05] via-transparent to-white/[0.08]"
+                        aria-hidden="true"
                       />
 
-                      {/* Card Header Bar */}
+                      {/* Ambient Radial Flare behind the Icon Plate */}
+                      <div
+                        className="absolute -top-12 -left-12 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-35"
+                        style={{ background: theme.accent }}
+                      />
+
+                      {/* HUD Corner Reticles (⌜ ⌝ ⌞ ⌟) */}
+                      <span
+                        className="absolute top-2 left-2 text-[11px] font-mono leading-none select-none pointer-events-none opacity-80"
+                        style={{ color: theme.accent }}
+                        aria-hidden="true"
+                      >
+                        ⌜
+                      </span>
+                      <span
+                        className="absolute top-2 right-2 text-[11px] font-mono leading-none select-none pointer-events-none opacity-80"
+                        style={{ color: theme.accent }}
+                        aria-hidden="true"
+                      >
+                        ⌝
+                      </span>
+                      <span
+                        className="absolute bottom-2 left-2 text-[11px] font-mono leading-none select-none pointer-events-none opacity-80"
+                        style={{ color: theme.accent }}
+                        aria-hidden="true"
+                      >
+                        ⌞
+                      </span>
+                      <span
+                        className="absolute bottom-2 right-2 text-[11px] font-mono leading-none select-none pointer-events-none opacity-80"
+                        style={{ color: theme.accent }}
+                        aria-hidden="true"
+                      >
+                        ⌟
+                      </span>
+
+                      {/* Holographic Background Telemetry Schematic */}
+                      {theme.schematicType === "data" ? (
+                        <svg
+                          className="absolute right-0 bottom-4 w-48 h-28 opacity-20 pointer-events-none text-emerald-400"
+                          viewBox="0 0 160 80"
+                          fill="none"
+                        >
+                          <path
+                            d="M0,60 Q20,20 40,45 T80,30 T120,50 T160,15"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeDasharray="3 3"
+                          />
+                          <path
+                            d="M0,70 L20,55 L40,65 L60,40 L80,50 L100,25 L120,45 L140,20 L160,35"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          />
+                          <circle cx="100" cy="25" r="3" fill="currentColor" />
+                          <circle cx="140" cy="20" r="3" fill="currentColor" />
+                          <line x1="20" y1="80" x2="20" y2="55" stroke="currentColor" strokeWidth="0.75" />
+                          <line x1="60" y1="80" x2="60" y2="40" stroke="currentColor" strokeWidth="0.75" />
+                          <line x1="100" y1="80" x2="100" y2="25" stroke="currentColor" strokeWidth="0.75" />
+                          <line x1="140" y1="80" x2="140" y2="20" stroke="currentColor" strokeWidth="0.75" />
+                        </svg>
+                      ) : theme.schematicType === "ai" ? (
+                        <svg
+                          className="absolute right-0 bottom-4 w-44 h-28 opacity-20 pointer-events-none text-purple-400"
+                          viewBox="0 0 160 90"
+                          fill="none"
+                        >
+                          <line x1="20" y1="20" x2="70" y2="35" stroke="currentColor" strokeWidth="1" />
+                          <line x1="20" y1="45" x2="70" y2="35" stroke="currentColor" strokeWidth="1" />
+                          <line x1="20" y1="70" x2="70" y2="60" stroke="currentColor" strokeWidth="1" />
+                          <line x1="70" y1="35" x2="130" y2="45" stroke="currentColor" strokeWidth="1.5" />
+                          <line x1="70" y1="60" x2="130" y2="45" stroke="currentColor" strokeWidth="1.5" />
+                          <circle cx="20" cy="20" r="3" fill="currentColor" />
+                          <circle cx="20" cy="45" r="3" fill="currentColor" />
+                          <circle cx="20" cy="70" r="3" fill="currentColor" />
+                          <circle cx="70" cy="35" r="4" fill="currentColor" />
+                          <circle cx="70" cy="60" r="4" fill="currentColor" />
+                          <circle cx="130" cy="45" r="5" fill="currentColor" />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="absolute right-0 bottom-4 w-44 h-28 opacity-20 pointer-events-none text-sky-400"
+                          viewBox="0 0 160 90"
+                          fill="none"
+                        >
+                          <path
+                            d="M10,20 H40 V50 H90 V30 H140"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeDasharray="4 2"
+                          />
+                          <circle cx="140" cy="30" r="3" fill="currentColor" />
+                          <path d="M30,70 H70 V50" stroke="currentColor" strokeWidth="1.5" />
+                          <rect x="66" y="46" width="8" height="8" fill="currentColor" />
+                        </svg>
+                      )}
+
+                      {/* Card Header Bar: Terminal Controls + Pulsing Live Beacon + Category Pill */}
                       <div className="relative z-10 flex items-center justify-between gap-2">
-                        {/* Terminal 3 Dots */}
-                        <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2 py-1 rounded-full border border-white/20">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                          <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-white/90 ml-0.5">
+                        {/* Pulsing Live Beacon & Project Tag */}
+                        <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15 shadow-sm">
+                          <span className="relative flex h-2 w-2">
+                            <span
+                              className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                              style={{ backgroundColor: theme.accent }}
+                            />
+                            <span
+                              className="relative inline-flex rounded-full h-2 w-2"
+                              style={{ backgroundColor: theme.accent }}
+                            />
+                          </span>
+                          <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider text-white/95">
                             PROJ #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                           </span>
                         </div>
 
-                        {/* Category Badge */}
-                        <div className="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[9px] font-mono font-black uppercase tracking-wider border border-white/20 text-white flex items-center gap-1">
-                          {getCategoryIcon(proj.category)}
+                        {/* Holographic Category Pill with Neon Rim */}
+                        <div
+                          className={`px-2.5 py-0.5 rounded-full backdrop-blur-md text-[9.5px] font-mono font-black uppercase tracking-wider flex items-center gap-1.5 border shadow-sm ${theme.badgeBg}`}
+                        >
+                          <span className="scale-90">{getCategoryIcon(proj.category)}</span>
                           <span>{proj.category}</span>
                         </div>
                       </div>
 
-                      {/* Card Center Visual: Title & Neural Schematic */}
-                      <div className="relative z-10 my-auto py-2 space-y-1.5">
-                        <div className="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-inner">
-                          {getCategoryIcon(proj.category)}
+                      {/* Card Center Visual: Isometric Icon Tile + Title + Tagline */}
+                      <div className="relative z-10 my-auto py-1 sm:py-2 space-y-2">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className="w-10 h-10 rounded-xl backdrop-blur-lg flex items-center justify-center border shadow-lg relative"
+                            style={{
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              borderColor: `${theme.accent}66`,
+                              boxShadow: `0 0 16px ${theme.accentGlow}`,
+                            }}
+                          >
+                            <div className="scale-110">{getCategoryIcon(proj.category)}</div>
+                            <span
+                              className="absolute -top-1 -right-1 w-2 h-2 rounded-full"
+                              style={{ backgroundColor: theme.accent }}
+                            />
+                          </div>
+
+                          <div className="flex flex-col">
+                            <span className="text-[9px] font-mono uppercase tracking-widest text-stone-300 flex items-center gap-1">
+                              <span style={{ color: theme.accent }}>//</span> PIPELINE SPEC
+                            </span>
+                            <span className="text-[10px] font-mono font-bold text-white/80">
+                              ID: {proj.id.toUpperCase()}
+                            </span>
+                          </div>
                         </div>
-                        <h4 className="text-base sm:text-lg font-black uppercase tracking-tight text-white drop-shadow-md line-clamp-2">
+
+                        {/* Title with Amanojaku font */}
+                        <h4 className="text-base sm:text-lg lg:text-xl font-hero-heading uppercase tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] line-clamp-2 leading-tight">
                           {proj.title}
                         </h4>
-                        <p className="text-[11px] sm:text-xs font-mono text-white/85 line-clamp-2 leading-snug drop-shadow-sm">
+
+                        {/* Tagline with Drawing Kids font */}
+                        <p className="text-[12px] sm:text-[13px] font-drawing-kids text-stone-200 line-clamp-2 leading-snug drop-shadow-sm font-normal">
                           {proj.tagline}
                         </p>
                       </div>
 
-                      {/* Card Footer: Tech Chips */}
-                      <div className="relative z-10 pt-1.5 border-t border-white/20 flex flex-wrap items-center gap-1">
-                        {proj.technologies.slice(0, 3).map((tech) => (
-                          <span
-                            key={tech}
-                            className="px-1.5 py-0.5 rounded bg-black/40 backdrop-blur-md text-[9px] font-mono font-bold text-white/90 border border-white/15"
+                      {/* Card Footer: Tech Chips + Quick Code Action */}
+                      <div className="relative z-10 pt-2 border-t border-white/15 flex items-center justify-between gap-2">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 overflow-hidden">
+                          {proj.technologies.slice(0, 3).map((tech) => (
+                            <span
+                              key={tech}
+                              className="px-2 py-0.5 rounded-md backdrop-blur-md text-[9.5px] font-mono font-bold text-white/95 border shadow-sm flex items-center gap-1"
+                              style={{
+                                backgroundColor: "rgba(0, 0, 0, 0.55)",
+                                borderColor: `${theme.accent}40`,
+                              }}
+                            >
+                              <span style={{ color: theme.accent }}>✦</span> {tech}
+                            </span>
+                          ))}
+                          {proj.technologies.length > 3 && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-mono text-white/70 font-bold bg-black/40 border border-white/10">
+                              +{proj.technologies.length - 3}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Front Card Micro-Action for quick GitHub peek */}
+                        {isActive && (
+                          <a
+                            href={proj.githubUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-black uppercase tracking-wider bg-white text-black hover:bg-stone-200 shadow-md flex items-center gap-1 transition-all hover:scale-105 cursor-pointer shrink-0"
+                            title="View Code on GitHub"
                           >
-                            ✦ {tech}
-                          </span>
-                        ))}
-                        {proj.technologies.length > 3 && (
-                          <span className="text-[9px] font-mono text-white/70 font-bold">
-                            +{proj.technologies.length - 3}
-                          </span>
+                            <span>CODE</span>
+                            <ArrowUpRight className="w-3 h-3" />
+                          </a>
                         )}
                       </div>
                     </div>
@@ -353,10 +550,10 @@ export function CircularProjectsCarousel({
 
                 {/* Title & Tagline */}
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-black uppercase text-black dark:text-white tracking-tight leading-snug">
+                  <h3 className="text-xl sm:text-2xl font-hero-heading uppercase text-black dark:text-white tracking-wide leading-snug">
                     {activeProject.title}
                   </h3>
-                  <p className="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 mt-1 flex items-center gap-1.5">
+                  <p className="text-xs sm:text-[13px] font-drawing-kids font-bold text-amber-700 dark:text-amber-400 mt-1 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>{activeProject.tagline}</span>
                   </p>

@@ -37,16 +37,16 @@ export function Scroll3DSection({
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="group relative inline-flex items-center gap-3 px-4 sm:px-5 py-2 rounded-full bg-white dark:bg-stone-900 border-2 border-black dark:border-white select-none transition-transform hover:-translate-y-0.5"
+            className="group relative inline-flex items-center gap-3 px-4 sm:px-5 py-2 rounded-full bg-white/70 dark:bg-stone-900/70 backdrop-blur-2xl border-2 border-black dark:border-white select-none transition-transform hover:-translate-y-0.5"
             style={{
-              boxShadow: `4px 4px 0 ${accentColor}`,
+              boxShadow: `4px 4px 0 ${accentColor}, inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.7)`, 
             }}
           >
             <span
               className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase text-white tracking-widest"
               style={{ backgroundColor: accentColor }}
             >
-              CH {chapterNumber}
+              ZONE {chapterNumber}
             </span>
             <span className="font-hero-heading text-sm sm:text-base uppercase tracking-wider text-black dark:text-white">
               {chapterName}

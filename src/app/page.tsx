@@ -9,6 +9,7 @@ import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { CertificatesSection } from "@/components/sections/CertificatesSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { SiteFooter } from "@/components/SiteFooter";
+import { MagazineChapterSpine } from "@/components/MagazineChapterSpine";
 
 export default function Home() {
   // Support direct anchor jumps on initial page load (e.g., /#about, /#projects)
@@ -27,6 +28,9 @@ export default function Home() {
 
   return (
     <main className="w-full min-h-screen bg-transparent text-black dark:text-white selection:bg-indigo-600 selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200">
+      {/* ── 3D MAGAZINE CHAPTER SPINE (Idea #1: Interactive Floating Right Dock) ── */}
+      <MagazineChapterSpine />
+
       {/* ── 01. COVER SCREEN (Dedicated Mobile & Desktop Versions) ── */}
       <section id="cover" className="relative w-full">
         {/* Phone Cover (iOS & Android) — Dedicated Clean Portrait Layout */}

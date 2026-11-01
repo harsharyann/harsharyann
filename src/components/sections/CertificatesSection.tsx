@@ -124,18 +124,7 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2">
             <span className="sketch-stamp bg-amber-400 text-black font-black shadow-[2px_2px_0_#000] font-hero-heading">
-              CHAPTER 04 • LAURELS &amp; CERTIFICATES
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-400 text-amber-800 dark:text-amber-300 font-bold">
-              <Award className="w-3 h-3 text-amber-500" />
-              {certsList.length} Verified {certsList.length === 1 ? "Certificate" : "Certificates"}
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-400 text-emerald-800 dark:text-emerald-300 font-bold">
-              <ShieldCheck className="w-3 h-3 text-emerald-500" />
-              Verified Laurels &amp; Awards
+              ZONE 04 • LAURELS &amp; CERTIFICATES
             </span>
           </div>
         </div>

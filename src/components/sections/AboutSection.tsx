@@ -256,18 +256,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2">
             <span className="sketch-stamp bg-amber-400 text-black font-black shadow-[2px_2px_0_#000] font-hero-heading">
-              CHAPTER 02 • THE ARCHITECT &amp; MIND
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-400 text-amber-800 dark:text-amber-300 font-bold">
-              <Sparkles className="w-3 h-3 text-amber-500" />
-              Machine Learning &amp; AI
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-400 text-emerald-800 dark:text-emerald-300 font-bold">
-              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-              100% Code Integrity
+              ZONE 02 • THE ARCHITECT &amp; MIND
             </span>
           </div>
         </div>
@@ -340,7 +329,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             {quickStats?.map((st, i) => (
               <div
                 key={i}
-                className="p-3.5 rounded-xl border-2 border-black dark:border-white/20 bg-white dark:bg-stone-900 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] space-y-0.5"
+                className="p-4 rounded-[28px] liquid-bento-card space-y-0.5"
               >
                 <div className="text-xl sm:text-2xl font-black text-black dark:text-white font-mono">
                   {st.value}
@@ -394,7 +383,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             return (
               <div
                 key={group.category}
-                className={`p-5 rounded-2xl border-2 border-black dark:border-white/20 ${t.bg} ${t.shadow} space-y-3`}
+                className="p-5 rounded-[28px] liquid-bento-card space-y-3"
               >
                 <div className={`flex items-center gap-2 font-mono text-xs font-black uppercase ${t.text}`}>
                   {t.icon}
@@ -434,7 +423,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
           {timelineMilestones.map((m) => (
             <div
               key={m.phaseNumber}
-              className={`p-5 rounded-2xl border-2 ${m.theme.border} ${m.theme.bgLight} ${m.theme.shadow} space-y-3 flex flex-col justify-between`}
+              className="p-5 rounded-[28px] liquid-bento-card space-y-3 flex flex-col justify-between"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -457,37 +446,6 @@ export function AboutSection({ id = "about" }: { id?: string }) {
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* ── CALL TO ACTION BANNER ── */}
-      <div className="p-6 sm:p-8 rounded-3xl border-2 border-black dark:border-white/20 bg-gradient-to-r from-amber-100 via-rose-50 to-indigo-50 dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="space-y-1 text-center sm:text-left">
-          <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-black dark:text-white">
-            Want to build something groundbreaking together?
-          </h3>
-          <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 max-w-xl">
-            Always open to discussing machine learning research, hackathon teams, and summer internship opportunities.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={() => scrollTo("contact")}
-            className="px-5 py-2.5 rounded-full bg-black text-white dark:bg-white dark:text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black dark:border-white shadow-[3px_3px_0_#8b5cf6] hover:-translate-y-0.5 transition-transform flex items-center gap-2 cursor-pointer"
-          >
-            <Send className="w-3.5 h-3.5" />
-            <span>Contact Desk</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollTo("projects")}
-            className="px-5 py-2.5 rounded-full bg-white text-black dark:bg-stone-900 dark:text-white font-mono text-xs font-black uppercase tracking-wider border-2 border-black dark:border-white shadow-[3px_3px_0_#06b6d4] hover:-translate-y-0.5 transition-transform flex items-center gap-2 cursor-pointer"
-          >
-            <Laptop className="w-3.5 h-3.5" />
-            <span>All Projects</span>
-          </button>
         </div>
       </div>
     </section>

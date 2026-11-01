@@ -319,7 +319,7 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
       <style>{SPARK_CSS}</style>
 
       <div
-        className="daily-spark-card"
+        className="daily-spark-card liquid-bento-card"
         suppressHydrationWarning
         style={
           {
@@ -332,20 +332,8 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
         {/* Washi tape sticker detail pinning this note to the sketchbook cover */}
         <div className="daily-spark-tape" aria-hidden="true" />
 
-        {/* Cute Kitty Doodle Peeking Over Thought Card Top-Right */}
-        <KittyPeeker />
-
-        {/* Live Coordinates Ribbon: Green dot, Location, Day, Date & Live Time */}
-        <div className="daily-spark-top-bar" suppressHydrationWarning>
-          <div className="daily-spark-live-coords" title="Live Local Chennai Time, Day & Coordinates">
-            <span className="daily-spark-live-dot" aria-hidden="true" />
-            <span className="daily-spark-city">CHENNAI</span>
-            <span className="daily-spark-sep">•</span>
-            <span className="daily-spark-date-text">{dayName}, {formattedDate}</span>
-            <span className="daily-spark-sep">•</span>
-            <span className="daily-spark-time-digits">{formattedTime}</span>
-          </div>
-
+        {/* Top bar with quick copy button */}
+        <div className="daily-spark-top-bar flex justify-end" suppressHydrationWarning>
           {/* Quick copy pill button */}
           <button
             type="button"
@@ -447,9 +435,11 @@ const SPARK_CSS = `
 .daily-spark-card {
   position: relative;
   width: 100%;
-  background-color: #ffffff;
-  background-image: radial-gradient(rgba(0, 0, 0, 0.07) 1.2px, transparent 1.2px);
-  background-size: 18px 18px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.50) 100%);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  box-shadow: 4px 4px 0 #000000, inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85);
+  background-image: none;
   color: #0a0a0a;
   border: 2px solid #000000;
   border-radius: 20px 16px 22px 14px / 14px 22px 16px 20px;
@@ -771,8 +761,11 @@ const SPARK_CSS = `
 
 /* Dark Mode Polish */
 html.dark .daily-spark-card {
-  background-color: #141417;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
+  background: linear-gradient(135deg, rgba(26, 27, 34, 0.70) 0%, rgba(16, 17, 22, 0.55) 100%);
+  backdrop-filter: blur(32px) saturate(210%);
+  -webkit-backdrop-filter: blur(32px) saturate(210%);
+  box-shadow: 4px 4px 0 #ffffff, inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.25);
+  background-image: none;
   color: #ffffff;
   border-color: #ffffff;
   box-shadow: 4px 4px 0 #ffffff;

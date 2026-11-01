@@ -39,7 +39,7 @@ html.dark {
 body {
   background-color: transparent;
   color: var(--text-primary);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'DrawingKids', 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   transition: background-color 0.25s ease, color 0.25s ease;
   overflow-x: hidden;
 }
@@ -54,21 +54,229 @@ html.dark ::selection {
   color: #000000;
 }
 
-/* Light Mode Paper Grid / Dark Mode Architectural Grid */
+/* Clean Glassmorphic Canvas Backdrop */
 .bg-news-texture {
   background-color: transparent;
-  background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-image: none;
 }
 
 html.dark .bg-news-texture {
   background-color: transparent;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-image: none;
+}
+
+/* ── Apple iOS Liquid Glass Design Language ── */
+.liquid-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.70) 0%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 20px 40px -15px rgba(0, 0, 0, 0.07),
+    0 1px 3px 0 rgba(0, 0, 0, 0.04),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+html.dark .liquid-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(25, 26, 32, 0.70) 0%,
+    rgba(14, 15, 20, 0.55) 100%
+  );
+  backdrop-filter: blur(32px) saturate(210%);
+  -webkit-backdrop-filter: blur(32px) saturate(210%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.55),
+    0 1px 2px 0 rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+html.dark .glass-panel {
+  background: rgba(18, 18, 22, 0.65);
+  backdrop-filter: blur(28px) saturate(210%);
+  -webkit-backdrop-filter: blur(28px) saturate(210%);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* ── 1. Apple Liquid Glass Water Orbs Keyframes ── */
+@keyframes liquid-drift-1 {
+  0% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate3d(14vw, 12vh, 0) scale(1.18) rotate(40deg); }
+  100% { transform: translate3d(6vw, -8vh, 0) scale(0.92) rotate(-20deg); }
+}
+
+@keyframes liquid-drift-2 {
+  0% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate3d(-16vw, 14vh, 0) scale(1.12) rotate(-45deg); }
+  100% { transform: translate3d(-8vw, -10vh, 0) scale(1.05) rotate(30deg); }
+}
+
+@keyframes liquid-drift-3 {
+  0% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate3d(18vw, -14vh, 0) scale(1.15) rotate(50deg); }
+  100% { transform: translate3d(-10vw, 8vh, 0) scale(0.95) rotate(-35deg); }
+}
+
+@keyframes liquid-drift-4 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-12vw, -16vh, 0) scale(1.22); }
+  100% { transform: translate3d(10vw, 12vh, 0) scale(0.88); }
+}
+
+@keyframes liquid-drift-5 {
+  0% { transform: translate3d(0, 0, 0) scale(1) opacity(0.85); }
+  50% { transform: translate3d(14vw, 10vh, 0) scale(1.25) opacity(1); }
+  100% { transform: translate3d(-10vw, -12vh, 0) scale(0.9) opacity(0.75); }
+}
+
+@keyframes liquid-caustic-drift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 50% 100%; }
+  100% { background-position: 100% 0%; }
+}
+
+.liquid-orb-1 { animation: liquid-drift-1 32s ease-in-out infinite alternate; }
+.liquid-orb-2 { animation: liquid-drift-2 38s ease-in-out infinite alternate; }
+.liquid-orb-3 { animation: liquid-drift-3 28s ease-in-out infinite alternate; }
+.liquid-orb-4 { animation: liquid-drift-4 34s ease-in-out infinite alternate; }
+.liquid-orb-5 { animation: liquid-drift-5 24s ease-in-out infinite alternate; }
+.liquid-caustics { animation: liquid-caustic-drift 40s ease-in-out infinite alternate; }
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-orb,
+  .liquid-caustics,
+  .liquid-bento-card,
+  .liquid-bento-card:hover {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* ── 2. Apple iOS Liquid Glass Bento Card Surface ── */
+.liquid-bento-card {
+  position: relative;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  box-shadow: 
+    0 20px 40px -15px rgba(0, 0, 0, 0.07),
+    0 1px 3px 0 rgba(0, 0, 0, 0.04),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+html.dark .liquid-bento-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.5),
+    0 1px 2px 0 rgba(0, 0, 0, 0.25),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not ((-webkit-backdrop-filter: blur(24px)) or (backdrop-filter: blur(24px))) {
+  .liquid-bento-card {
+    background: rgba(255, 255, 255, 0.92);
+  }
+  html.dark .liquid-bento-card {
+    background: rgba(12, 16, 26, 0.94);
+  }
+}
+
+/* Subtle diagonal sheen/specular gradient across top */
+.liquid-bento-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 28px 28px 0 0;
+}
+
+html.dark .liquid-bento-card::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 100%
+  );
+}
+
+/* Hover: Lift, Scale 1.02 & Mouse-Tracking Light Glow */
+@media (hover: hover) and (pointer: fine) {
+  .liquid-bento-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 
+      0 28px 56px -14px rgba(0, 0, 0, 0.12),
+      0 0 0 1px rgba(255, 255, 255, 0.5),
+      inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95);
+  }
+
+  html.dark .liquid-bento-card:hover {
+    box-shadow: 
+      0 32px 64px -14px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.22),
+      inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .liquid-bento-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.18),
+      transparent 65%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  html.dark .liquid-bento-card::after {
+    background: radial-gradient(
+      450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(56, 189, 248, 0.12),
+      transparent 65%
+    );
+  }
+
+  .liquid-bento-card:hover::after {
+    opacity: 1;
+  }
 }
 
 /* Hand-Drawn Sketchbook Utility Classes */
@@ -248,6 +456,22 @@ html.dark .sketch-button-outline:hover {
 
 .font-hero-heading {
   font-family: 'Amanojaku', 'Permanent Marker', 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+@font-face {
+  font-family: 'DrawingKids';
+  src: url('/fonts/Drawing-Kids-Thin-Regular.otf') format('opentype'),
+       url('/fonts/Drawing-Kids-Thin-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-drawing-kids,
+.font-hand-text,
+p {
+  font-family: 'DrawingKids', 'Space Grotesk', 'Patrick Hand', cursive, sans-serif;
   letter-spacing: 0.02em;
 }
 .font-editorial {

@@ -18,7 +18,7 @@ export function SiteFooter() {
   };
 
   return (
-    <footer className="w-full mt-20 pt-10 pb-12 border-t-4 border-black dark:border-white/20 bg-stone-100/90 dark:bg-[#0c0d12] text-black dark:text-white transition-colors duration-200">
+    <footer className="w-full mt-20 pt-10 pb-12 border-t-4 border-black dark:border-white/20 bg-stone-100/70 dark:bg-[#0c0d12]/75 backdrop-blur-2xl text-black dark:text-white transition-colors duration-200">
       <div className="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* ── TOP TIER: RETURN TO TOP ── */}
         <div className="flex items-center justify-end pb-6 border-b-2 border-black/15 dark:border-white/10 font-mono text-xs">
