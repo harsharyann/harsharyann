@@ -27,7 +27,8 @@
     "aboutHighlightedWords": "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning",
     "aboutZoneBadge": "✦ THE ARCHITECT & MIND",
     "aboutHeading": "Behind the Terminal",
-    "aboutSubtitle": "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed."
+    "aboutSubtitle": "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed.",
+    "showMobileCurrentRole": true
   },
   "socialLinks": {
     "github": "https://github.com",

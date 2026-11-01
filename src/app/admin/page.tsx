@@ -1076,17 +1076,46 @@ export default function AdminPage() {
                     />
                   </div>
 
-                  {/* Highlighter Pills Side by Side */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                  {/* Current Role / Internship Status Badge with Toggle */}
+                  <div className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-200 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="font-mono text-xs font-black uppercase text-stone-900">
+                          Current Role / Internship Badge
+                        </span>
+                      </div>
+
+                      {/* Show / Hide Toggle Button */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: {
+                              ...prev.personal,
+                              showMobileCurrentRole: prev.personal.showMobileCurrentRole === false ? true : false,
+                            },
+                          }))
+                        }
+                        className={`px-3 py-1 rounded-full font-mono text-[10px] font-black uppercase transition-all cursor-pointer flex items-center gap-1.5 border ${
+                          portfolio.personal.showMobileCurrentRole !== false
+                            ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
+                            : "bg-stone-200 text-stone-600 border-stone-300"
+                        }`}
+                      >
+                        <span>{portfolio.personal.showMobileCurrentRole !== false ? "● SHOWN ON COVER" : "○ HIDDEN"}</span>
+                      </button>
+                    </div>
+
                     <div>
-                      <label className="block font-mono text-xs font-bold text-amber-900 mb-1.5 flex items-center gap-1.5">
-                        <span className="w-3 h-3 rounded-full bg-[#fef08a] border border-black inline-block" />
-                        <span>Highlight Badge 1 (Yellow Pill):</span>
+                      <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                        Role Title &amp; Organization:
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. TA IIT Madras"
-                        value={portfolio.personal.mobileBadge1 || "TA IIT Madras"}
+                        placeholder="e.g. Teaching Assistant • IIT Madras"
+                        value={portfolio.personal.mobileBadge1 || "Teaching Assistant • IIT Madras"}
                         onChange={(e) =>
                           setPortfolio((prev) => ({
                             ...prev,
@@ -1095,25 +1124,9 @@ export default function AdminPage() {
                         }
                         className="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
                       />
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-cyan-900 mb-1.5 flex items-center gap-1.5">
-                        <span className="w-3 h-3 rounded-full bg-[#a5f3fc] border border-black inline-block" />
-                        <span>Highlight Badge 2 (Cyan Pill):</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. AI & Data Science"
-                        value={portfolio.personal.mobileBadge2 || "AI & Data Science"}
-                        onChange={(e) =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, mobileBadge2: e.target.value },
-                          }))
-                        }
-                        className="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                      />
+                      <span className="block font-mono text-[10px] text-stone-400 mt-1">
+                        Phone cover par pulsating green dot ke sath <strong>CURRENT ROLE</strong> badge me dikhta hai. Agar hide karna ho toh upar toggle switch use karein.
+                      </span>
                     </div>
                   </div>
 
@@ -1280,14 +1293,15 @@ export default function AdminPage() {
                         </span>
 
                         {/* Live Badges Preview */}
-                        <div className="flex flex-wrap items-center justify-center gap-1 mb-1">
-                          <span className="px-1.5 py-0.5 rounded-full bg-[#fef08a] text-black font-hero-heading text-[8px] font-black uppercase tracking-wider border border-black shadow-[1px_1px_0_#000]">
-                            {portfolio.personal.mobileBadge1 || "TA IIT Madras"}
-                          </span>
-                          <span className="px-1.5 py-0.5 rounded-full bg-[#a5f3fc] text-black font-hero-heading text-[8px] font-black uppercase tracking-wider border border-black shadow-[1px_1px_0_#000]">
-                            ✦ {portfolio.personal.mobileBadge2 || "AI & Data Science"}
-                          </span>
-                        </div>
+                        {portfolio.personal.showMobileCurrentRole !== false && (
+                          <div className="flex items-center justify-center mb-1">
+                            <span className="px-2 py-0.5 rounded-full bg-black/85 text-white text-[7.5px] font-bold uppercase tracking-wider border border-emerald-400/50 flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                              <span className="text-emerald-400 font-mono text-[6.5px]">ROLE:</span>
+                              <span className="truncate max-w-[100px]">{portfolio.personal.mobileBadge1 || "Teaching Assistant • IIT Madras"}</span>
+                            </span>
+                          </div>
+                        )}
 
                         {/* Live Tagline Preview */}
                         <p className="text-stone-300 text-[8px] font-drawing-kids tracking-wider line-clamp-2 max-w-[140px]">

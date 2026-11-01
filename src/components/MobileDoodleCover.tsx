@@ -430,27 +430,29 @@ export function MobileDoodleCover() {
           </motion.h1>
         </div>
 
-        {/* ── CURRENT ROLE / INTERNSHIP BADGE (Single Focused Status) ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex items-center justify-center mb-3 max-w-[340px]"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/85 backdrop-blur-md border border-emerald-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.7),0_0_14px_rgba(16,185,129,0.25)]">
-            <span className="flex h-2 w-2 relative shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-            </span>
-            <span className="font-mono text-[9px] font-black uppercase tracking-widest text-emerald-400">
-              CURRENT ROLE
-            </span>
-            <span className="text-white/30 text-xs font-bold">•</span>
-            <span className="font-['Space_Grotesk'] text-xs font-bold text-white tracking-wide">
-              {portfolio?.personal?.mobileBadge1 || "Teaching Assistant • IIT Madras"}
-            </span>
-          </div>
-        </motion.div>
+        {/* ── CURRENT ROLE / INTERNSHIP BADGE (Single Focused Status - Toggleable) ── */}
+        {portfolio?.personal?.showMobileCurrentRole !== false && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex items-center justify-center mb-3 max-w-[340px]"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/85 backdrop-blur-md border border-emerald-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.7),0_0_14px_rgba(16,185,129,0.25)]">
+              <span className="flex h-2 w-2 relative shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+              </span>
+              <span className="font-mono text-[9px] font-black uppercase tracking-widest text-emerald-400">
+                CURRENT ROLE
+              </span>
+              <span className="text-white/30 text-xs font-bold">•</span>
+              <span className="font-['Space_Grotesk'] text-xs font-bold text-white tracking-wide">
+                {portfolio?.personal?.mobileBadge1 || "Teaching Assistant • IIT Madras"}
+              </span>
+            </div>
+          </motion.div>
+        )}
 
         {/* Punchy Narrative Tagline */}
         <motion.p

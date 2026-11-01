@@ -57,6 +57,7 @@ export interface PortfolioData {
     mobileBadge1?: string;
     mobileBadge2?: string;
     mobileTagline?: string;
+    showMobileCurrentRole?: boolean;
     aboutPhotoTag?: string;
     aboutCurrentWork?: string;
     aboutWorkPlace?: string;
@@ -126,6 +127,7 @@ export const portfolioData: PortfolioData = {
     mobileBadge1: "TA IIT Madras",
     mobileBadge2: "AI & Data Science",
     mobileTagline: "Teaching Machines To Learn • Building Scientific Software",
+    showMobileCurrentRole: true,
     aboutPhotoTag: "✦ TA @ IIT MADRAS",
     aboutCurrentWork: "Teaching Assistant",
     aboutWorkPlace: "IIT Madras",
