@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { DoodleCrewCover } from "@/components/DoodleCrewCover";
 import { MobileDoodleCover } from "@/components/MobileDoodleCover";
+import { Scroll3DSection } from "@/components/Scroll3DSection";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { CertificatesSection } from "@/components/sections/CertificatesSection";
@@ -39,17 +40,45 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 02. CHAPTER 02: ABOUT & BIO ── */}
-      <AboutSection id="about" />
+      {/* ── 02. CHAPTER 02: ABOUT & BIO (3D Scroll Perspective) ── */}
+      <Scroll3DSection
+        id="about"
+        chapterNumber="02"
+        chapterName="The Architect & Mind"
+        accentColor="#f59e0b"
+      >
+        <AboutSection id="about-content" />
+      </Scroll3DSection>
 
-      {/* ── 03. CHAPTER 03: PROJECTS & BUILDS (Compact & 3D Interactive) ── */}
-      <ProjectsSection id="projects" />
+      {/* ── 03. CHAPTER 03: PROJECTS & BUILDS (3D Scroll Perspective) ── */}
+      <Scroll3DSection
+        id="projects"
+        chapterNumber="03"
+        chapterName="Project Lab & Code"
+        accentColor="#6366f1"
+      >
+        <ProjectsSection id="projects-content" />
+      </Scroll3DSection>
 
-      {/* ── 04. CHAPTER 04: CERTIFICATES & LAURELS (Compact Polaroid Bento Vault) ── */}
-      <CertificatesSection id="certificates" />
+      {/* ── 04. CHAPTER 04: CERTIFICATES & LAURELS (3D Scroll Perspective) ── */}
+      <Scroll3DSection
+        id="certificates"
+        chapterNumber="04"
+        chapterName="Credential Archive"
+        accentColor="#10b981"
+      >
+        <CertificatesSection id="certificates-content" />
+      </Scroll3DSection>
 
-      {/* ── 05. CHAPTER 05: CONTACT & DISPATCH ── */}
-      <ContactSection id="contact" />
+      {/* ── 05. CHAPTER 05: CONTACT & DISPATCH (3D Scroll Perspective) ── */}
+      <Scroll3DSection
+        id="contact"
+        chapterNumber="05"
+        chapterName="Direct Comms & Dispatch"
+        accentColor="#f43f5e"
+      >
+        <ContactSection id="contact-content" />
+      </Scroll3DSection>
 
       {/* ── FINAL ARCHITECTURAL FOOTER (At the very end of the website) ── */}
       <SiteFooter />

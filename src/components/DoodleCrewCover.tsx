@@ -622,13 +622,9 @@ const router = useRouter()
   }, [router])
 
   const triggerLeave = React.useCallback(() => {
-    if (isLeavingRef.current) return
-    isLeavingRef.current = true
-    setIsLeaving(true)
-    window.setTimeout(() => {
-      const el = document.getElementById("about"); if (el) el.scrollIntoView({ behavior: "smooth" });
-    }, 280)
-  }, [router])
+    const el = document.getElementById("about");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }, [])
 
   // Navigate to /about on scroll down, mouse wheel, or touch swipe
   React.useEffect(() => {
@@ -1453,11 +1449,7 @@ const COVER_CSS = `
   transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.38s ease;
 }
 
-.dcf-root.is-leaving {
-  transform: translate3d(0, -40px, 0);
-  opacity: 0;
-  pointer-events: none;
-}
+.dcf-root.is-leaving { pointer-events: auto; }
 
 :where(.dcf-root) *, :where(.dcf-root) *::before, :where(.dcf-root) *::after {
   box-sizing: border-box;

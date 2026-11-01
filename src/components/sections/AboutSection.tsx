@@ -255,7 +255,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
       <div className="pb-6 border-b-2 border-black dark:border-stone-800 space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2">
-            <span className="sketch-stamp bg-amber-400 text-black font-black shadow-[2px_2px_0_#000]">
+            <span className="sketch-stamp bg-amber-400 text-black font-black shadow-[2px_2px_0_#000] font-hero-heading">
               CHAPTER 02 • THE ARCHITECT &amp; MIND
             </span>
           </div>
@@ -274,7 +274,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white">
+            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading">
               Behind the Terminal
             </h2>
             <svg className="w-48 sm:w-64 h-3 text-amber-500 overflow-visible" viewBox="0 0 240 10" fill="none" aria-hidden="true">

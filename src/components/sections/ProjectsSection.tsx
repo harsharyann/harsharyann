@@ -269,11 +269,8 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
       <div className="pb-6 border-b-2 border-black dark:border-stone-800 space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2">
-            <span className="sketch-stamp bg-purple-600 text-white font-black shadow-[2px_2px_0_#000]">
+            <span className="sketch-stamp bg-purple-600 text-white font-black shadow-[2px_2px_0_#000] font-hero-heading">
               CHAPTER 03 • LAB EXPERIMENTS &amp; BUILDS
-            </span>
-            <span className="hidden sm:inline-block font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
-              [OPEN REPOSITORIES]
             </span>
           </div>
 
@@ -291,7 +288,7 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
 
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white">
+            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading">
               Projects &amp; Builds
             </h2>
 

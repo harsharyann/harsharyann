@@ -237,6 +237,19 @@ html.dark .sketch-button-outline:hover {
 }
 
 /* Typography Helpers */
+@font-face {
+  font-family: 'Amanojaku';
+  src: url('/fonts/Amanojaku-Demo.otf') format('opentype'),
+       url('/fonts/Amanojaku Demo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-hero-heading {
+  font-family: 'Amanojaku', 'Permanent Marker', 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
 .font-editorial {
   font-family: "Bodoni Moda", "Iowan Old Style", "Palatino", Georgia, serif;
   font-feature-settings: "liga" 1, "dlig" 1;
