@@ -399,8 +399,8 @@ const SPARK_CSS = `
   position: relative;
   z-index: 18;
   width: 100%;
-  max-width: 660px;
-  margin: 12px auto 4px;
+  max-width: 580px;
+  margin: clamp(4px, 0.8vh, 8px) auto 0;
   display: flex;
   justify-content: center;
   box-sizing: border-box;
@@ -414,17 +414,16 @@ const SPARK_CSS = `
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.50) 100%);
   backdrop-filter: blur(28px) saturate(190%);
   -webkit-backdrop-filter: blur(28px) saturate(190%);
-  box-shadow: 4px 4px 0 #000000, inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85);
+  box-shadow: 3px 3px 0 #000000, inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85);
   background-image: none;
   color: #0a0a0a;
   border: 2px solid #000000;
-  border-radius: 20px 16px 22px 14px / 14px 22px 16px 20px;
-  box-shadow: 4px 4px 0 #000000;
-  padding: 16px 20px 14px;
+  border-radius: 16px;
+  padding: clamp(8px, 1vh, 12px) clamp(12px, 1.4vw, 18px);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  transform: rotate(-0.4deg);
+  gap: clamp(4px, 0.6vh, 8px);
+  transform: rotate(-0.3deg);
   transition: transform 0.22s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.22s ease, border-color 0.2s ease;
   user-select: text;
 }
@@ -653,25 +652,25 @@ const SPARK_CSS = `
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  min-height: 44px;
+  gap: 6px;
+  min-height: 28px;
   text-align: left;
 }
 
 .daily-spark-quote-mark {
   font-family: "Bodoni Moda", "Iowan Old Style", Georgia, serif;
-  font-size: 32px;
+  font-size: 24px;
   line-height: 0.9;
   font-weight: 900;
   color: var(--spark-accent, #8b5cf6);
   user-select: none;
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .daily-spark-quote-endmark {
   font-family: "Bodoni Moda", "Iowan Old Style", Georgia, serif;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1;
   font-weight: 900;
   color: var(--spark-accent, #8b5cf6);
@@ -680,10 +679,10 @@ const SPARK_CSS = `
 
 .daily-spark-quote-text {
   margin: 0;
-  font-family: 'Plus Jakarta Sans', 'Space Grotesk', system-ui, sans-serif;
-  font-size: clamp(14.5px, 1.8vw, 17px);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: clamp(12.5px, 1.2vw, 14.5px);
   font-weight: 800;
-  line-height: 1.45;
+  line-height: 1.35;
   color: #111827;
   letter-spacing: -0.015em;
   text-wrap: balance;

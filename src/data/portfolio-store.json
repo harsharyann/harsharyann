@@ -4,8 +4,8 @@
     "role": "AI & Data Science Student & Teaching Assistant",
     "headline": "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",
     "bio": "I am Harsh Aryan, a developer passionate about Artificial Intelligence, Data Science, and Scientific Computing. My fascination began when I wrote my first Python script to automate a repetitive task; seeing lines of logic produce tangible results sparked an obsession that has guided my work ever since.\n\nWhile modern AI moves at breakneck speed, I believe real engineering requires solid anchors. Rather than jumping straight to high-level wrappers, I spend my time understanding the foundational mathematics—Linear Algebra, Multivariate Calculus, and Probability—implementing algorithms from scratch before relying on abstractions.",
-    "college": "Engineering College / University",
-    "degree": "Data Science And Applicatation",
+    "college": "IIT Madras",
+    "degree": "Data Science and Applications",
     "year": "Undergraduate",
     "cgpa": "Active Student",
     "location": "India & Open for Opportunities",
@@ -29,7 +29,12 @@
     "aboutZoneBadge": "✦ THE ARCHITECT & MIND",
     "aboutHeading": "Behind the Terminal",
     "aboutSubtitle": "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed.",
-    "showMobileCurrentRole": true
+    "showMobileCurrentRole": true,
+    "currentCountry": "India",
+    "currentCity": "Chennai, India",
+    "currentWork": "Teaching Assistant @ IIT Madras",
+    "currentStatusNote": "Active & Open for Opportunities",
+    "currentTimezone": "Asia/Kolkata (UTC+5:30 IST)"
   },
   "socialLinks": {
     "github": "https://github.com",

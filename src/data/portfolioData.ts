@@ -66,6 +66,11 @@ export interface PortfolioData {
     aboutZoneBadge?: string;
     aboutHeading?: string;
     aboutSubtitle?: string;
+    currentCountry?: string;
+    currentCity?: string;
+    currentWork?: string;
+    currentStatusNote?: string;
+    currentTimezone?: string;
   };
   socialLinks: {
     github: string;
@@ -111,8 +116,8 @@ export const portfolioData: PortfolioData = {
     role: "AI & Data Science Specialist & Teaching Assistant",
     headline: "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",
     bio: "Hi! I am Harsh Aryan, a curious 1st-year undergraduate student passionate about Artificial Intelligence, Data Science, and Mathematics. I spend my time mastering Python, Linear Algebra, Exploratory Data Analysis, and fundamental Machine Learning algorithms. I am eager to learn, build practical projects, participate in hackathons, and secure early internship opportunities.",
-    college: "Engineering College / University",
-    degree: "Computer Science & Engineering (AI & Data Science)",
+    college: "IIT Madras",
+    degree: "Data Science and Applications",
     year: "Undergraduate",
     cgpa: "Active Student",
     location: "India & Open for Remote Opportunities",
@@ -137,6 +142,11 @@ export const portfolioData: PortfolioData = {
     aboutZoneBadge: "✦ THE ARCHITECT & MIND",
     aboutHeading: "Behind the Terminal",
     aboutSubtitle: "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed.",
+    currentCountry: "India",
+    currentCity: "Chennai, India",
+    currentWork: "Teaching Assistant @ IIT Madras",
+    currentStatusNote: "Active & Open for Opportunities",
+    currentTimezone: "Asia/Kolkata (UTC+5:30 IST)",
   },
 
   socialLinks: {

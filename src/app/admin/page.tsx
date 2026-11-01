@@ -31,6 +31,7 @@ import {
   ArrowDown,
   Layers,
   Code2,
+  MapPin,
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Project, Certificate, PortfolioData, TimelineMilestone } from "@/data/portfolioData";
@@ -1325,12 +1326,12 @@ export default function AdminPage() {
                       <img
                         src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl) || "/harsh-cover.jpg"}
                         alt="Cover Preview"
-                        className="absolute inset-0 w-full h-full object-cover object-[center_16%]"
+                        className="absolute inset-0 w-full h-full object-cover object-[center_top]"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 via-48% to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-transparent pointer-events-none" />
 
                       {/* Top Bar inside Mockup */}
                       <div className="relative z-10 w-full px-2 pt-2 flex justify-end">
@@ -1341,26 +1342,25 @@ export default function AdminPage() {
 
                       {/* Bottom Details inside Mockup */}
                       <div className="relative z-10 p-2 text-center flex flex-col items-center">
-                        <svg viewBox="0 0 54 34" className="w-5 h-3.5 mb-1" fill="none" stroke="#000" strokeWidth="2.5">
-                          <path d="M 6 28 L 48 28 L 46 11 L 35 19 L 27 6 L 19 19 L 8 11 Z" fill={coverAccentColor} />
-                        </svg>
-
                         <span
-                          className="font-['Permanent_Marker',cursive] text-[13px] text-white tracking-wide leading-none select-none mb-1.5"
+                          className="font-hero-heading text-[13px] text-white tracking-wide leading-none select-none mb-1.5"
                           style={{
+                            fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
                             textShadow: `1px 1px 0 #000, -1px -1px 0 #000, 2px 2px 0 ${coverAccentColor}`,
                           }}
                         >
                           {portfolio.personal.name || "HARSH ARYAN"}
                         </span>
 
-                        {/* Live Badges Preview */}
+                        {/* Live Badges Preview: Teaching Assistant with IIT Madras underneath */}
                         {portfolio.personal.showMobileCurrentRole !== false && (
-                          <div className="flex items-center justify-center mb-1">
-                            <span className="px-2 py-0.5 rounded-full bg-black/85 text-white text-[7.5px] font-bold uppercase tracking-wider border border-emerald-400/50 flex items-center gap-1">
+                          <div className="flex flex-col items-center justify-center mb-1 px-2 py-1 rounded-xl bg-black/85 border border-emerald-400/50 w-full max-w-[130px]">
+                            <span className="text-white text-[7.5px] font-bold uppercase tracking-wider flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                              <span className="text-emerald-400 font-mono text-[6.5px]">ROLE:</span>
-                              <span className="truncate max-w-[100px]">{portfolio.personal.mobileBadge1 || "Teaching Assistant • IIT Madras"}</span>
+                              <span className="text-emerald-300 font-mono text-[7px]">Teaching Assistant</span>
+                            </span>
+                            <span className="text-amber-300 font-mono text-[6.5px] font-bold uppercase tracking-wider mt-0.5">
+                              IIT Madras
                             </span>
                           </div>
                         )}
@@ -1729,19 +1729,17 @@ export default function AdminPage() {
                         <div className="font-['Space_Grotesk'] text-base font-black uppercase text-black leading-none truncate">
                           {portfolio.personal.name || "HARSH ARYAN"}
                         </div>
-                        <div className="flex items-center gap-1.5 flex-wrap text-[9px] font-mono font-bold">
+                        <div className="flex flex-col items-start gap-1 text-[9px] font-mono font-bold">
                           <span className="px-1.5 py-0.5 rounded bg-stone-100 border border-stone-300 text-stone-900 flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                             <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}</span>
                           </span>
-                          <span>•</span>
                           <span className="px-1.5 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-950">
-                            🏛️ {portfolio.personal.aboutWorkPlace || portfolio.personal.college || "IIT Madras"}
+                            {portfolio.personal.aboutWorkPlace || "IIT Madras"}
                           </span>
                         </div>
                         <div className="flex items-center justify-between pt-1 border-t border-stone-200 text-[9px] font-mono text-stone-500">
                           <span>📍 {portfolio.personal.location || "India"}</span>
-                          <span>🎓 {portfolio.personal.degree || "BS Degree"}</span>
                         </div>
                       </div>
                     </div>
@@ -3012,25 +3010,162 @@ export default function AdminPage() {
 
         {/* ── TAB: INQUIRIES & CONTACT ── */}
         {activeTab === "contact" && (
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                  <Send className="w-6 h-6 text-amber-500" />
-                  <span>Contact Inquiries ({messages.length})</span>
-                </h2>
-                <p className="font-mono text-xs text-stone-500">Messages sent via your portfolio contact form</p>
+          <div className="space-y-6">
+            {/* 1. Live Coordinates & Current Dispatch Editor */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
+                <div>
+                  <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                    <MapPin className="w-6 h-6 text-cyan-600" />
+                    <span>Live Coordinates &amp; Current Dispatch</span>
+                  </h2>
+                  <p className="font-mono text-xs text-stone-500">
+                    Customize your live station, country, workplace/job, status notes, and timezone
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => saveInstantly(portfolio, "✓ Coordinates & dispatch station updated successfully!")}
+                  className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold shadow-[2px_2px_0_#666] active:translate-y-0.5 cursor-pointer self-start sm:self-auto"
+                >
+                  Save Dispatch Settings
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={fetchMessages}
-                className="px-3.5 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Refresh</span>
-              </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Current Country */}
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                    Current Country:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. India"
+                    value={portfolio.personal.currentCountry || ""}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, currentCountry: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+
+                {/* Current City & Location */}
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                    Current City / Location:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Chennai, India"
+                    value={portfolio.personal.currentCity || ""}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, currentCity: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+
+                {/* Current Role / Workplace ("kha job kr rha hu") */}
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                    Current Workplace / Role (&ldquo;Kaha Job Kar Rahe Ho&rdquo;):
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Teaching Assistant @ IIT Madras"
+                    value={portfolio.personal.currentWork || ""}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, currentWork: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs font-bold text-amber-900 focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+
+                {/* Standard Timezone */}
+                <div>
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                    Standard Timezone:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Asia/Kolkata (UTC+5:30 IST)"
+                    value={portfolio.personal.currentTimezone || ""}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, currentTimezone: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+
+                {/* Status Note / Availability */}
+                <div className="md:col-span-2">
+                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                    Current Status Note / Availability:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Open for Opportunities & Collaborations"
+                    value={portfolio.personal.currentStatusNote || ""}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, currentStatusNote: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Classic Live Dispatch Preview */}
+              <div className="pt-2">
+                <div className="font-mono text-[11px] font-bold text-stone-500 mb-2">
+                  Live Dispatch Card Preview:
+                </div>
+                <div className="p-4 rounded-2xl border-2 border-black bg-stone-50 shadow-[3px_3px_0_#06b6d4] max-w-md font-mono text-xs space-y-2">
+                  <div className="flex items-center justify-between pb-2 border-b border-dashed border-stone-300">
+                    <span className="font-black text-cyan-900 uppercase">CURRENT COORDINATES</span>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">● LIVE STATION</span>
+                  </div>
+                  <div><strong className="text-stone-500">LOCATION:</strong> {portfolio.personal.currentCountry ? `${portfolio.personal.currentCountry} • ` : ""}{portfolio.personal.currentCity || portfolio.personal.location || "India"}</div>
+                  <div><strong className="text-stone-500">STATION/JOB:</strong> <span className="font-bold text-amber-800">{portfolio.personal.currentWork || "Teaching Assistant @ IIT Madras"}</span></div>
+                  <div><strong className="text-stone-500">STATUS:</strong> &ldquo;{portfolio.personal.currentStatusNote || "Open for Opportunities"}&rdquo;</div>
+                </div>
+              </div>
             </div>
+
+            {/* 2. Contact Inquiries */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                    <Send className="w-6 h-6 text-amber-500" />
+                    <span>Contact Inquiries ({messages.length})</span>
+                  </h2>
+                  <p className="font-mono text-xs text-stone-500">Messages sent via your portfolio contact form</p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={fetchMessages}
+                  className="px-3.5 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Refresh</span>
+                </button>
+              </div>
 
             {isLoadingMessages ? (
               <div className="py-12 text-center text-stone-500 font-mono text-xs">
@@ -3071,7 +3206,8 @@ export default function AdminPage() {
               </div>
             )}
           </div>
-        )}
+        </div>
+      )}
       </main>
 
       {/* ── PROJECT MODAL (ADD / EDIT) ── */}

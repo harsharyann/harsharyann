@@ -40,6 +40,8 @@ export function SiteFooter() {
     }
   };
 
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
   const directoryItems = [
     { id: "cover", label: "Cover", href: "#cover" },
     { id: "about", label: "About", href: "/#about" },
@@ -79,27 +81,69 @@ export function SiteFooter() {
             </p>
           </div>
 
-          {/* Threaded Site Directory */}
-          <nav aria-label="Site Directory Thread" className="overflow-x-auto py-1 scrollbar-none">
-            <div className="inline-flex items-center gap-1 font-mono text-xs whitespace-nowrap">
-              {directoryItems.map((item, idx, arr) => (
-                <React.Fragment key={item.id}>
-                  <Link
-                    href={item.href}
-                    onClick={(e) => handleDirectoryClick(e, item)}
-                    className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 font-bold transition-all duration-150 cursor-pointer"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-600 group-hover:bg-amber-500 group-hover:scale-125 transition-all" />
-                    <span>{item.label}</span>
-                  </Link>
+          {/* 🐍 Cool Snake-Style Threaded Site Directory */}
+          <nav aria-label="Snake Thread Site Directory" className="overflow-x-auto py-1.5 scrollbar-none">
+            <div className="inline-flex items-center gap-1 font-mono text-xs whitespace-nowrap bg-white/40 dark:bg-stone-900/40 p-1.5 rounded-full border border-black/10 dark:border-white/10 shadow-2xs backdrop-blur-xs">
+              {directoryItems.map((item, idx, arr) => {
+                const isHovered = hoveredId === item.id;
+                const isFirst = idx === 0;
 
-                  {idx < arr.length - 1 && (
-                    <span className="text-stone-300 dark:text-stone-700 select-none font-bold px-0.5 tracking-tighter">
-                      ───
-                    </span>
-                  )}
-                </React.Fragment>
-              ))}
+                return (
+                  <React.Fragment key={item.id}>
+                    <Link
+                      href={item.href}
+                      onClick={(e) => handleDirectoryClick(e, item)}
+                      onMouseEnter={() => setHoveredId(item.id)}
+                      onMouseLeave={() => setHoveredId(null)}
+                      className={`group relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold transition-all duration-200 cursor-pointer select-none ${
+                        isHovered
+                          ? "bg-amber-300 dark:bg-amber-400 text-black border border-black shadow-[2px_2px_0_#000] scale-105"
+                          : "text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent"
+                      }`}
+                    >
+                      {/* Snake Head Indicator */}
+                      {isHovered ? (
+                        <span className="text-xs transition-transform group-hover:rotate-12 animate-bounce">
+                          🐍
+                        </span>
+                      ) : (
+                        <span
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            isFirst
+                              ? "bg-emerald-500 shadow-[0_0_8px_#22c55e]"
+                              : "bg-stone-400 dark:bg-stone-600 group-hover:bg-emerald-500"
+                          }`}
+                        />
+                      )}
+                      <span>{item.label}</span>
+                    </Link>
+
+                    {/* Animated Slithering Snake Track between nodes */}
+                    {idx < arr.length - 1 && (
+                      <div className="relative inline-flex items-center px-0.5 select-none pointer-events-none" aria-hidden="true">
+                        <svg className="w-7 sm:w-9 h-3.5 overflow-visible" viewBox="0 0 36 14" fill="none">
+                          {/* Snake undulating track */}
+                          <path
+                            d="M 2 7 Q 10 1, 18 7 T 34 7"
+                            stroke={isHovered ? "#f59e0b" : "currentColor"}
+                            strokeWidth="2.4"
+                            strokeLinecap="round"
+                            className={`transition-colors ${
+                              isHovered
+                                ? "text-amber-500"
+                                : "text-stone-300 dark:text-stone-700"
+                            }`}
+                            strokeDasharray="4 3"
+                            style={{
+                              animation: "slither 1.2s linear infinite",
+                            }}
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </div>
           </nav>
 

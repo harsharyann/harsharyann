@@ -224,8 +224,48 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
   const [copied, setCopied] = useState(false)
   const [showFlight, setShowFlight] = useState(false)
 
-  const emailToUse = portfolio?.personal?.email || portfolioData.personal.email
-  const locationToUse = portfolio?.personal?.location || portfolioData.personal.location
+  // Real-time auto-updating live clock (Day, Date, Month, Time in user's timezone)
+  const [liveTime, setLiveTime] = useState<{
+    time: string;
+    day: string;
+    date: string;
+  }>({
+    time: "",
+    day: "",
+    date: "",
+  });
+
+  React.useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setLiveTime({
+        time: now.toLocaleTimeString("en-US", {
+          timeZone: "Asia/Kolkata",
+          hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+        day: now.toLocaleDateString("en-US", {
+          timeZone: "Asia/Kolkata",
+          weekday: "long",
+        }),
+        date: now.toLocaleDateString("en-US", {
+          timeZone: "Asia/Kolkata",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+      });
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const personal = portfolio?.personal;
+  const emailToUse = personal?.email || portfolioData.personal.email
+  const locationToUse = personal?.location || portfolioData.personal.location
 
   const handleCopy = () => {
     navigator.clipboard.writeText(emailToUse)
@@ -424,11 +464,11 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
 
         {/* Coordinates Column */}
         <div className="lg:col-span-5 space-y-4">
-          {/* Direct Email Card */}
+          {/* Direct Electronic Mail Card */}
           <div className="p-5 rounded-[28px] liquid-bento-card space-y-3">
             <span className="font-mono text-xs font-black uppercase text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
               <Mail className="w-4 h-4 text-amber-600" />
-              <span>DIRECT INBOX</span>
+              <span>ELECTRONIC MAIL</span>
             </span>
             <div className="flex items-center justify-between p-2.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-white/80 dark:bg-stone-800/80">
               <span className="font-mono text-xs font-bold text-black dark:text-white truncate">
@@ -438,25 +478,88 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
                 type="button"
                 onClick={handleCopy}
                 className="p-1.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 transition-colors cursor-pointer"
-                title="Copy email to clipboard"
+                title="Copy electronic mail"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          {/* Location & Timezone Card */}
-          <div className="p-5 rounded-[28px] liquid-bento-card space-y-3">
-            <span className="font-mono text-xs font-black uppercase text-cyan-900 dark:text-cyan-300 flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-cyan-600" />
-              <span>COORDINATES</span>
-            </span>
-            <p className="font-mono text-xs text-stone-800 dark:text-stone-200">
-              {locationToUse}
-            </p>
-            <p className="font-mono text-[11px] text-stone-500 dark:text-stone-400">
-              Standard Timezone: UTC+5:30 (IST)
-            </p>
+          {/* Classic Live Coordinates & Current Dispatch Card */}
+          <div className="p-5 sm:p-6 rounded-[28px] liquid-bento-card space-y-4 border-2 border-black dark:border-white shadow-[4px_4px_0_#06b6d4] dark:shadow-[4px_4px_0_#38bdf8] bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl relative overflow-hidden">
+            {/* Header with live station indicator */}
+            <div className="flex items-center justify-between pb-3 border-b-2 border-dashed border-stone-200 dark:border-stone-800">
+              <span className="font-mono text-xs font-black uppercase text-cyan-900 dark:text-cyan-300 flex items-center gap-1.5">
+                <MapPin className="w-4 h-4 text-cyan-600" />
+                <span>CURRENT COORDINATES</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-black uppercase border border-emerald-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                <span>LIVE STATION</span>
+              </span>
+            </div>
+
+            {/* Field Grid: Classic Telegram / Dispatch Details */}
+            <div className="space-y-3 font-mono text-xs">
+              {/* Location & Country */}
+              <div className="flex items-start gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-stone-400 dark:text-stone-500 shrink-0 w-24">
+                  LOCATION:
+                </span>
+                <span className="font-bold text-stone-900 dark:text-stone-100">
+                  {personal?.currentCountry ? `${personal.currentCountry} • ` : ""}
+                  {personal?.currentCity || locationToUse}
+                </span>
+              </div>
+
+              {/* Current Role / Workplace ("kha job kr rha hu") */}
+              <div className="flex items-start gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-stone-400 dark:text-stone-500 shrink-0 w-24">
+                  STATION / JOB:
+                </span>
+                <span className="font-black text-amber-700 dark:text-amber-400">
+                  {personal?.currentWork || "Teaching Assistant @ IIT Madras"}
+                </span>
+              </div>
+
+              {/* Real-time Ticking Clock (Day, Date, Month, Time, Timezone) */}
+              <div className="flex items-start gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-stone-400 dark:text-stone-500 shrink-0 w-24">
+                  LOCAL TIME:
+                </span>
+                <div className="space-y-0.5">
+                  <div className="font-black text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5 text-cyan-500 animate-spin" style={{ animationDuration: "12s" }} />
+                    <span className="text-cyan-700 dark:text-cyan-300 font-bold tracking-wider">
+                      {liveTime.time || "22:15:00"}
+                    </span>
+                    <span className="text-[10px] text-stone-500 font-normal">
+                      {personal?.currentTimezone || "UTC+5:30 (IST)"}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+                    <Calendar className="w-3 h-3 text-stone-400" />
+                    <span>{liveTime.day ? `${liveTime.day}, ` : ""}{liveTime.date || "01 Nov 2026"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Note / Availability */}
+              <div className="flex items-start gap-2 pt-1 border-t border-dashed border-stone-200 dark:border-stone-800">
+                <span className="text-[10px] font-black uppercase tracking-wider text-stone-400 dark:text-stone-500 shrink-0 w-24">
+                  STATUS NOTE:
+                </span>
+                <span className="text-stone-600 dark:text-stone-400 italic">
+                  &ldquo;{personal?.currentStatusNote || "Open for Opportunities & Collaborations"}&rdquo;
+                </span>
+              </div>
+            </div>
+
+            {/* Classic Dispatch Stamp at Bottom */}
+            <div className="pt-2 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-[10px] font-mono text-stone-400">
+              <span className="tracking-widest uppercase">DISPATCH VERIFIED</span>
+              <span className="font-bold text-stone-500">IND // 2026</span>
+            </div>
           </div>
         </div>
       </div>

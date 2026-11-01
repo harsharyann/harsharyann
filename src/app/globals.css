@@ -39,7 +39,7 @@ html.dark {
 body {
   background-color: transparent;
   color: var(--text-primary);
-  font-family: 'DrawingKids', 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.25s ease, color 0.25s ease;
   overflow-x: hidden;
 }
@@ -450,30 +450,43 @@ html.dark .sketch-button-outline:hover {
   font-family: 'Amanojaku';
   src: url('/fonts/Amanojaku-Demo.otf') format('opentype'),
        url('/fonts/Amanojaku Demo.otf') format('opentype');
-  font-weight: normal;
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Amanojaku';
+  src: url('/fonts/Amanojaku-Demo.otf') format('opentype'),
+       url('/fonts/Amanojaku Demo.otf') format('opentype');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
 
 .font-hero-heading {
-  font-family: 'Amanojaku', 'Permanent Marker', 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: 0.02em;
+  font-family: 'Amanojaku', 'Dela Gothic One', 'Syne', 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.03em;
 }
 
 @font-face {
   font-family: 'DrawingKids';
   src: url('/fonts/Drawing-Kids-Thin-Regular.otf') format('opentype'),
        url('/fonts/Drawing-Kids-Thin-Regular.ttf') format('truetype');
-  font-weight: normal;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
-.font-drawing-kids,
-.font-hand-text,
-p {
+.font-drawing-kids {
   font-family: 'DrawingKids', 'Space Grotesk', 'Patrick Hand', cursive, sans-serif;
   letter-spacing: 0.02em;
+}
+
+.font-hand-text,
+p {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.01em;
 }
 .font-editorial {
   font-family: "Bodoni Moda", "Iowan Old Style", "Palatino", Georgia, serif;
@@ -483,6 +496,15 @@ p {
 .font-editorial-italic {
   font-family: "Cormorant Garamond", "Bodoni Moda", Georgia, serif;
   font-style: italic;
+}
+
+@keyframes slither {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -16;
+  }
 }
 
 /* Custom Scrollbar */

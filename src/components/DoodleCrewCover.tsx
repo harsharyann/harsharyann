@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Mail, Lock } from "lucide-react"
 import { useTheme } from "./ThemeProvider"
@@ -9,6 +10,8 @@ import { ThemeToggle } from "./ThemeToggle"
 import { usePortfolio } from "@/context/PortfolioContext"
 import { GithubIcon, LinkedinIcon } from "./SocialIcons"
 import { DailySpark } from "./DailySpark"
+import { formatGoogleDriveImageUrl } from "@/lib/googleDrive"
+import { extractPhotoPalette, PhotoPalette, DEFAULT_PHOTO_PALETTE } from "@/lib/colorExtractor"
 
 /**
  * DoodleCrewCover — A high-energy sketchbook cover page for Harsh Aryan.
@@ -553,7 +556,7 @@ const DoodleIcon = ({ kind, size = 18, isDark = false }: { kind: DoodleKind; siz
 
 type Metrics = { advances: number[]; cap: number }
 const FONT_SIZE = 190
-const DEFAULT_FONT = '"Arial Black", "Inter Display", Inter, -apple-system, sans-serif'
+const DEFAULT_FONT = "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif"
 
 const estimate = (word: string): Metrics => ({
   advances: Array.from(word).map((c) =>
@@ -611,6 +614,27 @@ export function DoodleCrewCover({
   const { data: portfolio, closeCover } = usePortfolio()
   const word = (portfolio?.personal?.desktopWordmark || portfolio?.personal?.name || wordmark).toUpperCase()
   const chars = React.useMemo(() => Array.from(word), [word])
+
+  // Dynamic photo and photo-extracted palette synchronization
+  const photoSrc =
+    formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl) ||
+    "/harsh-cover.jpg";
+  const [displayPhotoSrc, setDisplayPhotoSrc] = React.useState<string>(photoSrc);
+  const [photoPalette, setPhotoPalette] = React.useState<PhotoPalette>(DEFAULT_PHOTO_PALETTE);
+
+  React.useEffect(() => {
+    setDisplayPhotoSrc(photoSrc);
+  }, [photoSrc]);
+
+  React.useEffect(() => {
+    let alive = true;
+    extractPhotoPalette(displayPhotoSrc, DEFAULT_PHOTO_PALETTE).then((pal) => {
+      if (alive) setPhotoPalette(pal);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [displayPhotoSrc]);
 
   const router = useRouter()
   const isLeavingRef = React.useRef(false)
@@ -1126,6 +1150,28 @@ export function DoodleCrewCover({
       {/* Main Cover Canvas */}
       <main className="dcf-main-canvas" ref={worldRef}>
 
+        {/* Author Portrait Polaroid Flank (Bottom-Left) */}
+        <aside className="dcf-side-flank is-left group cursor-pointer" aria-label="Harsh Aryan - Polaroid Portrait">
+          <div className="dcf-flank-tape is-left-tape" style={{ backgroundColor: photoPalette.dominant }} />
+          <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-black/30 bg-stone-900 mb-2">
+            <Image
+              src={displayPhotoSrc}
+              alt="Harsh Aryan"
+              fill
+              unoptimized
+              className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
+              onError={() => setDisplayPhotoSrc("/harsh-cover.jpg")}
+            />
+            <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded-xs bg-emerald-500 text-black font-mono text-[9px] font-black uppercase">
+              LIVE TA
+            </div>
+          </div>
+          <div className="flex items-center justify-between text-[11px] font-bold font-mono">
+            <span className="truncate">{portfolio?.personal?.name || "Harsh Aryan"}</span>
+            <span className="text-amber-600 dark:text-amber-400 font-black">IIT-M</span>
+          </div>
+        </aside>
+
         {/* Portfolio Quick Dossier (Bottom-Right) */}
         <aside className="dcf-side-flank is-right" aria-label="Portfolio Quick Dossier">
           <div className="dcf-flank-tape is-right-tape" />
@@ -1162,6 +1208,18 @@ export function DoodleCrewCover({
             aria-label="Harsh Aryan — Doodle Crew Wordmark"
           >
             <defs>
+              {/* Force Amanojaku @font-face inside SVG context */}
+              <style>{`
+                @font-face {
+                  font-family: 'Amanojaku';
+                  src: url('/fonts/Amanojaku-Demo.otf') format('opentype'),
+                       url('/fonts/Amanojaku Demo.otf') format('opentype');
+                  font-weight: 100 900;
+                  font-style: normal;
+                  font-display: swap;
+                }
+              `}</style>
+
               {/* Pure B&W Cross-hatch pattern */}
               <pattern id={`${uid}-hatch`} width="4.6" height="4.6" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
                 <line x1="0" y1="0" x2="0" y2="4.6" stroke="#000000" strokeWidth="1.25" />
@@ -1211,7 +1269,7 @@ export function DoodleCrewCover({
                       y={4.5}
                       fontSize={FONT_SIZE}
                       fontWeight={900}
-                      style={{ fontFamily: DEFAULT_FONT }}
+                      style={{ fontFamily: "'Amanojaku', 'Dela Gothic One', sans-serif" }}
                       className="dcf-letter-shadow"
                     >
                       {c}
@@ -1223,8 +1281,10 @@ export function DoodleCrewCover({
                       fontSize={FONT_SIZE}
                       fontWeight={900}
                       style={{
-                        fontFamily: DEFAULT_FONT,
-                        fill: isDark ? DARK_LETTER_COLORS[i % DARK_LETTER_COLORS.length] : LETTER_COLORS[i % LETTER_COLORS.length],
+                        fontFamily: "'Amanojaku', 'Dela Gothic One', sans-serif",
+                        fill: photoPalette?.letters?.length
+                          ? photoPalette.letters[i % photoPalette.letters.length]
+                          : (isDark ? DARK_LETTER_COLORS[i % DARK_LETTER_COLORS.length] : LETTER_COLORS[i % LETTER_COLORS.length]),
                       }}
                       className="dcf-letter-main"
                       filter={`url(#${uid}-ink)`}
@@ -1328,11 +1388,16 @@ export function DoodleCrewCover({
 
         {/* Hero Headline & Call to Action */}
         <div className="dcf-hero-copy">
-          {/* Active Role — Redesigned Sleek Editorial Badge */}
+          {/* Active Role — Stacked Editorial Badge (Teaching Assistant + IIT Madras directly underneath) */}
           <div className="dcf-hero-roles dcf-rise" style={{ "--d": "460ms" } as React.CSSProperties} aria-label="Harsh Aryan - Current Role">
-            <div className="dcf-hero-role-pill is-ta group cursor-default" title="Teaching Assistant • IIT Madras">
-              <span className="dcf-role-live-dot" aria-hidden="true" />
-              <span className="dcf-role-text-bold">{portfolio?.personal?.desktopRole || portfolio?.personal?.role || "Teaching Assistant • IIT Madras"}</span>
+            <div className="dcf-hero-role-pill is-ta group cursor-default flex flex-col items-center justify-center gap-0.5 py-1 px-4 rounded-xl" title="Teaching Assistant @ IIT Madras">
+              <div className="flex items-center gap-1.5">
+                <span className="dcf-role-live-dot" aria-hidden="true" />
+                <span className="dcf-role-text-bold text-[11px] sm:text-xs font-extrabold uppercase tracking-wide">Teaching Assistant</span>
+              </div>
+              <div className="font-mono text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                IIT Madras
+              </div>
             </div>
           </div>
 
@@ -1355,7 +1420,7 @@ export function DoodleCrewCover({
               }}
               className="dcf-btn is-projects is-solid cursor-pointer"
             >
-              <DoodleIcon kind="bolt" size={16} isDark={isDark} />
+              <DoodleIcon kind="bolt" size={14} isDark={isDark} />
               <span>Explore Projects</span>
               <span className="dcf-btn-arrow">↗</span>
             </a>
@@ -1371,7 +1436,7 @@ export function DoodleCrewCover({
               }}
               className="dcf-btn is-about is-outline cursor-pointer"
             >
-              <DoodleIcon kind="star" size={16} isDark={isDark} />
+              <DoodleIcon kind="star" size={14} isDark={isDark} />
               <span>About &amp; Story</span>
             </a>
 
@@ -1386,7 +1451,7 @@ export function DoodleCrewCover({
               }}
               className="dcf-btn is-contact is-outline cursor-pointer"
             >
-              <DoodleIcon kind="plane" size={16} isDark={isDark} />
+              <DoodleIcon kind="plane" size={14} isDark={isDark} />
               <span>Contact Desk</span>
             </a>
           </div>
@@ -1395,15 +1460,15 @@ export function DoodleCrewCover({
           <DailySpark isDark={isDark} />
 
           {/* Enter Portfolio Action Link with "CLICK HERE" comic bubble & 8-second countdown */}
-          <div className="dcf-scroll-cue dcf-rise flex flex-col items-center gap-2 mt-4" style={{ "--d": "600ms" } as React.CSSProperties}>
+          <div className="dcf-scroll-cue dcf-rise flex flex-col items-center gap-1 mt-1.5" style={{ "--d": "600ms" } as React.CSSProperties}>
             {/* Comic Doodle Speech Bubble: "CLICK HERE 👇" */}
-            <div className="relative pointer-events-none -mb-1 z-20">
-              <div className="px-3 py-1 bg-yellow-300 text-black border-2 border-black rounded-full font-mono text-[11px] font-black uppercase tracking-wider shadow-[3px_3px_0_#000] flex items-center gap-1.5 animate-bounce select-none">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0" />
+            <div className="relative pointer-events-none -mb-0.5 z-20">
+              <div className="px-2 py-0.5 bg-yellow-300 text-black border-[1.5px] border-black rounded-full font-mono text-[9px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] flex items-center gap-1 animate-bounce select-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping shrink-0" />
                 <span>CLICK HERE</span>
-                <span className="text-xs">👇</span>
+                <span className="text-[10px]">👇</span>
                 {/* Comic bubble pointer tail */}
-                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-yellow-300 border-r-2 border-b-2 border-black rotate-45" />
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-yellow-300 border-r-[1.5px] border-b-[1.5px] border-black rotate-45" />
               </div>
             </div>
 
@@ -1411,12 +1476,12 @@ export function DoodleCrewCover({
             <button
               type="button"
               onClick={triggerLeave}
-              className="group relative inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white/95 dark:bg-[#12131a]/95 backdrop-blur-xl border-2 border-black dark:border-white shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff] hover:shadow-[6px_6px_0_#f59e0b] hover:-translate-y-1 active:translate-y-0.5 transition-all cursor-pointer select-none"
+              className="group relative inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-[#12131a]/95 backdrop-blur-xl border-[1.5px] border-black dark:border-white shadow-[2.5px_2.5px_0_#000] dark:shadow-[2.5px_2.5px_0_#fff] hover:shadow-[4px_4px_0_#f59e0b] hover:-translate-y-0.5 active:translate-y-0.5 transition-all cursor-pointer select-none"
               aria-label="Click here to enter portfolio or wait for countdown"
             >
               {/* Circular SVG 8s Countdown Dial */}
-              <div className="relative w-7 h-7 flex items-center justify-center shrink-0">
-                <svg className="w-7 h-7 -rotate-90" viewBox="0 0 32 32">
+              <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 -rotate-90" viewBox="0 0 32 32">
                   <circle
                     cx="16"
                     cy="16"
@@ -1439,27 +1504,27 @@ export function DoodleCrewCover({
                     className="transition-all duration-1000 ease-linear"
                   />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-black text-amber-600 dark:text-amber-400">
+                <span className="absolute inset-0 flex items-center justify-center font-mono text-[8.5px] font-black text-amber-600 dark:text-amber-400">
                   {countdown}
                 </span>
               </div>
 
               {/* Action Label */}
-              <div className="flex flex-col text-left">
-                <span className="font-['Space_Grotesk'] text-xs sm:text-sm font-black uppercase tracking-wider text-black dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+              <div className="flex items-center gap-1.5 text-left">
+                <span className="font-['Space_Grotesk'] text-[11px] sm:text-xs font-black uppercase tracking-wider text-black dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                   ENTER PORTFOLIO ✦
                 </span>
-                <span className="font-mono text-[9.5px] text-stone-500 dark:text-stone-400">
-                  Auto-entering in {countdown}s • Click to skip
+                <span className="font-mono text-[8.5px] text-stone-500 dark:text-stone-400 hidden sm:inline">
+                  ({countdown}s)
                 </span>
               </div>
 
               {/* Bouncing Arrow Box */}
-              <div className="w-6 h-6 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shadow-xs group-hover:bg-amber-500 group-hover:text-black transition-colors shrink-0">
+              <div className="w-5 h-5 rounded-md bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shadow-xs group-hover:bg-amber-500 group-hover:text-black transition-colors shrink-0">
                 <svg
                   viewBox="0 0 16 16"
-                  width="12"
-                  height="12"
+                  width="10"
+                  height="10"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2.4"
@@ -1479,6 +1544,24 @@ export function DoodleCrewCover({
 }
 
 const COVER_CSS = `
+@font-face {
+  font-family: 'Amanojaku';
+  src: url('/fonts/Amanojaku-Demo.otf') format('opentype'),
+       url('/fonts/Amanojaku Demo.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Amanojaku';
+  src: url('/fonts/Amanojaku-Demo.otf') format('opentype'),
+       url('/fonts/Amanojaku Demo.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 .dcf-root {
   position: relative;
   isolation: isolate;
@@ -1600,7 +1683,7 @@ const COVER_CSS = `
   align-items: center;
   gap: 7px;
   padding: 6.5px 16px;
-  font-family: 'DrawingKids', 'Space Grotesk', sans-serif;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
   font-size: 12.5px;
   font-weight: 800;
   border-radius: 999px;
@@ -1825,6 +1908,30 @@ const COVER_CSS = `
   box-shadow: 1px 1px 0 #000000;
 }
 
+/* Side Flank (Desktop Bottom-Left Polaroid Flank) */
+.dcf-side-flank.is-left {
+  position: absolute;
+  bottom: clamp(24px, 4vh, 48px);
+  left: clamp(20px, 3.5vw, 54px);
+  width: 175px;
+  padding: 12px 12px 10px;
+  background: #fffdf5;
+  color: #000000;
+  border: 2px solid #000000;
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 #f59e0b;
+  z-index: 20;
+  pointer-events: auto;
+  user-select: none;
+  transform: rotate(-2.5deg);
+  transition: transform 0.22s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.22s ease;
+}
+
+.dcf-side-flank.is-left:hover {
+  transform: rotate(0deg) translateY(-4px) scale(1.04);
+  box-shadow: 6px 6px 0 #f59e0b;
+}
+
 /* Side Flank (Desktop Bottom-Right Dossier) */
 .dcf-side-flank.is-right {
   position: absolute;
@@ -1962,7 +2069,7 @@ const COVER_CSS = `
 .dcf-flank-stat-lbl {
   font-size: 11px;
   font-weight: 700;
-  font-family: 'DrawingKids', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   color: #444444;
 }
 
@@ -2418,10 +2525,17 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: clamp(16px, 3vw, 40px) clamp(16px, 4vw, 48px) 32px;
+  padding: clamp(6px, 1.4vh, 18px) clamp(16px, 3.5vw, 40px) clamp(8px, 1.6vh, 20px);
   max-width: 1440px;
   width: 100%;
+  max-height: calc(100dvh - 48px);
   margin: 0 auto;
+  box-sizing: border-box;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.dcf-main-canvas::-webkit-scrollbar {
+  display: none;
 }
 
 /* Eyebrow badge */
@@ -2449,13 +2563,19 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   position: relative;
   z-index: 5;
   width: 100%;
-  max-width: 1300px;
+  max-width: min(840px, 78vw);
+  max-height: clamp(140px, 22vh, 195px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dcf-svg {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
+  max-height: clamp(140px, 22vh, 195px);
   user-select: none;
   -webkit-user-select: none;
   overflow: visible;
@@ -2607,10 +2727,23 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: clamp(20px, 3.5vw, 36px);
-  max-width: 880px;
+  margin-top: clamp(4px, 1vh, 12px);
+  max-width: 760px;
   width: 100%;
-  gap: 16px;
+  gap: clamp(5px, 0.9vh, 10px);
+}
+
+.dcf-hero-headline-text {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: clamp(12px, 1.1vw, 13.5px);
+  color: #4b5563;
+  line-height: 1.35;
+  font-weight: 600;
+  text-wrap: balance;
+  margin: 0;
+}
+html.dark .dcf-hero-headline-text {
+  color: #d1d5db;
 }
 
 /* Tagline */
@@ -2705,20 +2838,20 @@ html.dark .dcf-scroll-link:hover .dcf-scroll-arrow-box {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 10px;
+  margin-top: 1px;
 }
 
 .dcf-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 48px;
-  padding: 0 22px;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
   border-radius: 999px;
-  border: 2px solid #000000;
-  font-family: 'DrawingKids', 'Space Grotesk', sans-serif;
-  font-size: 15px;
+  border: 1.5px solid #000000;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: -0.01em;
   text-decoration: none;

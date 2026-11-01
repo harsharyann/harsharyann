@@ -449,7 +449,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             </div>
 
             {/* ── Integrated Lower Chin (Inside the SAME frame) ── */}
-            <div className="pt-2 border-t-2 border-dashed border-stone-300 dark:border-stone-700/80 space-y-3">
+            <div className="pt-2.5 border-t-2 border-dashed border-stone-300 dark:border-stone-700/80 space-y-2.5">
               {/* Name */}
               <div>
                 <h3 className="font-['Space_Grotesk'] text-2xl font-black uppercase tracking-tight text-black dark:text-white leading-none">
@@ -457,32 +457,27 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                 </h3>
               </div>
 
-              {/* Current Work & Workplace Pill Badges */}
-              <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              {/* Current Work: Teaching Assistant & IIT Madras (Directly underneath, no building emoji) */}
+              <div className="flex flex-col items-start gap-1 pt-0.5">
                 {/* Current Work / Role */}
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-stone-100 dark:bg-stone-800 border border-black/20 dark:border-white/20 text-stone-900 dark:text-stone-100 font-mono text-xs font-bold shadow-2xs">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/30 dark:border-emerald-500/40 text-stone-900 dark:text-stone-100 font-mono text-xs font-bold shadow-2xs">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                  <span>{personal.aboutCurrentWork || personal.role}</span>
+                  <span>{personal.aboutCurrentWork || personal.role || "Teaching Assistant"}</span>
                 </div>
 
-                {/* Work Place / Organization */}
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-100 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-200 font-mono text-xs font-bold shadow-2xs">
-                  <span>🏛️</span>
-                  <span>{personal.aboutWorkPlace || personal.college}</span>
+                {/* IIT Madras directly underneath (Clean, NO building emoji) */}
+                <div className="inline-flex items-center px-3 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-900/40 border border-amber-300/80 dark:border-amber-700/80 text-amber-950 dark:text-amber-200 font-mono text-xs font-bold shadow-2xs">
+                  <span>{personal.aboutWorkPlace || "IIT Madras"}</span>
                 </div>
               </div>
 
-              {/* Secondary Details: Location & Degree */}
-              <div className="pt-2 border-t border-stone-200 dark:border-stone-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-stone-600 dark:text-stone-400">
-                <span className="flex items-center gap-1 truncate">
+              {/* Location — Clean, no college / building clutter */}
+              {personal.location && (
+                <div className="pt-2 border-t border-stone-200 dark:border-stone-800/80 flex items-center gap-1.5 text-[11px] font-mono text-stone-600 dark:text-stone-400">
                   <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                   <span>{personal.location}</span>
-                </span>
-                <span className="flex items-center gap-1 truncate text-stone-500 dark:text-stone-400">
-                  <GraduationCap className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                  <span>{personal.degree}</span>
-                </span>
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
