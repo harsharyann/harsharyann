@@ -124,7 +124,7 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2">
             <span className="sketch-stamp bg-amber-400 text-black font-black shadow-[2px_2px_0_#000] font-hero-heading">
-              ZONE 04 • LAURELS &amp; CERTIFICATES
+              ✦ LAURELS &amp; CERTIFICATES
             </span>
           </div>
         </div>

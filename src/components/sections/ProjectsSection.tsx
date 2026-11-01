@@ -270,7 +270,7 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2">
             <span className="sketch-stamp bg-purple-600 text-white font-black shadow-[2px_2px_0_#000] font-hero-heading">
-              ZONE 03 • LAB EXPERIMENTS &amp; BUILDS
+              ✦ LAB EXPERIMENTS &amp; BUILDS
             </span>
           </div>
         </div>

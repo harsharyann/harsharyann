@@ -166,7 +166,7 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2">
             <span className="sketch-stamp bg-rose-500 text-white font-black shadow-[2px_2px_0_#000] font-hero-heading">
-              ZONE 05 • DISPATCH &amp; INQUIRY
+              ✦ DISPATCH &amp; INQUIRY
             </span>
           </div>
         </div>

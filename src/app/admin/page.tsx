@@ -1618,17 +1618,21 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Live Preview Framed Photo & Plaque (Right 5 cols) */}
+                {/* Live Preview Unified Frame (Right 5 cols) */}
                 <div className="md:col-span-5 flex flex-col items-center">
                   <div className="font-mono text-[11px] font-bold text-stone-500 mb-2">
-                    Live Framing &amp; Plaque Preview:
+                    Live Unified Frame Preview:
                   </div>
 
-                  {/* The Frame Preview */}
-                  <div className="w-full max-w-[260px] rounded-2xl border-[5px] border-stone-900 bg-[#16171d] shadow-[6px_6px_0_#000] p-2.5">
-                    {/* Archival Mat */}
-                    <div className="relative rounded-xl bg-[#faf8f3] border border-stone-300 p-2">
-                      <div className="relative aspect-[3/4] w-full rounded-lg overflow-hidden border border-black/20 bg-stone-100">
+                  {/* The Unified Frame Preview */}
+                  <div className="w-full max-w-[270px]">
+                    {/* Washi Tape */}
+                    <div className="w-24 h-5 bg-[#fde047]/85 border-t border-b border-black/25 shadow-xs rotate-[-1.5deg] mx-auto -mb-2.5 z-20 relative rounded-[2px]" />
+
+                    {/* Frame Body */}
+                    <div className="rounded-2xl border-2 border-black bg-[#fffdfa] shadow-[5px_5px_0_#000] p-3 space-y-2.5">
+                      {/* Photo Inset */}
+                      <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden border border-black/25 bg-stone-100">
                         <img
                           src={formatGoogleDriveImageUrl(portfolio.personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
                           alt="About Frame Preview"
@@ -1637,32 +1641,41 @@ export default function AdminPage() {
                             (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
                           }}
                         />
+                        {/* Corner Tabs */}
+                        <div className="absolute top-1 left-1 w-2.5 h-2.5 border-t border-l border-black/60 pointer-events-none" />
+                        <div className="absolute top-1 right-1 w-2.5 h-2.5 border-t border-r border-black/60 pointer-events-none" />
+                        <div className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b border-l border-black/60 pointer-events-none" />
+                        <div className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b border-r border-black/60 pointer-events-none" />
+                        {/* Corner Ribbon Tag */}
+                        <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-amber-400 text-black border border-black rounded font-mono text-[8.5px] font-black uppercase shadow-[1.5px_1.5px_0_#000]">
+                          {portfolio.personal.aboutPhotoTag || "✦ TA @ IIT MADRAS"}
+                        </div>
                       </div>
-                      {/* Corner Tag */}
-                      <div className="absolute bottom-3 right-3 px-2 py-0.5 bg-amber-400 text-black border border-black rounded font-mono text-[9px] font-black uppercase shadow-[1.5px_1.5px_0_#000]">
-                        {portfolio.personal.aboutPhotoTag || "✦ TA @ IIT MADRAS"}
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* The Plaque Preview */}
-                  <div className="mt-2.5 w-full max-w-[260px] p-3 rounded-xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-1.5">
-                    <div className="flex items-center justify-between border-b border-stone-200 pb-1 text-[8px] font-mono text-amber-700 font-bold uppercase">
-                      <span>EXHIBIT · DOSSIER</span>
-                      <span>#HA-01</span>
-                    </div>
-                    <div className="font-['Space_Grotesk'] text-sm font-black uppercase text-black truncate">
-                      {portfolio.personal.name || "HARSH ARYAN"}
-                    </div>
-                    <div className="flex items-center gap-1.5 flex-wrap text-[10px] font-mono font-bold">
-                      <span className="px-1.5 py-0.5 rounded bg-stone-100 border border-stone-300 text-stone-900 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}</span>
-                      </span>
-                      <span>•</span>
-                      <span className="px-1.5 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-950">
-                        🏛️ {portfolio.personal.aboutWorkPlace || portfolio.personal.college || "IIT Madras"}
-                      </span>
+                      {/* Integrated Chin Details */}
+                      <div className="pt-1.5 border-t-2 border-dashed border-stone-300 space-y-1.5">
+                        <div className="flex items-center justify-between text-[8px] font-mono text-amber-700 font-bold uppercase">
+                          <span>ARCHIVAL RECORD</span>
+                          <span>#HA-2026</span>
+                        </div>
+                        <div className="font-['Space_Grotesk'] text-base font-black uppercase text-black leading-none truncate">
+                          {portfolio.personal.name || "HARSH ARYAN"}
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-wrap text-[9px] font-mono font-bold">
+                          <span className="px-1.5 py-0.5 rounded bg-stone-100 border border-stone-300 text-stone-900 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}</span>
+                          </span>
+                          <span>•</span>
+                          <span className="px-1.5 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-950">
+                            🏛️ {portfolio.personal.aboutWorkPlace || portfolio.personal.college || "IIT Madras"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between pt-1 border-t border-stone-200 text-[9px] font-mono text-stone-500">
+                          <span>📍 {portfolio.personal.location || "India"}</span>
+                          <span style={{ fontFamily: "'Patrick Hand', cursive" }} className="font-bold text-stone-800 text-xs">harsh aryan ✍️</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1695,7 +1708,7 @@ export default function AdminPage() {
                   </label>
                   <input
                     type="text"
-                    value={portfolio.personal.aboutZoneBadge ?? "ZONE 02 • THE ARCHITECT & MIND"}
+                    value={portfolio.personal.aboutZoneBadge ?? "✦ THE ARCHITECT & MIND"}
                     onChange={(e) =>
                       setPortfolio((prev) => ({
                         ...prev,

@@ -130,7 +130,7 @@ export const portfolioData: PortfolioData = {
     aboutCurrentWork: "Teaching Assistant",
     aboutWorkPlace: "IIT Madras",
     aboutHighlightedWords: "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning",
-    aboutZoneBadge: "ZONE 02 • THE ARCHITECT & MIND",
+    aboutZoneBadge: "✦ THE ARCHITECT & MIND",
     aboutHeading: "Behind the Terminal",
     aboutSubtitle: "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed.",
   },

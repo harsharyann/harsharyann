@@ -339,7 +339,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2">
             <span className="sketch-stamp bg-amber-400 text-black font-black shadow-[2px_2px_0_#000] font-hero-heading">
-              {personal.aboutZoneBadge || "ZONE 02 • THE ARCHITECT & MIND"}
+              ✦ THE ARCHITECT &amp; MIND
             </span>
           </div>
         </div>
@@ -365,83 +365,92 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
       {/* ── PROFILE & BIO ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Authentic Museum Gallery Framed Photo & OG Plaque */}
-        <div className="lg:col-span-5 flex flex-col items-center sm:items-start space-y-4">
-          <div className="relative group mx-auto sm:mx-0 w-full max-w-[320px] sm:max-w-[360px]">
-            {/* Outer Framing Moulding: Classic Deep Dark Framing that flatters any portrait */}
-            <div className="relative rounded-2xl border-[6px] border-stone-900 dark:border-stone-100 bg-[#16171d] dark:bg-[#1b1c24] shadow-[8px_8px_0_#000] dark:shadow-[8px_8px_0_#fff] p-3 sm:p-3.5 transition-transform duration-300 hover:scale-[1.01]">
-              {/* Archival Passe-Partout Mat Board (Matte Ivory in Light / Blueprint Obsidian in Dark) */}
-              <div className="relative rounded-xl bg-[#faf8f3] dark:bg-[#0c0d12] border border-stone-300/80 dark:border-stone-800 p-2 sm:p-2.5 shadow-inner">
-                {/* Photo Inset Frame */}
-                <div className="relative aspect-[3/4] w-full min-h-[300px] sm:min-h-[340px] rounded-lg overflow-hidden border border-black/15 dark:border-white/15 bg-stone-200 dark:bg-stone-800 shadow-inner">
-                  <Image
-                    src={formatGoogleDriveImageUrl(personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
-                    alt={personal.name}
-                    fill
-                    priority
-                    unoptimized
-                    sizes="(max-width: 640px) 280px, 340px"
-                    className="object-cover object-center group-hover:scale-105 transition-transform duration-500 select-none"
-                  />
-                  {/* Subtle archival matte reflection */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-white/[0.12] pointer-events-none" />
-                </div>
+        {/* Left Column: Unified Bespoke Physical Exhibition Frame */}
+        <div className="lg:col-span-5 flex flex-col items-center sm:items-start space-y-3">
+          {/* Top Washi Tape (Realistic artist tape holding frame to graph paper) */}
+          <div className="w-28 sm:w-32 h-6 bg-[#fde047]/80 dark:bg-[#fde047]/45 border-t border-b border-black/25 shadow-xs rotate-[-1.5deg] mx-auto sm:ml-10 -mb-4 z-20 relative backdrop-blur-xs rounded-[2px]" />
 
-                {/* Corner Archival Photo Tag / Badge */}
-                <div className="absolute bottom-4 right-4 px-3 py-1 bg-amber-400 text-black border-2 border-black rounded-lg font-mono text-[11px] font-black uppercase shadow-[2.5px_2.5px_0_#000] rotate-[1deg] select-none">
-                  {personal.aboutPhotoTag || "✦ TA @ IIT MADRAS"}
-                </div>
+          {/* Single Unified Frame Body */}
+          <div className="relative group mx-auto sm:mx-0 w-full max-w-[340px] sm:max-w-[380px] rounded-2xl bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 border-black dark:border-white shadow-[8px_8px_0_#000] dark:shadow-[8px_8px_0_#fff] p-4 sm:p-5 space-y-3.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[10px_10px_0_#000] dark:hover:shadow-[10px_10px_0_#fff]">
+            
+            {/* Top Inset Photo Recess */}
+            <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden border-2 border-black/20 dark:border-white/20 bg-stone-200 dark:bg-stone-900 shadow-inner group">
+              <Image
+                src={formatGoogleDriveImageUrl(personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
+                alt={personal.name}
+                fill
+                priority
+                unoptimized
+                sizes="(max-width: 640px) 320px, 380px"
+                className="object-cover object-top group-hover:scale-105 transition-transform duration-500 select-none"
+              />
+
+              {/* Photo Corner Mounting Brackets (Archival retro photo corners) */}
+              <div className="absolute top-1.5 left-1.5 w-3.5 h-3.5 border-t-2 border-l-2 border-black/60 dark:border-white/60 pointer-events-none" />
+              <div className="absolute top-1.5 right-1.5 w-3.5 h-3.5 border-t-2 border-r-2 border-black/60 dark:border-white/60 pointer-events-none" />
+              <div className="absolute bottom-1.5 left-1.5 w-3.5 h-3.5 border-b-2 border-l-2 border-black/60 dark:border-white/60 pointer-events-none" />
+              <div className="absolute bottom-1.5 right-1.5 w-3.5 h-3.5 border-b-2 border-r-2 border-black/60 dark:border-white/60 pointer-events-none" />
+
+              {/* Gold Ribbon Stamp Badge */}
+              <div className="absolute bottom-3 right-3 px-3 py-1 bg-amber-400 text-black border-2 border-black rounded-lg font-mono text-[10px] font-black uppercase shadow-[2px_2px_0_#000] rotate-[1.5deg] select-none">
+                {personal.aboutPhotoTag || "✦ TA @ IIT MADRAS"}
               </div>
             </div>
 
-            {/* ── "OG" Exhibition Plaque / Signature Mount ── */}
-            <div className="mt-3.5 w-full p-4 rounded-2xl bg-white dark:bg-stone-900 border-2 border-black dark:border-white shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff] space-y-2.5">
-              {/* Plaque Header / Serial */}
-              <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-1.5">
-                <span className="font-mono text-[9px] font-black uppercase text-amber-700 dark:text-amber-400 tracking-widest flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                  <span>EXHIBIT · IDENTITY DOSSIER</span>
+            {/* ── Integrated Lower Chin (Inside the SAME frame) ── */}
+            <div className="pt-2 border-t-2 border-dashed border-stone-300 dark:border-stone-700/80 space-y-3">
+              {/* Archival Serial Header */}
+              <div className="flex items-center justify-between text-[9px] font-mono font-black uppercase text-amber-800 dark:text-amber-400 tracking-widest">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>ARCHIVAL IDENTITY RECORD</span>
                 </span>
-                <span className="font-mono text-[9px] text-stone-500 font-bold">
-                  HA-2026
+                <span className="text-stone-400 dark:text-stone-500 font-bold">
+                  #HA-2026
                 </span>
               </div>
 
               {/* Name */}
               <div>
-                <h3 className="font-['Space_Grotesk'] text-xl sm:text-2xl font-black uppercase tracking-tight text-black dark:text-white leading-none">
-                  {personal.name}
+                <h3 className="font-['Space_Grotesk'] text-2xl font-black uppercase tracking-tight text-black dark:text-white leading-none">
+                  {personal.name || "HARSH ARYAN"}
                 </h3>
               </div>
 
               {/* Current Work & Workplace Pill Badges */}
               <div className="flex flex-wrap items-center gap-2 pt-0.5">
                 {/* Current Work / Role */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-100 dark:bg-stone-800 border border-black/20 dark:border-white/20 text-stone-900 dark:text-stone-100 font-mono text-xs font-bold shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-stone-100 dark:bg-stone-800 border border-black/20 dark:border-white/20 text-stone-900 dark:text-stone-100 font-mono text-xs font-bold shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                   <span>{personal.aboutCurrentWork || personal.role}</span>
                 </div>
 
-                <span className="text-stone-400 font-bold hidden sm:inline">•</span>
-
                 {/* Work Place / Organization */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-200 font-mono text-xs font-bold shadow-2xs">
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-100 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-200 font-mono text-xs font-bold shadow-2xs">
                   <span>🏛️</span>
                   <span>{personal.aboutWorkPlace || personal.college}</span>
                 </div>
               </div>
 
-              {/* Secondary Details: Location & Degree */}
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 border-t border-dashed border-stone-200 dark:border-stone-800 text-[11px] font-mono text-stone-600 dark:text-stone-400">
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
-                  <span>{personal.location}</span>
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1 truncate">
+              {/* Secondary Details: Location, Degree & Hand Signature */}
+              <div className="pt-1 border-t border-stone-200 dark:border-stone-800/80 space-y-1.5">
+                <div className="flex items-center justify-between text-[11px] font-mono text-stone-600 dark:text-stone-400">
+                  <span className="flex items-center gap-1 truncate">
+                    <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
+                    <span>{personal.location}</span>
+                  </span>
+                  <span
+                    className="font-bold text-stone-800 dark:text-stone-200 text-base rotate-[-2deg]"
+                    style={{ fontFamily: "'Patrick Hand', cursive" }}
+                  >
+                    harsh aryan ✍️
+                  </span>
+                </div>
+
+                <div className="text-[10px] font-mono text-stone-500 dark:text-stone-400 flex items-center gap-1">
                   <GraduationCap className="w-3 h-3 text-indigo-500 shrink-0" />
-                  <span>{personal.degree}</span>
-                </span>
+                  <span className="truncate">{personal.degree}</span>
+                </div>
               </div>
             </div>
           </div>

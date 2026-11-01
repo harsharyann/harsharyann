@@ -240,7 +240,7 @@ export function MobileDoodleCover() {
       {/* ── 1. PURE ORIGINAL FULLSCREEN HERO PORTRAIT (Hardware Accelerated) ── */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden" style={{ contain: "strict" }}>
         <motion.div
-          className="relative w-full h-full"
+          className="relative w-full h-full opacity-60"
           initial={{ scale: 1 }}
           animate={{
             scale: [1, 1.04, 1.01, 1],
@@ -269,9 +269,10 @@ export function MobileDoodleCover() {
           />
         </motion.div>
 
-        {/* ── Clean Soft Bottom Fade (Ensures text legibility while keeping photo 100% clear) ── */}
-        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-[62%] bg-gradient-to-t from-black via-black/85 via-48% to-transparent pointer-events-none" />
+        {/* ── Clean Soft Atmospheric Vignette (Softens person visibility & ensures crisp text contrast) ── */}
+        <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-44 bg-gradient-to-b from-black/85 via-black/45 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-[68%] bg-gradient-to-t from-black via-black/90 via-48% to-transparent pointer-events-none" />
       </div>
 
       {/* ── 2. TOP BAR: Admin Lock (Dynamically adapts border & dot to photo accent color) ── */}
@@ -293,6 +294,38 @@ export function MobileDoodleCover() {
           <span>ADMIN</span>
         </Link>
       </header>
+
+      {/* ── FIXED FROSTED GLASS SOCIAL DOCK (Right Side Background) ── */}
+      <div className="absolute right-3.5 top-[36%] -translate-y-1/2 z-30 flex flex-col gap-2.5 backdrop-blur-2xl bg-black/45 p-1.5 rounded-full border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
+        <a
+          href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub Profile"
+          title="GitHub"
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 text-white border border-white/20 shadow-xs transition-all active:scale-90"
+        >
+          <GithubIcon className="w-3.5 h-3.5" />
+        </a>
+        <a
+          href={portfolio?.socialLinks?.linkedin || "https://linkedin.com"}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn Profile"
+          title="LinkedIn"
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-[#0077b5]/30 hover:bg-[#0077b5]/60 text-white border border-white/20 shadow-xs transition-all active:scale-90"
+        >
+          <LinkedinIcon className="w-3.5 h-3.5" />
+        </a>
+        <a
+          href={`mailto:${portfolio?.personal?.email || "harsharyan@outlook.com"}`}
+          aria-label="Send Email"
+          title="Email Harsh"
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-[#f59e0b]/30 hover:bg-[#f59e0b]/60 text-white border border-white/20 shadow-xs transition-all active:scale-90"
+        >
+          <Mail className="w-3.5 h-3.5" />
+        </a>
+      </div>
 
       {/* ── 3. FLOATING 4K COLORFUL VECTOR DOODLES OVER PORTRAIT ── */}
       <div className="relative z-20 flex-1 w-full pointer-events-none overflow-visible">
@@ -397,23 +430,26 @@ export function MobileDoodleCover() {
           </motion.h1>
         </div>
 
-        {/* ── 2 COLORFUL HIGHLIGHTER SKETCH PILLS (Posca Marker Style) ── */}
+        {/* ── CURRENT ROLE / INTERNSHIP BADGE (Single Focused Status) ── */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-wrap items-center justify-center gap-2 mb-2.5 max-w-[340px]"
+          className="flex items-center justify-center mb-3 max-w-[340px]"
         >
-          {/* Yellow Highlighter Pill */}
-          <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#fef08a] text-black font-hero-heading text-[12px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
-            <span>{portfolio?.personal?.mobileBadge1 || "TA IIT Madras"}</span>
-          </span>
-
-          {/* Electric Cyan Highlighter Pill */}
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#a5f3fc] text-black font-hero-heading text-[12px] font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#000]">
-            <span>✦</span>
-            <span>{portfolio?.personal?.mobileBadge2 || "AI & Data Science"}</span>
-          </span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/85 backdrop-blur-md border border-emerald-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.7),0_0_14px_rgba(16,185,129,0.25)]">
+            <span className="flex h-2 w-2 relative shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+            </span>
+            <span className="font-mono text-[9px] font-black uppercase tracking-widest text-emerald-400">
+              CURRENT ROLE
+            </span>
+            <span className="text-white/30 text-xs font-bold">•</span>
+            <span className="font-['Space_Grotesk'] text-xs font-bold text-white tracking-wide">
+              {portfolio?.personal?.mobileBadge1 || "Teaching Assistant • IIT Madras"}
+            </span>
+          </div>
         </motion.div>
 
         {/* Punchy Narrative Tagline */}
@@ -421,52 +457,10 @@ export function MobileDoodleCover() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.26 }}
-          className="text-stone-300 text-xs sm:text-sm font-drawing-kids text-sm font-medium tracking-[0.12em] drop-shadow mb-4 max-w-[320px]"
+          className="text-stone-300 text-xs sm:text-sm font-drawing-kids text-sm font-medium tracking-[0.12em] drop-shadow mb-5 max-w-[320px]"
         >
           {portfolio?.personal?.mobileTagline || "Teaching Machines To Learn • Building Scientific Software"}
         </motion.p>
-
-        {/* ── COLORFUL NEO-BRUTALIST SOCIAL DOCK ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.32 }}
-          className="flex items-center justify-center gap-3.5 mb-4"
-        >
-          {/* GitHub (Electric White with Cyan Shadow) */}
-          <a
-            href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub Profile"
-            title="GitHub"
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-black text-black hover:text-white border-2 border-black shadow-[2.5px_2.5px_0_#38bdf8] transition-all duration-200 active:scale-90"
-          >
-            <GithubIcon className="w-4 h-4" />
-          </a>
-
-          {/* LinkedIn (Blue with Yellow Shadow) */}
-          <a
-            href={portfolio?.socialLinks?.linkedin || "https://linkedin.com"}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn Profile"
-            title="LinkedIn"
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0077b5] text-white border-2 border-black shadow-[2.5px_2.5px_0_#fde047] transition-all duration-200 active:scale-90"
-          >
-            <LinkedinIcon className="w-4 h-4" />
-          </a>
-
-          {/* Email (Amber with Purple Shadow) */}
-          <a
-            href={`mailto:${portfolio?.personal?.email || "harsharyan@outlook.com"}`}
-            aria-label="Send Email"
-            title="Email Harsh"
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-[#fbbf24] text-black border-2 border-black shadow-[2.5px_2.5px_0_#c084fc] transition-all duration-200 active:scale-90"
-          >
-            <Mail className="w-4 h-4" />
-          </a>
-        </motion.div>
 
         {/* ── LIQUID GLASS BUBBLE EXPLORE BUTTON ── */}
         <motion.button
