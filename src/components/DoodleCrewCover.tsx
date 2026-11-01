@@ -626,6 +626,24 @@ export function DoodleCrewCover({
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }, [closeCover])
 
+  // 8-Second Visual Countdown Timer to Auto-Enter Portfolio (with live tick)
+  const [countdown, setCountdown] = React.useState(8);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          triggerLeave();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [triggerLeave]);
+
   // Clean native scroll: no event hijacking or wheel trapping
 
   const rootRef = React.useRef<HTMLDivElement | null>(null)
@@ -1375,17 +1393,79 @@ export function DoodleCrewCover({
           {/* THE DAILY SPARK ✦ - 7 Days, 7 Quotes */}
           <DailySpark isDark={isDark} />
 
-          {/* Enter Portfolio Action Link */}
-          <div className="dcf-scroll-cue dcf-rise" style={{ "--d": "600ms" } as React.CSSProperties}>
+          {/* Enter Portfolio Action Link with "CLICK HERE" comic bubble & 8-second countdown */}
+          <div className="dcf-scroll-cue dcf-rise flex flex-col items-center gap-2 mt-4" style={{ "--d": "600ms" } as React.CSSProperties}>
+            {/* Comic Doodle Speech Bubble: "CLICK HERE 👇" */}
+            <div className="relative pointer-events-none -mb-1 z-20">
+              <div className="px-3 py-1 bg-yellow-300 text-black border-2 border-black rounded-full font-mono text-[11px] font-black uppercase tracking-wider shadow-[3px_3px_0_#000] flex items-center gap-1.5 animate-bounce select-none">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0" />
+                <span>CLICK HERE</span>
+                <span className="text-xs">👇</span>
+                {/* Comic bubble pointer tail */}
+                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-yellow-300 border-r-2 border-b-2 border-black rotate-45" />
+              </div>
+            </div>
+
+            {/* Interactive Physical Enter Button with Live 8s Countdown Ring */}
             <button
               type="button"
               onClick={triggerLeave}
-              className="dcf-scroll-link cursor-pointer"
-              aria-label="Click to explore portfolio"
+              className="group relative inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white/95 dark:bg-[#12131a]/95 backdrop-blur-xl border-2 border-black dark:border-white shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff] hover:shadow-[6px_6px_0_#f59e0b] hover:-translate-y-1 active:translate-y-0.5 transition-all cursor-pointer select-none"
+              aria-label="Click here to enter portfolio or wait for countdown"
             >
-              <span className="dcf-scroll-label font-mono">CLICK TO ENTER PORTFOLIO ✦</span>
-              <div className="dcf-scroll-arrow-box">
-                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {/* Circular SVG 8s Countdown Dial */}
+              <div className="relative w-7 h-7 flex items-center justify-center shrink-0">
+                <svg className="w-7 h-7 -rotate-90" viewBox="0 0 32 32">
+                  <circle
+                    cx="16"
+                    cy="16"
+                    r="12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.8"
+                    className="text-stone-200 dark:text-stone-800"
+                  />
+                  <circle
+                    cx="16"
+                    cy="16"
+                    r="12"
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="3"
+                    strokeDasharray="75.4"
+                    strokeDashoffset={75.4 - (75.4 * countdown) / 8}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000 ease-linear"
+                  />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-black text-amber-600 dark:text-amber-400">
+                  {countdown}
+                </span>
+              </div>
+
+              {/* Action Label */}
+              <div className="flex flex-col text-left">
+                <span className="font-['Space_Grotesk'] text-xs sm:text-sm font-black uppercase tracking-wider text-black dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                  ENTER PORTFOLIO ✦
+                </span>
+                <span className="font-mono text-[9.5px] text-stone-500 dark:text-stone-400">
+                  Auto-entering in {countdown}s • Click to skip
+                </span>
+              </div>
+
+              {/* Bouncing Arrow Box */}
+              <div className="w-6 h-6 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shadow-xs group-hover:bg-amber-500 group-hover:text-black transition-colors shrink-0">
+                <svg
+                  viewBox="0 0 16 16"
+                  width="12"
+                  height="12"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="group-hover:translate-y-0.5 transition-transform"
+                >
                   <path d="M8 2 L8 13 M3 8 L8 13 L13 8" />
                 </svg>
               </div>

@@ -8,7 +8,7 @@
     "degree": "Data Science And Applicatation",
     "year": "Undergraduate",
     "cgpa": "Active Student",
-    "location": "India & Open for Remote Opportunities",
+    "location": "India & Open for Opportunities",
     "availability": "Seeking Summer 2026 Early Internships & Hackathon Collaborations",
     "email": "harsharyan@outlook.com",
     "resumeUrl": "/Harsh_Aryan_Resume.pdf",
@@ -25,7 +25,7 @@
     "aboutCurrentWork": "Teaching Assistant",
     "aboutWorkPlace": "IIT Madras",
     "aboutHighlightedWords": "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning",
-    "aboutHighlightColor": "#f59e0b",
+    "aboutHighlightColor": "#f43f5e",
     "aboutZoneBadge": "✦ THE ARCHITECT & MIND",
     "aboutHeading": "Behind the Terminal",
     "aboutSubtitle": "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed.",
@@ -290,7 +290,8 @@
         "FastAPI (Basic Endpoints)",
         "HTML5 & Tailwind CSS",
         "Kaggle Notebooks",
-        "Google Colab"
+        "Google Colab",
+        "Nest js"
       ]
     },
     {

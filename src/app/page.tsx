@@ -10,7 +10,6 @@ import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { CertificatesSection } from "@/components/sections/CertificatesSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { SiteFooter } from "@/components/SiteFooter";
-import { MagazineChapterSpine } from "@/components/MagazineChapterSpine";
 import { usePortfolio } from "@/context/PortfolioContext";
 
 export default function Home() {
@@ -32,8 +31,7 @@ export default function Home() {
     };
   }, [isCoverOpen]);
 
-  // Stay on Cover Page for 6.5 seconds (5-7 sec requested by user) before
-  // smoothly transitioning to About. User can also click anytime to enter immediately.
+  // 8-Second Auto Transition fallback (synced with desktop live countdown)
   useEffect(() => {
     if (!isCoverOpen) return;
 
@@ -43,16 +41,13 @@ export default function Home() {
       if (el) {
         el.scrollIntoView({ behavior: "smooth" });
       }
-    }, 6500); // 6.5 seconds
+    }, 8500); // 8.5s fallback
 
     return () => clearTimeout(autoTransitionTimer);
   }, [isCoverOpen, closeCover]);
 
   return (
     <main className="w-full min-h-screen bg-transparent text-black dark:text-white selection:bg-indigo-600 selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200">
-      {/* ── 3D MAGAZINE CHAPTER SPINE (Visible once cover is dismissed) ── */}
-      {!isCoverOpen && <MagazineChapterSpine />}
-
       {/* ── 01. COVER SCREEN (Dedicated Mobile & Desktop Versions - Fully Dismissable Portal) ── */}
       <AnimatePresence mode="wait" initial={false}>
         {isCoverOpen && (
@@ -66,10 +61,13 @@ export default function Home() {
               transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
             }}
             exit={{
-              y: "-100%",
+              y: "-110%",
+              scale: 0.88,
+              rotateX: 14,
               opacity: 0,
-              transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+              transition: { duration: 0.85, ease: [0.76, 0, 0.24, 1] },
             }}
+            style={{ perspective: "1400px", transformOrigin: "50% 15%" }}
             className="fixed inset-0 z-50 w-full h-[100dvh] overflow-hidden touch-none select-none bg-[#edf6fa] dark:bg-[#090a0f] text-black dark:text-white transition-colors duration-300"
           >
             {/* Phone Cover (iOS & Android) — Dedicated Clean Portrait Layout */}
@@ -85,9 +83,17 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ── PORTFOLIO MAIN BODY (Only visible & scrollable when Cover is dismissed) ── */}
-      <div
-        className={`w-full transition-opacity duration-300 ${
+      {/* ── PORTFOLIO MAIN BODY (Cinematic 3D Zoom Reveal when Cover is dismissed) ── */}
+      <motion.div
+        key="portfolio-main-body"
+        initial={{ opacity: 0, scale: 0.94, y: 50, filter: "blur(6px)" }}
+        animate={
+          !isCoverOpen
+            ? { opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }
+            : { opacity: 0, scale: 0.94, y: 50, filter: "blur(6px)" }
+        }
+        transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        className={`w-full ${
           isCoverOpen ? "invisible h-0 overflow-hidden pointer-events-none" : "visible"
         }`}
       >
@@ -133,7 +139,7 @@ export default function Home() {
 
         {/* ── FINAL ARCHITECTURAL FOOTER (At the very end of the website) ── */}
         <SiteFooter />
-      </div>
+      </motion.div>
     </main>
   );
 }
