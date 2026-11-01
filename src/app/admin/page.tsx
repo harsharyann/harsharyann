@@ -36,6 +36,7 @@ import {
   formatGoogleDriveViewUrl,
 } from "@/lib/googleDrive";
 import { extractVibrantColor } from "@/lib/colorExtractor";
+import { compressImageFile } from "@/lib/imageCompressor";
 
 interface ContactMessage {
   id: string;
@@ -671,15 +672,15 @@ export default function AdminPage() {
     <div className="min-h-screen bg-stone-50 text-stone-900 selection:bg-amber-400 selection:text-black font-sans pb-20">
       {/* ── Instant Save Toast Notification (Fatak Se Feedback) ── */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-black text-white font-mono text-xs font-bold shadow-[0_10px_30px_rgba(0,0,0,0.3)] border border-white/20 animate-in fade-in slide-in-from-bottom-3 duration-200">
-          <CheckCircle className="w-4 h-4 text-emerald-400" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-black text-white font-mono text-xs font-bold shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/20 animate-in fade-in slide-in-from-bottom-3 duration-200 w-[92%] sm:w-auto max-w-md justify-center text-center">
+          <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {saveError && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-red-600 text-white font-mono text-xs font-bold shadow-lg">
-          <AlertCircle className="w-4 h-4 text-white" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-red-600 text-white font-mono text-xs font-bold shadow-lg w-[92%] sm:w-auto max-w-md justify-center text-center">
+          <AlertCircle className="w-4 h-4 text-white shrink-0" />
           <span>{saveError}</span>
         </div>
       )}
@@ -1314,22 +1315,27 @@ export default function AdminPage() {
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (ev) => {
-                              if (ev.target?.result) {
-                                setPortfolio((prev) => ({
-                                  ...prev,
-                                  personal: {
-                                    ...prev.personal,
-                                    coverPhotoUrl: ev.target!.result as string,
-                                  },
-                                }));
-                              }
-                            };
-                            reader.readAsDataURL(file);
+                            try {
+                              setIsSaving(true);
+                              setToastMessage("Optimizing & compressing image for mobile...");
+                              const compressed = await compressImageFile(file);
+                              const updated = {
+                                ...portfolio,
+                                personal: {
+                                  ...portfolio.personal,
+                                  coverPhotoUrl: compressed,
+                                },
+                              };
+                              setPortfolio(updated);
+                              await saveInstantly(updated, "✅ Cover photo uploaded & saved successfully!");
+                            } catch (err) {
+                              alert("Failed to process image. Please try another image file.");
+                            } finally {
+                              setIsSaving(false);
+                            }
                           }
                         }}
                       />
@@ -1337,13 +1343,15 @@ export default function AdminPage() {
 
                     <button
                       type="button"
-                      onClick={() =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, coverPhotoUrl: "/harsh-cover.jpg" },
-                        }))
-                      }
-                      className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer"
+                      onClick={async () => {
+                        const updated = {
+                          ...portfolio,
+                          personal: { ...portfolio.personal, coverPhotoUrl: "/harsh-cover.jpg" },
+                        };
+                        setPortfolio(updated);
+                        await saveInstantly(updated, "✅ Reset to default /harsh-cover.jpg!");
+                      }}
+                      className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer active:translate-y-0.5"
                     >
                       Reset to Default (/harsh-cover.jpg)
                     </button>
@@ -1561,22 +1569,27 @@ export default function AdminPage() {
                           type="file"
                           accept="image/*"
                           className="hidden"
-                          onChange={(e) => {
+                          onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (ev) => {
-                                if (ev.target?.result) {
-                                  setPortfolio((prev) => ({
-                                    ...prev,
-                                    personal: {
-                                      ...prev.personal,
-                                      aboutPhotoUrl: ev.target!.result as string,
-                                    },
-                                  }));
-                                }
-                              };
-                              reader.readAsDataURL(file);
+                              try {
+                                setIsSaving(true);
+                                setToastMessage("Optimizing & compressing image for mobile...");
+                                const compressed = await compressImageFile(file);
+                                const updated = {
+                                  ...portfolio,
+                                  personal: {
+                                    ...portfolio.personal,
+                                    aboutPhotoUrl: compressed,
+                                  },
+                                };
+                                setPortfolio(updated);
+                                await saveInstantly(updated, "✅ About photo uploaded & saved successfully!");
+                              } catch (err) {
+                                alert("Failed to process image. Please try another image file.");
+                              } finally {
+                                setIsSaving(false);
+                              }
                             }
                           }}
                         />
@@ -1584,13 +1597,15 @@ export default function AdminPage() {
 
                       <button
                         type="button"
-                        onClick={() =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, aboutPhotoUrl: "/harsh-cover.jpg" },
-                          }))
-                        }
-                        className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer"
+                        onClick={async () => {
+                          const updated = {
+                            ...portfolio,
+                            personal: { ...portfolio.personal, aboutPhotoUrl: "/harsh-cover.jpg" },
+                          };
+                          setPortfolio(updated);
+                          await saveInstantly(updated, "✅ Reset to default /harsh-cover.jpg!");
+                        }}
+                        className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer active:translate-y-0.5"
                       >
                         Reset to Default (/harsh-cover.jpg)
                       </button>

@@ -228,10 +228,16 @@ export function MobileDoodleCover() {
     formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl) ||
     "/harsh-cover.jpg";
 
+  const [displayPhotoSrc, setDisplayPhotoSrc] = useState<string>(photoSrc);
+
+  useEffect(() => {
+    setDisplayPhotoSrc(photoSrc);
+  }, [photoSrc]);
+
   // Automatically extract dominant vibrant accent color from the photo
   useEffect(() => {
     let isMounted = true;
-    extractVibrantColor(photoSrc, "#facc15").then((color) => {
+    extractVibrantColor(displayPhotoSrc, "#facc15").then((color) => {
       if (isMounted) {
         setAccentColor(color);
       }
@@ -239,7 +245,7 @@ export function MobileDoodleCover() {
     return () => {
       isMounted = false;
     };
-  }, [photoSrc]);
+  }, [displayPhotoSrc]);
 
   return (
     <section
@@ -279,16 +285,16 @@ export function MobileDoodleCover() {
         >
           {/* Pure High-Definition Photo As Uploaded (Zero Filters, Zero Artificial Overlays) */}
           <Image
-            src={photoSrc}
+            src={displayPhotoSrc}
             alt={portfolio?.personal?.name || "Harsh Aryan"}
             fill
             priority
-            unoptimized={
-              isGoogleDriveUrl(portfolio?.personal?.coverPhotoUrl) ||
-              (portfolio?.personal?.coverPhotoUrl?.startsWith("data:") ?? false)
-            }
+            unoptimized
             sizes="100vw"
             className="object-cover object-[center_16%]"
+            onError={() => {
+              setDisplayPhotoSrc("/harsh-cover.jpg");
+            }}
           />
         </motion.div>
 

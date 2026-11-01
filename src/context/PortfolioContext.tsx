@@ -82,6 +82,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch("/api/portfolio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(newData),
       });
 
