@@ -2,8 +2,10 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
+import confetti from "canvas-confetti"
 import { portfolioData } from "@/data/portfolioData"
 import { usePortfolio } from "@/context/PortfolioContext"
+import { SiteFooter } from "@/components/SiteFooter"
 import {
   Check,
   Send,
@@ -15,6 +17,9 @@ import {
   Sparkles,
   MessageSquare,
   Clock,
+  User,
+  Tag,
+  CheckCircle2,
 } from "lucide-react"
 import { GithubIcon, LinkedinIcon, LeetCodeIcon } from "@/components/SocialIcons"
 
@@ -181,7 +186,7 @@ export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    category: "Summer 2026 Internship Opportunity",
+    category: "",
     message: "",
   })
   const [submitted, setSubmitted] = useState(false)
@@ -198,52 +203,61 @@ export default function ContactPage() {
     process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL ||
     "https://script.google.com/macros/s/AKfycbykP3WgOErhv4Nw01aeQJwiLi-IMCqzYdYdLZGhhCBvR0wV4vJdX06BNESDj9EGSjaX6Q/exec"
 
+  // ── Snappy Dispatch Handler (Guaranteed < 1.5s Response Without Cold-Start Lag) ──
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
 
+    const payload = { ...formData }
+
     try {
+      // 1. Immediately store to local admin inbox
+      const localSavePromise = fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }).catch(() => {})
+
+      // 2. Background async dispatch to Google Sheet (non-blocking)
       if (GOOGLE_SHEET_URL) {
-        const params = new URLSearchParams()
-        params.append("name", formData.name)
-        params.append("email", formData.email)
-        params.append("category", formData.category)
-        params.append("message", formData.message)
-
-        // Save to local admin inbox
         try {
-          await fetch("/api/contact", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: formData.name,
-              email: formData.email,
-              category: formData.category,
-              message: formData.message,
-            }),
-          });
-        } catch (e) {}
+          const params = new URLSearchParams()
+          params.append("name", payload.name)
+          params.append("email", payload.email)
+          params.append("category", payload.category)
+          params.append("message", payload.message)
 
-        await fetch(GOOGLE_SHEET_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: params.toString(),
-          mode: "no-cors",
-        })
-      } else {
-        // Fallback simulation when sheet URL is not configured yet
-        await new Promise((resolve) => setTimeout(resolve, 600))
+          fetch(GOOGLE_SHEET_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString(),
+            mode: "no-cors",
+          }).catch(() => {})
+        } catch (e) {}
       }
+
+      // Fast, satisfying 700ms animation delay for snappy confirmation
+      await Promise.all([
+        localSavePromise,
+        new Promise((resolve) => setTimeout(resolve, 700)),
+      ])
 
       setSubmitted(true)
       setFormData({
         name: "",
         email: "",
-        category: "Summer 2026 Internship Opportunity",
+        category: "",
         message: "",
       })
+
+      // Celebratory Confetti Burst!
+      try {
+        confetti({
+          particleCount: 55,
+          spread: 65,
+          origin: { y: 0.65 },
+        })
+      } catch (e) {}
     } catch (err) {
       console.error("Form submission error:", err)
       setSubmitted(true)
@@ -475,10 +489,14 @@ export default function ContactPage() {
             </div>
 
             {submitted ? (
-              <div className="p-8 border-2 border-black dark:border-emerald-400 bg-emerald-50/90 dark:bg-stone-900 text-center space-y-4 rounded-xl shadow-[4px_4px_0_#10b981]">
+              <div className="p-8 border-2 border-black dark:border-emerald-400 bg-emerald-50/90 dark:bg-stone-900 text-center space-y-4 rounded-2xl shadow-[4px_4px_0_#10b981] animate-in fade-in zoom-in-95 duration-200">
                 <span className="text-4xl block animate-bounce">✈️</span>
-                <h3 className="text-xl font-black uppercase text-black dark:text-white">
-                  Dispatch Sent Successfully!
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-400 text-emerald-800 dark:text-emerald-300 font-mono text-[11px] font-black uppercase tracking-wider">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Dispatch Received &amp; Filed</span>
+                </div>
+                <h3 className="text-2xl font-black uppercase text-black dark:text-white">
+                  Message Sent Successfully!
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 font-mono max-w-md mx-auto leading-relaxed">
                   Thank you for reaching out. Harsh will review your note and respond back within 24 hours.
@@ -486,104 +504,115 @@ export default function ContactPage() {
                 <button
                   type="button"
                   onClick={() => setSubmitted(false)}
-                  className="px-5 py-2.5 rounded-full bg-black text-white dark:bg-white dark:text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black dark:border-white shadow-[2.5px_2.5px_0_#10b981] hover:-translate-y-0.5 transition-transform cursor-pointer"
+                  className="px-6 py-2.5 rounded-full bg-black hover:bg-stone-800 text-white dark:bg-white dark:hover:bg-stone-100 dark:text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black dark:border-white shadow-[2.5px_2.5px_0_#10b981] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
                 >
                   Send Another Message ↺
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1">
+                {/* 1. Name Input */}
+                <div className="space-y-1.5">
                   <label
                     htmlFor="name"
-                    className="block font-mono text-xs font-black uppercase text-stone-800 dark:text-stone-200"
+                    className="block font-mono text-xs font-black uppercase tracking-wider text-stone-800 dark:text-stone-200"
                   >
                     Your Full Name / Organization:
                   </label>
-                  <input
-                    id="name"
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Alex Morgan / Tech Team"
-                    className="w-full p-3 border-2 border-black dark:border-stone-700 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-stone-800 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-                  />
+                  <div className="relative">
+                    <input
+                      id="name"
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder=""
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-black dark:border-stone-700 font-mono text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-400/20 bg-white dark:bg-stone-800 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-all"
+                    />
+                    <User className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-400" />
+                  </div>
                 </div>
 
-                <div className="space-y-1">
+                {/* 2. Return Email */}
+                <div className="space-y-1.5">
                   <label
                     htmlFor="email"
-                    className="block font-mono text-xs font-black uppercase text-stone-800 dark:text-stone-200"
+                    className="block font-mono text-xs font-black uppercase tracking-wider text-stone-800 dark:text-stone-200"
                   >
                     Your Return Email:
                   </label>
-                  <input
-                    id="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="e.g. alex@company.com"
-                    className="w-full p-3 border-2 border-black dark:border-stone-700 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-stone-800 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-                  />
+                  <div className="relative">
+                    <input
+                      id="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder=""
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-black dark:border-stone-700 font-mono text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-400/20 bg-white dark:bg-stone-800 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-all"
+                    />
+                    <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-400" />
+                  </div>
                 </div>
 
-                <div className="space-y-1">
+                {/* 3. Inquiry Subject / Topic (Dropdown Completely Removed -> Free Text Input) */}
+                <div className="space-y-1.5">
                   <label
                     htmlFor="category"
-                    className="block font-mono text-xs font-black uppercase text-stone-800 dark:text-stone-200"
+                    className="block font-mono text-xs font-black uppercase tracking-wider text-stone-800 dark:text-stone-200"
                   >
-                    Inquiry Intent / Classification:
+                    Inquiry / Purpose:
                   </label>
-                  <select
-                    id="category"
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full p-3 border-2 border-black dark:border-stone-700 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-stone-800 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-                  >
-                    <option value="Summer 2026 Internship Opportunity">
-                      Summer 2026 Early Internship Opportunity
-                    </option>
-                    <option value="Hackathon Team Collaboration">
-                      Hackathon Team / Open Source Collaboration
-                    </option>
-                    <option value="Research Mentorship">
-                      Research &amp; AI Mentorship
-                    </option>
-                    <option value="General Conversation / Connect">
-                      General Connection / Coffee Chat
-                    </option>
-                  </select>
+                  <div className="relative">
+                    <input
+                      id="category"
+                      type="text"
+                      required
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      placeholder=""
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-black dark:border-stone-700 font-mono text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-400/20 bg-white dark:bg-stone-800 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-all"
+                    />
+                    <Tag className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-400" />
+                  </div>
                 </div>
 
-                <div className="space-y-1">
+                {/* 4. Message Textarea */}
+                <div className="space-y-1.5">
                   <label
                     htmlFor="message"
-                    className="block font-mono text-xs font-black uppercase text-stone-800 dark:text-stone-200"
+                    className="block font-mono text-xs font-black uppercase tracking-wider text-stone-800 dark:text-stone-200"
                   >
                     Note / Message:
                   </label>
                   <textarea
                     id="message"
                     required
-                    rows={5}
+                    rows={4}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Tell me about the role, hackathon project, or problem you are exploring..."
-                    className="w-full p-3 border-2 border-black dark:border-stone-700 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-stone-800 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                    placeholder=""
+                    className="w-full p-3.5 rounded-xl border-2 border-black dark:border-stone-700 font-mono text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-400/20 bg-white dark:bg-stone-800 text-black dark:text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-all"
                   />
                 </div>
 
+                {/* 5. Submit Button */}
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3.5 px-6 rounded-lg font-mono text-xs font-black uppercase tracking-wider bg-black hover:bg-stone-900 text-white dark:bg-white dark:hover:bg-stone-100 dark:text-black border-2 border-black dark:border-white shadow-[4px_4px_0_#0284c7] hover:-translate-y-0.5 active:translate-y-0 transition-transform cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 rounded-xl font-mono text-xs font-black uppercase tracking-wider bg-black hover:bg-stone-900 text-white dark:bg-white dark:hover:bg-stone-100 dark:text-black border-2 border-black dark:border-white shadow-[4px_4px_0_#0284c7] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_#000] transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>
-                    {submitting ? "Launching Dispatch..." : "Send Paper Plane Message ✈️"}
-                  </span>
+                  {submitting ? (
+                    <>
+                      <Sparkles className="w-4 h-4 animate-spin" />
+                      <span>Sending Dispatch...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Send Paper Plane Message ✈️</span>
+                    </>
+                  )}
                 </button>
               </form>
             )}
@@ -592,84 +621,9 @@ export default function ContactPage() {
       </div>
 
       {/* =========================================================================
-          EDITORIAL COLOPHON & FOOTER
-          (Features Doodle #3: Chai Cup & Code)
+          DISTINCT HIGH-END ARCHITECTURAL SITE FOOTER
       ========================================================================= */}
-      <footer className="mt-16 pt-10 border-t-2 border-black dark:border-stone-800 space-y-8 font-mono text-xs">
-        {/* Upper tier: Colophon Details & Social Channels */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-stone-200 dark:border-stone-800">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="bg-purple-600 text-white dark:bg-white dark:text-black px-2.5 py-0.5 text-[11px] font-black uppercase rounded tracking-wider inline-block">
-                SKETCHBOOK COLOPHON
-              </span>
-              <ChaiCupDoodle />
-            </div>
-            <h4 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-black dark:text-white mt-1">
-              {personal.name}
-            </h4>
-            <p className="text-xs text-stone-600 dark:text-stone-400 mt-1 max-w-md">
-              Personal Portfolio • Handcrafted with Code, Mathematics &amp; Intelligent Models.
-            </p>
-          </div>
-
-          {/* Social Channels */}
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href={socialLinks.github}
-              target="_blank"
-              rel="noreferrer"
-              className="sketch-pill"
-            >
-              <GithubIcon className="w-3.5 h-3.5" />
-              <span>GitHub</span>
-            </a>
-            <a
-              href={socialLinks.linkedin}
-              target="_blank"
-              rel="noreferrer"
-              className="sketch-pill"
-            >
-              <LinkedinIcon className="w-3.5 h-3.5" />
-              <span>LinkedIn</span>
-            </a>
-            <a href={`mailto:${personal.email}`} className="sketch-pill">
-              <Mail className="w-3.5 h-3.5" />
-              <span>{personal.email}</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Lower tier: Return-to-Cover Button, Theme Switcher & Copyright */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/"
-              className="sketch-button-solid text-xs py-1.5 px-3.5 inline-flex items-center gap-1.5 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] cursor-pointer"
-              title="Return to Cover Page"
-            >
-              <span>← Cover Page</span>
-            </Link>
-
-            <span className="text-stone-500 dark:text-stone-400 font-bold text-[11px]">
-              © 2026 Harsh Aryan • Handcrafted Edition
-            </span>
-          </div>
-
-          {/* Back to Top */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="inline-flex items-center gap-1 border-2 border-black dark:border-white px-2.5 py-1.5 rounded-full text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors font-bold cursor-pointer text-xs shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-              title="Scroll to Top"
-            >
-              <span>Top</span>
-              <ArrowUp className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

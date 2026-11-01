@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { GithubIcon } from "@/components/SocialIcons"
 import { CircularProjectsCarousel } from "@/components/CircularProjectsCarousel"
+import { SiteFooter } from "@/components/SiteFooter"
 
 /**
  * Handcrafted Doodle #1 — The Alchemist's Lab Flask 🧪
@@ -675,6 +676,9 @@ export default function ProjectsPage() {
           </a>
         </div>
       </div>
+
+      {/* ── Standout Architectural Footer ── */}
+      <SiteFooter />
     </div>
   )
 }

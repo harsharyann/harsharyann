@@ -6,6 +6,7 @@ import Image from "next/image"
 import { portfolioData } from "@/data/portfolioData"
 import { usePortfolio } from "@/context/PortfolioContext"
 import { formatGoogleDriveImageUrl, isGoogleDriveUrl } from "@/lib/googleDrive"
+import { SiteFooter } from "@/components/SiteFooter"
 import {
   Brain,
   Code2,
@@ -859,6 +860,9 @@ export default function AboutPage() {
           </Link>
         </div>
       </div>
+
+      {/* ── Standout Architectural Footer ── */}
+      <SiteFooter />
     </div>
   )
 }

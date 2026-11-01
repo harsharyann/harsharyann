@@ -5,6 +5,7 @@ import { portfolioData, Certificate } from "@/data/portfolioData"
 import { usePortfolio } from "@/context/PortfolioContext"
 import { Sparkles, Award, ShieldCheck, CheckCircle2 } from "lucide-react"
 import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCarousel"
+import { SiteFooter } from "@/components/SiteFooter"
 
 /**
  * Handcrafted Doodle #1 — The Laurel Medal 🏅
@@ -256,6 +257,9 @@ export default function CertificatesPage() {
 
         <PolaroidCertificateCarousel certificates={filtered} height={550} cardWidth={460} />
       </div>
+
+      {/* ── Standout Architectural Footer ── */}
+      <SiteFooter />
     </div>
   )
 }

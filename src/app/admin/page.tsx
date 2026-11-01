@@ -582,7 +582,7 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* Login Form */}
+          {/* Login Form (Clean, Zero Password Hints, High-Security) */}
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 mb-1.5">
@@ -593,10 +593,10 @@ export default function AdminPage() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="admin or harsh"
+                  placeholder=""
                   autoComplete="username"
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border-2 border-stone-300 text-stone-900 placeholder-stone-400 font-mono text-xs focus:outline-none focus:border-black focus:bg-white transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border-2 border-stone-300 text-stone-900 font-mono text-xs focus:outline-none focus:border-black focus:bg-white transition-all"
                 />
                 <User className="absolute right-3.5 top-3 w-4 h-4 text-stone-400" />
               </div>
@@ -608,23 +608,15 @@ export default function AdminPage() {
               </label>
               <div className="relative">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter admin password"
+                  placeholder="••••••••"
                   autoComplete="current-password"
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border-2 border-stone-300 text-stone-900 placeholder-stone-400 font-mono text-xs focus:outline-none focus:border-black focus:bg-white transition-all pr-10"
+                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border-2 border-stone-300 text-stone-900 font-mono text-xs focus:outline-none focus:border-black focus:bg-white transition-all"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-3 text-stone-400 hover:text-stone-700 cursor-pointer"
-                  tabIndex={-1}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+                <Lock className="absolute right-3.5 top-3 w-4 h-4 text-stone-400" />
               </div>
             </div>
 
