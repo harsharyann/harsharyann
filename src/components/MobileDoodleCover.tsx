@@ -7,131 +7,12 @@ import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { formatGoogleDriveImageUrl } from "@/lib/googleDrive";
-import {
-  extractPhotoPalette,
-  PhotoPalette,
-  DEFAULT_PHOTO_PALETTE,
-} from "@/lib/colorExtractor";
-
-/* ── Rich 4K Handcrafted Colorful Vector Doodles (Posca Marker & Comic Style) ── */
-
-function CuteBlinkingStarDoodle({ className = "", color = "#fde047" }: { className?: string; color?: string }) {
-  return (
-    <svg
-      viewBox="0 0 46 46"
-      className={className}
-      fill="none"
-      stroke="#000000"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path
-        d="M23 3 L28 15 L41 17 L31 27 L34 40 L23 33 L12 40 L15 27 L5 17 L18 15 Z"
-        fill={color}
-      />
-      <circle cx="19" cy="22" r="1.8" fill="#000000" stroke="none" />
-      <circle cx="27" cy="22" r="1.8" fill="#000000" stroke="none" />
-      <circle cx="18.5" cy="21.2" r="0.6" fill="#ffffff" stroke="none" />
-      <circle cx="26.5" cy="21.2" r="0.6" fill="#ffffff" stroke="none" />
-      <path d="M20 26 Q23 29 26 26" stroke="#000000" strokeWidth="1.8" fill="none" />
-      <circle cx="15.5" cy="26" r="1.8" fill="#f43f5e" opacity="0.85" stroke="none" />
-      <circle cx="30.5" cy="26" r="1.8" fill="#f43f5e" opacity="0.85" stroke="none" />
-    </svg>
-  );
-}
-
-function NeonNeuralNetworkDoodle({ className = "", accent = "#38bdf8" }: { className?: string; accent?: string }) {
-  return (
-    <svg
-      viewBox="0 0 70 55"
-      className={className}
-      fill="none"
-      stroke="#000000"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <line x1="12" y1="12" x2="36" y2="28" stroke={accent} strokeWidth="2.5" />
-      <line x1="12" y1="42" x2="36" y2="28" stroke="#a855f7" strokeWidth="2.5" />
-      <line x1="36" y1="28" x2="60" y2="18" stroke="#34d399" strokeWidth="2.5" />
-      <line x1="36" y1="28" x2="58" y2="40" stroke="#f59e0b" strokeWidth="2.5" />
-      <circle cx="12" cy="12" r="6" fill={accent} stroke="#000000" strokeWidth="2" />
-      <circle cx="12" cy="42" r="6" fill="#c084fc" stroke="#000000" strokeWidth="2" />
-      <circle cx="36" cy="28" r="8" fill="#facc15" stroke="#000000" strokeWidth="2.2" />
-      <circle cx="60" cy="18" r="5.5" fill="#34d399" stroke="#000000" strokeWidth="2" />
-      <circle cx="58" cy="40" r="5.5" fill="#fb7185" stroke="#000000" strokeWidth="2" />
-      <circle cx="36" cy="28" r="2.5" fill="#ffffff" stroke="none" />
-    </svg>
-  );
-}
-
-function ColorfulRocketDoodle({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 46 54"
-      className={className}
-      fill="none"
-      stroke="#000000"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M18 38 Q23 52 23 52 Q23 52 28 38 Z" fill="#f97316" stroke="#ea580c" />
-      <path d="M20 38 Q23 46 23 46 Q23 46 26 38 Z" fill="#fde047" stroke="none" />
-      <circle cx="12" cy="45" r="4.5" fill="#e0e7ff" stroke="#000" strokeWidth="1.8" />
-      <circle cx="34" cy="45" r="4.5" fill="#e0e7ff" stroke="#000" strokeWidth="1.8" />
-      <path d="M14 26 L5 34 L14 36 Z" fill="#8b5cf6" />
-      <path d="M32 26 L41 34 L32 36 Z" fill="#8b5cf6" />
-      <path d="M23 4 C14 14 14 30 15 36 L31 36 C32 30 32 14 23 4 Z" fill="#ffffff" />
-      <circle cx="23" cy="19" r="4.5" fill="#38bdf8" stroke="#000000" strokeWidth="2" />
-      <circle cx="24.5" cy="17.5" r="1.4" fill="#ffffff" stroke="none" />
-    </svg>
-  );
-}
-
-function NeonLightningDoodle({ className = "", color = "#fde047" }: { className?: string; color?: string }) {
-  return (
-    <svg
-      viewBox="0 0 28 42"
-      className={className}
-      fill={color}
-      stroke="#000000"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M17 2 L4 21 L14 21 L10 40 L24 17 L14 17 Z" />
-    </svg>
-  );
-}
-
-function SparkleStarDoodle({ className = "", color = "#38bdf8" }: { className?: string; color?: string }) {
-  return (
-    <svg
-      viewBox="0 0 26 26"
-      className={className}
-      fill={color}
-      stroke="#000000"
-      strokeWidth="2"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M13 0 Q13 13 0 13 Q13 13 13 26 Q13 13 26 13 Q13 13 13 0 Z" />
-    </svg>
-  );
-}
 
 export function MobileDoodleCover() {
   const { data: portfolio, closeCover } = usePortfolio();
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [hasMoved, setHasMoved] = useState<boolean>(false);
-  const [palette, setPalette] = useState<PhotoPalette>(DEFAULT_PHOTO_PALETTE);
   const ignoreNextClickRef = useRef(false);
 
   // Tap Ripple Animation State
@@ -203,21 +84,7 @@ export function MobileDoodleCover() {
     setDisplayPhotoSrc(photoSrc);
   }, [photoSrc]);
 
-  // Extract dynamic color palette directly from the photo
-  useEffect(() => {
-    let isMounted = true;
-    extractPhotoPalette(displayPhotoSrc, DEFAULT_PHOTO_PALETTE).then((extracted) => {
-      if (isMounted) {
-        setPalette(extracted);
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [displayPhotoSrc]);
-
   const nameString = portfolio?.personal?.name || "HARSH ARYAN";
-  const nameChars = Array.from(nameString);
 
   return (
     <section
@@ -245,7 +112,7 @@ export function MobileDoodleCover() {
             top: r.y - 35,
             width: 70,
             height: 70,
-            boxShadow: `0 0 35px ${palette.dominant}, inset 0 0 20px ${palette.accent}`,
+            boxShadow: "0 0 35px rgba(255, 255, 255, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.4)",
           }}
         />
       ))}
@@ -283,92 +150,24 @@ export function MobileDoodleCover() {
         {/* Soft, lightweight vignettes for contrast without blacking out the face */}
         <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
         <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#090a0f] via-[#090a0f]/70 to-transparent pointer-events-none" />
-
-        {/* ── Floating 4K Vector Doodles over the photo ── */}
-        <motion.div
-          animate={{
-            y: [0, -5, 0],
-            rotate: [-4, 2, -4],
-          }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-4 left-3 pointer-events-none z-10"
-        >
-          <NeonNeuralNetworkDoodle accent={palette.secondary} className="w-14 h-11 filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]" />
-        </motion.div>
-
-        <motion.div
-          animate={{
-            rotate: [10, 18, 10],
-            y: [0, -4, 0],
-          }}
-          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-4 right-3 pointer-events-none z-10"
-        >
-          <CuteBlinkingStarDoodle color={palette.accent} className="w-10 h-10 filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]" />
-        </motion.div>
-
-        <motion.div
-          animate={{
-            scale: [0.9, 1.1, 0.9],
-            rotate: [-12, -4, -12],
-          }}
-          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-12 left-3 pointer-events-none z-10"
-        >
-          <NeonLightningDoodle color={palette.dominant} className="w-6 h-9 filter drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)]" />
-        </motion.div>
-
-        <motion.div
-          animate={{
-            y: [0, -6, 0],
-            x: [0, 2, 0],
-          }}
-          transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-10 right-3 pointer-events-none z-10"
-        >
-          <ColorfulRocketDoodle className="w-9 h-11 filter drop-shadow-[0_5px_12px_rgba(0,0,0,0.85)]" />
-        </motion.div>
-
-        <motion.div
-          animate={{ scale: [0.8, 1.2, 0.8], rotate: [0, 90, 0] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-20 right-12 pointer-events-none z-10"
-        >
-          <SparkleStarDoodle className="w-4 h-4 filter drop-shadow" color={palette.secondary} />
-        </motion.div>
       </div>
 
       {/* ── 2. TYPOGRAPHY & SKETCH STICKER SECTION ── */}
       <footer className="relative z-30 w-full px-4 pb-5 pt-0 flex-1 flex flex-col items-center justify-between text-center overflow-visible">
-        {/* Name: "HARSH ARYAN" with cool display font & photo-derived color harmony */}
+        {/* Name: "HARSH ARYAN" — Single unified crisp white color */}
         <div className="relative inline-block -mt-5 mb-1.5 z-20">
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.1, ease: "easeOut" }}
-            className="font-hero-heading text-[2.75rem] sm:text-6xl text-white tracking-wider px-2 leading-none select-none flex items-center justify-center flex-wrap gap-x-1.5"
+            className="font-hero-heading text-[2.75rem] sm:text-6xl text-white tracking-wider px-2 leading-none select-none"
             style={{
               fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
+              color: "#ffffff",
+              textShadow: "2.5px 2.5px 0 #000, -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 4.5px 4.5px 0 #000, 6px 6px 12px rgba(0,0,0,0.85)",
             }}
           >
-            {nameChars.map((ch, idx) => {
-              if (ch === " ") {
-                return <span key={idx} className="w-2.5 inline-block" />;
-              }
-              const letterColor = palette.letters[idx % palette.letters.length];
-              return (
-                <span
-                  key={idx}
-                  className="inline-block transition-colors duration-500"
-                  style={{
-                    color: letterColor,
-                    textShadow: `2.5px 2.5px 0 #000, -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 4px 4px 0 #000, 5.5px 5.5px 0 ${palette.dominant}`,
-                  }}
-                >
-                  {ch}
-                </span>
-              );
-            })}
+            {nameString}
           </motion.h1>
         </div>
 
@@ -382,13 +181,9 @@ export function MobileDoodleCover() {
           }}
           className="relative w-full max-w-[345px] my-auto select-none cursor-pointer"
         >
-          {/* Realistic Washi Tape at Top with Photo Accent Tint */}
+          {/* Realistic Washi Tape at Top */}
           <div
-            className="w-24 h-4 border-y border-black/30 shadow-xs rotate-[-2deg] mx-auto -mb-2 z-20 relative rounded-xs backdrop-blur-xs transition-colors duration-500"
-            style={{
-              backgroundColor: palette.dominant,
-              opacity: 0.92,
-            }}
+            className="w-24 h-4 border-y border-black/30 shadow-xs rotate-[-2deg] mx-auto -mb-2 z-20 relative rounded-xs backdrop-blur-xs bg-amber-400 dark:bg-amber-400 opacity-90"
             aria-hidden="true"
           />
 
@@ -400,15 +195,13 @@ export function MobileDoodleCover() {
                 rotate: [6, 2, 6],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="relative px-2.5 py-1 text-black border-2 border-black rounded-full font-mono text-[10px] font-black uppercase tracking-wider shadow-[2.5px_2.5px_0_#000] flex items-center gap-1.5 select-none transition-colors duration-500"
-              style={{ backgroundColor: palette.accent }}
+              className="relative px-2.5 py-1 text-black border-2 border-black rounded-full font-mono text-[10px] font-black uppercase tracking-wider shadow-[2.5px_2.5px_0_#000] flex items-center gap-1.5 select-none bg-amber-300 dark:bg-amber-300"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping shrink-0" />
               <span>CLICK HERE</span>
               <span className="text-xs">👇</span>
               <div
-                className="absolute -bottom-1.5 right-6 w-2.5 h-2.5 border-r-2 border-b-2 border-black rotate-45 transition-colors duration-500"
-                style={{ backgroundColor: palette.accent }}
+                className="absolute -bottom-1.5 right-6 w-2.5 h-2.5 bg-amber-300 dark:bg-amber-300 border-r-2 border-b-2 border-black rotate-45"
               />
             </motion.div>
           </div>

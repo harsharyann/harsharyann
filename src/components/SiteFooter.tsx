@@ -81,8 +81,8 @@ export function SiteFooter() {
             </p>
           </div>
 
-          {/* 🐍 Cool Snake-Style Threaded Site Directory */}
-          <nav aria-label="Snake Thread Site Directory" className="overflow-x-auto py-1.5 scrollbar-none">
+          {/* Threaded Site Directory */}
+          <nav aria-label="Site Directory" className="overflow-x-auto py-1.5 scrollbar-none">
             <div className="inline-flex items-center gap-1 font-mono text-xs whitespace-nowrap bg-white/40 dark:bg-stone-900/40 p-1.5 rounded-full border border-black/10 dark:border-white/10 shadow-2xs backdrop-blur-xs">
               {directoryItems.map((item, idx, arr) => {
                 const isHovered = hoveredId === item.id;
@@ -101,45 +101,22 @@ export function SiteFooter() {
                           : "text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent"
                       }`}
                     >
-                      {/* Snake Head Indicator */}
-                      {isHovered ? (
-                        <span className="text-xs transition-transform group-hover:rotate-12 animate-bounce">
-                          🐍
-                        </span>
-                      ) : (
-                        <span
-                          className={`w-2 h-2 rounded-full transition-all ${
-                            isFirst
-                              ? "bg-emerald-500 shadow-[0_0_8px_#22c55e]"
-                              : "bg-stone-400 dark:bg-stone-600 group-hover:bg-emerald-500"
-                          }`}
-                        />
-                      )}
+                      {/* Node Indicator Dot */}
+                      <span
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          isHovered
+                            ? "bg-black dark:bg-black scale-125"
+                            : isFirst
+                            ? "bg-emerald-500 shadow-[0_0_8px_#22c55e]"
+                            : "bg-stone-400 dark:bg-stone-600 group-hover:bg-emerald-500"
+                        }`}
+                      />
                       <span>{item.label}</span>
                     </Link>
 
-                    {/* Animated Slithering Snake Track between nodes */}
+                    {/* Clean Connector Divider between nodes */}
                     {idx < arr.length - 1 && (
-                      <div className="relative inline-flex items-center px-0.5 select-none pointer-events-none" aria-hidden="true">
-                        <svg className="w-7 sm:w-9 h-3.5 overflow-visible" viewBox="0 0 36 14" fill="none">
-                          {/* Snake undulating track */}
-                          <path
-                            d="M 2 7 Q 10 1, 18 7 T 34 7"
-                            stroke={isHovered ? "#f59e0b" : "currentColor"}
-                            strokeWidth="2.4"
-                            strokeLinecap="round"
-                            className={`transition-colors ${
-                              isHovered
-                                ? "text-amber-500"
-                                : "text-stone-300 dark:text-stone-700"
-                            }`}
-                            strokeDasharray="4 3"
-                            style={{
-                              animation: "slither 1.2s linear infinite",
-                            }}
-                          />
-                        </svg>
-                      </div>
+                      <span className="w-3 sm:w-5 h-px border-t border-dashed border-stone-300 dark:border-stone-700 select-none pointer-events-none" aria-hidden="true" />
                     )}
                   </React.Fragment>
                 );
