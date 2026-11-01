@@ -1948,8 +1948,8 @@ export default function AdminPage() {
                 />
               </div>
 
-              {/* Dedicated Auto-Highlight Keywords */}
-              <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-2">
+              {/* Dedicated Auto-Highlight Keywords & Color */}
+              <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
                 <label className="block font-mono text-xs font-bold text-amber-950 flex items-center gap-1.5">
                   <span>✨</span>
                   <span>Auto-Highlight Keywords (Comma Separated):</span>
@@ -1966,9 +1966,88 @@ export default function AdminPage() {
                   }
                   className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-300 text-stone-900 font-mono text-xs focus:border-black focus:outline-none font-bold"
                 />
-                <p className="font-mono text-[11px] text-amber-800">
-                  💡 In keywords me se jo bhi aapke headline ya bio me aayenge, wo automatically hand-drawn yellow marker highlight ho jayenge.
-                </p>
+
+                {/* Highlight Text Color Selector */}
+                <div className="pt-2 border-t border-amber-200/80 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="font-mono text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                      <span>🎨</span>
+                      <span>Highlight Text Color (No background box):</span>
+                    </label>
+                    <span
+                      className="px-2 py-0.5 rounded font-mono text-[10px] font-black text-white shadow-xs"
+                      style={{ backgroundColor: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
+                    >
+                      {portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="relative flex items-center gap-2 p-1.5 rounded-xl bg-white border border-amber-300">
+                      <input
+                        type="color"
+                        value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                        onChange={(e) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, aboutHighlightColor: e.target.value },
+                          }))
+                        }
+                        className="w-8 h-8 rounded-lg cursor-pointer border-0 p-0 bg-transparent"
+                      />
+                      <input
+                        type="text"
+                        value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                        onChange={(e) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, aboutHighlightColor: e.target.value },
+                          }))
+                        }
+                        placeholder="#f59e0b"
+                        className="w-24 px-2 py-1 font-mono text-xs font-bold text-stone-900 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Quick Preset Color Chips */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {[
+                        { name: "Amber", hex: "#f59e0b" },
+                        { name: "Emerald", hex: "#10b981" },
+                        { name: "Indigo", hex: "#6366f1" },
+                        { name: "Rose", hex: "#f43f5e" },
+                        { name: "Purple", hex: "#a855f7" },
+                        { name: "Cyan", hex: "#06b6d4" },
+                      ].map((preset) => (
+                        <button
+                          key={preset.hex}
+                          type="button"
+                          onClick={() =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, aboutHighlightColor: preset.hex },
+                            }))
+                          }
+                          className={`px-2 py-1 rounded-lg font-mono text-[10px] font-bold border transition-transform hover:scale-105 active:scale-95 cursor-pointer ${
+                            (portfolio.personal.aboutHighlightColor || "#f59e0b") === preset.hex
+                              ? "border-black bg-stone-900 text-white shadow-xs font-black"
+                              : "border-stone-300 bg-white text-stone-700 hover:border-black"
+                          }`}
+                        >
+                          <span
+                            className="inline-block w-2 h-2 rounded-full mr-1 align-middle"
+                            style={{ backgroundColor: preset.hex }}
+                          />
+                          {preset.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <p className="font-mono text-[11px] text-amber-800">
+                    💡 Keywords ka background box nahi aayega, sirf text ka color change hoga. Aap yahan se color picker ya presets se color set kar sakte hain.
+                  </p>
+                </div>
               </div>
             </div>
 

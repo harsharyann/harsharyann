@@ -21,7 +21,55 @@ import { CircularProjectsCarousel } from "@/components/CircularProjectsCarousel"
 /**
  * Handcrafted Doodle #1 — The Alchemist's Lab Flask 🧪
  */
-function LabFlaskDoodle({ className = "" }: { className?: string }) {
+function LabFlaskDoodle({ className = "", isPhone = false }: { className?: string; isPhone?: boolean }) {
+  if (isPhone) {
+    return (
+      <div className={`relative inline-flex items-center align-middle ${className}`} aria-hidden="true">
+        <svg
+          viewBox="0 0 100 110"
+          className="w-8 h-9 drop-shadow-[1.5px_1.5px_0_rgba(0,0,0,0.15)] filter overflow-visible"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* Floating math / code bubbles */}
+          <circle cx="50" cy="12" r="3" fill="#f59e0b" stroke="none" />
+          <circle cx="34" cy="22" r="2.2" fill="#10b981" stroke="none" />
+          <circle cx="68" cy="18" r="3.5" fill="#8b5cf6" stroke="none" />
+
+          {/* Flask Neck & Lip */}
+          <rect x="42" y="32" width="16" height="5" rx="1.5" fill="#ffffff" stroke="#000000" className="dark:fill-stone-800 dark:stroke-white" />
+          <path d="M 45 37 L 45 52" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
+          <path d="M 55 37 L 55 52" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
+
+          {/* Conical Flask Body */}
+          <path
+            d="M 45 52 L 20 94 C 18 97 21 102 26 102 L 74 102 C 79 102 82 97 80 94 L 55 52 Z"
+            fill="#faf5ff"
+            stroke="#000000"
+            className="dark:fill-purple-950/30 dark:stroke-white"
+            strokeWidth="2.6"
+          />
+
+          {/* Liquid level with wavy surface */}
+          <path
+            d="M 28 82 Q 40 76 50 82 Q 60 88 72 82 L 77 98 C 76 100 74 101 71 101 L 29 101 C 26 101 24 100 23 98 Z"
+            fill="#c084fc"
+            stroke="#7e22ce"
+            className="dark:fill-purple-500/60 dark:stroke-purple-300"
+            strokeWidth="2"
+          />
+
+          {/* Bubbles in liquid */}
+          <circle cx="38" cy="91" r="1.8" fill="#ffffff" stroke="none" />
+          <circle cx="58" cy="88" r="2.2" fill="#ffffff" stroke="none" />
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <div className={`relative inline-flex items-center ${className}`} aria-hidden="true">
       <svg
@@ -269,8 +317,12 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
       <div className="pb-6 border-b-2 border-black dark:border-stone-800 space-y-5">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading">
-              Projects &amp; Builds
+            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading inline-flex items-center gap-2 sm:gap-3 flex-wrap">
+              <span>Projects &amp; Builds</span>
+              {/* On phone: Cute lab flask doodle placed directly next to 'BUILDS' */}
+              <span className="inline-flex lg:hidden shrink-0 -mt-1 sm:-mt-2">
+                <LabFlaskDoodle isPhone />
+              </span>
             </h2>
 
             <svg
@@ -292,7 +344,8 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
             </p>
           </div>
 
-          <div className="self-start lg:self-end">
+          {/* On laptop & desktop: keep the right-hand Lab Flask Doodle with speech bubble */}
+          <div className="hidden lg:block self-start lg:self-end">
             <LabFlaskDoodle />
           </div>
         </div>

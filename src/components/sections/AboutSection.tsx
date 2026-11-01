@@ -22,7 +22,61 @@ import {
 /**
  * Handcrafted Bespoke Doodle #1 — The Thinker's Spark
  */
-function ThinkerLightbulbDoodle({ className = "" }: { className?: string }) {
+function ThinkerLightbulbDoodle({ className = "", isPhone = false }: { className?: string; isPhone?: boolean }) {
+  if (isPhone) {
+    return (
+      <div className={`relative inline-flex items-center align-middle ${className}`} aria-hidden="true">
+        <svg
+          viewBox="0 0 100 120"
+          className="w-8 h-10 drop-shadow-[1.5px_1.5px_0_rgba(0,0,0,0.15)] filter"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* Glow rays */}
+          <path d="M 50 8 L 50 18" stroke="#f59e0b" strokeWidth="2.8" />
+          <path d="M 22 20 L 30 28" stroke="#f59e0b" strokeWidth="2.8" />
+          <path d="M 78 20 L 70 28" stroke="#f59e0b" strokeWidth="2.8" />
+          <path d="M 12 52 L 22 52" stroke="#f59e0b" strokeWidth="2.8" />
+          <path d="M 88 52 L 78 52" stroke="#f59e0b" strokeWidth="2.8" />
+
+          {/* Bulb body with warm yellow fill */}
+          <path
+            d="M 32 76 C 22 68 18 55 20 42 C 24 24 38 18 50 18 C 62 18 76 24 80 42 C 82 55 78 68 68 76 L 68 88 L 32 88 Z"
+            fill="#fef08a"
+            stroke="#000000"
+            className="dark:stroke-white dark:fill-amber-300/40"
+            strokeWidth="2.6"
+          />
+
+          {/* Playful cartoon eyes looking right */}
+          <circle cx="44" cy="46" r="3.5" fill="#000000" className="dark:fill-white" stroke="none" />
+          <circle cx="58" cy="46" r="3.5" fill="#000000" className="dark:fill-white" stroke="none" />
+          <circle cx="45.5" cy="44.5" r="1.2" fill="#ffffff" stroke="none" />
+          <circle cx="59.5" cy="44.5" r="1.2" fill="#ffffff" stroke="none" />
+
+          {/* Happy little mouth */}
+          <path d="M 48 54 Q 51 58 54 54" stroke="#000000" className="dark:stroke-white" strokeWidth="2" fill="none" />
+
+          {/* Filament squiggle */}
+          <path
+            d="M 40 34 Q 45 28 50 34 Q 55 28 60 34"
+            stroke="#f59e0b"
+            strokeWidth="2.2"
+            fill="none"
+          />
+
+          {/* Screw base & contact point */}
+          <path d="M 36 94 L 64 94" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
+          <path d="M 39 100 L 61 100" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
+          <path d="M 44 106 L 56 106" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <div className={`relative inline-flex items-center ${className}`} aria-hidden="true">
       <svg
@@ -182,9 +236,11 @@ function PaperPlaneFlightDoodle({ className = "" }: { className?: string }) {
 function FormattedHighlightedText({
   text,
   highlightKeywords = "",
+  highlightColor = "#f59e0b",
 }: {
   text: string;
   highlightKeywords?: string;
+  highlightColor?: string;
 }) {
   if (!text) return null;
 
@@ -206,22 +262,24 @@ function FormattedHighlightedText({
       if (part.startsWith("==") && part.endsWith("==")) {
         const inner = part.slice(2, -2);
         tokens.push(
-          <mark
+          <span
             key={idx}
-            className="bg-amber-300 dark:bg-amber-400/35 text-stone-950 dark:text-amber-100 px-1.5 py-0.5 rounded font-bold shadow-xs mx-0.5 inline-block"
+            className="font-bold transition-colors duration-200"
+            style={{ color: highlightColor || "#f59e0b" }}
           >
             {inner}
-          </mark>
+          </span>
         );
       } else if (part.startsWith("^^") && part.endsWith("^^")) {
         const inner = part.slice(2, -2);
         tokens.push(
-          <mark
+          <span
             key={idx}
-            className="bg-cyan-200 dark:bg-cyan-400/35 text-stone-950 dark:text-cyan-100 px-1.5 py-0.5 rounded font-bold shadow-xs mx-0.5 inline-block"
+            className="font-bold transition-colors duration-200"
+            style={{ color: highlightColor || "#f59e0b" }}
           >
             {inner}
-          </mark>
+          </span>
         );
       } else if (part.startsWith("**") && part.endsWith("**")) {
         const inner = part.slice(2, -2);
@@ -243,12 +301,13 @@ function FormattedHighlightedText({
             );
             if (isMatch) {
               tokens.push(
-                <mark
+                <span
                   key={`${idx}-${sIdx}`}
-                  className="bg-amber-300 dark:bg-amber-400/35 text-stone-950 dark:text-amber-100 px-1.5 py-0.5 rounded font-bold shadow-xs mx-0.5 inline-block"
+                  className="font-bold transition-colors duration-200"
+                  style={{ color: highlightColor || "#f59e0b" }}
                 >
                   {sub}
-                </mark>
+                </span>
               );
             } else {
               tokens.push(sub);
@@ -338,8 +397,12 @@ export function AboutSection({ id = "about" }: { id?: string }) {
       <div className="pb-6 border-b-2 border-black dark:border-stone-800 space-y-5">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading">
-              {personal.aboutHeading || "Behind the Terminal"}
+            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading inline-flex items-center gap-2 sm:gap-3 flex-wrap">
+              <span>{personal.aboutHeading || "Behind the Terminal"}</span>
+              {/* On phone: Cute idea spark doodle placed directly next to 'TERMINAL' */}
+              <span className="inline-flex lg:hidden shrink-0 -mt-1 sm:-mt-2">
+                <ThinkerLightbulbDoodle isPhone />
+              </span>
             </h2>
             <svg className="w-48 sm:w-64 h-3 text-amber-500 overflow-visible" viewBox="0 0 240 10" fill="none" aria-hidden="true">
               <path d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
@@ -349,7 +412,8 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             </p>
           </div>
 
-          <div className="self-start lg:self-end">
+          {/* On laptop & desktop: keep the right-hand Thinker Doodle with speech bubble */}
+          <div className="hidden lg:block self-start lg:self-end">
             <ThinkerLightbulbDoodle />
           </div>
         </div>
@@ -433,12 +497,14 @@ export function AboutSection({ id = "about" }: { id?: string }) {
               <FormattedHighlightedText
                 text={personal.headline}
                 highlightKeywords={personal.aboutHighlightedWords}
+                highlightColor={personal.aboutHighlightColor}
               />
             </div>
             <div className="space-y-3 pt-1 text-stone-700 dark:text-stone-300">
               <FormattedHighlightedText
                 text={personal.bio}
                 highlightKeywords={personal.aboutHighlightedWords}
+                highlightColor={personal.aboutHighlightColor}
               />
             </div>
           </div>
