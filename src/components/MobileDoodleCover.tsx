@@ -170,9 +170,6 @@ export function MobileDoodleCover() {
       return;
     }
     triggerRipple(e.clientX, e.clientY, e.currentTarget);
-    setTimeout(() => {
-      closeCover();
-    }, 240);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -197,16 +194,9 @@ export function MobileDoodleCover() {
     const diffX = Math.abs(endX - touchStartX);
     const diffY = Math.abs(endY - touchStartY);
 
-    // ONLY stationary tap (finger moved < 10px)! Sliding/scrolling will NOT open About page!
+    // Stationary tap triggers ripple without instantly closing cover
     if (!hasMoved && diffX < 10 && diffY < 10) {
-      ignoreNextClickRef.current = true;
-      setTimeout(() => {
-        ignoreNextClickRef.current = false;
-      }, 500);
       triggerRipple(endX, endY, e.currentTarget);
-      setTimeout(() => {
-        closeCover();
-      }, 240);
     }
 
     setTouchStartX(null);

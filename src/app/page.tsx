@@ -32,22 +32,21 @@ export default function Home() {
     };
   }, [isCoverOpen]);
 
-  // Support direct anchor jumps on initial page load (e.g., /#about, /#projects)
+  // Stay on Cover Page for 6.5 seconds (5-7 sec requested by user) before
+  // smoothly transitioning to About. User can also click anytime to enter immediately.
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash) {
-      const id = window.location.hash.replace("#", "");
-      if (id && id !== "cover") {
-        closeCover();
-        const timer = setTimeout(() => {
-          const el = document.getElementById(id);
-          if (el) {
-            el.scrollIntoView({ behavior: "smooth" });
-          }
-        }, 250);
-        return () => clearTimeout(timer);
+    if (!isCoverOpen) return;
+
+    const autoTransitionTimer = setTimeout(() => {
+      closeCover();
+      const el = document.getElementById("about");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
       }
-    }
-  }, [closeCover]);
+    }, 6500); // 6.5 seconds
+
+    return () => clearTimeout(autoTransitionTimer);
+  }, [isCoverOpen, closeCover]);
 
   return (
     <main className="w-full min-h-screen bg-transparent text-black dark:text-white selection:bg-indigo-600 selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200">

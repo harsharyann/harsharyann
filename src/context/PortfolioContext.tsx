@@ -32,12 +32,11 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isCoverOpen, setIsCoverOpen] = useState<boolean>(true);
 
-  // Check initial hash on mount - if directly navigating to a section like #projects or #about, bypass cover
+  // Clean up any stale hash on initial visit so the cover portal displays reliably
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const hash = window.location.hash;
-      if (hash && hash !== "#cover" && hash !== "#") {
-        setIsCoverOpen(false);
+    if (typeof window !== "undefined" && window.location.hash) {
+      if (window.history && window.location.hash !== "#cover") {
+        window.history.replaceState(null, "", window.location.pathname);
       }
     }
   }, []);
