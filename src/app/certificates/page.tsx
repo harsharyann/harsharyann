@@ -85,7 +85,7 @@ function ClothespinGuideDoodle({ className = "" }: { className?: string }) {
         className="text-xs sm:text-sm font-bold text-purple-700 dark:text-purple-300 rotate-[-2deg]"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
-        drag or swipe the line ✦
+        polaroid credential bento ✦
       </span>
     </div>
   )
@@ -244,18 +244,18 @@ export default function CertificatesPage() {
       </div>
 
       {/* =========================================================================
-          INTERACTIVE POLAROID CLOTHESLINE CAROUSEL (Landscape Rectangular Prints)
+          INTERACTIVE POLAROID BENTO VAULT (Unifying Polaroid Print & Details)
           (With Doodle #2: Clothesline Clothespin Guide)
       ========================================================================= */}
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold text-stone-600 dark:text-stone-400">
           <ClothespinGuideDoodle />
           <span className="text-amber-700 dark:text-amber-300 font-black">
-            {filtered.length} {filtered.length === 1 ? "PRINT" : "PRINTS"} HANGING ON THE LINE
+            {filtered.length} {filtered.length === 1 ? "CREDENTIAL" : "CREDENTIALS"} IN UNIFIED VAULT
           </span>
         </div>
 
-        <PolaroidCertificateCarousel certificates={filtered} height={550} cardWidth={460} />
+        <PolaroidCertificateCarousel certificates={filtered} />
       </div>
 
       {/* ── Standout Architectural Footer ── */}
