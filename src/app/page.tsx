@@ -101,7 +101,7 @@ export default function Home() {
         <Scroll3DSection
           id="about"
           chapterNumber="01"
-          chapterName="The Architect & Mind"
+          chapterName="The Architect and Mind"
           accentColor="#f59e0b"
         >
           <AboutSection id="about-content" />
@@ -111,7 +111,7 @@ export default function Home() {
         <Scroll3DSection
           id="projects"
           chapterNumber="02"
-          chapterName="Project Lab & Code"
+          chapterName="Project Lab and Code"
           accentColor="#6366f1"
         >
           <ProjectsSection id="projects-content" />
@@ -121,7 +121,7 @@ export default function Home() {
         <Scroll3DSection
           id="certificates"
           chapterNumber="03"
-          chapterName="Certifications & Laurels"
+          chapterName="Certifications and Laurels"
           accentColor="#10b981"
         >
           <CertificatesSection id="certificates-content" />
@@ -131,7 +131,7 @@ export default function Home() {
         <Scroll3DSection
           id="contact"
           chapterNumber="04"
-          chapterName="Direct Communications & Dispatch"
+          chapterName="Direct Communications and Dispatch"
           accentColor="#f43f5e"
         >
           <ContactSection id="contact-content" />
