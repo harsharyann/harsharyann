@@ -709,9 +709,6 @@ function CoverBackgroundLayer({ isDark }: { isDark: boolean }) {
       <div className="absolute top-4 right-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
         <span>{isDark ? "[ SYS // 2026.04 ]" : "SYSTEM // ARCHIVE"}</span>
       </div>
-      <div className="absolute bottom-4 left-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
-        <span>{isDark ? "[ LAT 25.5941° N • LON 85.1376° E ]" : "COORDINATES [25°36'N, 85°08'E]"}</span>
-      </div>
       <div className="absolute bottom-4 right-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
         <span>{isDark ? "[ SEC-01 // HARSH ARYAN ]" : "HARSH ARYAN // PORTFOLIO"}</span>
       </div>
