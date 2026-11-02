@@ -32,6 +32,8 @@ import {
   Layers,
   Code2,
   MapPin,
+  Menu,
+  X,
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Project, Certificate, PortfolioData, TimelineMilestone } from "@/data/portfolioData";
@@ -91,6 +93,7 @@ export default function AdminPage() {
   const [portfolio, setPortfolio] = useState<PortfolioData>(initialData);
   type AdminTab = "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
   const [activeTab, setActiveTab] = useState<AdminTab>("cover");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState("");
@@ -850,123 +853,244 @@ export default function AdminPage() {
     ? portfolio.certificateCategories
     : DEFAULT_CERT_CATS;
 
-  // ─── AUTHENTICATED DASHBOARD (SOCIUS IN PURE LIGHT THEME) ───
+  const navTabs = [
+    { id: "cover", label: "Cover Hero", title: "Cover Page Manager", desc: "Hero portrait, wordmark, roles & cover buttons", icon: Sliders },
+    { id: "about", label: "Profile & Bio", title: "Profile & Dossier Manager", desc: "Photo framing, personal statement, bio highlights & workplace", icon: User },
+    { id: "highlights", label: "Highlights", title: "Highlights & Key Metrics", desc: "Section header stamps, live highlighter & benchmark stats", icon: Sparkles },
+    { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderGit2, count: portfolio.projects.length },
+    { id: "certificates", label: "Certificates", title: "Credentials & Laurels", desc: "Verified credentials, verification links & categories", icon: Award, count: portfolio.certificates.length },
+    { id: "milestones", label: "Milestones", title: "Roadmap & Milestones", desc: "Academic journey, semester goals & timeline events", icon: Layers, count: (portfolio.milestones || []).length || 3 },
+    { id: "skills", label: "Skills Arsenal", title: "Technical Skills Arsenal", desc: "Category groupings, badges, proficiency & skill tags", icon: Code2, count: portfolio.skills.length },
+    { id: "contact", label: "Inquiries & Dispatch", title: "Inquiries & Live Station", desc: "Location coordinates, local time, status & incoming contact dispatches", icon: Send, count: messages.filter((m) => !m.read).length || undefined, alert: messages.some((m) => !m.read) },
+  ];
+
+  const currentTabObj = navTabs.find((t) => t.id === activeTab) || navTabs[0];
+
+  // ─── AUTHENTICATED DASHBOARD (SOCIUS WITH MODERN LEFT SIDEBAR LAYOUT) ───
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 selection:bg-amber-400 selection:text-black font-sans pb-20">
+    <div className="min-h-screen bg-[#f8f9fa] text-stone-900 selection:bg-amber-400 selection:text-black font-sans flex flex-col md:flex-row">
       {/* ── Instant Save Toast Notification (Fatak Se Feedback) ── */}
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-black text-white font-mono text-xs font-bold shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/20 animate-in fade-in slide-in-from-bottom-3 duration-200 w-[92%] sm:w-auto max-w-md justify-center text-center">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-black text-white font-mono text-xs font-bold shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/20 animate-in fade-in slide-in-from-bottom-3 duration-200">
           <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {saveError && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-red-600 text-white font-mono text-xs font-bold shadow-lg w-[92%] sm:w-auto max-w-md justify-center text-center">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-red-600 text-white font-mono text-xs font-bold shadow-lg">
           <AlertCircle className="w-4 h-4 text-white shrink-0" />
           <span>{saveError}</span>
         </div>
       )}
 
-      {/* ── Floating Glassmorphism Navbar (Socius NavButton Bar) ── */}
-      <header className="sticky top-3 sm:top-4 z-40 w-full px-3 sm:px-6 pointer-events-none">
-        <div className="max-w-6xl mx-auto rounded-2xl sm:rounded-full bg-white/80 backdrop-blur-2xl border border-black/10 shadow-[0_10px_35px_rgba(0,0,0,0.06)] px-3 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-3 pointer-events-auto transition-all">
-          
-          {/* Brand Left: Socius + Return Link */}
-          <div className="flex items-center gap-3">
+      {/* ── Mobile Top Header (Visible only on < md) ── */}
+      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white border-b border-stone-200 shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 cursor-pointer"
+            aria-label="Toggle navigation menu"
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-amber-400 text-black font-black text-xs border border-black shadow-xs">
+              S
+            </div>
+            <span className="font-['Space_Grotesk'] text-base font-black uppercase tracking-tight text-stone-900">
+              Socius
+            </span>
+          </div>
+        </div>
+
+        <button
+          onClick={handleSaveAll}
+          disabled={isSaving}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400 text-black font-mono text-xs font-black uppercase tracking-wider border border-black shadow-xs cursor-pointer"
+        >
+          <Save className="w-3.5 h-3.5" />
+          <span>{isSaving ? "Saving..." : "Save"}</span>
+        </button>
+      </div>
+
+      {/* Backdrop for mobile drawer */}
+      {isMobileMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-xs"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* ── LEFT SIDEBAR (Desktop Fixed, Mobile Slide-Over) ── */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-stone-200/90 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 ${
+          isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
+        {/* Sidebar Header: Brand & Live Indicator */}
+        <div className="p-5 border-b border-stone-100">
+          <div className="flex items-center justify-between">
             <Link
               href="/"
-              className="flex items-center gap-2.5 group cursor-pointer"
+              className="flex items-center gap-3 group cursor-pointer"
               title="Return to Live Portfolio"
             >
-              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-300 text-black font-['Space_Grotesk'] font-black text-xs border border-black/20 shadow-sm group-hover:scale-105 transition-transform">
+              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-300 text-black font-['Space_Grotesk'] font-black text-sm border-2 border-black shadow-[2px_2px_0_#000] group-hover:scale-105 transition-transform">
                 S
               </div>
               <div className="flex flex-col">
-                <span className="font-['Space_Grotesk'] text-base font-black uppercase tracking-tight text-stone-900 group-hover:text-amber-600 transition-colors">
-                  Socius
+                <span className="font-['Space_Grotesk'] text-lg font-black uppercase tracking-tight text-stone-900 group-hover:text-amber-600 transition-colors leading-none">
+                  Socius Studio
                 </span>
-                <span className="font-mono text-[9px] text-stone-500 flex items-center gap-1">
+                <span className="font-mono text-[9px] text-stone-500 flex items-center gap-1.5 mt-1 font-bold">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Live Sync
+                  <span>LIVE CLOUD CMS</span>
                 </span>
               </div>
             </Link>
-          </div>
-
-          {/* Center: Glassmorphism NavTabs (Pill Buttons) */}
-          <nav className="flex items-center gap-1.5 p-1 rounded-xl sm:rounded-full bg-stone-100/90 border border-stone-200/80 overflow-x-auto max-w-full">
-            {[
-              { id: "cover", label: "Cover", icon: Sliders },
-              { id: "about", label: "Profile", icon: User },
-              { id: "highlights", label: "Highlights", icon: Sparkles },
-              { id: "projects", label: "Projects", icon: FolderGit2, count: portfolio.projects.length },
-              { id: "certificates", label: "Certificates", icon: Award, count: portfolio.certificates.length },
-              { id: "milestones", label: "Milestones", icon: Layers, count: (portfolio.milestones || []).length || 3 },
-              { id: "skills", label: "Skills", icon: Code2, count: portfolio.skills.length },
-              { id: "contact", label: "Inquiries", icon: Send, count: messages.filter((m) => !m.read).length || undefined },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as AdminTab)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg sm:rounded-full font-mono text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-                    isActive
-                      ? "bg-black text-white shadow-sm font-black"
-                      : "text-stone-600 hover:text-black hover:bg-white/80"
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{tab.label}</span>
-                  {tab.count !== undefined && (
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                        isActive ? "bg-white/20 text-white" : "bg-stone-200 text-stone-700"
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Right: Quick Actions */}
-          <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              target="_blank"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white hover:bg-stone-50 font-mono text-xs font-bold text-stone-700 hover:text-black transition-all"
-            >
-              <span>View Site</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
 
             <button
-              onClick={handleSaveAll}
-              disabled={isSaving}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border border-black shadow-[2px_2px_0_#000] active:translate-y-0.5 transition-all cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="md:hidden p-1.5 rounded-lg text-stone-400 hover:text-black hover:bg-stone-100 cursor-pointer"
             >
-              <Save className="w-3.5 h-3.5" />
-              <span>{isSaving ? "Saving..." : "Save All"}</span>
+              <X className="w-5 h-5" />
             </button>
+          </div>
+        </div>
 
+        {/* Sidebar Nav Items (Vertical Menu) */}
+        <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-1.5">
+          <div className="px-3 pb-2 text-[10px] font-mono font-black uppercase tracking-widest text-stone-400">
+            Workspace Tabs
+          </div>
+          {navTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id as AdminTab);
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-mono text-xs transition-all cursor-pointer text-left group ${
+                  isActive
+                    ? "bg-stone-900 text-white font-black shadow-[3px_3px_0_#f59e0b] border border-stone-800"
+                    : "text-stone-700 hover:text-black hover:bg-stone-100 font-bold"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Icon
+                    className={`w-4 h-4 transition-colors ${
+                      isActive ? "text-amber-400" : "text-stone-500 group-hover:text-black"
+                    }`}
+                  />
+                  <span>{tab.label}</span>
+                </div>
+                {tab.count !== undefined && (
+                  <span
+                    className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                      isActive
+                        ? "bg-amber-400 text-black"
+                        : "bg-stone-200 text-stone-700 group-hover:bg-stone-300"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sidebar Footer: Live Site Link & User Profile */}
+        <div className="p-4 border-t border-stone-200 bg-stone-50/80 space-y-3">
+          <Link
+            href="/"
+            target="_blank"
+            className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-white border border-stone-200 hover:border-black font-mono text-xs font-bold text-stone-700 hover:text-black transition-all shadow-xs group cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <ExternalLink className="w-3.5 h-3.5 text-stone-500 group-hover:text-amber-600" />
+              <span>View Live Website</span>
+            </span>
+            <span className="text-[10px] text-stone-400 font-mono">↗</span>
+          </Link>
+
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-stone-900 text-amber-300 flex items-center justify-center font-mono text-xs font-black border border-stone-800 shadow-2xs">
+                HA
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-bold font-mono text-stone-900 leading-tight">Harsh Aryan</span>
+                <span className="text-[9.5px] font-mono text-emerald-600 font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Super Admin
+                </span>
+              </div>
+            </div>
             <button
               onClick={handleLogout}
-              className="p-1.5 rounded-xl border border-stone-200 hover:border-stone-400 text-stone-500 hover:text-red-600 bg-white hover:bg-red-50 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>
-      </header>
+      </aside>
 
-      {/* ── Main Content Area ── */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+      {/* ── MAIN CONTENT WORKSPACE (Right Side on md: screens) ── */}
+      <div className="flex-1 md:ml-72 min-h-screen flex flex-col">
+        {/* Sticky Top Bar for Section Header & Save All */}
+        <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-stone-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+          {/* Breadcrumb Left */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="md:hidden p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 cursor-pointer"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-stone-400 uppercase tracking-wider">
+                <span>Studio</span>
+                <span>/</span>
+                <span className="text-stone-900 font-black">{currentTabObj.title}</span>
+              </div>
+              <span className="text-xs font-mono text-stone-500 hidden sm:inline">
+                {currentTabObj.desc}
+              </span>
+            </div>
+          </div>
+
+          {/* Actions Right */}
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/"
+              target="_blank"
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white hover:bg-stone-50 font-mono text-xs font-bold text-stone-700 hover:text-black transition-all cursor-pointer"
+            >
+              <span>Preview</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+
+            <button
+              onClick={handleSaveAll}
+              disabled={isSaving}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] active:translate-y-0.5 transition-all cursor-pointer"
+            >
+              {isSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+              <span>{isSaving ? "Saving..." : "Save All Changes"}</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Content Container */}
+        <main className="flex-1 p-4 sm:p-7 max-w-6xl w-full mx-auto space-y-8">
 
         {/* ── TAB: COVER HERO MANAGER (LAPTOP & PHONE DEDICATED SECTIONS) ── */}
         {activeTab === "cover" && (
@@ -3208,7 +3332,8 @@ export default function AdminPage() {
           </div>
         </div>
       )}
-      </main>
+        </main>
+      </div>
 
       {/* ── PROJECT MODAL (ADD / EDIT) ── */}
       {isProjectModalOpen && (
