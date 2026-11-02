@@ -701,17 +701,6 @@ function CoverBackgroundLayer({ isDark }: { isDark: boolean }) {
             : "radial-gradient(ellipse at 50% 15%, rgba(255, 255, 255, 0.75) 0%, rgba(250, 248, 243, 0.3) 60%, rgba(235, 230, 220, 0.45) 100%)",
         }}
       />
-
-      {/* ── 7. Technical Architectural Corner Crop Markers ── */}
-      <div className="absolute top-4 left-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
-        <span>{isDark ? "[ 01 // ORBITAL ARCHIVE ]" : "+ 01 // DRAFTING COVER"}</span>
-      </div>
-      <div className="absolute top-4 right-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
-        <span>{isDark ? "[ SYS // 2026.04 ]" : "SYSTEM // ARCHIVE"}</span>
-      </div>
-      <div className="absolute bottom-4 right-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
-        <span>{isDark ? "[ SEC-01 // HARSH ARYAN ]" : "HARSH ARYAN // PORTFOLIO"}</span>
-      </div>
     </div>
   )
 }
@@ -1236,8 +1225,11 @@ export function DoodleCrewCover({
         <div className="dcf-top-inner">
           <div className="dcf-top-left">
             <div className="dcf-brand-stamp">
-              <img src="/icon.svg" alt="App Logo" className="w-4 h-4 object-contain inline-block rounded-xs shrink-0" />
+              <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-black/20 bg-stone-100 dark:bg-stone-800">
+                <img src="/icon.svg" alt="App Logo" className="w-3.5 h-3.5 object-contain" />
+              </div>
               <span>{portfolio?.personal?.name || portfolio?.personal?.desktopWordmark || "HARSH ARYAN"}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0 ml-0.5" />
             </div>
           </div>
 
@@ -1632,23 +1624,26 @@ const COVER_CSS = `
   font-family: 'Amanojaku', 'Permanent Marker', cursive, sans-serif;
   font-weight: 900;
   font-size: 13.5px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: #000000;
-  color: #ffffff;
-  padding: 5px 12px;
-  border-radius: 6px;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  background: #ffffff;
+  color: #000000;
+  padding: 5px 14px 5px 9px;
+  border-radius: 9999px;
+  border: 2px solid #000000;
+  box-shadow: 2.5px 2.5px 0 #000000;
   transform: rotate(-1.5deg);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   user-select: none;
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+  cursor: default;
 }
 
 .dcf-brand-stamp:hover {
-  transform: rotate(0deg) scale(1.04);
+  transform: rotate(0deg) scale(1.05) translateY(-1px);
+  box-shadow: 4px 4px 0 #000000;
 }
 
 /* Hero Roles directly under HARSH ARYAN wordmark */
@@ -2088,14 +2083,14 @@ html:not(.dark) .dcf-art[style*="--i: 5"] { fill: #fed7aa; }
 
 /* Light Mode: Neo-Pop Brand Stamp, Time Gadget, Role & Candy Socials */
 html:not(.dark) .dcf-brand-stamp {
-  background: #fde047;
+  background: #ffffff;
   color: #000000;
   border: 2px solid #000000;
-  box-shadow: 2.5px 2.5px 0 #000000;
+  box-shadow: 3px 3px 0 #000000;
 }
 html:not(.dark) .dcf-brand-stamp:hover {
-  background: #facc15;
-  box-shadow: 3.5px 3.5px 0 #000000;
+  background: #fef08a;
+  box-shadow: 4.5px 4.5px 0 #000000;
 }
 
 html:not(.dark) .dcf-role-badge {
@@ -2245,7 +2240,13 @@ html.dark .dcf-root {
 html.dark .dcf-brand-stamp {
   background: #ffffff;
   color: #000000;
-  box-shadow: 2px 2px 0 #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0 #f59e0b;
+}
+
+html.dark .dcf-brand-stamp:hover {
+  background: #ffffff;
+  box-shadow: 4.5px 4.5px 0 #fbbf24;
 }
 
 html.dark .dcf-hero-role-pill.is-ta {
