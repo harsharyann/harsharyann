@@ -33,6 +33,9 @@ import {
   ArrowDown,
   Layers,
   Code2,
+  Brain,
+  Laptop,
+  FolderGit2,
   MapPin,
   Menu,
   X,
@@ -4437,6 +4440,129 @@ export default function AdminPage() {
                     + Add Category
                   </button>
                 </div>
+              </div>
+            </div>
+
+            {/* Live Bento Preview (Matches Portfolio Public View) */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-amber-50/50 border-2 border-black shadow-[4px_4px_0_#000] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-stone-200">
+                <div className="flex items-center gap-2">
+                  <span className="sketch-stamp bg-black text-amber-300 font-mono text-[10px] font-black uppercase px-2 py-0.5 rounded">
+                    LIVE PREVIEW
+                  </span>
+                  <h4 className="font-['Space_Grotesk'] text-base font-black uppercase text-stone-900">
+                    Live Bento Cards Preview (Portfolio Display)
+                  </h4>
+                </div>
+                <span className="font-mono text-xs text-stone-500">
+                  Yeh preview realtime me live updates reflect karta hai
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 pt-2">
+                {(portfolio.skills || []).map((group, idx) => {
+                  const themes = [
+                    {
+                      bg: "bg-[#fffef7]",
+                      border: "border-2 border-black",
+                      shadow: "shadow-[4px_4px_0_#f59e0b]",
+                      tape: "bg-amber-300",
+                      badgeBg: "bg-amber-100 text-amber-950 border-amber-300",
+                      starColor: "text-amber-500",
+                      icon: <Code2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />,
+                    },
+                    {
+                      bg: "bg-[#fafffa]",
+                      border: "border-2 border-black",
+                      shadow: "shadow-[4px_4px_0_#10b981]",
+                      tape: "bg-emerald-300",
+                      badgeBg: "bg-emerald-100 text-emerald-950 border-emerald-300",
+                      starColor: "text-emerald-500",
+                      icon: <Brain className="w-3.5 h-3.5 text-emerald-600 shrink-0" />,
+                    },
+                    {
+                      bg: "bg-[#fafaff]",
+                      border: "border-2 border-black",
+                      shadow: "shadow-[4px_4px_0_#6366f1]",
+                      tape: "bg-indigo-300",
+                      badgeBg: "bg-indigo-100 text-indigo-950 border-indigo-300",
+                      starColor: "text-indigo-500",
+                      icon: <Laptop className="w-3.5 h-3.5 text-indigo-600 shrink-0" />,
+                    },
+                    {
+                      bg: "bg-[#f7feff]",
+                      border: "border-2 border-black",
+                      shadow: "shadow-[4px_4px_0_#06b6d4]",
+                      tape: "bg-cyan-300",
+                      badgeBg: "bg-cyan-100 text-cyan-950 border-cyan-300",
+                      starColor: "text-cyan-500",
+                      icon: <FolderGit2 className="w-3.5 h-3.5 text-cyan-600 shrink-0" />,
+                    },
+                    {
+                      bg: "bg-[#fff8fa]",
+                      border: "border-2 border-black",
+                      shadow: "shadow-[4px_4px_0_#f43f5e]",
+                      tape: "bg-rose-300",
+                      badgeBg: "bg-rose-100 text-rose-950 border-rose-300",
+                      starColor: "text-rose-500",
+                      icon: <Sparkles className="w-3.5 h-3.5 text-rose-600 shrink-0" />,
+                    },
+                  ];
+                  const t = themes[idx % themes.length];
+                  const total = portfolio.skills?.length || 1;
+                  const colSpan =
+                    total === 5
+                      ? idx < 3
+                        ? "lg:col-span-2"
+                        : "lg:col-span-3"
+                      : total === 4 || total === 2
+                      ? "lg:col-span-3"
+                      : total === 1
+                      ? "lg:col-span-6"
+                      : "lg:col-span-2";
+
+                  return (
+                    <div
+                      key={idx}
+                      className={`relative p-4 rounded-2xl ${colSpan} ${t.bg} ${t.border} ${t.shadow} flex flex-col justify-between space-y-3`}
+                    >
+                      {/* Washi tape pin */}
+                      <div
+                        className={`absolute -top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 ${t.tape} border border-black/25 shadow-xs rotate-[-1deg] rounded-xs pointer-events-none z-10`}
+                      />
+
+                      <div className="flex items-center justify-between gap-1 pb-2 border-b border-dashed border-black/15">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`inline-flex px-1.5 py-0.5 rounded font-mono text-[9px] font-black border ${t.badgeBg}`}>
+                            0{idx + 1}
+                          </span>
+                          <span className="font-mono text-xs font-black uppercase text-black flex items-center gap-1 truncate">
+                            {t.icon}
+                            <span className="truncate">{group.category || "Untitled Category"}</span>
+                          </span>
+                        </div>
+                        <span className="text-[9px] font-mono font-bold text-stone-500 px-1.5 py-0.5 rounded-full bg-black/5 shrink-0">
+                          {group.items?.length || 0} tools
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {(group.items || []).map((tool, tIdx) => (
+                          <span
+                            key={tIdx}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-black/15 text-stone-900 font-mono text-[11px] font-bold shadow-2xs"
+                          >
+                            <span className={t.starColor}>✦</span>
+                            <span>{tool}</span>
+                          </span>
+                        ))}
+                        {(!group.items || group.items.length === 0) && (
+                          <span className="font-mono text-xs text-stone-400 italic">No skill tags yet. Add one above!</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

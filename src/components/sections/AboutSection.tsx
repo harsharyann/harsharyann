@@ -826,6 +826,8 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                   : "lg:col-span-3"
                 : total === 4 || total === 2
                 ? "lg:col-span-3"
+                : total === 1
+                ? "lg:col-span-6"
                 : "lg:col-span-2";
 
             return (
