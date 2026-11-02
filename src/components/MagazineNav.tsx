@@ -17,6 +17,73 @@ interface NavSection {
   icon: (active: boolean) => React.ReactNode;
 }
 
+const NAV_ITEM_THEMES: Record<
+  string,
+  {
+    active: string;
+    inactive: string;
+    iconColor: string;
+    numBadge: string;
+    tagBadge: string;
+  }
+> = {
+  cover: {
+    active:
+      "bg-amber-300 text-black dark:bg-amber-400 dark:text-black border-black dark:border-amber-300 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#f59e0b]",
+    inactive:
+      "border-transparent hover:border-black dark:hover:border-amber-400 hover:bg-amber-100/70 dark:hover:bg-amber-950/40 text-stone-900 dark:text-stone-100",
+    iconColor: "text-amber-600 dark:text-amber-400",
+    numBadge:
+      "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-900/70 dark:text-amber-300 dark:border-amber-700",
+    tagBadge:
+      "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-900/60 dark:text-amber-200 dark:border-amber-700",
+  },
+  about: {
+    active:
+      "bg-orange-300 text-black dark:bg-orange-400 dark:text-black border-black dark:border-orange-300 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#f97316]",
+    inactive:
+      "border-transparent hover:border-black dark:hover:border-orange-400 hover:bg-orange-100/70 dark:hover:bg-orange-950/40 text-stone-900 dark:text-stone-100",
+    iconColor: "text-orange-600 dark:text-orange-400",
+    numBadge:
+      "bg-orange-100 text-orange-900 border-orange-300 dark:bg-orange-900/70 dark:text-orange-300 dark:border-orange-700",
+    tagBadge:
+      "bg-orange-100 text-orange-900 border-orange-300 dark:bg-orange-900/60 dark:text-orange-200 dark:border-orange-700",
+  },
+  projects: {
+    active:
+      "bg-indigo-300 text-black dark:bg-indigo-400 dark:text-black border-black dark:border-indigo-300 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#6366f1]",
+    inactive:
+      "border-transparent hover:border-black dark:hover:border-indigo-400 hover:bg-indigo-100/70 dark:hover:bg-indigo-950/40 text-stone-900 dark:text-stone-100",
+    iconColor: "text-indigo-600 dark:text-indigo-400",
+    numBadge:
+      "bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-900/70 dark:text-indigo-300 dark:border-indigo-700",
+    tagBadge:
+      "bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-900/60 dark:text-indigo-200 dark:border-indigo-700",
+  },
+  certificates: {
+    active:
+      "bg-emerald-300 text-black dark:bg-emerald-400 dark:text-black border-black dark:border-emerald-300 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#10b981]",
+    inactive:
+      "border-transparent hover:border-black dark:hover:border-emerald-400 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/40 text-stone-900 dark:text-stone-100",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    numBadge:
+      "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-900/70 dark:text-emerald-300 dark:border-emerald-700",
+    tagBadge:
+      "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-900/60 dark:text-emerald-200 dark:border-emerald-700",
+  },
+  contact: {
+    active:
+      "bg-rose-300 text-black dark:bg-rose-400 dark:text-black border-black dark:border-rose-300 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#f43f5e]",
+    inactive:
+      "border-transparent hover:border-black dark:hover:border-rose-400 hover:bg-rose-100/70 dark:hover:bg-rose-950/40 text-stone-900 dark:text-stone-100",
+    iconColor: "text-rose-600 dark:text-rose-400",
+    numBadge:
+      "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-900/70 dark:text-rose-300 dark:border-rose-700",
+    tagBadge:
+      "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-900/60 dark:text-rose-200 dark:border-rose-700",
+  },
+};
+
 export function MagazineNav() {
   const pathname = usePathname();
   const { isCoverOpen, openCover, data: portfolio } = usePortfolio();
@@ -218,77 +285,111 @@ export function MagazineNav() {
         {/* EXPANDABLE SKETCHBOOK DIRECTORY POPUP */}
         {isOpen && (
           <div
-            className="absolute right-0 top-full mt-3 w-80 bg-white/75 dark:bg-stone-900/75 backdrop-blur-2xl border-2 border-black dark:border-white shadow-[6px_6px_0_#000,inset_0_1px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[6px_6px_0_#fff,inset_0_1px_1.5px_0_rgba(255,255,255,0.18)] rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-top-3 duration-150 select-none"
+            className="absolute right-0 top-full mt-3 w-80 bg-[#fffdfa] dark:bg-[#12131c] backdrop-blur-2xl border-2 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#f59e0b] rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-top-3 duration-150 select-none"
             role="dialog"
             aria-label="Site Navigation Directory"
           >
+            {/* Playful washi tape on top of the directory modal */}
+            <div
+              className="absolute -top-2 left-1/2 -translate-x-1/2 w-16 h-3 bg-amber-400 dark:bg-amber-400 border border-black/30 shadow-xs rotate-[-1deg] rounded-xs pointer-events-none z-10"
+              aria-hidden="true"
+            />
+
             {/* Header */}
-            <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-black/10 dark:border-white/10 font-mono text-[11px] font-black uppercase text-stone-500 dark:text-stone-400">
-              <span className="flex items-center gap-2">
-                <img src="/icon.svg" alt="Logo" className="w-4 h-4 object-contain rounded-xs" />
-                EXPLORE INDEX
+            <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-dashed border-black/15 dark:border-white/15 font-mono text-[11px] font-black uppercase">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-black text-white dark:bg-white dark:text-black font-black text-[10px] -rotate-1 shadow-[1.5px_1.5px_0_#f59e0b]">
+                <span>📑</span> EXPLORE INDEX
               </span>
-              <span className="text-[10px] text-stone-400">[ESC TO CLOSE]</span>
+              <span className="px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-[9px] font-mono text-stone-500 dark:text-stone-400 font-bold">
+                ESC ✕
+              </span>
             </div>
 
             {/* Navigation Links */}
             <div className="space-y-1.5">
               {/* 00 Cover */}
-              <button
-                type="button"
-                onClick={(e) => handleNavClick("cover", e)}
-                className={`w-full flex items-center justify-between p-2.5 rounded-xl border transition-all group font-mono text-xs font-bold cursor-pointer ${
-                  activeSection === "cover"
-                    ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-[2px_2px_0_#888]"
-                    : "border-transparent hover:border-black dark:hover:border-white hover:bg-stone-100 dark:hover:bg-stone-800 text-black dark:text-white"
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className={`text-[10px] font-extrabold w-5 ${activeSection === "cover" ? "text-amber-400 dark:text-amber-600" : "text-stone-400"}`}>
-                    00
-                  </span>
-                  <Home className="w-4 h-4 text-stone-500 group-hover:text-amber-500 transition-colors" />
-                  <span className="uppercase font-black">Cover Screen</span>
-                </div>
-                {activeSection === "cover" ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase text-amber-300 dark:text-amber-700 bg-stone-800 dark:bg-stone-200 px-2 py-0.5 rounded-full">
-                    <span>✦</span> CURRENT
-                  </span>
-                ) : (
-                  <span className="text-[10px] text-stone-400 font-mono">↵ Top</span>
-                )}
-              </button>
+              {(() => {
+                const isCoverActive = activeSection === "cover";
+                const theme = NAV_ITEM_THEMES.cover;
+                return (
+                  <button
+                    type="button"
+                    onClick={(e) => handleNavClick("cover", e)}
+                    className={`w-full flex items-center justify-between p-2.5 rounded-xl border-2 transition-all duration-150 group font-mono text-xs font-bold cursor-pointer select-none ${
+                      isCoverActive ? theme.active : theme.inactive
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className={`text-[10px] font-black px-1.5 py-0.5 rounded border ${
+                          isCoverActive
+                            ? "bg-black text-amber-300 dark:bg-black dark:text-amber-300 border-black"
+                            : theme.numBadge
+                        }`}
+                      >
+                        00
+                      </span>
+                      <Home
+                        className={`w-4 h-4 transition-transform group-hover:scale-110 ${
+                          isCoverActive ? "text-black dark:text-black stroke-[2.5]" : theme.iconColor
+                        }`}
+                      />
+                      <span className="uppercase font-black tracking-wide">Cover Screen</span>
+                    </div>
+                    {isCoverActive ? (
+                      <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-black bg-white dark:bg-black dark:text-amber-300 px-2 py-0.5 rounded-full border border-black shadow-xs">
+                        <span>✦</span> CURRENT
+                      </span>
+                    ) : (
+                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${theme.tagBadge}`}>
+                        TOP ↵
+                      </span>
+                    )}
+                  </button>
+                );
+              })()}
 
               {/* Chapter Sections */}
               {sections.map((s) => {
                 const isActive = activeSection === s.id;
+                const theme = NAV_ITEM_THEMES[s.id] || NAV_ITEM_THEMES.about;
                 return (
                   <button
                     key={s.id}
                     type="button"
                     onClick={(e) => handleNavClick(s.id, e)}
-                    className={`w-full flex items-center justify-between p-2.5 rounded-xl border transition-all font-mono text-xs font-bold cursor-pointer ${
-                      isActive
-                        ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-[2.5px_2.5px_0_#888]"
-                        : "border-transparent hover:border-black dark:hover:border-white hover:bg-stone-100 dark:hover:bg-stone-800 text-black dark:text-white"
+                    className={`w-full flex items-center justify-between p-2.5 rounded-xl border-2 transition-all duration-150 group font-mono text-xs font-bold cursor-pointer select-none ${
+                      isActive ? theme.active : theme.inactive
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className={`text-[10px] font-extrabold w-5 ${isActive ? "text-amber-400 dark:text-amber-600" : "text-stone-400"}`}>
+                      <span
+                        className={`text-[10px] font-black px-1.5 py-0.5 rounded border ${
+                          isActive
+                            ? "bg-black text-white dark:bg-black dark:text-white border-black"
+                            : theme.numBadge
+                        }`}
+                      >
                         {s.chapter}
                       </span>
-                      <span className="flex items-center justify-center">
+                      <span
+                        className={`flex items-center justify-center transition-transform group-hover:scale-110 ${
+                          isActive ? "text-black dark:text-black" : theme.iconColor
+                        }`}
+                      >
                         {s.icon(isActive)}
                       </span>
-                      <span className="uppercase font-black">{s.name}</span>
+                      <span className="uppercase font-black tracking-wide">{s.name}</span>
                     </div>
 
                     {isActive ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase text-amber-300 dark:text-amber-700 bg-stone-800 dark:bg-stone-200 px-2 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-black bg-white dark:bg-black dark:text-white px-2 py-0.5 rounded-full border border-black shadow-xs">
                         <span>✦</span> CURRENT
                       </span>
                     ) : (
-                      <span className="text-[10px] text-stone-400 uppercase font-mono">
+                      <span
+                        className={`text-[9.5px] font-black uppercase px-2 py-0.5 rounded-full border ${theme.tagBadge}`}
+                      >
                         {s.badge}
                       </span>
                     )}
@@ -297,16 +398,17 @@ export function MagazineNav() {
               })}
 
               {/* Admin Portal Shortcut */}
-              <div className="pt-2 mt-2 border-t border-black/10 dark:border-white/10">
+              <div className="pt-2 mt-2 border-t-2 border-dashed border-black/10 dark:border-white/10">
                 <Link
                   href="/admin"
-                  className="flex items-center justify-between p-2 rounded-xl text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all font-mono text-[11px] font-bold"
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-purple-50/80 dark:bg-purple-950/25 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-900 dark:text-purple-300 transition-all font-mono text-xs font-bold group"
                 >
                   <span className="flex items-center gap-2">
                     <img src="/icon.svg" alt="Socius" className="w-3.5 h-3.5 object-contain rounded-xs" />
-                    <span>Socius</span>
+                    <span className="font-black uppercase tracking-wide">Socius</span>
                   </span>
-                  <span className="text-[9px] bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 px-1.5 py-0.5 rounded">
+                  <span className="text-[9.5px] font-bold bg-purple-200/80 dark:bg-purple-900/60 text-purple-900 dark:text-purple-200 border border-purple-300 dark:border-purple-700 px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <Lock className="w-3 h-3" />
                     Locked
                   </span>
                 </Link>
@@ -319,7 +421,11 @@ export function MagazineNav() {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase bg-white/75 dark:bg-stone-900/75 backdrop-blur-2xl text-black dark:text-white px-4 py-2.5 rounded-full border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000,inset_0_1px_1.5px_0_rgba(255,255,255,0.7)] dark:shadow-[3.5px_3.5px_0_#fff,inset_0_1px_1.5px_0_rgba(255,255,255,0.18)] hover:-translate-y-0.5 active:translate-y-0.5 transition-all select-none cursor-pointer"
+          className={`group relative inline-flex items-center gap-2.5 font-mono text-xs font-black uppercase px-4 py-2.5 rounded-full border-2 transition-all duration-200 select-none cursor-pointer hover:-translate-y-0.5 active:translate-y-0.5 ${
+            isOpen
+              ? "bg-amber-300 text-black border-black shadow-[3.5px_3.5px_0_#000] dark:bg-amber-400 dark:text-black dark:border-black dark:shadow-[3.5px_3.5px_0_#f59e0b]"
+              : "bg-white/90 dark:bg-stone-900/90 text-black dark:text-white border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff]"
+          }`}
           aria-label="Toggle Menu"
           aria-expanded={isOpen}
         >
