@@ -19,87 +19,115 @@ export const viewport: Viewport = {
   ],
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "Harsh Aryan | AI & Data Science Developer • Teaching Assistant @ IIT Madras",
-    template: "%s | Harsh Aryan",
-  },
-  description:
-    "Official sketchbook portfolio of Harsh Aryan — Teaching Assistant at IIT Madras, Machine Learning Developer & AI Researcher specializing in Deep Learning, Scientific Computing, and Python.",
-  keywords: [
-    "Harsh Aryan",
-    "Harsh Aryan IIT Madras",
-    "Teaching Assistant IIT Madras",
-    "AI Developer",
-    "Data Science",
-    "Machine Learning Engineer",
-    "Python Developer",
-    "IIT Madras Data Science",
-    "Scientific Computing",
-    "Deep Learning",
-    "Creative Developer Portfolio",
-    "Portfolio",
-    "AI & Data Science",
-  ],
-  authors: [{ name: "Harsh Aryan", url: "https://github.com/harsharyann" }],
-  creator: "Harsh Aryan",
-  publisher: "Harsh Aryan",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    title: "Harsh Aryan | AI & Data Science Developer • IIT Madras",
-    description:
-      "Hand-drawn sketchbook portfolio of Harsh Aryan — Teaching Assistant at IIT Madras, Machine Learning Developer & AI Researcher.",
-    url: "/",
-    siteName: "Harsh Aryan Portfolio",
-    locale: "en_US",
-    type: "website",
-    images: [
+/**
+ * Dynamic Pro SEO Metadata Generator
+ * Automatically updates whenever user modifies personal info, projects, skills or headline in Admin!
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const data = getStoredPortfolioData();
+  const personal = data.personal || {};
+  const name = personal.name?.trim() || "Harsh Aryan";
+  const role = (personal.role || personal.currentWork || "AI & Data Science Developer").trim();
+  const headline = (personal.headline || personal.bio || "Exploring Data Science, Machine Learning Foundations & Scientific Computing.").slice(0, 160).trim();
+  const college = personal.college?.trim() || "IIT Madras";
+  const photoUrl = personal.aboutPhotoUrl || personal.coverPhotoUrl || "/app-logo.png";
+
+  // Dynamic SEO keywords extracted from user's current projects, skills & technologies
+  const skillNames = (data.skills || []).flatMap((g) => g.items || []);
+  const projectTitles = (data.projects || []).map((p) => p.title);
+  const projectTechs = (data.projects || []).flatMap((p) => p.technologies || []);
+  const customKeywords = Array.from(
+    new Set([
+      name,
+      `${name} ${college}`,
+      `${name} Portfolio`,
+      role,
+      `${role} ${college}`,
+      college,
+      "AI Developer",
+      "Data Science",
+      "Machine Learning Engineer",
+      "Python Developer",
+      "IIT Madras Data Science",
+      "Scientific Computing",
+      "Deep Learning",
+      "Creative Developer Portfolio",
+      ...skillNames.slice(0, 10),
+      ...projectTitles.slice(0, 6),
+      ...projectTechs.slice(0, 6),
+    ])
+  );
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: `${name} | ${role} • ${college}`,
+      template: `%s | ${name}`,
+    },
+    description: headline,
+    keywords: customKeywords,
+    authors: [
       {
-        url: "/app-logo.png",
-        width: 1200,
-        height: 630,
-        alt: "Harsh Aryan — AI & Data Science Developer Portfolio",
+        name,
+        url: data.socialLinks?.github || "https://github.com/harsharyann",
       },
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Harsh Aryan | AI & Data Science Developer • IIT Madras",
-    description:
-      "Hand-drawn sketchbook portfolio of Harsh Aryan — Teaching Assistant at IIT Madras, Machine Learning Developer & AI Researcher.",
-    creator: "@harsharyann",
-    images: ["/app-logo.png"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    nocache: false,
-    googleBot: {
+    creator: name,
+    publisher: name,
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+    alternates: {
+      canonical: "/",
+    },
+    openGraph: {
+      title: `${name} | ${role} • ${college}`,
+      description: headline,
+      url: "/",
+      siteName: `${name} Portfolio`,
+      locale: "en_US",
+      type: "website",
+      images: [
+        {
+          url: photoUrl,
+          width: 1200,
+          height: 630,
+          alt: `${name} — ${role}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${name} | ${role} • ${college}`,
+      description: headline,
+      creator: "@harsharyann",
+      images: [photoUrl],
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      nocache: false,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "any" },
-    ],
-    shortcut: "/icon.svg",
-    apple: "/app-logo.png",
-  },
-  category: "technology",
-};
+    icons: {
+      icon: [
+        { url: "/icon.svg", type: "image/svg+xml" },
+        { url: "/favicon.ico", sizes: "any" },
+      ],
+      shortcut: "/icon.svg",
+      apple: "/app-logo.png",
+    },
+    category: "technology",
+  };
+}
 
 export default function RootLayout({
   children,
@@ -107,6 +135,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const initialPortfolioData = getStoredPortfolioData();
+  const personal = initialPortfolioData.personal || {};
+  const name = personal.name?.trim() || "Harsh Aryan";
+  const role = (personal.role || personal.currentWork || "Teaching Assistant & AI Developer").trim();
+  const college = personal.college?.trim() || "IIT Madras";
+  const bio = personal.bio || personal.headline || "Machine Learning & Scientific Computing Developer.";
+  const headline = personal.headline || bio;
+  const photoUrl = personal.aboutPhotoUrl || personal.coverPhotoUrl || `${siteUrl}/app-logo.png`;
+
+  const allSkills = (initialPortfolioData.skills || []).flatMap((g) => g.items || []);
+  const sameAsList = Object.values(initialPortfolioData.socialLinks || {}).filter(
+    (u): u is string => typeof u === "string" && u.startsWith("http")
+  );
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -114,17 +154,22 @@ export default function RootLayout({
       {
         "@type": "Person",
         "@id": `${siteUrl}/#person`,
-        name: "Harsh Aryan",
-        jobTitle: "Teaching Assistant & AI Developer",
+        name,
+        jobTitle: role,
         worksFor: {
           "@type": "CollegeOrUniversity",
-          name: "IIT Madras",
+          name: college,
         },
         alumniOf: {
           "@type": "CollegeOrUniversity",
-          name: "IIT Madras",
+          name: college,
         },
-        knowsAbout: [
+        description: bio,
+        image: photoUrl,
+        email: personal.email ? `mailto:${personal.email}` : undefined,
+        url: siteUrl,
+        sameAs: sameAsList,
+        knowsAbout: allSkills.length > 0 ? allSkills : [
           "Artificial Intelligence",
           "Machine Learning",
           "Data Science",
@@ -132,25 +177,72 @@ export default function RootLayout({
           "Deep Learning",
           "Scientific Computing",
         ],
-        sameAs: [
-          "https://github.com/harsharyann",
-          "https://linkedin.com",
-          "https://kaggle.com",
-        ],
-        url: siteUrl,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: personal.currentCity || "Chennai",
+          addressCountry: personal.currentCountry || "India",
+        },
       },
       {
         "@type": "WebSite",
         "@id": `${siteUrl}/#website`,
-        name: "Harsh Aryan Portfolio",
-        description:
-          "Official hand-drawn sketchbook portfolio of Harsh Aryan — AI & Data Science Developer at IIT Madras.",
+        name: `${name} Portfolio`,
         url: siteUrl,
+        description: headline,
         publisher: {
           "@id": `${siteUrl}/#person`,
         },
         inLanguage: "en-US",
       },
+      {
+        "@type": "ProfilePage",
+        "@id": `${siteUrl}/#profilepage`,
+        url: siteUrl,
+        name: `${name} | Official Sketchbook Portfolio`,
+        mainEntity: {
+          "@id": `${siteUrl}/#person`,
+        },
+      },
+      // Dynamic CreativeWork / SoftwareSourceCode for all live projects
+      ...((initialPortfolioData.projects && initialPortfolioData.projects.length > 0)
+        ? [
+            {
+              "@type": "ItemList",
+              name: "Featured Engineering & AI Projects",
+              itemListElement: initialPortfolioData.projects.map((p, idx) => ({
+                "@type": "ListItem",
+                position: idx + 1,
+                item: {
+                  "@type": "SoftwareSourceCode",
+                  name: p.title,
+                  description: p.description,
+                  programmingLanguage: p.technologies?.join(", "),
+                  codeRepository: p.githubUrl || undefined,
+                  url: p.liveUrl || p.githubUrl || `${siteUrl}/#projects`,
+                },
+              })),
+            },
+          ]
+        : []),
+      // Dynamic Laurels / Certificates Credentials
+      ...((initialPortfolioData.certificates && initialPortfolioData.certificates.length > 0)
+        ? [
+            {
+              "@type": "ItemList",
+              name: "Academic Honors & Professional Certifications",
+              itemListElement: initialPortfolioData.certificates.map((c, idx) => ({
+                "@type": "ListItem",
+                position: idx + 1,
+                item: {
+                  "@type": "EducationalOccupationalCredential",
+                  name: c.title,
+                  credentialCategory: c.issuer,
+                  url: c.credentialUrl || `${siteUrl}/#certificates`,
+                },
+              })),
+            },
+          ]
+        : []),
     ],
   };
 

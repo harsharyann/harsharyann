@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getStoredPortfolioData, saveStoredPortfolioData, resetStoredPortfolioData } from "@/lib/portfolioStore";
 import { isAuthenticated } from "@/lib/auth";
 
@@ -32,6 +33,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Failed to save portfolio data" }, { status: 500 });
     }
 
+    // Automatically revalidate root layout, pages, and SEO sitemap
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/sitemap.xml");
+      revalidatePath("/robots.txt");
+    } catch (e) {
+      console.warn("Revalidation notice:", e);
+    }
+
     return NextResponse.json({ success: true, data: updatedData });
   } catch (err) {
     console.error("Save portfolio error:", err);
@@ -48,6 +58,14 @@ export async function PUT() {
   const success = resetStoredPortfolioData();
   if (!success) {
     return NextResponse.json({ error: "Failed to reset portfolio data" }, { status: 500 });
+  }
+
+  try {
+    revalidatePath("/", "layout");
+    revalidatePath("/sitemap.xml");
+    revalidatePath("/robots.txt");
+  } catch (e) {
+    console.warn("Revalidation notice:", e);
   }
 
   const data = getStoredPortfolioData();

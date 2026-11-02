@@ -679,18 +679,10 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
           {/* Quick Stats Grid (Colourful Sketchbook Sticker Cards) */}
           <div className="space-y-3 pt-3">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 font-mono text-[10px] sm:text-[11px] font-black uppercase tracking-wider shadow-[2px_2px_0_#f59e0b] -rotate-1 select-none">
-                  <span>🏷️</span>
-                  <span>KEY BENCHMARKS</span>
-                </span>
-                <span className="font-mono text-[10px] font-bold text-stone-400 dark:text-stone-500 tracking-widest uppercase hidden sm:inline">
-                  // VERIFIED METRICS
-                </span>
-              </div>
-              <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 italic hidden md:inline">
-                ✦ interactive stickers
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 font-mono text-[10px] sm:text-[11px] font-black uppercase tracking-wider shadow-[2px_2px_0_#f59e0b] -rotate-1 select-none">
+                <span>🏷️</span>
+                <span>KEY BENCHMARKS</span>
               </span>
             </div>
 
