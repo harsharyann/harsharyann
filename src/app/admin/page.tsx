@@ -46,6 +46,7 @@ import {
   Calendar,
   Mail,
 } from "lucide-react";
+import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Project, Certificate, PortfolioData, TimelineMilestone, Experience, DailyThought, DEFAULT_DAILY_THOUGHTS } from "@/data/portfolioData";
 import { FormattedHighlightedText } from "@/components/sections/AboutSection";
@@ -95,7 +96,7 @@ export default function AdminPage() {
 
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("Harsharyann_");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState("");
@@ -1020,10 +1021,10 @@ export default function AdminPage() {
   // ─── LOADING STATE ───
   if (isAuthenticated === null) {
     return (
-      <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center p-4">
-        <div className="p-8 rounded-2xl bg-white border border-stone-200 shadow-sm flex flex-col items-center space-y-4">
+      <div className="min-h-screen bg-[#f7f3ea] dark:bg-[#0c0d14] flex flex-col items-center justify-center p-4">
+        <div className="p-8 rounded-2xl bg-white dark:bg-[#151620] border-2 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] flex flex-col items-center space-y-4">
           <RefreshCw className="w-8 h-8 text-amber-500 animate-spin" />
-          <p className="font-mono text-xs uppercase tracking-wider text-stone-600 font-bold">
+          <p className="font-mono text-xs uppercase tracking-wider text-stone-600 dark:text-stone-300 font-bold">
             Checking Socius Session...
           </p>
         </div>
@@ -1031,97 +1032,151 @@ export default function AdminPage() {
     );
   }
 
-  // ─── LOGIN SCREEN (SOCIUS LOCKED VIEW) ───
+  // ─── LOGIN SCREEN (SOCIUS LOCKED VIEW - ULTRA CLEAN & MINIMAL) ───
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-stone-100 flex flex-col items-center justify-center p-4 sm:p-6 text-stone-900 font-sans selection:bg-amber-400 selection:text-black">
-        <div className="w-full max-w-md p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[8px_8px_0_#000] space-y-6">
-          {/* Socius Brand Header */}
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-400 text-black border-2 border-black shadow-[3px_3px_0_#000] mx-auto mb-1">
-              <Lock className="w-6 h-6 stroke-[2.5]" />
-            </div>
-            <h1 className="font-['Space_Grotesk'] text-3xl font-black uppercase tracking-tight text-stone-900">
-              Socius
-            </h1>
-            <p className="font-mono text-xs text-stone-500">
-              Personal Portfolio Management Console
-            </p>
-          </div>
+      <div className="min-h-screen bg-[#f7f3ea] dark:bg-[#0c0d14] flex flex-col items-center justify-center p-4 sm:p-6 text-stone-900 dark:text-stone-100 font-sans selection:bg-amber-400 selection:text-black relative overflow-hidden">
+        {/* Subtle Sketchbook Grid Background */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.08] dark:opacity-[0.05]"
+          style={{
+            backgroundImage: "radial-gradient(currentColor 1.2px, transparent 1.2px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
 
-          {/* Feedback error alert */}
-          {authError && (
-            <div className="p-3.5 rounded-xl bg-red-50 border-2 border-red-300 text-red-700 font-mono text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{authError}</span>
-            </div>
-          )}
+        {/* Ambient Blurred Glows */}
+        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-amber-400/10 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-cyan-400/10 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          {/* Login Form (Clean, Zero Password Hints, High-Security) */}
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 mb-1.5">
-                Username:
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder=""
-                  autoComplete="username"
-                  required
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border-2 border-stone-300 text-stone-900 font-mono text-xs focus:outline-none focus:border-black focus:bg-white transition-all"
-                />
-                <User className="absolute right-3.5 top-3 w-4 h-4 text-stone-400" />
+        {/* ── CLEAN DOSSIER CARD CONTAINER ── */}
+        <div className="relative w-full max-w-md">
+          {/* Main Dossier Card */}
+          <div className="w-full p-6 sm:p-8 rounded-[28px] bg-[#fffef9] dark:bg-[#151620] border-[2.5px] border-black dark:border-white shadow-[8px_8px_0_#000] dark:shadow-[8px_8px_0_#fff] space-y-6 relative z-20">
+            {/* Feedback error alert */}
+            {authError && (
+              <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border-2 border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 font-mono text-xs flex items-center gap-2 shadow-[2px_2px_0_#dc2626]">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{authError}</span>
               </div>
-            </div>
+            )}
 
-            <div>
-              <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 mb-1.5">
-                Password:
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  required
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border-2 border-stone-300 text-stone-900 font-mono text-xs focus:outline-none focus:border-black focus:bg-white transition-all"
-                />
-                <Lock className="absolute right-3.5 top-3 w-4 h-4 text-stone-400" />
+            {/* Login Form */}
+            <form onSubmit={handleLogin} className="space-y-4">
+              {/* Username Field: Pre-applied Harsharyann_ */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300">
+                    Username:
+                  </label>
+                  <span className="font-mono text-[9.5px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>Harsharyann_</span>
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Harsharyann_"
+                    autoComplete="username"
+                    required
+                    className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-xs font-bold focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
+                  />
+                  <User className="absolute right-3.5 top-3 w-4 h-4 text-stone-400" />
+                </div>
               </div>
+
+              {/* Password Field */}
+              <div>
+                <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
+                  Password:
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    autoFocus
+                    required
+                    className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-xs font-bold focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-2.5 p-1 text-stone-400 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Enter Socius Action Button */}
+              <button
+                type="submit"
+                disabled={isLoggingIn}
+                className="w-full mt-2 py-3.5 px-6 rounded-xl bg-[#fde047] hover:bg-[#facc15] text-black font-mono text-xs font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0_#000] hover:shadow-[5px_5px_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-[1.5px_1.5px_0_#000] transition-all cursor-pointer flex items-center justify-center gap-2 select-none"
+              >
+                {isLoggingIn ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>Unlocking Vault...</span>
+                  </>
+                ) : (
+                  <>
+                    <Unlock className="w-4 h-4 stroke-[2.5]" />
+                    <span>Enter Socius</span>
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Return link */}
+            <div className="pt-4 border-t border-black/10 dark:border-white/10 text-center">
+              <Link
+                href="/"
+                className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white transition-colors inline-flex items-center gap-1.5 group"
+              >
+                <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                <span>Return to Live Portfolio</span>
+              </Link>
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoggingIn}
-              className="w-full mt-2 py-3 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-widest border-2 border-black shadow-[3.5px_3.5px_0_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              {isLoggingIn ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Unlocking...</span>
-                </>
-              ) : (
-                <>
-                  <Unlock className="w-4 h-4 stroke-[2.5]" />
-                  <span>Enter Socius</span>
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Return link */}
-          <div className="mt-6 pt-5 border-t border-stone-200 text-center">
-            <Link
-              href="/"
-              className="font-mono text-xs font-bold text-stone-500 hover:text-black transition-colors"
-            >
-              &larr; Return to Live Portfolio
-            </Link>
+            {/* Social Media Handles */}
+            <div className="pt-2 flex items-center justify-center gap-2.5">
+              <a
+                href={portfolio.socialLinks?.github || "https://github.com/harsharyann"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-white dark:bg-white dark:text-black border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-110 cursor-pointer"
+                title="GitHub"
+                aria-label="GitHub"
+              >
+                <GithubIcon className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href={portfolio.socialLinks?.linkedin || "https://linkedin.com"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-[#0077b5] text-white border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-110 cursor-pointer"
+                title="LinkedIn"
+                aria-label="LinkedIn"
+              >
+                <LinkedinIcon className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href={`mailto:${portfolio.personal?.email || "harsharyan@outlook.com"}`}
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-[#f59e0b] text-white border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-110 cursor-pointer"
+                title="Email Harsh"
+                aria-label="Email"
+              >
+                <Mail className="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -1181,7 +1236,7 @@ export default function AdminPage() {
 
   // ─── AUTHENTICATED DASHBOARD (SOCIUS WITH MODERN LEFT SIDEBAR LAYOUT) ───
   return (
-    <div className="min-h-screen bg-[#f8f9fa] text-stone-900 selection:bg-amber-400 selection:text-black font-sans flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#f7f3ea] dark:bg-[#0c0d14] text-stone-900 dark:text-stone-100 selection:bg-amber-400 selection:text-black font-sans flex flex-col md:flex-row relative">
       {/* ── Instant Save Toast Notification (Fatak Se Feedback) ── */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-black text-white font-mono text-xs font-bold shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/20 animate-in fade-in slide-in-from-bottom-3 duration-200">
@@ -1198,7 +1253,7 @@ export default function AdminPage() {
       )}
 
       {/* ── Mobile Top Header (Visible only on < md) ── */}
-      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white border-b border-stone-200 shadow-xs">
+      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white/95 dark:bg-[#141520]/95 backdrop-blur-xl border-b border-stone-200 dark:border-stone-800 shadow-xs">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
@@ -1238,7 +1293,7 @@ export default function AdminPage() {
 
       {/* ── LEFT SIDEBAR (Desktop Fixed, Mobile Slide-Over) ── */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-stone-200/90 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#141520]/95 backdrop-blur-xl border-r-2 border-stone-200/90 dark:border-stone-800/90 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 ${
           isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
         }`}
       >
@@ -1250,8 +1305,8 @@ export default function AdminPage() {
               className="flex items-center gap-3 group cursor-pointer"
               title="Return to Live Portfolio"
             >
-              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-300 text-black font-['Space_Grotesk'] font-black text-sm border-2 border-black shadow-[2px_2px_0_#000] group-hover:scale-105 transition-transform">
-                S
+              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-300 text-black border-2 border-black shadow-[2px_2px_0_#000] group-hover:scale-105 transition-transform overflow-hidden p-1 shrink-0">
+                <img src="/icon.svg" alt="Socius Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <span className="font-['Space_Grotesk'] text-lg font-black uppercase tracking-tight text-stone-900 group-hover:text-amber-600 transition-colors leading-none">
@@ -1391,9 +1446,18 @@ export default function AdminPage() {
       </aside>
 
       {/* ── MAIN CONTENT WORKSPACE (Right Side on md: screens) ── */}
-      <div className="flex-1 md:ml-72 min-h-screen flex flex-col">
+      <div className="flex-1 md:ml-72 min-h-screen flex flex-col relative bg-[#faf7f2]/95 dark:bg-[#0e0f17]/95">
+        {/* Subtle Sketchbook Grid Background */}
+        <div
+          className="fixed inset-0 md:left-72 pointer-events-none opacity-[0.06] dark:opacity-[0.04] z-0"
+          style={{
+            backgroundImage: "radial-gradient(currentColor 1.2px, transparent 1.2px)",
+            backgroundSize: "22px 22px",
+          }}
+        />
+
         {/* Sticky Top Bar for Section Header & Save All */}
-        <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-stone-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-30 bg-white/90 dark:bg-[#141520]/90 backdrop-blur-xl border-b-2 border-stone-200/90 dark:border-stone-800 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
           {/* Breadcrumb Left */}
           <div className="flex items-center gap-3">
             <button

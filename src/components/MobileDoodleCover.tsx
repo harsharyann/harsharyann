@@ -40,6 +40,9 @@ export function MobileDoodleCover() {
       return;
     }
     triggerRipple(e.clientX, e.clientY, e.currentTarget);
+    setTimeout(() => {
+      closeCover();
+    }, 220);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -66,6 +69,9 @@ export function MobileDoodleCover() {
 
     if (!hasMoved && diffX < 10 && diffY < 10) {
       triggerRipple(endX, endY, e.currentTarget);
+      setTimeout(() => {
+        closeCover();
+      }, 220);
     }
 
     setTouchStartX(null);
@@ -174,6 +180,7 @@ export function MobileDoodleCover() {
         {/* ── SKETCHBOOK STICKER NOTE ── */}
         <div
           onClick={(e) => {
+            e.stopPropagation();
             triggerRipple(e.clientX, e.clientY, e.currentTarget);
             setTimeout(() => {
               closeCover();
@@ -286,10 +293,21 @@ export function MobileDoodleCover() {
           </motion.div>
         </div>
 
-        {/* Subtle tap cue */}
-        <div className="text-[10px] font-mono font-bold tracking-widest uppercase opacity-45 pb-0.5">
-          ✦ TAP ANYWHERE TO ENTER ✦
-        </div>
+        {/* Action Button: Click Here to Explore Portfolio */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            triggerRipple(e.clientX, e.clientY, e.currentTarget);
+            setTimeout(() => {
+              closeCover();
+            }, 200);
+          }}
+          className="group relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 border border-white/25 backdrop-blur-md text-[10.5px] font-mono font-bold tracking-wider uppercase text-white/90 shadow-md transition-all cursor-pointer select-none"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping shrink-0" />
+          <span>✦ CLICK HERE TO EXPLORE PORTFOLIO ✦</span>
+        </button>
       </footer>
     </section>
   );

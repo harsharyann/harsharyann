@@ -28,9 +28,10 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
     ],
     shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    apple: "/app-logo.png",
   },
 };
 
@@ -42,6 +43,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-transparent text-black" suppressHydrationWarning>
       <head>
+        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+        <link rel="alternate icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/app-logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

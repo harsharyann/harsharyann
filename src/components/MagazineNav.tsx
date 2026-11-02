@@ -224,8 +224,9 @@ export function MagazineNav() {
           >
             {/* Header */}
             <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-black/10 dark:border-white/10 font-mono text-[11px] font-black uppercase text-stone-500 dark:text-stone-400">
-              <span className="flex items-center gap-1.5">
-                <span className="text-amber-500">✦</span> EXPLORE INDEX
+              <span className="flex items-center gap-2">
+                <img src="/icon.svg" alt="Logo" className="w-4 h-4 object-contain rounded-xs" />
+                EXPLORE INDEX
               </span>
               <span className="text-[10px] text-stone-400">[ESC TO CLOSE]</span>
             </div>
@@ -302,7 +303,7 @@ export function MagazineNav() {
                   className="flex items-center justify-between p-2 rounded-xl text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all font-mono text-[11px] font-bold"
                 >
                   <span className="flex items-center gap-2">
-                    <Lock className="w-3.5 h-3.5" />
+                    <img src="/icon.svg" alt="Socius" className="w-3.5 h-3.5 object-contain rounded-xs" />
                     <span>Socius</span>
                   </span>
                   <span className="text-[9px] bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 px-1.5 py-0.5 rounded">

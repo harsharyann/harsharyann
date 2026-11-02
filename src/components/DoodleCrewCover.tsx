@@ -1117,7 +1117,10 @@ export function DoodleCrewCover({
       <header className="dcf-top-bar">
         <div className="dcf-top-inner">
           <div className="dcf-top-left">
-            <div className="dcf-brand-stamp">{portfolio?.personal?.desktopWordmark || portfolio?.personal?.name || "HARSH ARYAN"}</div>
+            <div className="dcf-brand-stamp">
+              <img src="/icon.svg" alt="App Logo" className="w-4 h-4 object-contain inline-block rounded-xs shrink-0" />
+              <span>{portfolio?.personal?.desktopWordmark || portfolio?.personal?.name || "HARSH ARYAN"}</span>
+            </div>
           </div>
 
           {/* Right: Candy Social Links */}
@@ -1307,14 +1310,15 @@ export function DoodleCrewCover({
               <DailySpark isDark={isDark} />
             </div>
 
-            {/* Enter Portfolio Action Button with Countdown & Pause Control */}
-            <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
-              {/* Comic Doodle Speech Bubble */}
-              <div className="relative pointer-events-none select-none">
-                <div className="px-2 py-0.5 bg-yellow-300 text-black border-[1.5px] border-black rounded-full font-mono text-[9px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] flex items-center gap-1 animate-bounce">
+            {/* ── ENTER PORTFOLIO HERO CTA (Unified Neo-Brutalist Sketchbook Card) ── */}
+            <div className="relative inline-flex items-center pt-2.5 select-none">
+              {/* Floating Comic "CLICK HERE 👇" Speech Bubble */}
+              <div className="absolute -top-3.5 right-6 z-20 pointer-events-none select-none">
+                <div className="px-2.5 py-0.5 bg-yellow-300 text-black border-2 border-black rounded-full font-mono text-[9px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] flex items-center gap-1.5 animate-bounce">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping shrink-0" />
                   <span>CLICK HERE</span>
-                  <span className="text-[10px]">👉</span>
+                  <span className="text-[11px] leading-none">👇</span>
+                  <div className="absolute -bottom-1.5 right-4 w-2 h-2 bg-yellow-300 border-r-2 border-b-2 border-black rotate-45" />
                 </div>
               </div>
 
@@ -1322,20 +1326,20 @@ export function DoodleCrewCover({
               <button
                 type="button"
                 onClick={triggerLeave}
-                className="group relative inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-300 hover:bg-amber-400 text-black border-2 border-black shadow-[3px_3px_0_#000] hover:shadow-[4px_4px_0_#000] hover:-translate-y-0.5 active:translate-y-0.5 transition-all cursor-pointer select-none"
+                className="dcf-enter-cta-btn group cursor-pointer select-none"
                 aria-label="Click here to enter portfolio or wait for countdown"
               >
                 {/* Circular SVG Countdown Dial (Desktop) or Star Pin (Mobile) */}
                 {!isMobileDevice ? (
-                  <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
-                    <svg className="w-5 h-5 -rotate-90" viewBox="0 0 32 32">
+                  <div className="relative w-6 h-6 flex items-center justify-center shrink-0">
+                    <svg className="w-6 h-6 -rotate-90" viewBox="0 0 32 32">
                       <circle
                         cx="16"
                         cy="16"
                         r="12"
                         fill="none"
-                        stroke="rgba(0,0,0,0.2)"
-                        strokeWidth="2.8"
+                        stroke="rgba(0,0,0,0.18)"
+                        strokeWidth="3"
                       />
                       <circle
                         cx="16"
@@ -1350,40 +1354,40 @@ export function DoodleCrewCover({
                         className="transition-all duration-1000 ease-linear"
                       />
                     </svg>
-                    <span className="absolute inset-0 flex items-center justify-center font-mono text-[8.5px] font-black text-black">
+                    <span className="absolute inset-0 flex items-center justify-center font-mono text-[9px] font-black text-black">
                       {countdown}
                     </span>
                   </div>
                 ) : (
-                  <div className="w-5 h-5 rounded-full bg-black text-amber-300 flex items-center justify-center shrink-0 shadow-xs">
-                    <span className="text-[10px] font-black">✦</span>
+                  <div className="w-6 h-6 rounded-full bg-black text-amber-300 flex items-center justify-center shrink-0 shadow-xs">
+                    <span className="text-xs font-black">✦</span>
                   </div>
                 )}
 
-                {/* Action Label */}
-                <div className="flex items-center gap-1.5 text-left">
-                  <span className="font-['Space_Grotesk'] text-[11px] sm:text-xs font-black uppercase tracking-wider text-black">
-                    ENTER PORTFOLIO ✦
+                {/* Action Label & Subtitle */}
+                <div className="flex flex-col text-left leading-tight pr-1">
+                  <span className="font-['Space_Grotesk'] text-xs sm:text-[13px] font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+                    <span>ENTER PORTFOLIO</span>
+                    <span className="text-amber-800">✦</span>
                   </span>
                   {!isMobileDevice && (
-                    <span className="font-mono text-[8.5px] text-black/75 font-bold hidden sm:inline">
-                      ({countdown}s)
+                    <span className="font-mono text-[9px] text-stone-800 font-bold tracking-tight">
+                      Auto-entering in {countdown}s • or tap now
                     </span>
                   )}
                 </div>
 
                 {/* Bouncing Arrow Box */}
-                <div className="w-5 h-5 rounded-md bg-black text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                <div className="w-6 h-6 rounded-lg bg-black text-white flex items-center justify-center shadow-xs group-hover:translate-y-0.5 group-hover:scale-105 transition-transform shrink-0">
                   <svg
                     viewBox="0 0 16 16"
-                    width="10"
-                    height="10"
+                    width="11"
+                    height="11"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2.4"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="group-hover:translate-y-0.5 transition-transform"
                   >
                     <path d="M8 2 L8 13 M3 8 L8 13 L13 8" />
                   </svg>
@@ -1451,13 +1455,16 @@ const COVER_CSS = `
 
 :where(.dcf-root) button {
   appearance: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+:where(.dcf-root) button:not([class]) {
   background: none;
   border: 0;
   padding: 0;
   margin: 0;
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
 }
 
 :where(.dcf-root) h1, :where(.dcf-root) p {
@@ -1510,7 +1517,9 @@ const COVER_CSS = `
   border-radius: 6px;
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
   transform: rotate(-1.5deg);
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   user-select: none;
   transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
@@ -2732,6 +2741,50 @@ html.dark .dcf-hero-headline-text {
 .dcf-btn.is-solid svg path {
   fill: #ffffff;
   stroke: #ffffff;
+}
+
+/* Enter Portfolio Hero CTA Button */
+.dcf-enter-cta-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 8px 18px !important;
+  background: #fde047 !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 14px !important;
+  box-shadow: 4px 4px 0 #000000 !important;
+  font-family: inherit !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.15s ease, background-color 0.15s ease !important;
+}
+
+.dcf-enter-cta-btn:hover {
+  background: #facc15 !important;
+  transform: translate(-1.5px, -1.5px) !important;
+  box-shadow: 5.5px 5.5px 0 #000000 !important;
+}
+
+.dcf-enter-cta-btn:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 1.5px 1.5px 0 #000000 !important;
+}
+
+html.dark .dcf-enter-cta-btn {
+  background: #fde047 !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 4px 4px 0 #ffffff !important;
+}
+
+html.dark .dcf-enter-cta-btn:hover {
+  background: #facc15 !important;
+  box-shadow: 5.5px 5.5px 0 #ffffff !important;
+}
+
+html.dark .dcf-enter-cta-btn:active {
+  box-shadow: 1.5px 1.5px 0 #ffffff !important;
 }
 
 .dcf-btn.is-outline {
