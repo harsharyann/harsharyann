@@ -504,25 +504,25 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             </div>
           </div>
 
-          {/* Quick Stats Grid (Matching User Screenshot Capsule Design) */}
-          <div className="space-y-2 pt-2">
+          {/* Quick Stats Grid (Slim Benchmark Cards) */}
+          <div className="space-y-2 pt-1.5">
             <div className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
               [KEY BENCHMARKS]
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
               {quickStats?.map((st, i) => (
                 <div
                   key={i}
-                  className="p-4 sm:p-5 rounded-[22px] bg-white dark:bg-stone-900/90 border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000]"
+                  className="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-white dark:bg-stone-900/90 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] dark:hover:shadow-[3px_3px_0_#fff]"
                 >
-                  <div className="text-2xl sm:text-3xl font-black text-black dark:text-white font-mono tracking-tight">
+                  <div className="text-xl sm:text-2xl font-black text-black dark:text-white font-mono tracking-tight leading-none">
                     {st.value}
                   </div>
-                  <div className="text-[10px] sm:text-[11px] font-mono font-bold text-stone-600 dark:text-stone-300 uppercase tracking-wider mt-1">
+                  <div className="text-[10px] sm:text-[11px] font-mono font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider mt-1.5 leading-tight">
                     {st.label}
                   </div>
                   {st.sublabel && (
-                    <div className="text-[9px] font-mono text-stone-400 dark:text-stone-500 truncate mt-0.5">
+                    <div className="text-[9px] font-mono text-stone-400 dark:text-stone-500 truncate mt-0.5 leading-tight">
                       {st.sublabel}
                     </div>
                   )}

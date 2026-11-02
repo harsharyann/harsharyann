@@ -267,6 +267,22 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
   const emailToUse = personal?.email || portfolioData.personal.email
   const locationToUse = personal?.location || portfolioData.personal.location
 
+  // Clean formatted location (e.g. "Chennai, India" without redundant country duplication)
+  const formattedLocation = React.useMemo(() => {
+    const city = personal?.currentCity?.trim();
+    const country = personal?.currentCountry?.trim();
+
+    if (city && country) {
+      if (city.toLowerCase().includes(country.toLowerCase())) {
+        return city;
+      }
+      return `${city}, ${country}`;
+    }
+    if (city) return city;
+    if (country) return country;
+    return locationToUse || "Chennai, India";
+  }, [personal?.currentCity, personal?.currentCountry, locationToUse]);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(emailToUse)
     setCopied(true)
@@ -493,22 +509,24 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
                 <MapPin className="w-4 h-4 text-cyan-600" />
                 <span>CURRENT COORDINATES</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-black uppercase border border-emerald-500/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+              <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 font-mono text-[10px] font-black uppercase tracking-wider border-2 border-emerald-600 dark:border-emerald-500 shadow-[2px_2px_0_#059669] transition-transform hover:-translate-y-0.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-xs" />
+                </span>
                 <span>LIVE STATION</span>
               </span>
             </div>
 
             {/* Field Grid: Classic Telegram / Dispatch Details */}
             <div className="space-y-3 font-mono text-xs">
-              {/* Location & Country */}
+              {/* Location */}
               <div className="flex items-start gap-2">
                 <span className="text-[10px] font-black uppercase tracking-wider text-stone-400 dark:text-stone-500 shrink-0 w-24">
                   LOCATION:
                 </span>
                 <span className="font-bold text-stone-900 dark:text-stone-100">
-                  {personal?.currentCountry ? `${personal.currentCountry} • ` : ""}
-                  {personal?.currentCity || locationToUse}
+                  {formattedLocation}
                 </span>
               </div>
 

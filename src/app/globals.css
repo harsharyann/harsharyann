@@ -462,6 +462,8 @@ html.dark .sketch-button-outline:hover {
   font-weight: 900;
   font-style: normal;
   font-display: swap;
+  /* Exclude U+0026 (&) because Amanojaku-Demo has an empty glyph for ampersand; allows fallback font to render & */
+  unicode-range: U+0000-0025, U+0027-FFFF;
 }
 
 .font-hero-heading {

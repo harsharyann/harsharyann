@@ -152,7 +152,11 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading inline-flex items-center gap-2 sm:gap-3 flex-wrap">
-              <span>Certifications &amp; Laurels</span>
+              <span>
+                Certifications{" "}
+                <span className="font-sans font-black text-amber-500 dark:text-amber-400 mx-1 inline-block">&amp;</span>{" "}
+                Laurels
+              </span>
               {/* On phone: Cute laurel medal doodle placed directly next to 'LAURELS' */}
               <span className="inline-flex lg:hidden shrink-0 -mt-1 sm:-mt-2">
                 <MedalRibbonDoodle isPhone />

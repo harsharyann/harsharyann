@@ -83,7 +83,23 @@ export function Scroll3DSection({
               #{chapterNumber}
             </span>
             <span className="font-hero-heading text-sm sm:text-base uppercase tracking-wider text-black dark:text-white">
-              {chapterName}
+              {chapterName.includes("&") ? (
+                chapterName.split("&").map((part, idx, arr) => (
+                  <React.Fragment key={idx}>
+                    {part}
+                    {idx < arr.length - 1 && (
+                      <span
+                        className="font-sans font-black mx-1 inline-block"
+                        style={{ color: accentColor }}
+                      >
+                        &amp;
+                      </span>
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
+                chapterName
+              )}
             </span>
             <span
               className="font-bold group-hover:rotate-45 transition-transform"

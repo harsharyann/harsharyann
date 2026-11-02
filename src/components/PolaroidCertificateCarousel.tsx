@@ -784,7 +784,7 @@ export function PolaroidCertificateCarousel({
                         className="px-3 py-1.5 rounded-lg font-mono text-[11px] font-black uppercase tracking-wider bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white shadow-[2px_2px_0_#f59e0b] hover:-translate-y-0.5 transition-transform flex items-center gap-1 cursor-pointer"
                       >
                         <ZoomIn className="w-3 h-3 text-amber-400" />
-                        <span>Inspect Print</span>
+                        <span>Inspect</span>
                       </button>
                     )}
 
