@@ -106,7 +106,7 @@ export function getCertTheme(category: string) {
   // 4. Extra Curricular / Hackathon / Clubs / Leadership: Prestigious Maroon & Warm Gold
   if (
     cat.includes("extra") ||
-    cat.includes("caricul") ||
+    cat.includes("curricul") ||
     cat.includes("activity") ||
     cat.includes("club") ||
     cat.includes("lead") ||

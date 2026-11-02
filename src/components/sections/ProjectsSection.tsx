@@ -177,20 +177,27 @@ function TerminalDoodle({ className = "" }: { className?: string }) {
 
 export function ProjectsSection({ id = "projects" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
-  const projectsList: Project[] = portfolio?.projects || portfolioData.projects
+  const projectsList: Project[] = Array.isArray(portfolio?.projects)
+    ? portfolio.projects
+    : (portfolioData.projects || [])
   const [activeCategory, setActiveCategory] = useState("All")
   const [viewMode, setViewMode] = useState<"3d" | "grid">("3d")
 
   const dynamicCategoryNames = React.useMemo(() => {
-    const fromConfig = portfolio?.projectCategories || [
-      "Machine Learning",
-      "Data Analysis",
-      "Web & AI Tools",
-      "Python Basics",
-    ]
-    const fromProjects = (portfolio?.projects || []).map((p) => p.category)
-    return Array.from(new Set([...fromConfig, ...fromProjects])).filter(Boolean)
-  }, [portfolio?.projectCategories, portfolio?.projects])
+    // Surface only categories that actually contain at least one project
+    const fromProjects = Array.from(
+      new Set((projectsList || []).map((p) => p.category?.trim()))
+    ).filter(Boolean) as string[]
+
+    return fromProjects
+  }, [projectsList])
+
+  // Reset active filter if current active category no longer exists
+  React.useEffect(() => {
+    if (activeCategory !== "All" && !dynamicCategoryNames.includes(activeCategory)) {
+      setActiveCategory("All")
+    }
+  }, [activeCategory, dynamicCategoryNames])
 
   const COLOR_PALETTE = ["purple", "emerald", "cyan", "amber", "rose", "indigo", "teal", "orange"]
 
@@ -351,86 +358,100 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
         </div>
 
         {/* ── FILTER PILLS & VIEW MODE SWITCHER ── */}
-        <div className="pt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2 font-mono text-xs uppercase">
-            {categories.map((cat) => {
-              const count =
-                cat.label === "All"
-                  ? projectsList.length
-                  : projectsList.filter((p) => p.category === cat.label).length
+        {projectsList.length > 0 && (
+          <div className="pt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-2 font-mono text-xs uppercase">
+              {categories.map((cat) => {
+                const count =
+                  cat.label === "All"
+                    ? projectsList.length
+                    : projectsList.filter((p) => p.category === cat.label).length
 
-              const isActive = activeCategory === cat.label
+                const isActive = activeCategory === cat.label
 
-              let activeStyle = "bg-black text-white shadow-[2.5px_2.5px_0_#8b5cf6]"
-              if (cat.color === "purple") {
-                activeStyle = "bg-purple-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-              } else if (cat.color === "emerald") {
-                activeStyle = "bg-emerald-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-              } else if (cat.color === "cyan") {
-                activeStyle = "bg-sky-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-              } else if (cat.color === "amber") {
-                activeStyle = "bg-amber-400 text-black shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-              } else if (cat.color === "rose") {
-                activeStyle = "bg-rose-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-              } else if (cat.color === "indigo") {
-                activeStyle = "bg-indigo-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-              } else if (cat.color === "teal") {
-                activeStyle = "bg-teal-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-              } else if (cat.color === "orange") {
-                activeStyle = "bg-orange-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-              }
+                let activeStyle = "bg-black text-white shadow-[2.5px_2.5px_0_#8b5cf6]"
+                if (cat.color === "purple") {
+                  activeStyle = "bg-purple-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                } else if (cat.color === "emerald") {
+                  activeStyle = "bg-emerald-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                } else if (cat.color === "cyan") {
+                  activeStyle = "bg-sky-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                } else if (cat.color === "amber") {
+                  activeStyle = "bg-amber-400 text-black shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                } else if (cat.color === "rose") {
+                  activeStyle = "bg-rose-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                } else if (cat.color === "indigo") {
+                  activeStyle = "bg-indigo-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                } else if (cat.color === "teal") {
+                  activeStyle = "bg-teal-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                } else if (cat.color === "orange") {
+                  activeStyle = "bg-orange-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
+                }
 
-              return (
-                <button
-                  key={cat.label}
-                  type="button"
-                  onClick={() => setActiveCategory(cat.label)}
-                  className={`px-3 py-1 rounded-full border-2 border-black dark:border-white font-black tracking-wider transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
-                    isActive
-                      ? activeStyle
-                      : "bg-white text-black dark:bg-stone-900 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#666]"
-                  }`}
-                >
-                  {isActive && <Sparkles className="w-3 h-3 text-amber-300" />}
-                  <span>{cat.name}</span>
-                  <span className="text-[10px] opacity-75 font-bold">({count})</span>
-                </button>
-              )
-            })}
+                return (
+                  <button
+                    key={cat.label}
+                    type="button"
+                    onClick={() => setActiveCategory(cat.label)}
+                    className={`px-3 py-1 rounded-full border-2 border-black dark:border-white font-black tracking-wider transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
+                      isActive
+                        ? activeStyle
+                        : "bg-white text-black dark:bg-stone-900 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#666]"
+                    }`}
+                  >
+                    {isActive && <Sparkles className="w-3 h-3 text-amber-300" />}
+                    <span>{cat.name}</span>
+                    <span className="text-[10px] opacity-75 font-bold">({count})</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Perspective View Switcher: 3D Cylinder vs Grid Dossiers */}
+            <div className="inline-flex items-center self-start md:self-auto p-1 rounded-full border-2 border-black dark:border-white bg-white dark:bg-stone-900 shadow-[2.5px_2.5px_0_#000] dark:shadow-[2.5px_2.5px_0_#fff]">
+              <button
+                type="button"
+                onClick={() => setViewMode("3d")}
+                className={`px-3 py-1 rounded-full text-xs font-mono font-black flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === "3d"
+                    ? "bg-black text-white dark:bg-white dark:text-black shadow-xs"
+                    : "text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white"
+                }`}
+              >
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span>3D CYLINDER</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={`px-3 py-1 rounded-full text-xs font-mono font-black flex items-center gap-1.5 transition-all cursor-pointer ${
+                  viewMode === "grid"
+                    ? "bg-black text-white dark:bg-white dark:text-black shadow-xs"
+                    : "text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white"
+                }`}
+              >
+                <LayoutGrid className="w-3 h-3" />
+                <span>GRID DOSSIERS</span>
+              </button>
+            </div>
           </div>
-
-          {/* Perspective View Switcher: 3D Cylinder vs Grid Dossiers */}
-          <div className="inline-flex items-center self-start md:self-auto p-1 rounded-full border-2 border-black dark:border-white bg-white dark:bg-stone-900 shadow-[2.5px_2.5px_0_#000] dark:shadow-[2.5px_2.5px_0_#fff]">
-            <button
-              type="button"
-              onClick={() => setViewMode("3d")}
-              className={`px-3 py-1 rounded-full text-xs font-mono font-black flex items-center gap-1.5 transition-all cursor-pointer ${
-                viewMode === "3d"
-                  ? "bg-black text-white dark:bg-white dark:text-black shadow-xs"
-                  : "text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white"
-              }`}
-            >
-              <Sparkles className="w-3 h-3 text-amber-400" />
-              <span>3D CYLINDER</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("grid")}
-              className={`px-3 py-1 rounded-full text-xs font-mono font-black flex items-center gap-1.5 transition-all cursor-pointer ${
-                viewMode === "grid"
-                  ? "bg-black text-white dark:bg-white dark:text-black shadow-xs"
-                  : "text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white"
-              }`}
-            >
-              <LayoutGrid className="w-3 h-3" />
-              <span>GRID DOSSIERS</span>
-            </button>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* ── SHOWCASE: 3D Perspective Circular Deck OR Full Color-Coded Dossiers ── */}
-      {viewMode === "3d" ? (
+      {projectsList.length === 0 ? (
+        <div className="p-12 sm:p-16 rounded-[28px] border-2 border-dashed border-stone-300 dark:border-stone-700 bg-white/50 dark:bg-stone-900/40 text-center space-y-3 font-mono">
+          <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-100 dark:bg-amber-950/60 border-2 border-black dark:border-amber-400 flex items-center justify-center shadow-[2px_2px_0_#000]">
+            <FolderGit2 className="w-6 h-6 text-amber-700 dark:text-amber-300" />
+          </div>
+          <h3 className="text-base font-black uppercase text-stone-900 dark:text-stone-100">
+            No Projects Published Yet
+          </h3>
+          <p className="text-xs text-stone-600 dark:text-stone-400 max-w-md mx-auto">
+            Projects added through the Socius Admin Console will appear here automatically.
+          </p>
+        </div>
+      ) : viewMode === "3d" ? (
         <div className="space-y-4">
           <CircularProjectsCarousel projects={filtered} />
           <div className="text-center pt-1">

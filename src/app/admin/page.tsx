@@ -45,10 +45,14 @@ import {
   Building2,
   Calendar,
   Mail,
+  Trophy,
+  BookOpen,
+  FileText,
+  Bookmark,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
-import { Project, Certificate, PortfolioData, TimelineMilestone, Experience, DailyThought, DEFAULT_DAILY_THOUGHTS } from "@/data/portfolioData";
+import { Project, Certificate, LaurelItem, PortfolioData, TimelineMilestone, Experience, DailyThought, DEFAULT_DAILY_THOUGHTS } from "@/data/portfolioData";
 import { FormattedHighlightedText } from "@/components/sections/AboutSection";
 import {
   extractGoogleDriveId,
@@ -70,12 +74,7 @@ interface ContactMessage {
   read: boolean;
 }
 
-const DEFAULT_PROJECT_CATS = [
-  "Machine Learning",
-  "Data Analysis",
-  "Web & AI Tools",
-  "Python Basics",
-];
+const DEFAULT_PROJECT_CATS: string[] = [];
 
 const DEFAULT_CERT_CATS = [
   "Machine Learning",
@@ -579,6 +578,24 @@ export default function AdminPage() {
   const [driveInput, setDriveInput] = useState("");
   const [driveFeedback, setDriveFeedback] = useState<string | null>(null);
 
+  // Laurel / Research Paper / Book Modal State
+  const [editingLaurel, setEditingLaurel] = useState<LaurelItem | null>(null);
+  const [isLaurelModalOpen, setIsLaurelModalOpen] = useState(false);
+  const [laurelAdminFilter, setLaurelAdminFilter] = useState<"all" | "award" | "paper" | "book">("all");
+  const [laurelForm, setLaurelForm] = useState<LaurelItem>({
+    id: "",
+    type: "award",
+    title: "",
+    issuerOrPublisher: "",
+    date: "2026",
+    roleOrAward: "",
+    link: "",
+    description: "",
+    badge: "",
+    imageUrl: "",
+    isVisible: true,
+  });
+
   // Sync state when initialData arrives from server/context
   useEffect(() => {
     if (initialData && initialData.personal) {
@@ -590,6 +607,7 @@ export default function AdminPage() {
         certificateCategories: initialData.certificateCategories !== undefined
           ? initialData.certificateCategories
           : DEFAULT_CERT_CATS,
+        laurelItems: initialData.laurelItems || [],
       });
     }
   }, [initialData]);
@@ -786,14 +804,16 @@ export default function AdminPage() {
 
   // ── Project Actions ──
   const openNewProjectModal = () => {
-    const cats = portfolio.projectCategories || DEFAULT_PROJECT_CATS;
+    const cats = (portfolio.projectCategories && portfolio.projectCategories.length > 0)
+      ? portfolio.projectCategories
+      : [];
     setEditingProject(null);
     setProjectForm({
       id: "proj-" + Date.now(),
       title: "",
       tagline: "",
       description: "",
-      category: cats[0] || "Machine Learning",
+      category: cats[0] || "",
       technologies: ["Python"],
       metrics: ["High Accuracy"],
       features: [],
@@ -801,7 +821,7 @@ export default function AdminPage() {
       liveUrl: "",
       imageGradient: "from-amber-400 to-orange-500",
     });
-    setCustomProjectCat("");
+    setCustomProjectCat(cats.length === 0 ? "General" : "");
     setTechInput("");
     setMetricInput("");
     setIsProjectModalOpen(true);
@@ -822,7 +842,7 @@ export default function AdminPage() {
       return;
     }
 
-    const effectiveCategory = customProjectCat.trim() || projectForm.category || "Machine Learning";
+    const effectiveCategory = customProjectCat.trim() || projectForm.category || "General";
     const finalProject: Project = {
       ...projectForm,
       category: effectiveCategory,
@@ -830,13 +850,13 @@ export default function AdminPage() {
 
     let updatedProjects: Project[];
     if (editingProject) {
-      updatedProjects = portfolio.projects.map((p) => (p.id === editingProject.id ? finalProject : p));
+      updatedProjects = (portfolio.projects || []).map((p) => (p.id === editingProject.id ? finalProject : p));
     } else {
-      updatedProjects = [finalProject, ...portfolio.projects];
+      updatedProjects = [finalProject, ...(portfolio.projects || [])];
     }
 
     // Auto-register category if new
-    const currentCats = portfolio.projectCategories || DEFAULT_PROJECT_CATS;
+    const currentCats = portfolio.projectCategories || [];
     const updatedCats = currentCats.includes(effectiveCategory) ? currentCats : [...currentCats, effectiveCategory];
 
     const newPortfolio: PortfolioData = {
@@ -1016,6 +1036,99 @@ export default function AdminPage() {
     };
     setPortfolio(newPortfolio);
     await saveInstantly(newPortfolio, "Certificate deleted.");
+  };
+
+  // ── Laurel, Paper & Book Actions ──
+  const openNewLaurelModal = (defaultType: "award" | "paper" | "book" = "award") => {
+    setEditingLaurel(null);
+    setLaurelForm({
+      id: "laurel-" + Date.now(),
+      type: defaultType,
+      title: "",
+      issuerOrPublisher: "",
+      date: new Date().getFullYear().toString(),
+      roleOrAward: "",
+      link: "",
+      description: "",
+      badge: defaultType === "award" ? "Hackathon Laurel" : defaultType === "paper" ? "Peer-Reviewed" : "Published Edition",
+      imageUrl: "",
+      isVisible: true,
+    });
+    setIsLaurelModalOpen(true);
+  };
+
+  const openEditLaurelModal = (item: LaurelItem) => {
+    setEditingLaurel(item);
+    setLaurelForm({ ...item });
+    setIsLaurelModalOpen(true);
+  };
+
+  const handleSaveLaurel = async () => {
+    if (!laurelForm.title.trim()) {
+      alert("Please provide a title");
+      return;
+    }
+
+    const currentList = portfolio.laurelItems || [];
+    let updatedList: LaurelItem[];
+    if (editingLaurel) {
+      updatedList = currentList.map((item) => (item.id === editingLaurel.id ? laurelForm : item));
+    } else {
+      updatedList = [laurelForm, ...currentList];
+    }
+
+    const newPortfolio: PortfolioData = {
+      ...portfolio,
+      laurelItems: updatedList,
+    };
+
+    setPortfolio(newPortfolio);
+    setIsLaurelModalOpen(false);
+    await saveInstantly(newPortfolio, editingLaurel ? "Item updated successfully!" : "Item added to Laurels!");
+  };
+
+  const handleDeleteLaurel = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this item?")) return;
+    const currentList = portfolio.laurelItems || [];
+    const updatedList = currentList.filter((item) => item.id !== id);
+    const newPortfolio: PortfolioData = {
+      ...portfolio,
+      laurelItems: updatedList,
+    };
+    setPortfolio(newPortfolio);
+    await saveInstantly(newPortfolio, "Item removed.");
+  };
+
+  const handleToggleLaurelVisibility = async (id: string) => {
+    const currentList = portfolio.laurelItems || [];
+    const updatedList = currentList.map((item) => {
+      if (item.id === id) {
+        const nextState = item.isVisible === false ? true : false;
+        return { ...item, isVisible: nextState };
+      }
+      return item;
+    });
+
+    const newPortfolio: PortfolioData = {
+      ...portfolio,
+      laurelItems: updatedList,
+    };
+    setPortfolio(newPortfolio);
+    await saveInstantly(newPortfolio, "Item visibility updated!");
+  };
+
+  const handleToggleLaurelsSection = async () => {
+    const currentState = portfolio.personal.showLaurelsSection !== false;
+    const newPersonal = {
+      ...portfolio.personal,
+      showLaurelsSection: !currentState,
+    };
+    const newPortfolio: PortfolioData = {
+      ...portfolio,
+      personal: newPersonal,
+    };
+    setPortfolio(newPortfolio);
+    await saveInstantly(newPortfolio, !currentState ? "Laurels & Research section visible on main site" : "Laurels & Research section hidden from main site");
   };
 
   // ─── LOADING STATE ───
@@ -4393,28 +4506,38 @@ export default function AdminPage() {
 
               {/* Category Badges with delete button */}
               <div className="flex flex-wrap gap-2 pt-1">
-                {projectCats.map((cat) => (
-                  <span
-                    key={cat}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100 border border-stone-300 text-stone-800 font-mono text-xs font-bold shadow-xs hover:border-stone-400 transition-colors"
-                  >
-                    <span>{cat}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveProjectCategory(cat)}
-                      className="w-4 h-4 rounded-full flex items-center justify-center text-stone-400 hover:text-white hover:bg-red-500 transition-colors cursor-pointer text-[10px]"
-                      title={`Remove "${cat}"`}
+                {projectCats.length === 0 ? (
+                  <span className="text-xs font-mono text-stone-400 italic">No project categories defined yet. Type above and click "+ Add".</span>
+                ) : (
+                  projectCats.map((cat) => (
+                    <span
+                      key={cat}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100 border border-stone-300 text-stone-800 font-mono text-xs font-bold shadow-xs hover:border-stone-400 transition-colors"
                     >
-                      ✕
-                    </button>
-                  </span>
-                ))}
+                      <span>{cat}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveProjectCategory(cat)}
+                        className="w-4 h-4 rounded-full flex items-center justify-center text-stone-400 hover:text-white hover:bg-red-500 transition-colors cursor-pointer text-[10px]"
+                        title={`Remove "${cat}"`}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))
+                )}
               </div>
             </div>
 
             {/* Projects Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {portfolio.projects.map((proj) => (
+            {(portfolio.projects || []).length === 0 ? (
+              <div className="p-8 sm:p-12 text-center rounded-2xl bg-white border-2 border-dashed border-stone-200 font-mono space-y-2">
+                <p className="text-stone-800 font-bold text-sm">No projects added yet</p>
+                <p className="text-stone-500 text-xs">Click "+ Add Project" above to publish your first project.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {(portfolio.projects || []).map((proj) => (
                 <div
                   key={proj.id}
                   className="p-5 rounded-2xl bg-white border-2 border-stone-200 hover:border-black flex flex-col justify-between space-y-4 shadow-sm hover:shadow-[4px_4px_0_#000] transition-all"
@@ -4485,6 +4608,7 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+            )}
           </div>
         )}
 
@@ -4671,6 +4795,222 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* ── SUBSECTION: LAURELS, RESEARCH PAPERS & PUBLISHED BOOKS MANAGER ── */}
+            <div className="pt-10 border-t-2 border-dashed border-stone-300 space-y-5">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-stone-200 shadow-sm">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-amber-500" />
+                    <h3 className="font-['Space_Grotesk'] text-xl font-black uppercase text-stone-900">
+                      Laurels, Research Papers &amp; Published Books ({(portfolio.laurelItems || []).length})
+                    </h3>
+                  </div>
+                  <p className="font-mono text-xs text-stone-500 mt-1">
+                    Manage hackathon laurels, peer-reviewed research papers, and published academic literature with instant hide/unhide control
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Master Section Hide / Unhide Toggle */}
+                  <button
+                    type="button"
+                    onClick={handleToggleLaurelsSection}
+                    className={`px-3.5 py-2 rounded-xl font-mono text-xs font-bold border-2 transition-all cursor-pointer flex items-center gap-2 ${
+                      portfolio.personal.showLaurelsSection !== false
+                        ? "bg-emerald-50 text-emerald-900 border-emerald-500 shadow-[2px_2px_0_#10b981]"
+                        : "bg-stone-100 text-stone-600 border-stone-300"
+                    }`}
+                    title="Toggle whole section visibility on the live site"
+                  >
+                    {portfolio.personal.showLaurelsSection !== false ? (
+                      <>
+                        <Eye className="w-4 h-4 text-emerald-600" />
+                        <span>Section Visible on Site</span>
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-4 h-4 text-stone-400" />
+                        <span>Section Hidden from Site</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => openNewLaurelModal("award")}
+                    className="px-4 py-2 rounded-xl bg-black hover:bg-stone-800 text-white font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2.5px_2.5px_0_#f59e0b] transition-all cursor-pointer flex items-center gap-1.5 active:translate-x-0.5 active:translate-y-0.5"
+                  >
+                    <Plus className="w-4 h-4 stroke-[3]" />
+                    <span>+ Add Entry</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Type Filter Pills within Admin */}
+              <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+                {(["all", "award", "paper", "book"] as const).map((t) => {
+                  const items = portfolio.laurelItems || [];
+                  const count = t === "all" ? items.length : items.filter((i) => i.type === t).length;
+                  const label =
+                    t === "all"
+                      ? `All Entries (${count})`
+                      : t === "award"
+                      ? `🏆 Awards & Laurels (${count})`
+                      : t === "paper"
+                      ? `📄 Research Papers (${count})`
+                      : `📚 Published Books (${count})`;
+
+                  const isSelected = laurelAdminFilter === t;
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setLaurelAdminFilter(t)}
+                      className={`px-3 py-1.5 rounded-full border transition-all cursor-pointer font-bold ${
+                        isSelected
+                          ? "bg-stone-900 text-white border-stone-900 shadow-xs"
+                          : "bg-white text-stone-700 border-stone-300 hover:border-black"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Items List in Admin */}
+              {(() => {
+                const raw = portfolio.laurelItems || [];
+                const filtered = laurelAdminFilter === "all" ? raw : raw.filter((i) => i.type === laurelAdminFilter);
+
+                if (filtered.length === 0) {
+                  return (
+                    <div className="p-8 sm:p-12 text-center rounded-2xl bg-white border-2 border-dashed border-stone-200 font-mono space-y-2">
+                      <p className="text-stone-800 font-bold text-sm">No items in this filter view</p>
+                      <p className="text-stone-500 text-xs">Click "+ Add Entry" above to add an award, research paper, or published book.</p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {filtered.map((item) => {
+                      const isAward = item.type === "award";
+                      const isPaper = item.type === "paper";
+                      const isBook = item.type === "book";
+                      const isVis = item.isVisible !== false;
+
+                      return (
+                        <div
+                          key={item.id}
+                          className={`p-5 rounded-2xl bg-white border-2 flex flex-col justify-between space-y-4 shadow-sm transition-all ${
+                            isVis ? "border-stone-200 hover:border-black" : "border-dashed border-stone-300 opacity-60 bg-stone-50/70"
+                          }`}
+                        >
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between gap-2 pb-2 border-b border-stone-200">
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black uppercase border flex items-center gap-1 ${
+                                  isAward
+                                    ? "bg-amber-100 text-amber-900 border-amber-300"
+                                    : isPaper
+                                    ? "bg-indigo-100 text-indigo-900 border-indigo-300"
+                                    : "bg-rose-100 text-rose-900 border-rose-300"
+                                }`}
+                              >
+                                {isAward ? "🏆 Award" : isPaper ? "📄 Paper" : "📚 Book"}
+                              </span>
+
+                              <div className="flex items-center gap-1">
+                                {/* Quick Hide / Show Item Toggle */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleLaurelVisibility(item.id)}
+                                  className={`p-1.5 rounded-lg border text-xs font-mono font-bold cursor-pointer transition-colors flex items-center gap-1 ${
+                                    isVis
+                                      ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
+                                      : "bg-stone-200 text-stone-600 border-stone-400 hover:bg-stone-300"
+                                  }`}
+                                  title={isVis ? "Click to Hide this item from live site" : "Click to Show this item on live site"}
+                                >
+                                  {isVis ? <Eye className="w-3.5 h-3.5 text-emerald-600" /> : <EyeOff className="w-3.5 h-3.5 text-stone-500" />}
+                                  <span className="text-[10px]">{isVis ? "Live" : "Hidden"}</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => openEditLaurelModal(item)}
+                                  className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 hover:text-black cursor-pointer"
+                                  title="Edit Entry"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteLaurel(item.id)}
+                                  className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 cursor-pointer"
+                                  title="Delete Entry"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div>
+                              <div className="flex items-center gap-1.5 text-[10px] font-mono text-stone-500 font-bold mb-1">
+                                <span>{item.date}</span>
+                                {item.badge && (
+                                  <span className="px-1.5 py-0.2 rounded bg-stone-100 text-stone-700 border border-stone-200">
+                                    {item.badge}
+                                  </span>
+                                )}
+                              </div>
+                              <h4 className="font-mono font-black text-sm text-stone-900 leading-snug line-clamp-2">
+                                {item.title}
+                              </h4>
+                              <p className="font-mono text-xs text-stone-600 line-clamp-1 mt-1">
+                                {item.issuerOrPublisher}
+                              </p>
+                              {item.roleOrAward && (
+                                <p className="font-mono text-[11px] font-bold text-amber-700 line-clamp-1 mt-0.5">
+                                  ✦ {item.roleOrAward}
+                                </p>
+                              )}
+                            </div>
+
+                            {item.description && (
+                              <p className="font-mono text-xs text-stone-500 line-clamp-2 leading-relaxed">
+                                {item.description}
+                              </p>
+                            )}
+                          </div>
+
+                          {item.link ? (
+                            <div className="pt-2 border-t border-stone-100 flex items-center justify-between font-mono text-xs">
+                              <a
+                                href={item.link}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-amber-700 hover:underline flex items-center gap-1 font-bold text-[11px]"
+                              >
+                                <span>Open Link</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            </div>
+                          ) : (
+                            <div className="pt-2 border-t border-stone-100 text-[11px] font-mono text-stone-400">
+                              No External Link
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         )}
@@ -5701,7 +6041,7 @@ export default function AdminPage() {
                       autoFocus
                       value={customCertCat}
                       onChange={(e) => setCustomCertCat(e.target.value)}
-                      placeholder="e.g. Extra Caricullam, Hackathons"
+                      placeholder="e.g. Cloud Computing, Hackathons"
                       className="w-full px-3.5 py-2.5 rounded-xl bg-amber-50 border-2 border-amber-400 text-stone-900 focus:border-black focus:outline-none"
                     />
                   </div>
@@ -5916,6 +6256,227 @@ export default function AdminPage() {
                 className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black uppercase border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer"
               >
                 Save Certificate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── ADD / EDIT LAUREL / RESEARCH PAPER / BOOK MODAL ── */}
+      {isLaurelModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-2xl bg-white rounded-3xl border-2 border-black shadow-[6px_6px_0_#000] p-6 sm:p-7 space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-amber-500" />
+                <h3 className="font-['Space_Grotesk'] text-xl font-black uppercase text-stone-900">
+                  {editingLaurel ? "Edit Laurel / Publication" : "Add Laurel, Research Paper or Book"}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsLaurelModalOpen(false)}
+                className="p-1 rounded-lg text-stone-400 hover:text-black cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 font-mono text-xs">
+              {/* Type Selector (3 Visual Cards) */}
+              <div>
+                <label className="block text-stone-800 font-bold mb-1.5">Entry Type:</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { type: "award", icon: Trophy, label: "🏆 Award & Laurel", color: "hover:border-amber-400" },
+                    { type: "paper", icon: FileText, label: "📄 Research Paper", color: "hover:border-indigo-400" },
+                    { type: "book", icon: BookOpen, label: "📚 Published Book", color: "hover:border-rose-400" },
+                  ].map((btn) => {
+                    const isSelected = laurelForm.type === btn.type;
+                    return (
+                      <button
+                        key={btn.type}
+                        type="button"
+                        onClick={() => setLaurelForm({ ...laurelForm, type: btn.type as any })}
+                        className={`p-3 rounded-xl border-2 font-bold text-center transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
+                          isSelected
+                            ? "bg-black text-white border-black shadow-[2.5px_2.5px_0_#f59e0b]"
+                            : `bg-stone-50 text-stone-700 border-stone-200 ${btn.color}`
+                        }`}
+                      >
+                        <btn.icon className={`w-4 h-4 ${isSelected ? "text-amber-400" : "text-stone-500"}`} />
+                        <span className="text-[11px] leading-tight">{btn.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="block text-stone-800 font-bold mb-1">
+                  {laurelForm.type === "award"
+                    ? "Award / Laurel Title:"
+                    : laurelForm.type === "paper"
+                    ? "Research Paper Title:"
+                    : "Book / Chapter Title:"}
+                </label>
+                <input
+                  type="text"
+                  value={laurelForm.title}
+                  onChange={(e) => setLaurelForm({ ...laurelForm, title: e.target.value })}
+                  placeholder={
+                    laurelForm.type === "award"
+                      ? "e.g. Smart India Hackathon — 1st Runner Up"
+                      : laurelForm.type === "paper"
+                      ? "e.g. Low-Latency Edge Inference with Pruned Tensors"
+                      : "e.g. Mathematical Intuition for Machine Learning"
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none font-bold"
+                />
+              </div>
+
+              {/* Organization / Publisher / Journal & Year */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-800 font-bold mb-1">
+                    {laurelForm.type === "award"
+                      ? "Awarding Body / Organization:"
+                      : laurelForm.type === "paper"
+                      ? "Journal / Conference / ArXiv:"
+                      : "Publisher / Press:"}
+                  </label>
+                  <input
+                    type="text"
+                    value={laurelForm.issuerOrPublisher}
+                    onChange={(e) => setLaurelForm({ ...laurelForm, issuerOrPublisher: e.target.value })}
+                    placeholder={
+                      laurelForm.type === "award"
+                        ? "e.g. Ministry of Education / IIT Madras"
+                        : laurelForm.type === "paper"
+                        ? "e.g. IEEE Transactions / ArXiv / ACM"
+                        : "e.g. Self-Published / Springer / Notion Press"
+                    }
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-stone-800 font-bold mb-1">Year / Date:</label>
+                  <input
+                    type="text"
+                    value={laurelForm.date}
+                    onChange={(e) => setLaurelForm({ ...laurelForm, date: e.target.value })}
+                    placeholder="2026"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Role / Standing & Badge Tag */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-800 font-bold mb-1">
+                    {laurelForm.type === "award"
+                      ? "Award Place / Standing:"
+                      : laurelForm.type === "paper"
+                      ? "Author Role:"
+                      : "Author / Editor Role:"}
+                  </label>
+                  <input
+                    type="text"
+                    value={laurelForm.roleOrAward || ""}
+                    onChange={(e) => setLaurelForm({ ...laurelForm, roleOrAward: e.target.value })}
+                    placeholder={
+                      laurelForm.type === "award"
+                        ? "e.g. 1st Place Laureate (Among 100+ Teams)"
+                        : "e.g. Lead Author / First Author"
+                    }
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-stone-800 font-bold mb-1">Badge Tag (Optional):</label>
+                  <input
+                    type="text"
+                    value={laurelForm.badge || ""}
+                    onChange={(e) => setLaurelForm({ ...laurelForm, badge: e.target.value })}
+                    placeholder={
+                      laurelForm.type === "award"
+                        ? "e.g. National Finalist"
+                        : laurelForm.type === "paper"
+                        ? "e.g. Peer-Reviewed"
+                        : "e.g. ISBN Verified"
+                    }
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Link / DOI / Credential URL */}
+              <div>
+                <label className="block text-stone-800 font-bold mb-1">
+                  Link (DOI / PDF / Publication / Certificate URL):
+                </label>
+                <input
+                  type="text"
+                  value={laurelForm.link || ""}
+                  onChange={(e) => setLaurelForm({ ...laurelForm, link: e.target.value })}
+                  placeholder="https://..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none"
+                />
+              </div>
+
+              {/* Description / Abstract */}
+              <div>
+                <label className="block text-stone-800 font-bold mb-1">Description / Abstract:</label>
+                <textarea
+                  rows={3}
+                  value={laurelForm.description}
+                  onChange={(e) => setLaurelForm({ ...laurelForm, description: e.target.value })}
+                  placeholder="Brief synopsis, problem tackled, or key impact of this work..."
+                  className="w-full p-3 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 focus:border-black focus:bg-white focus:outline-none"
+                />
+              </div>
+
+              {/* Visibility Switch */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                <div>
+                  <span className="font-bold text-stone-900 block text-xs">Show on Live Portfolio:</span>
+                  <span className="text-[11px] text-stone-500">
+                    {laurelForm.isVisible !== false ? "Visible to website visitors" : "Hidden from website"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setLaurelForm({ ...laurelForm, isVisible: laurelForm.isVisible === false ? true : false })}
+                  className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                    laurelForm.isVisible !== false
+                      ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
+                      : "bg-stone-200 text-stone-700 border-stone-300"
+                  }`}
+                >
+                  {laurelForm.isVisible !== false ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                  <span>{laurelForm.isVisible !== false ? "Visible" : "Hidden"}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-200 font-mono text-xs">
+              <button
+                type="button"
+                onClick={() => setIsLaurelModalOpen(false)}
+                className="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 font-bold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveLaurel}
+                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black uppercase border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer"
+              >
+                Save Entry
               </button>
             </div>
           </div>
