@@ -404,6 +404,79 @@ export function FormattedHighlightedText({
   );
 }
 
+const BENCHMARK_STICKER_THEMES = [
+  {
+    bg: "bg-amber-100/90 dark:bg-amber-950/40",
+    border: "border-black dark:border-amber-400",
+    shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#f59e0b]",
+    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#fbbf24]",
+    tape: "bg-amber-300/90 dark:bg-amber-500/60",
+    valueText: "text-amber-950 dark:text-amber-200",
+    labelText: "text-amber-900 dark:text-amber-300",
+    sublabel: "text-amber-800/80 dark:text-amber-400/80",
+    badgeBg: "bg-amber-200/90 text-amber-950 dark:bg-amber-900/80 dark:text-amber-200 border-amber-950/20 dark:border-amber-400/30",
+    icon: "✨",
+    tag: "SPECIALTY",
+    tilt: "-rotate-1 sm:-rotate-2",
+  },
+  {
+    bg: "bg-emerald-100/90 dark:bg-emerald-950/40",
+    border: "border-black dark:border-emerald-400",
+    shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#10b981]",
+    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#34d399]",
+    tape: "bg-emerald-300/90 dark:bg-emerald-500/60",
+    valueText: "text-emerald-950 dark:text-emerald-200",
+    labelText: "text-emerald-900 dark:text-emerald-300",
+    sublabel: "text-emerald-800/80 dark:text-emerald-400/80",
+    badgeBg: "bg-emerald-200/90 text-emerald-950 dark:bg-emerald-900/80 dark:text-emerald-200 border-emerald-950/20 dark:border-emerald-400/30",
+    icon: "⚡",
+    tag: "PROJECTS",
+    tilt: "rotate-1 sm:rotate-2",
+  },
+  {
+    bg: "bg-cyan-100/90 dark:bg-cyan-950/40",
+    border: "border-black dark:border-cyan-400",
+    shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#06b6d4]",
+    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#22d3ee]",
+    tape: "bg-cyan-300/90 dark:bg-cyan-500/60",
+    valueText: "text-cyan-950 dark:text-cyan-200",
+    labelText: "text-cyan-900 dark:text-cyan-300",
+    sublabel: "text-cyan-800/80 dark:text-cyan-400/80",
+    badgeBg: "bg-cyan-200/90 text-cyan-950 dark:bg-cyan-900/80 dark:text-cyan-200 border-cyan-950/20 dark:border-cyan-400/30",
+    icon: "🏆",
+    tag: "HONORS",
+    tilt: "-rotate-1 sm:-rotate-1.5",
+  },
+  {
+    bg: "bg-rose-100/90 dark:bg-rose-950/40",
+    border: "border-black dark:border-rose-400",
+    shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#f43f5e]",
+    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#fb7185]",
+    tape: "bg-rose-300/90 dark:bg-rose-500/60",
+    valueText: "text-rose-950 dark:text-rose-200",
+    labelText: "text-rose-900 dark:text-rose-300",
+    sublabel: "text-rose-800/80 dark:text-rose-400/80",
+    badgeBg: "bg-rose-200/90 text-rose-950 dark:bg-rose-900/80 dark:text-rose-200 border-rose-950/20 dark:border-rose-400/30",
+    icon: "🔥",
+    tag: "SOLVED",
+    tilt: "rotate-1 sm:rotate-2",
+  },
+  {
+    bg: "bg-violet-100/90 dark:bg-violet-950/40",
+    border: "border-black dark:border-violet-400",
+    shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#8b5cf6]",
+    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#a78bfa]",
+    tape: "bg-violet-300/90 dark:bg-violet-500/60",
+    valueText: "text-violet-950 dark:text-violet-200",
+    labelText: "text-violet-900 dark:text-violet-300",
+    sublabel: "text-violet-800/80 dark:text-violet-400/80",
+    badgeBg: "bg-violet-200/90 text-violet-950 dark:bg-violet-900/80 dark:text-violet-200 border-violet-950/20 dark:border-violet-400/30",
+    icon: "🚀",
+    tag: "METRICS",
+    tilt: "-rotate-1",
+  },
+];
+
 export function AboutSection({ id = "about" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
   const { personal, skills, quickStats, milestones, experiences } = portfolio
@@ -604,30 +677,75 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             </div>
           </div>
 
-          {/* Quick Stats Grid (Slim Benchmark Cards) */}
-          <div className="space-y-2 pt-1.5">
-            <div className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-              [KEY BENCHMARKS]
+          {/* Quick Stats Grid (Colourful Sketchbook Sticker Cards) */}
+          <div className="space-y-3 pt-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 font-mono text-[10px] sm:text-[11px] font-black uppercase tracking-wider shadow-[2px_2px_0_#f59e0b] -rotate-1 select-none">
+                  <span>🏷️</span>
+                  <span>KEY BENCHMARKS</span>
+                </span>
+                <span className="font-mono text-[10px] font-bold text-stone-400 dark:text-stone-500 tracking-widest uppercase hidden sm:inline">
+                  // VERIFIED METRICS
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 italic hidden md:inline">
+                ✦ interactive stickers
+              </span>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-              {quickStats?.map((st, i) => (
-                <div
-                  key={i}
-                  className="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-white dark:bg-stone-900/90 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] dark:hover:shadow-[3px_3px_0_#fff]"
-                >
-                  <div className="text-xl sm:text-2xl font-black text-black dark:text-white font-mono tracking-tight leading-none">
-                    {st.value}
-                  </div>
-                  <div className="text-[10px] sm:text-[11px] font-mono font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider mt-1.5 leading-tight">
-                    {st.label}
-                  </div>
-                  {st.sublabel && (
-                    <div className="text-[9px] font-mono text-stone-400 dark:text-stone-500 truncate mt-0.5 leading-tight">
-                      {st.sublabel}
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 pt-1.5">
+              {quickStats?.map((st, i) => {
+                const theme = BENCHMARK_STICKER_THEMES[i % BENCHMARK_STICKER_THEMES.length];
+                return (
+                  <div
+                    key={i}
+                    className={`group relative pt-3.5 pb-2.5 px-3 sm:px-3.5 rounded-2xl border-2 ${theme.border} ${theme.bg} ${theme.shadow} ${theme.hoverShadow} ${theme.tilt} transition-all duration-200 hover:rotate-0 hover:-translate-y-1.5 hover:scale-[1.03] select-none cursor-default`}
+                  >
+                    {/* Realistic Washi Tape pinned at top */}
+                    <div
+                      className={`absolute -top-1.5 left-1/2 -translate-x-1/2 w-10 sm:w-12 h-2.5 ${theme.tape} border border-black/25 dark:border-white/20 shadow-xs rotate-[-1deg] rounded-xs backdrop-blur-xs pointer-events-none z-10`}
+                      aria-hidden="true"
+                    />
+
+                    {/* Top Row: Mini Tag Badge & Index */}
+                    <div className="flex items-center justify-between gap-1 mb-1.5">
+                      <span
+                        className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8.5px] sm:text-[9px] font-mono font-black uppercase tracking-wider border ${theme.badgeBg}`}
+                      >
+                        <span>{theme.icon}</span>
+                        <span>{theme.tag}</span>
+                      </span>
+                      <span className="text-[9.5px] font-mono font-bold text-black/35 dark:text-white/40">
+                        #{String(i + 1).padStart(2, "0")}
+                      </span>
                     </div>
-                  )}
-                </div>
-              ))}
+
+                    {/* Big Metric Value */}
+                    <div
+                      className={`text-xl sm:text-2xl font-black font-mono tracking-tight leading-none ${theme.valueText}`}
+                    >
+                      {st.value}
+                    </div>
+
+                    {/* Label */}
+                    <div
+                      className={`text-[10.5px] sm:text-[11px] font-mono font-black uppercase tracking-wider mt-1.5 leading-tight ${theme.labelText}`}
+                    >
+                      {st.label}
+                    </div>
+
+                    {/* Sublabel */}
+                    {st.sublabel && (
+                      <div
+                        className={`text-[9px] font-mono truncate mt-0.5 leading-tight font-medium ${theme.sublabel}`}
+                      >
+                        {st.sublabel}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

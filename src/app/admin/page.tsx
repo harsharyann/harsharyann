@@ -3500,37 +3500,112 @@ export default function AdminPage() {
                   ))}
                 </div>
 
-                {/* Live Slim Cards Preview */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-stone-100 border border-stone-300 space-y-3">
+                {/* Live Colourful Sticker Preview */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-stone-100 border border-stone-300 space-y-4">
                   <div className="flex items-center justify-between border-b border-stone-200 pb-2">
                     <span className="font-mono text-xs font-black uppercase text-stone-800 flex items-center gap-1.5">
                       <Eye className="w-3.5 h-3.5 text-stone-600" />
-                      <span>Live Key Benchmarks Preview (Actual Site Cards):</span>
+                      <span>Live Key Benchmarks Preview (Colourful Stickers):</span>
                     </span>
-                    <span className="font-mono text-[10px] text-stone-500">
-                      [KEY BENCHMARKS]
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black text-white font-mono text-[9px] font-black uppercase -rotate-1 shadow-[1.5px_1.5px_0_#f59e0b]">
+                      🏷️ KEY BENCHMARKS
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-                    {(portfolio.quickStats || []).map((st, i) => (
-                      <div
-                        key={i}
-                        className="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0_#000] transition-all"
-                      >
-                        <div className="text-xl sm:text-2xl font-black text-black font-mono tracking-tight leading-none">
-                          {st.value || "0"}
-                        </div>
-                        <div className="text-[10px] sm:text-[11px] font-mono font-bold text-stone-700 uppercase tracking-wider mt-1.5 leading-tight">
-                          {st.label || "METRIC"}
-                        </div>
-                        {st.sublabel && (
-                          <div className="text-[9px] font-mono text-stone-400 truncate mt-0.5 leading-tight">
-                            {st.sublabel}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 pt-1">
+                    {(portfolio.quickStats || []).map((st, i) => {
+                      const themes = [
+                        {
+                          bg: "bg-amber-100",
+                          border: "border-black",
+                          shadow: "shadow-[3px_3px_0_#000]",
+                          tape: "bg-amber-300",
+                          text: "text-amber-950",
+                          label: "text-amber-900",
+                          sub: "text-amber-800/80",
+                          badge: "bg-amber-200 text-amber-950 border-amber-950/20",
+                          icon: "✨",
+                          tag: "SPECIALTY",
+                          tilt: "-rotate-1 sm:-rotate-2",
+                        },
+                        {
+                          bg: "bg-emerald-100",
+                          border: "border-black",
+                          shadow: "shadow-[3px_3px_0_#000]",
+                          tape: "bg-emerald-300",
+                          text: "text-emerald-950",
+                          label: "text-emerald-900",
+                          sub: "text-emerald-800/80",
+                          badge: "bg-emerald-200 text-emerald-950 border-emerald-950/20",
+                          icon: "⚡",
+                          tag: "PROJECTS",
+                          tilt: "rotate-1 sm:rotate-2",
+                        },
+                        {
+                          bg: "bg-cyan-100",
+                          border: "border-black",
+                          shadow: "shadow-[3px_3px_0_#000]",
+                          tape: "bg-cyan-300",
+                          text: "text-cyan-950",
+                          label: "text-cyan-900",
+                          sub: "text-cyan-800/80",
+                          badge: "bg-cyan-200 text-cyan-950 border-cyan-950/20",
+                          icon: "🏆",
+                          tag: "HONORS",
+                          tilt: "-rotate-1 sm:-rotate-1.5",
+                        },
+                        {
+                          bg: "bg-rose-100",
+                          border: "border-black",
+                          shadow: "shadow-[3px_3px_0_#000]",
+                          tape: "bg-rose-300",
+                          text: "text-rose-950",
+                          label: "text-rose-900",
+                          sub: "text-rose-800/80",
+                          badge: "bg-rose-200 text-rose-950 border-rose-950/20",
+                          icon: "🔥",
+                          tag: "SOLVED",
+                          tilt: "rotate-1 sm:rotate-2",
+                        },
+                      ];
+                      const theme = themes[i % themes.length];
+                      return (
+                        <div
+                          key={i}
+                          className={`relative pt-3.5 pb-2.5 px-3 rounded-2xl border-2 ${theme.border} ${theme.bg} ${theme.shadow} ${theme.tilt} transition-all`}
+                        >
+                          {/* Washi tape strip */}
+                          <div
+                            className={`absolute -top-1.5 left-1/2 -translate-x-1/2 w-10 h-2.5 ${theme.tape} border border-black/25 shadow-xs rotate-[-1deg] rounded-xs`}
+                          />
+
+                          {/* Top row */}
+                          <div className="flex items-center justify-between gap-1 mb-1.5">
+                            <span
+                              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8.5px] font-mono font-black uppercase tracking-wider border ${theme.badge}`}
+                            >
+                              <span>{theme.icon}</span>
+                              <span>{theme.tag}</span>
+                            </span>
+                            <span className="text-[9.5px] font-mono font-bold text-black/35">
+                              #{String(i + 1).padStart(2, "0")}
+                            </span>
                           </div>
-                        )}
-                      </div>
-                    ))}
+
+                          <div className={`text-xl sm:text-2xl font-black font-mono tracking-tight leading-none ${theme.text}`}>
+                            {st.value || "0"}
+                          </div>
+                          <div className={`text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-wider mt-1.5 leading-tight ${theme.label}`}>
+                            {st.label || "METRIC"}
+                          </div>
+                          {st.sublabel && (
+                            <div className={`text-[9px] font-mono truncate mt-0.5 leading-tight font-medium ${theme.sub}`}>
+                              {st.sublabel}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
