@@ -1,5 +1,16 @@
 import { NextResponse } from "next/server";
-import { checkCredentials, isAuthenticated, AUTH_COOKIE, SECRET_TOKEN } from "@/lib/auth";
+import { cookies } from "next/headers";
+import {
+  checkCredentials,
+  isAuthenticated,
+  createSessionToken,
+  createGatePass,
+  verifyGatePass,
+  safeCompare,
+  AUTH_COOKIE,
+  GATE_COOKIE,
+  ADMIN_GATE_KEY,
+} from "@/lib/auth";
 
 // In-Memory Brute-Force Rate Limiter (IP-based)
 const failedAttempts = new Map<string, { count: number; lockedUntil: number }>();
@@ -16,7 +27,14 @@ function getClientIp(req: Request): string {
 
 export async function GET() {
   const authed = await isAuthenticated();
-  return NextResponse.json({ authenticated: authed });
+  const cookieStore = await cookies();
+  const gateToken = cookieStore.get(GATE_COOKIE)?.value;
+  const gateUnlocked = authed || verifyGatePass(gateToken);
+
+  return NextResponse.json({
+    authenticated: authed,
+    gateUnlocked,
+  });
 }
 
 export async function POST(req: Request) {
@@ -35,18 +53,40 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { username, password } = body;
 
-    if (!username || !password) {
+    // ── ACTION: UNLOCK GATE ONLY ──
+    if (body.action === "unlock_gate") {
+      const { gateKey } = body;
+      if (!gateKey || !safeCompare(gateKey.trim(), ADMIN_GATE_KEY.trim())) {
+        return NextResponse.json({ error: "Invalid Access Gate Key" }, { status: 403 });
+      }
+
+      const res = NextResponse.json({ success: true, message: "Gate unlocked" });
+      res.cookies.set({
+        name: GATE_COOKIE,
+        value: createGatePass(),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
+      return res;
+    }
+
+    // ── ACTION: 3-FACTOR ADMIN LOGIN ──
+    const { username, password, pin } = body;
+
+    if (!username || !password || !pin) {
       return NextResponse.json(
-        { error: "Username and password are required" },
+        { error: "Username, Password, and 6-Digit Master Security PIN are all required." },
         { status: 400 }
       );
     }
 
-    if (!checkCredentials(username, password)) {
-      // Artificial delay (400ms) to prevent high-speed dictionary brute force
-      await new Promise((r) => setTimeout(r, 400));
+    if (!checkCredentials(username, password, pin)) {
+      // Artificial delay (450ms) to prevent high-speed dictionary brute force
+      await new Promise((r) => setTimeout(r, 450));
 
       const prevCount = attemptRecord && attemptRecord.lockedUntil <= now ? 0 : (attemptRecord?.count || 0);
       const newCount = prevCount + 1;
@@ -61,7 +101,7 @@ export async function POST(req: Request) {
         failedAttempts.set(ip, { count: newCount, lockedUntil: 0 });
         const remaining = MAX_ATTEMPTS - newCount;
         return NextResponse.json(
-          { error: `Invalid credentials. (${remaining} attempt${remaining === 1 ? "" : "s"} remaining before lockout)` },
+          { error: `Invalid credentials or Security PIN. (${remaining} attempt${remaining === 1 ? "" : "s"} remaining before lockout)` },
           { status: 401 }
         );
       }
@@ -70,14 +110,30 @@ export async function POST(req: Request) {
     // Success: Reset rate limiter for this IP
     failedAttempts.delete(ip);
 
+    const sessionToken = createSessionToken(username);
+    const gatePass = createGatePass();
+
     const res = NextResponse.json({ success: true, message: "Authenticated successfully" });
+
+    // Set signed HMAC session cookie (7 days)
     res.cookies.set({
       name: AUTH_COOKIE,
-      value: SECRET_TOKEN,
+      value: sessionToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+
+    // Set gate cookie (7 days)
+    res.cookies.set({
+      name: GATE_COOKIE,
+      value: gatePass,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
 
@@ -92,6 +148,13 @@ export async function DELETE() {
   const res = NextResponse.json({ success: true, message: "Logged out" });
   res.cookies.set({
     name: AUTH_COOKIE,
+    value: "",
+    httpOnly: true,
+    maxAge: 0,
+    path: "/",
+  });
+  res.cookies.set({
+    name: GATE_COOKIE,
     value: "",
     httpOnly: true,
     maxAge: 0,

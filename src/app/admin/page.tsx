@@ -37,6 +37,9 @@ import {
   Laptop,
   FolderGit2,
   MapPin,
+  ShieldCheck,
+  KeyRound,
+  Clock,
   Menu,
   X,
   Palette,
@@ -93,10 +96,13 @@ export default function AdminPage() {
 
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [username, setUsername] = useState("Harsharyann_");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [securityPin, setSecurityPin] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showSecurityPin, setShowSecurityPin] = useState(false);
   const [authError, setAuthError] = useState("");
+  const [inactivityNotice, setInactivityNotice] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // CMS Form State
@@ -686,24 +692,69 @@ export default function AdminPage() {
     }
   }, [isAuthenticated, activeTab]);
 
+  // ── INACTIVITY AUTO-LOGOUT (20 Minutes Timeout) ──
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let lastInteraction = Date.now();
+    const INACTIVITY_LIMIT_MS = 20 * 60 * 1000; // 20 minutes
+
+    const recordActivity = () => {
+      lastInteraction = Date.now();
+    };
+
+    const events = ["mousemove", "mousedown", "keydown", "touchstart", "scroll", "wheel"];
+    events.forEach((evt) => window.addEventListener(evt, recordActivity, { passive: true }));
+
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - lastInteraction;
+      if (elapsed >= INACTIVITY_LIMIT_MS) {
+        // Trigger auto-logout due to inactivity
+        handleLogout();
+        setInactivityNotice("Security lock: Session auto-logged out due to 20 minutes of inactivity.");
+      }
+    }, 15000); // Check every 15s
+
+    return () => {
+      events.forEach((evt) => window.removeEventListener(evt, recordActivity));
+      clearInterval(interval);
+    };
+  }, [isAuthenticated]);
+
   // Handle Login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError("");
+    setInactivityNotice(null);
+
+    if (!username.trim() || !password.trim() || !securityPin.trim()) {
+      setAuthError("All 3 fields are required: Username, Password, and 6-Digit Master PIN.");
+      return;
+    }
+
+    if (securityPin.trim().length !== 6) {
+      setAuthError("Master Security PIN must be exactly 6 digits.");
+      return;
+    }
+
     setIsLoggingIn(true);
 
     try {
       const res = await fetch("/api/admin/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim(),
+          pin: securityPin.trim(),
+        }),
       });
       const data = await res.json();
 
       if (res.ok && data.success) {
         setIsAuthenticated(true);
       } else {
-        setAuthError(data.error || "Invalid username or password");
+        setAuthError(data.error || "Invalid username, password, or security PIN.");
       }
     } catch (err) {
       setAuthError("Failed to authenticate. Please check network connection.");
@@ -719,6 +770,7 @@ export default function AdminPage() {
       setIsAuthenticated(false);
       setUsername("");
       setPassword("");
+      setSecurityPin("");
     } catch (err) {
       console.error(err);
     }
@@ -1164,7 +1216,14 @@ export default function AdminPage() {
         <div className="relative w-full max-w-md">
           {/* Main Dossier Card */}
           <div className="w-full p-6 sm:p-8 rounded-[28px] bg-[#fffef9] dark:bg-[#151620] border-[2.5px] border-black dark:border-white shadow-[8px_8px_0_#000] dark:shadow-[8px_8px_0_#fff] space-y-6 relative z-20">
-            {/* Feedback error alert */}
+            {/* Security Feedback alerts */}
+            {inactivityNotice && (
+              <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400 text-amber-900 dark:text-amber-200 font-mono text-xs flex items-center gap-2 shadow-[2px_2px_0_#d97706]">
+                <Clock className="w-4 h-4 shrink-0 text-amber-600" />
+                <span>{inactivityNotice}</span>
+              </div>
+            )}
+
             {authError && (
               <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border-2 border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 font-mono text-xs flex items-center gap-2 shadow-[2px_2px_0_#dc2626]">
                 <AlertCircle className="w-4 h-4 shrink-0" />
@@ -1174,24 +1233,30 @@ export default function AdminPage() {
 
             {/* Login Form */}
             <form onSubmit={handleLogin} className="space-y-4">
-              {/* Username Field: Pre-applied Harsharyann_ */}
+              {/* Header security badge */}
+              <div className="flex items-center justify-between pb-1">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-[10px] font-bold text-stone-700 dark:text-stone-300">
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
+                  <span>3-Factor Protected Access</span>
+                </span>
+                <span className="font-mono text-[9.5px] text-stone-400">
+                  HMAC Signed Session
+                </span>
+              </div>
+
+              {/* Username Field */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300">
-                    Username:
-                  </label>
-                  <span className="font-mono text-[9.5px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>Harsharyann_</span>
-                  </span>
-                </div>
+                <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
+                  Admin Identifier:
+                </label>
                 <div className="relative">
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Harsharyann_"
+                    placeholder="Enter Admin Username"
                     autoComplete="username"
+                    autoFocus
                     required
                     className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-xs font-bold focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
                   />
@@ -1211,7 +1276,6 @@ export default function AdminPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     autoComplete="current-password"
-                    autoFocus
                     required
                     className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-xs font-bold focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
                   />
@@ -1226,6 +1290,41 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {/* 6-Digit Master Security PIN Field */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300">
+                    Master Security PIN:
+                  </label>
+                  <span className="font-mono text-[9.5px] font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 bg-amber-100/70 dark:bg-amber-950/50 px-2 py-0.5 rounded-full border border-amber-400/40">
+                    <KeyRound className="w-3 h-3 text-amber-600" />
+                    <span>6-Digits Required</span>
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showSecurityPin ? "text" : "password"}
+                    value={securityPin}
+                    onChange={(e) => setSecurityPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    placeholder="••••••"
+                    maxLength={6}
+                    autoComplete="off"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    required
+                    className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-sm font-black tracking-[0.35em] text-center focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSecurityPin(!showSecurityPin)}
+                    className="absolute right-3 top-2.5 p-1 text-stone-400 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
+                    title={showSecurityPin ? "Hide PIN" : "Show PIN"}
+                  >
+                    {showSecurityPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
               {/* Enter Socius Action Button */}
               <button
                 type="submit"
@@ -1235,12 +1334,12 @@ export default function AdminPage() {
                 {isLoggingIn ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Unlocking Vault...</span>
+                    <span>Verifying 3-Factor Credentials...</span>
                   </>
                 ) : (
                   <>
                     <Unlock className="w-4 h-4 stroke-[2.5]" />
-                    <span>Enter Socius</span>
+                    <span>Authenticate &amp; Enter Socius</span>
                   </>
                 )}
               </button>
@@ -1542,6 +1641,9 @@ export default function AdminPage() {
                 <span className="text-xs font-bold font-mono text-stone-900 leading-tight">Harsh Aryan</span>
                 <span className="text-[9.5px] font-mono text-emerald-600 font-semibold flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Super Admin
+                </span>
+                <span className="text-[9px] font-mono text-stone-400 flex items-center gap-1 mt-0.5" title="Auto-locks after 20 minutes of inactivity">
+                  <Clock className="w-2.5 h-2.5 text-amber-500" /> Auto-Lock: 20m
                 </span>
               </div>
             </div>
