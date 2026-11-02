@@ -1220,18 +1220,10 @@ export function DoodleCrewCover({
       {/* ── BACKGROUND LAYER: Rich Sketchbook Paper & Cyber Blueprint Canvas ── */}
       <CoverBackgroundLayer isDark={isDark} />
 
-      {/* Top Header Bar with Harsh Aryan stamp and Candy Social Links */}
+      {/* Top Header Bar with Candy Social Links */}
       <header className="dcf-top-bar">
         <div className="dcf-top-inner">
-          <div className="dcf-top-left">
-            <div className="dcf-brand-stamp">
-              <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-black/20 bg-stone-100 dark:bg-stone-800">
-                <img src="/icon.svg" alt="App Logo" className="w-3.5 h-3.5 object-contain" />
-              </div>
-              <span>{portfolio?.personal?.name || portfolio?.personal?.desktopWordmark || "HARSH ARYAN"}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0 ml-0.5" />
-            </div>
-          </div>
+          <div className="dcf-top-left" />
 
           {/* Right: Candy Social Links */}
           <div className="dcf-top-actions">
