@@ -653,10 +653,25 @@ export function DoodleCrewCover({
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }, [closeCover])
 
-  // 8-Second Visual Countdown Timer to Auto-Enter Portfolio (with live tick)
+  // 8-Second Visual Countdown Timer to Auto-Enter Portfolio (Desktop only; phone requires tap)
   const [countdown, setCountdown] = React.useState(8);
+  const [isMobileDevice, setIsMobileDevice] = React.useState(false);
 
   React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobileDevice(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  React.useEffect(() => {
+    // IN PHONE: Do NOT automatically navigate! Only navigate when user explicitly clicks.
+    if (isMobileDevice) {
+      return;
+    }
+
     if (countdown <= 0) {
       triggerLeave();
       return;
@@ -667,7 +682,7 @@ export function DoodleCrewCover({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [countdown, triggerLeave]);
+  }, [countdown, triggerLeave, isMobileDevice]);
 
   // Clean native scroll: no event hijacking or wheel trapping
 
@@ -1191,12 +1206,6 @@ export function DoodleCrewCover({
                   onError={() => setDisplayPhotoSrc("/harsh-cover.jpg")}
                 />
 
-                {/* Floating Live Radar Chip */}
-                <div className="absolute top-2.5 left-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 dark:bg-black/90 backdrop-blur-md border border-white/30 text-white font-mono text-[9px] font-black uppercase tracking-wider shadow-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>LIVE TA @ IIT MADRAS</span>
-                </div>
-
                 {/* Minimal Architectural Camera Corner Brackets */}
                 <div className="absolute top-2.5 right-2.5 w-3.5 h-3.5 border-t-2 border-r-2 border-white/70 pointer-events-none" />
                 <div className="absolute bottom-2.5 left-2.5 w-3.5 h-3.5 border-b-2 border-l-2 border-white/70 pointer-events-none" />
@@ -1209,7 +1218,7 @@ export function DoodleCrewCover({
                   {portfolio?.personal?.name || "HARSH ARYAN"}
                 </span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 font-black uppercase text-[10.5px]">
-                  AI &amp; DS
+                  {portfolio?.personal?.desktopPhotoTag || "AI & DS"}
                 </span>
               </div>
             </div>
@@ -1218,12 +1227,6 @@ export function DoodleCrewCover({
           {/* ── RIGHT COLUMN: Clean Name Typography, Role, Subtitle, Actions, Daily Spark ── */}
           <div className="md:col-span-7 flex flex-col items-start text-left space-y-3 order-2">
             
-            {/* Dossier Eyebrow Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 font-mono text-[10px] font-black uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-              <span>PORTFOLIO DOSSIER • 2026</span>
-            </div>
-
             {/* Clean, Bold Name Heading (No cartoon characters) */}
             <div>
               <h1 className="font-hero-heading text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-black dark:text-white leading-none select-none">
@@ -1304,8 +1307,8 @@ export function DoodleCrewCover({
               <DailySpark isDark={isDark} />
             </div>
 
-            {/* Enter Portfolio Action Button with Countdown */}
-            <div className="flex items-center gap-3 pt-0.5">
+            {/* Enter Portfolio Action Button with Countdown & Pause Control */}
+            <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
               {/* Comic Doodle Speech Bubble */}
               <div className="relative pointer-events-none select-none">
                 <div className="px-2 py-0.5 bg-yellow-300 text-black border-[1.5px] border-black rounded-full font-mono text-[9px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] flex items-center gap-1 animate-bounce">
@@ -1315,55 +1318,62 @@ export function DoodleCrewCover({
                 </div>
               </div>
 
-              {/* Interactive Physical Enter Button with Live 8s Countdown Ring */}
+              {/* Interactive Physical Enter Button in Neo-Brutalist Yellow Box */}
               <button
                 type="button"
                 onClick={triggerLeave}
-                className="group relative inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-[#12131a]/95 backdrop-blur-xl border-[1.5px] border-black dark:border-white shadow-[2.5px_2.5px_0_#000] dark:shadow-[2.5px_2.5px_0_#fff] hover:shadow-[4px_4px_0_#f59e0b] hover:-translate-y-0.5 active:translate-y-0.5 transition-all cursor-pointer select-none"
+                className="group relative inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-300 hover:bg-amber-400 text-black border-2 border-black shadow-[3px_3px_0_#000] hover:shadow-[4px_4px_0_#000] hover:-translate-y-0.5 active:translate-y-0.5 transition-all cursor-pointer select-none"
                 aria-label="Click here to enter portfolio or wait for countdown"
               >
-                {/* Circular SVG 8s Countdown Dial */}
-                <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
-                  <svg className="w-5 h-5 -rotate-90" viewBox="0 0 32 32">
-                    <circle
-                      cx="16"
-                      cy="16"
-                      r="12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.8"
-                      className="text-stone-200 dark:text-stone-800"
-                    />
-                    <circle
-                      cx="16"
-                      cy="16"
-                      r="12"
-                      fill="none"
-                      stroke="#f59e0b"
-                      strokeWidth="3"
-                      strokeDasharray="75.4"
-                      strokeDashoffset={75.4 - (75.4 * countdown) / 8}
-                      strokeLinecap="round"
-                      className="transition-all duration-1000 ease-linear"
-                    />
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center font-mono text-[8.5px] font-black text-amber-600 dark:text-amber-400">
-                    {countdown}
-                  </span>
-                </div>
+                {/* Circular SVG Countdown Dial (Desktop) or Star Pin (Mobile) */}
+                {!isMobileDevice ? (
+                  <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
+                    <svg className="w-5 h-5 -rotate-90" viewBox="0 0 32 32">
+                      <circle
+                        cx="16"
+                        cy="16"
+                        r="12"
+                        fill="none"
+                        stroke="rgba(0,0,0,0.2)"
+                        strokeWidth="2.8"
+                      />
+                      <circle
+                        cx="16"
+                        cy="16"
+                        r="12"
+                        fill="none"
+                        stroke="#000000"
+                        strokeWidth="3.2"
+                        strokeDasharray="75.4"
+                        strokeDashoffset={75.4 - (75.4 * countdown) / 8}
+                        strokeLinecap="round"
+                        className="transition-all duration-1000 ease-linear"
+                      />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center font-mono text-[8.5px] font-black text-black">
+                      {countdown}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-black text-amber-300 flex items-center justify-center shrink-0 shadow-xs">
+                    <span className="text-[10px] font-black">✦</span>
+                  </div>
+                )}
 
                 {/* Action Label */}
                 <div className="flex items-center gap-1.5 text-left">
-                  <span className="font-['Space_Grotesk'] text-[11px] sm:text-xs font-black uppercase tracking-wider text-black dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                  <span className="font-['Space_Grotesk'] text-[11px] sm:text-xs font-black uppercase tracking-wider text-black">
                     ENTER PORTFOLIO ✦
                   </span>
-                  <span className="font-mono text-[8.5px] text-stone-500 dark:text-stone-400 hidden sm:inline">
-                    ({countdown}s)
-                  </span>
+                  {!isMobileDevice && (
+                    <span className="font-mono text-[8.5px] text-black/75 font-bold hidden sm:inline">
+                      ({countdown}s)
+                    </span>
+                  )}
                 </div>
 
                 {/* Bouncing Arrow Box */}
-                <div className="w-5 h-5 rounded-md bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shadow-xs group-hover:bg-amber-500 group-hover:text-black transition-colors shrink-0">
+                <div className="w-5 h-5 rounded-md bg-black text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform shrink-0">
                   <svg
                     viewBox="0 0 16 16"
                     width="10"

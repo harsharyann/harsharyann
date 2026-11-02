@@ -26,6 +26,20 @@ export interface Certificate {
   verificationSource?: string;
 }
 
+export interface Experience {
+  id: string;
+  role: string;
+  company: string;
+  companyUrl?: string;
+  location?: string;
+  period: string;
+  type?: string;
+  description: string;
+  highlights?: string[];
+  skillsUsed?: string[];
+  isCurrent?: boolean;
+}
+
 export interface TimelineMilestone {
   phaseNumber: string;
   period: string;
@@ -33,6 +47,58 @@ export interface TimelineMilestone {
   subtitle: string;
   description: string;
 }
+
+export interface DailyThought {
+  dayIndex: number; // 0 = Sun, 1 = Mon, ..., 6 = Sat
+  dayName: string;
+  persona: string;
+  quote: string;
+}
+
+export const DEFAULT_DAILY_THOUGHTS: DailyThought[] = [
+  {
+    dayIndex: 0,
+    dayName: "Sunday",
+    persona: "The Philosopher",
+    quote: "Teach machines to learn. Never stop learning yourself.",
+  },
+  {
+    dayIndex: 1,
+    dayName: "Monday",
+    persona: "The Dreamer",
+    quote: "Every great invention begins with an unreasonable idea.",
+  },
+  {
+    dayIndex: 2,
+    dayName: "Tuesday",
+    persona: "The Builder",
+    quote: "Dreams don't compile themselves. Start building.",
+  },
+  {
+    dayIndex: 3,
+    dayName: "Wednesday",
+    persona: "The Thinker",
+    quote: "Somewhere between logic and imagination, I build.",
+  },
+  {
+    dayIndex: 4,
+    dayName: "Thursday",
+    persona: "The Explorer",
+    quote: "Stay curious. The universe has more bugs than features.",
+  },
+  {
+    dayIndex: 5,
+    dayName: "Friday",
+    persona: "The Creator",
+    quote: "Code is how I turn 'what if' into 'what's next'.",
+  },
+  {
+    dayIndex: 6,
+    dayName: "Saturday",
+    persona: "The Rebel",
+    quote: "Why follow the blueprint when you can invent one?",
+  },
+];
 
 export interface PortfolioData {
   personal: {
@@ -54,10 +120,15 @@ export interface PortfolioData {
     desktopRole?: string;
     desktopHeadline?: string;
     desktopTagline?: string;
+    desktopPhotoChip?: string;
+    desktopPhotoTag?: string;
+    desktopEyebrow?: string;
     mobileBadge1?: string;
     mobileBadge2?: string;
     mobileTagline?: string;
     showMobileCurrentRole?: boolean;
+    showDevelopmentTrajectory?: boolean;
+    showExperienceSection?: boolean;
     aboutPhotoTag?: string;
     aboutCurrentWork?: string;
     aboutWorkPlace?: string;
@@ -71,6 +142,28 @@ export interface PortfolioData {
     currentWork?: string;
     currentStatusNote?: string;
     currentTimezone?: string;
+    currentTimezoneIana?: string;
+    contactTitle?: string;
+    contactSubtitle?: string;
+    contactDoodleNote?: string;
+    contactFormTitle?: string;
+    contactMailboxNote?: string;
+    contactButtonText?: string;
+    contactSuccessMessage?: string;
+    contactEmailLabel?: string;
+    contactCoordinatesTitle?: string;
+    currentStationBadge?: string;
+    contactStampText?: string;
+    contactStampCode?: string;
+    projectsNavIcon?: "foldercode" | "code" | "folder" | "terminal" | "layers";
+    coverDailyThoughtHeader?: string;
+    coverDailyThoughtQuote?: string;
+    coverDailyThoughtAuthor?: string;
+    coverDailyThoughtSignature?: string;
+    footerBrandName?: string;
+    footerSubtitle?: string;
+    footerTagline?: string;
+    footerEasterEggText?: string;
   };
   socialLinks: {
     github: string;
@@ -105,9 +198,11 @@ export interface PortfolioData {
     category: string;
     items: string[];
   }[];
+  experiences?: Experience[];
   milestones?: TimelineMilestone[];
   certificateCategories?: string[];
   certificates: Certificate[];
+  dailyThoughts?: DailyThought[];
 }
 
 export const portfolioData: PortfolioData = {
@@ -134,6 +229,8 @@ export const portfolioData: PortfolioData = {
     mobileBadge2: "AI & Data Science",
     mobileTagline: "Teaching Machines To Learn • Building Scientific Software",
     showMobileCurrentRole: true,
+    showDevelopmentTrajectory: true,
+    showExperienceSection: true,
     aboutPhotoTag: "✦ TA @ IIT MADRAS",
     aboutCurrentWork: "Teaching Assistant",
     aboutWorkPlace: "IIT Madras",
@@ -147,6 +244,28 @@ export const portfolioData: PortfolioData = {
     currentWork: "Teaching Assistant @ IIT Madras",
     currentStatusNote: "Active & Open for Opportunities",
     currentTimezone: "Asia/Kolkata (UTC+5:30 IST)",
+    currentTimezoneIana: "Asia/Kolkata",
+    contactTitle: "Send a Dispatch",
+    contactSubtitle: "Have an interesting machine learning challenge, internship opportunity, or algorithmic project in mind? Drop your inquiry directly into my terminal.",
+    contactDoodleNote: "drop a note anytime 💌",
+    contactFormTitle: "DIRECT INQUIRY DISPATCH",
+    contactMailboxNote: "direct dispatch 📬",
+    contactButtonText: "SEND DISPATCH",
+    contactSuccessMessage: "Thank you! Your message has been received directly. I will follow up shortly.",
+    contactEmailLabel: "ELECTRONIC MAIL",
+    contactCoordinatesTitle: "CURRENT COORDINATES",
+    currentStationBadge: "LIVE STATION",
+    contactStampText: "DISPATCH VERIFIED",
+    contactStampCode: "IND // 2026",
+    projectsNavIcon: "foldercode",
+    coverDailyThoughtHeader: "A LITTLE THOUGHT FOR TODAY",
+    coverDailyThoughtQuote: "Every great invention begins with an unreasonable idea.",
+    coverDailyThoughtAuthor: "The Dreamer",
+    coverDailyThoughtSignature: "Harsh's Daily Thoughts",
+    footerBrandName: "HARSH ARYAN",
+    footerSubtitle: "Teaching machines to learn • Scientific software",
+    footerTagline: "crafting with code & mathematics",
+    footerEasterEggText: "socius",
   },
 
   socialLinks: {
@@ -327,6 +446,26 @@ export const portfolioData: PortfolioData = {
     },
   ],
 
+  experiences: [
+    {
+      id: "exp-1",
+      role: "Teaching Assistant",
+      company: "Indian Institute of Technology Madras (IIT Madras)",
+      companyUrl: "https://www.iitm.ac.in",
+      location: "Chennai, India",
+      period: "2024 – Present",
+      type: "Academic & Mentorship",
+      isCurrent: true,
+      description: "Guiding undergraduate student cohorts in fundamental computer science, Python programming, and algorithmic problem-solving methodologies.",
+      highlights: [
+        "Mentoring 150+ students through hands-on computational labs and code reviews.",
+        "Assisting course instructors in designing rigorous algorithm and data structure problem sets.",
+        "Hosting interactive problem-solving clinics bridging mathematical theory with Python code."
+      ],
+      skillsUsed: ["Python", "Algorithms", "Data Structures", "Computational Thinking", "Mentorship"]
+    }
+  ],
+
   certificateCategories: [
     "Machine Learning",
     "Data Science",
@@ -427,4 +566,5 @@ export const portfolioData: PortfolioData = {
         "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows.",
     },
   ],
+  dailyThoughts: DEFAULT_DAILY_THOUGHTS,
 };

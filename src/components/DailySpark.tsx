@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useCallback, useSyncExternalStore } from "react"
+import { usePortfolio } from "@/context/PortfolioContext"
 
 export interface SparkQuote {
   dayIndex: number // 0 = Sun, 1 = Mon, ..., 6 = Sat
@@ -211,6 +212,9 @@ const getReducedMotionSnapshot = () => {
 }
 
 export function DailySpark({ isDark = false }: { isDark?: boolean }) {
+  const { data: portfolio } = usePortfolio()
+  const personal = portfolio?.personal
+
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false)
   const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotionSnapshot, () => false)
   const [typedText, setTypedText] = useState<string>("")
@@ -227,17 +231,26 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
 
   const todaySpark = WEEKLY_SPARKS[currentWeekday] || WEEKLY_SPARKS[1]
 
+  // Check if thoughts list is present in portfolio
+  const thoughtsList = portfolio?.dailyThoughts || []
+  const todayCustom = thoughtsList.find((t) => t.dayIndex === currentWeekday)
+
+  const activeQuote = todayCustom?.quote || personal?.coverDailyThoughtQuote?.trim() || todaySpark.quote
+  const activePersona = todayCustom?.persona || personal?.coverDailyThoughtAuthor?.trim() || todaySpark.persona
+  const activeHeader = personal?.coverDailyThoughtHeader?.trim() || "A LITTLE THOUGHT FOR TODAY"
+  const activeSignature = personal?.coverDailyThoughtSignature?.trim() || "— Harsh’s Daily Thoughts"
+
   const displayText = !mounted
-    ? todaySpark.quote
+    ? activeQuote
     : reducedMotion
-    ? todaySpark.quote
-    : (typedText || todaySpark.quote)
+    ? activeQuote
+    : (typedText || activeQuote)
 
   // Smooth typewriter animation effect for today's thought
   useEffect(() => {
     if (!mounted || reducedMotion) return
 
-    const fullText = todaySpark.quote
+    const fullText = activeQuote
     let idx = 0
     let timer: NodeJS.Timeout
 
@@ -258,11 +271,11 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
       clearTimeout(startTimer)
       clearInterval(timer)
     }
-  }, [mounted, currentWeekday, todaySpark.quote, reducedMotion])
+  }, [mounted, currentWeekday, activeQuote, reducedMotion])
 
   // Copy quote to clipboard + confetti celebration
   const handleCopyQuote = useCallback(async () => {
-    const textToCopy = `"${todaySpark.quote}" — Harsh's Daily Thoughts (${todaySpark.dayName} • ${todaySpark.persona})`
+    const textToCopy = `"${activeQuote}" ${activeSignature} (${todaySpark.dayName} • ${activePersona})`
     try {
       await navigator.clipboard.writeText(textToCopy)
       setCopied(true)
@@ -285,7 +298,7 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
     } catch {
       // clipboard access error fallback
     }
-  }, [todaySpark, reducedMotion])
+  }, [activeQuote, activeSignature, activePersona, todaySpark.dayName, todaySpark.accentColor, reducedMotion])
 
   return (
     <section
@@ -339,7 +352,7 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
               ✦
             </span>
             <h3 className="daily-spark-heading">
-              A LITTLE THOUGHT FOR TODAY
+              {activeHeader}
             </h3>
             <span className="daily-spark-sparkle-mini" aria-hidden="true">
               <SparkleIcon className="w-3.5 h-3.5" color={todaySpark.accentColor} />
@@ -356,7 +369,7 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
             }}
           >
             <span className="daily-spark-persona-spark" aria-hidden="true">✦</span>
-            <span className="daily-spark-persona-text">{todaySpark.persona}</span>
+            <span className="daily-spark-persona-text">{activePersona}</span>
           </div>
         </div>
 
@@ -385,7 +398,7 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
           </div>
 
           <div className="daily-spark-signature">
-            <span>— Harsh’s Daily Thoughts</span>
+            <span>{activeSignature}</span>
             <span className="daily-spark-sig-star" aria-hidden="true">✦</span>
           </div>
         </div>

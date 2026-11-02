@@ -24,7 +24,7 @@ import { GithubIcon, LinkedinIcon, LeetCodeIcon } from "@/components/SocialIcons
 /**
  * Handcrafted Doodle #1 — The Airmail Flying Letter 💌
  */
-function AirmailLetterDoodle({ className = "", isPhone = false }: { className?: string; isPhone?: boolean }) {
+function AirmailLetterDoodle({ className = "", isPhone = false, noteText }: { className?: string; isPhone?: boolean; noteText?: string }) {
   if (isPhone) {
     return (
       <div className={`relative inline-flex items-center ${className}`} aria-hidden="true">
@@ -102,7 +102,7 @@ function AirmailLetterDoodle({ className = "", isPhone = false }: { className?: 
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
         <span className="text-rose-950 dark:text-rose-200 text-sm">
-          drop a note anytime 💌
+          {noteText || "drop a note anytime 💌"}
         </span>
       </div>
     </div>
@@ -112,7 +112,7 @@ function AirmailLetterDoodle({ className = "", isPhone = false }: { className?: 
 /**
  * Handcrafted Doodle #2 — The Postal Mailbox 📬
  */
-function PostalMailboxDoodle({ className = "" }: { className?: string }) {
+function PostalMailboxDoodle({ className = "", noteText }: { className?: string; noteText?: string }) {
   return (
     <div className={`relative inline-flex items-center gap-2 ${className}`} aria-hidden="true">
       <svg
@@ -140,7 +140,7 @@ function PostalMailboxDoodle({ className = "" }: { className?: string }) {
         className="text-xs sm:text-sm font-bold text-sky-700 dark:text-sky-300 rotate-[-1deg]"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
-        direct dispatch 📬
+        {noteText || "direct dispatch 📬"}
       </span>
     </div>
   )
@@ -214,6 +214,7 @@ function FlyingPaperPlaneAnimation({ isFlying }: { isFlying: boolean }) {
 
 export function ContactSection({ id = "contact" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
+  const personal = portfolio?.personal;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -238,32 +239,44 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
   React.useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      setLiveTime({
-        time: now.toLocaleTimeString("en-US", {
-          timeZone: "Asia/Kolkata",
+      const tz = personal?.currentTimezoneIana || "Asia/Kolkata";
+      let timeStr = "";
+      let dayStr = "";
+      let dateStr = "";
+      try {
+        timeStr = now.toLocaleTimeString("en-US", {
+          timeZone: tz,
           hour12: false,
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-        }),
-        day: now.toLocaleDateString("en-US", {
-          timeZone: "Asia/Kolkata",
+        });
+        dayStr = now.toLocaleDateString("en-US", {
+          timeZone: tz,
           weekday: "long",
-        }),
-        date: now.toLocaleDateString("en-US", {
-          timeZone: "Asia/Kolkata",
+        });
+        dateStr = now.toLocaleDateString("en-US", {
+          timeZone: tz,
           day: "2-digit",
           month: "short",
           year: "numeric",
-        }),
+        });
+      } catch {
+        timeStr = now.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        dayStr = now.toLocaleDateString("en-US", { weekday: "long" });
+        dateStr = now.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
+      }
+      setLiveTime({
+        time: timeStr,
+        day: dayStr,
+        date: dateStr,
       });
     };
     updateTime();
     const timer = setInterval(updateTime, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [personal?.currentTimezoneIana]);
 
-  const personal = portfolio?.personal;
   const emailToUse = personal?.email || portfolioData.personal.email
   const locationToUse = personal?.location || portfolioData.personal.location
 
@@ -329,10 +342,10 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading inline-flex items-center gap-2 sm:gap-3 flex-wrap">
-              <span>Send a Dispatch</span>
+              <span>{personal?.contactTitle || "Send a Dispatch"}</span>
               {/* On phone: Cute airmail letter doodle placed directly next to 'DISPATCH' */}
               <span className="inline-flex lg:hidden shrink-0 -mt-1 sm:-mt-2">
-                <AirmailLetterDoodle isPhone />
+                <AirmailLetterDoodle isPhone noteText={personal?.contactDoodleNote} />
               </span>
             </h2>
 
@@ -351,13 +364,13 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
             </svg>
 
             <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
-              Have an interesting machine learning challenge, internship opportunity, or algorithmic project in mind? Drop your inquiry directly into my terminal.
+              {personal?.contactSubtitle || "Have an interesting machine learning challenge, internship opportunity, or algorithmic project in mind? Drop your inquiry directly into my terminal."}
             </p>
           </div>
 
           {/* On laptop & desktop: keep the right-hand Airmail Doodle with speech bubble */}
           <div className="hidden lg:block self-start lg:self-end">
-            <AirmailLetterDoodle />
+            <AirmailLetterDoodle noteText={personal?.contactDoodleNote} />
           </div>
         </div>
       </div>
@@ -370,9 +383,9 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
             <div className="flex items-center justify-between pb-3 border-b-2 border-black/10 dark:border-white/10">
               <span className="font-mono text-xs font-black uppercase tracking-wider text-black dark:text-white flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-rose-500" />
-                <span>DIRECT INQUIRY DISPATCH</span>
+                <span>{personal?.contactFormTitle || "DIRECT INQUIRY DISPATCH"}</span>
               </span>
-              <PostalMailboxDoodle />
+              <PostalMailboxDoodle noteText={personal?.contactMailboxNote} />
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -457,7 +470,7 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
                 ) : (
                   <>
                     <Send className="w-4 h-4 text-rose-400" />
-                    <span>SEND DISPATCH</span>
+                    <span>{personal?.contactButtonText || "SEND DISPATCH"}</span>
                   </>
                 )}
               </button>
@@ -465,7 +478,7 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
               {status === "success" && (
                 <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-400 text-emerald-800 dark:text-emerald-300 font-mono text-xs flex items-center gap-2 animate-in fade-in">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Thank you! Your message has been received directly. I will follow up shortly.</span>
+                  <span>{personal?.contactSuccessMessage || "Thank you! Your message has been received directly. I will follow up shortly."}</span>
                 </div>
               )}
 
@@ -484,7 +497,7 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
           <div className="p-5 rounded-[28px] liquid-bento-card space-y-3">
             <span className="font-mono text-xs font-black uppercase text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
               <Mail className="w-4 h-4 text-amber-600" />
-              <span>ELECTRONIC MAIL</span>
+              <span>{personal?.contactEmailLabel || "ELECTRONIC MAIL"}</span>
             </span>
             <div className="flex items-center justify-between p-2.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-white/80 dark:bg-stone-800/80">
               <span className="font-mono text-xs font-bold text-black dark:text-white truncate">
@@ -507,14 +520,14 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
             <div className="flex items-center justify-between pb-3 border-b-2 border-dashed border-stone-200 dark:border-stone-800">
               <span className="font-mono text-xs font-black uppercase text-cyan-900 dark:text-cyan-300 flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-cyan-600" />
-                <span>CURRENT COORDINATES</span>
+                <span>{personal?.contactCoordinatesTitle || "CURRENT COORDINATES"}</span>
               </span>
               <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 font-mono text-[10px] font-black uppercase tracking-wider border-2 border-emerald-600 dark:border-emerald-500 shadow-[2px_2px_0_#059669] transition-transform hover:-translate-y-0.5">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-xs" />
                 </span>
-                <span>LIVE STATION</span>
+                <span>{personal?.currentStationBadge || "LIVE STATION"}</span>
               </span>
             </div>
 
@@ -575,8 +588,8 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
 
             {/* Classic Dispatch Stamp at Bottom */}
             <div className="pt-2 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-[10px] font-mono text-stone-400">
-              <span className="tracking-widest uppercase">DISPATCH VERIFIED</span>
-              <span className="font-bold text-stone-500">IND // 2026</span>
+              <span className="tracking-widest uppercase">{personal?.contactStampText || "DISPATCH VERIFIED"}</span>
+              <span className="font-bold text-stone-500">{personal?.contactStampCode || "IND // 2026"}</span>
             </div>
           </div>
         </div>

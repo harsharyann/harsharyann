@@ -26,24 +26,61 @@ const PortfolioContext = createContext<PortfolioContextType>({
 });
 
 const LOCAL_STORAGE_KEY = "socius_portfolio_data";
+const COVER_SESSION_KEY = "socius_cover_dismissed";
+const LAST_SECTION_KEY = "socius_last_section";
 
 export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<PortfolioData>(initialDefaultData);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isCoverOpen, setIsCoverOpen] = useState<boolean>(true);
 
-  // Clean up any stale hash on initial visit so the cover portal displays reliably
+  // Sync Cover State on initial load / refresh so user STAYS on the page they were on
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash) {
-      if (window.history && window.location.hash !== "#cover") {
-        window.history.replaceState(null, "", window.location.pathname);
+    if (typeof window === "undefined") return;
+    try {
+      const isDismissed = sessionStorage.getItem(COVER_SESSION_KEY) === "true";
+      const hash = window.location.hash;
+      const hasSpecificSectionHash = Boolean(hash && hash !== "#cover" && hash !== "#");
+      const isNotHomeRoot = window.location.pathname !== "/";
+
+      // If already dismissed in this session, or user has section hash, or is on another route:
+      if (isDismissed || hasSpecificSectionHash || isNotHomeRoot) {
+        setIsCoverOpen(false);
+
+        // If there is a section hash (e.g. #projects, #about, #contact, #certificates), scroll right to it!
+        if (hasSpecificSectionHash) {
+          const targetId = hash.replace("#", "");
+          setTimeout(() => {
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: "instant" });
+            }
+          }, 80);
+        } else {
+          // If no hash in URL, check if there was a recorded last section
+          const lastSec = sessionStorage.getItem(LAST_SECTION_KEY);
+          if (lastSec && lastSec !== "cover") {
+            setTimeout(() => {
+              const targetEl = document.getElementById(lastSec);
+              if (targetEl) {
+                targetEl.scrollIntoView({ behavior: "instant" });
+              }
+            }, 80);
+          }
+        }
       }
+    } catch {
+      // Safe fallback
     }
   }, []);
 
   const openCover = useCallback(() => {
-    setIsCoverOpen((prev) => (prev ? prev : true));
+    setIsCoverOpen(true);
     if (typeof window !== "undefined") {
+      try {
+        sessionStorage.removeItem(COVER_SESSION_KEY);
+        sessionStorage.removeItem(LAST_SECTION_KEY);
+      } catch {}
       window.scrollTo({ top: 0, behavior: "instant" });
       if (window.history && window.location.hash) {
         window.history.pushState(null, "", "/");
@@ -52,7 +89,12 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const closeCover = useCallback(() => {
-    setIsCoverOpen((prev) => (prev ? false : prev));
+    setIsCoverOpen(false);
+    if (typeof window !== "undefined") {
+      try {
+        sessionStorage.setItem(COVER_SESSION_KEY, "true");
+      } catch {}
+    }
   }, []);
 
   const refreshData = async () => {

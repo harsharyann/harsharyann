@@ -351,125 +351,120 @@ export function CircularProjectsCarousel({
                     style={{
                       ...style,
                       boxShadow: isActive
-                        ? "0 14px 28px -10px rgba(0,0,0,0.22), 3px 4px 0 #000"
-                        : "0 6px 16px -6px rgba(0,0,0,0.12), 2px 2px 0 #000",
+                        ? "5px 5px 0 #000"
+                        : "2px 2px 0 #000",
                     }}
-                    className={`absolute inset-0 w-full h-full rounded-[28px] p-1 transition-all duration-300 overflow-hidden flex flex-col justify-between select-none ${
+                    className={`absolute inset-0 w-full h-full rounded-2xl sm:rounded-3xl p-3.5 sm:p-4.5 ${theme.cardBg} transition-all duration-300 overflow-hidden flex flex-col justify-between select-none ${
                       isActive
-                        ? "border-2 border-black dark:border-white shadow-xl"
-                        : "border-2 border-stone-800/40 dark:border-stone-700/60"
+                        ? "border-2 sm:border-[2.5px] border-black dark:border-white shadow-[5px_5px_0_#000] dark:shadow-[5px_5px_0_#fff]"
+                        : "border-2 border-stone-800/50 dark:border-stone-600/60"
                     }`}
                     title={isActive ? proj.title : `Click to view ${proj.title}`}
                   >
-                    {/* Visual Card Canvas with Dynamic 5-Palette Clean Craft Theme */}
+                    {/* Subtle Paper Grain Texture Overlay */}
                     <div
-                      className={`relative w-full h-full rounded-[24px] p-3.5 sm:p-4 ${theme.cardBg} border ${theme.borderColor} flex flex-col justify-between overflow-hidden shadow-xs`}
+                      className="absolute inset-0 pointer-events-none opacity-[0.035] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:12px_12px]"
+                      aria-hidden="true"
+                    />
+
+                    {/* Schematic Diagram Background watermark */}
+                    <svg
+                      className="absolute right-0 bottom-2 w-44 h-24 opacity-30 pointer-events-none"
+                      viewBox="0 0 160 80"
+                      fill="none"
                     >
-                      {/* Subtle Paper Grain Texture Overlay */}
-                      <div
-                        className="absolute inset-0 pointer-events-none opacity-[0.035] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:12px_12px]"
-                        aria-hidden="true"
+                      <path
+                        d="M10,65 L35,50 L65,58 L95,30 L125,45 L155,18"
+                        className={theme.schematicStroke}
+                        strokeWidth="2"
+                        strokeLinecap="round"
                       />
+                      <path
+                        d="M10,40 H40 V60 H85 V25 H150"
+                        className={theme.schematicStroke}
+                        strokeWidth="1.2"
+                        strokeDasharray="4 3"
+                      />
+                      <circle cx="95" cy="30" r="3.5" className={theme.schematicFill} />
+                      <circle cx="155" cy="18" r="4" className={theme.schematicFill} />
+                      <rect x="61" y="54" width="7" height="7" rx="1.5" className={theme.schematicFill} />
+                    </svg>
 
-                      {/* Schematic Diagram Background watermark */}
-                      <svg
-                        className="absolute right-0 bottom-2 w-44 h-24 opacity-30 pointer-events-none"
-                        viewBox="0 0 160 80"
-                        fill="none"
+                    {/* Card Header Bar: Project Sequence Badge + Category Pill */}
+                    <div className="relative z-10 flex items-center justify-between gap-2">
+                      {/* Project Tag */}
+                      <div className="flex items-center gap-1.5 bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 rounded-full border border-black dark:border-white shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#fff]">
+                        <span className={`w-2 h-2 rounded-full ${theme.pillDot} animate-pulse`} />
+                        <span className="text-[9.5px] font-mono font-black uppercase tracking-wider">
+                          PROJ #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
+                        </span>
+                      </div>
+
+                      {/* Category Pill */}
+                      <div
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-black uppercase tracking-wider flex items-center gap-1.5 border border-black/20 dark:border-white/20 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#fff] ${theme.tagBg}`}
                       >
-                        <path
-                          d="M10,65 L35,50 L65,58 L95,30 L125,45 L155,18"
-                          className={theme.schematicStroke}
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d="M10,40 H40 V60 H85 V25 H150"
-                          className={theme.schematicStroke}
-                          strokeWidth="1.2"
-                          strokeDasharray="4 3"
-                        />
-                        <circle cx="95" cy="30" r="3.5" className={theme.schematicFill} />
-                        <circle cx="155" cy="18" r="4" className={theme.schematicFill} />
-                        <rect x="61" y="54" width="7" height="7" rx="1.5" className={theme.schematicFill} />
-                      </svg>
+                        <span className="scale-95">{getCategoryIcon(proj.category)}</span>
+                        <span>{proj.category}</span>
+                      </div>
+                    </div>
 
-                      {/* Card Header Bar: Project Sequence Badge + Category Pill */}
-                      <div className="relative z-10 flex items-center justify-between gap-2">
-                        {/* Project Tag */}
-                        <div className="flex items-center gap-1.5 bg-black/85 dark:bg-white/90 px-2.5 py-1 rounded-full border border-black/20 shadow-xs">
-                          <span className={`w-2 h-2 rounded-full ${theme.pillDot} animate-pulse`} />
-                          <span className="text-[9.5px] font-mono font-black uppercase tracking-wider text-white dark:text-black">
-                            PROJ #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
-                          </span>
-                        </div>
-
-                        {/* Category Pill */}
+                    {/* Card Center Visual: Icon Badge + Prominent Title + Tagline */}
+                    <div className="relative z-10 my-auto py-1 sm:py-2 space-y-1.5">
+                      <div className="flex items-center gap-2">
                         <div
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 border shadow-xs ${theme.tagBg}`}
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center border border-black/20 dark:border-white/20 shadow-[1px_1px_0_#000] dark:shadow-[1px_1px_0_#fff] ${theme.iconBoxBg}`}
                         >
-                          <span className="scale-95">{getCategoryIcon(proj.category)}</span>
-                          <span>{proj.category}</span>
+                          {getCategoryIcon(proj.category)}
                         </div>
+                        <span className="text-[10px] font-mono font-black uppercase tracking-wider text-stone-600 dark:text-stone-400">
+                          ENGINEERING BUILD
+                        </span>
                       </div>
 
-                      {/* Card Center Visual: Icon Badge + Prominent Title + Tagline (NO DUPLICATE CATEGORY) */}
-                      <div className="relative z-10 my-auto py-1 sm:py-2 space-y-1.5">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`w-8 h-8 rounded-lg flex items-center justify-center border shadow-xs ${theme.iconBoxBg}`}
+                      {/* Thematic Space Grotesk Bold Title */}
+                      <h4 className="text-sm sm:text-base lg:text-lg font-['Space_Grotesk'] font-black uppercase tracking-tight text-stone-950 dark:text-stone-50 line-clamp-2 leading-snug">
+                        {proj.title}
+                      </h4>
+
+                      {/* Clean Technical Tagline */}
+                      <p className="text-[11px] sm:text-[12px] font-mono text-stone-600 dark:text-stone-300 line-clamp-2 leading-relaxed font-medium">
+                        {proj.tagline}
+                      </p>
+                    </div>
+
+                    {/* Card Footer: Tech Chips + Quick Code Action */}
+                    <div className="relative z-10 pt-2 border-t border-black/15 dark:border-white/15 flex items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 overflow-hidden">
+                        {proj.technologies.slice(0, 3).map((tech) => (
+                          <span
+                            key={tech}
+                            className="px-2 py-0.5 rounded-md text-[9.5px] font-mono font-bold bg-white/95 dark:bg-stone-900/95 text-stone-900 dark:text-stone-100 border border-black/20 dark:border-white/20 shadow-[1px_1px_0_#000] dark:shadow-[1px_1px_0_#fff] flex items-center gap-1"
                           >
-                            {getCategoryIcon(proj.category)}
-                          </div>
-                          <span className="text-[10px] font-mono font-black uppercase tracking-wider text-stone-500 dark:text-stone-400">
-                            ENGINEERING BUILD
+                            <span style={{ color: theme.accentDark }}>✦</span> {tech}
                           </span>
-                        </div>
-
-                        {/* Title with Amanojaku font */}
-                        <h4 className="text-base sm:text-lg lg:text-xl font-hero-heading uppercase tracking-wide text-stone-950 dark:text-stone-50 line-clamp-2 leading-tight">
-                          {proj.title}
-                        </h4>
-
-                        {/* Tagline with Drawing Kids font */}
-                        <p className="text-[12px] sm:text-[13px] font-drawing-kids text-stone-700 dark:text-stone-300 line-clamp-2 leading-snug font-medium">
-                          {proj.tagline}
-                        </p>
-                      </div>
-
-                      {/* Card Footer: Tech Chips + Quick Code Action */}
-                      <div className="relative z-10 pt-2 border-t border-black/10 dark:border-white/10 flex items-center justify-between gap-2">
-                        <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 overflow-hidden">
-                          {proj.technologies.slice(0, 3).map((tech) => (
-                            <span
-                              key={tech}
-                              className="px-2 py-0.5 rounded-md text-[9.5px] font-mono font-bold bg-white/90 dark:bg-stone-900/90 text-stone-900 dark:text-stone-200 border border-stone-300/80 dark:border-stone-700/80 shadow-xs flex items-center gap-1"
-                            >
-                              <span style={{ color: theme.accentDark }}>✦</span> {tech}
-                            </span>
-                          ))}
-                          {proj.technologies.length > 3 && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-mono text-stone-600 dark:text-stone-400 font-bold bg-stone-100/90 dark:bg-stone-800/90 border border-stone-300/60 dark:border-stone-700/60">
-                              +{proj.technologies.length - 3}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Front Card Micro-Action for quick GitHub peek */}
-                        {isActive && (
-                          <a
-                            href={proj.githubUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-black uppercase tracking-wider bg-black text-white hover:bg-stone-800 dark:bg-white dark:text-black dark:hover:bg-stone-200 border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center gap-1 transition-all hover:scale-105 cursor-pointer shrink-0"
-                            title="View Code on GitHub"
-                          >
-                            <span>CODE</span>
-                            <ArrowUpRight className="w-3 h-3" />
-                          </a>
+                        ))}
+                        {proj.technologies.length > 3 && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono text-stone-700 dark:text-stone-300 font-bold bg-white/80 dark:bg-stone-800/80 border border-black/15 dark:border-white/15">
+                            +{proj.technologies.length - 3}
+                          </span>
                         )}
                       </div>
+
+                      {/* Front Card Micro-Action for quick GitHub peek */}
+                      {isActive && (
+                        <a
+                          href={proj.githubUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-black uppercase tracking-wider bg-black text-white hover:bg-stone-800 dark:bg-white dark:text-black dark:hover:bg-stone-200 border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center gap-1 transition-all hover:scale-105 cursor-pointer shrink-0"
+                          title="View Code on GitHub"
+                        >
+                          <span>CODE</span>
+                          <ArrowUpRight className="w-3 h-3" />
+                        </a>
+                      )}
                     </div>
                   </div>
                 )

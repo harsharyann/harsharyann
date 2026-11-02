@@ -17,7 +17,9 @@ import {
   RefreshCw,
   LogOut,
   Sliders,
-  FolderGit2,
+  FolderCode,
+  Folder,
+  Terminal,
   Award,
   Send,
   User,
@@ -34,9 +36,19 @@ import {
   MapPin,
   Menu,
   X,
+  Palette,
+  Type,
+  Eraser,
+  Check,
+  RotateCcw,
+  Briefcase,
+  Building2,
+  Calendar,
+  Mail,
 } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
-import { Project, Certificate, PortfolioData, TimelineMilestone } from "@/data/portfolioData";
+import { Project, Certificate, PortfolioData, TimelineMilestone, Experience, DailyThought, DEFAULT_DAILY_THOUGHTS } from "@/data/portfolioData";
+import { FormattedHighlightedText } from "@/components/sections/AboutSection";
 import {
   extractGoogleDriveId,
   isGoogleDriveUrl,
@@ -93,6 +105,7 @@ export default function AdminPage() {
   const [portfolio, setPortfolio] = useState<PortfolioData>(initialData);
   type AdminTab = "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
   const [activeTab, setActiveTab] = useState<AdminTab>("cover");
+  const [coverSubView, setCoverSubView] = useState<"desktop" | "mobile">("desktop");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -104,6 +117,17 @@ export default function AdminPage() {
     extractVibrantColor(photo, "#facc15").then(setCoverAccentColor);
   }, [portfolio.personal?.coverPhotoUrl]);
 
+  // Gracefully route any legacy highlights/milestones tab selection to the unified Profile & Bio tab
+  useEffect(() => {
+    if ((activeTab as string) === "highlights") {
+      setActiveTab("about");
+      setAboutSubView("benchmarks");
+    } else if ((activeTab as string) === "milestones") {
+      setActiveTab("about");
+      setAboutSubView("milestones");
+    }
+  }, [activeTab]);
+
   // Category Management Inputs
   const [newProjectCatInput, setNewProjectCatInput] = useState("");
   const [newCertCatInput, setNewCertCatInput] = useState("");
@@ -113,6 +137,143 @@ export default function AdminPage() {
   const headlineInputRef = React.useRef<HTMLInputElement>(null);
   const [newSkillCatName, setNewSkillCatName] = useState("");
   const [skillTagInputs, setSkillTagInputs] = useState<Record<number, string>>({});
+
+  // ── Arbitrary Color Highlighter & Selection Management ──
+  const [highlighterColor, setHighlighterColor] = useState<string>("#f59e0b");
+  const [selectedTarget, setSelectedTarget] = useState<{
+    field: "headline" | "bio";
+    text: string;
+    start: number;
+    end: number;
+  } | null>(null);
+  const [aboutSubView, setAboutSubView] = useState<"all" | "identity" | "bio" | "benchmarks" | "experience" | "milestones">("all");
+  const [contactSubTab, setContactSubTab] = useState<"all" | "copy" | "form" | "coordinates" | "footer" | "inquiries">("all");
+  const [selectedThoughtDay, setSelectedThoughtDay] = useState<number>(0);
+  const [todayWeekday, setTodayWeekday] = useState<number>(0);
+  const [thoughtViewMode, setThoughtViewMode] = useState<"tabs" | "grid">("tabs");
+
+  useEffect(() => {
+    const day = new Date().getDay();
+    setTodayWeekday(day);
+    setSelectedThoughtDay(day);
+  }, []);
+
+  const HIGHLIGHT_PALETTE = [
+    { name: "Warm Amber", hex: "#f59e0b" },
+    { name: "Fresh Emerald", hex: "#10b981" },
+    { name: "Ocean Cyan", hex: "#06b6d4" },
+    { name: "Electric Indigo", hex: "#6366f1" },
+    { name: "Coral Rose", hex: "#f43f5e" },
+    { name: "Vibrant Purple", hex: "#a855f7" },
+    { name: "Sunset Orange", hex: "#f97316" },
+    { name: "Golden Yellow", hex: "#eab308" },
+    { name: "Bright Lime", hex: "#84cc16" },
+    { name: "Crimson Red", hex: "#dc2626" },
+  ];
+
+  const applyColorHighlight = (
+    field: "headline" | "bio",
+    ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement | null>,
+    color: string
+  ) => {
+    const el = ref.current;
+    const currentVal = portfolio.personal[field] || "";
+    let start = el && el.selectionStart !== null ? el.selectionStart : 0;
+    let end = el && el.selectionEnd !== null ? el.selectionEnd : 0;
+
+    // Fallback to selectedTarget if element lost focus
+    if (start === end && selectedTarget && selectedTarget.field === field && selectedTarget.start < selectedTarget.end) {
+      start = selectedTarget.start;
+      end = selectedTarget.end;
+    }
+
+    if (start === end) {
+      alert("Please select the text in the box above first, then click the color to highlight it!");
+      if (el) el.focus();
+      return;
+    }
+
+    const rawSelected = currentVal.substring(start, end);
+    // Strip existing highlight tags if re-highlighting
+    const clean = rawSelected
+      .replace(/^\{\{#[0-9a-fA-F]{3,8}\|(.+?)\}\}$/, "$1")
+      .replace(/^==(.+?)==$/, "$1")
+      .replace(/^\^\^(.+?)\^\^$/, "$1")
+      .replace(/^\*\*(.+?)\*\*$/, "$1");
+
+    const replacement = `{{${color}|${clean}}}`;
+    const nextVal = currentVal.substring(0, start) + replacement + currentVal.substring(end);
+
+    setPortfolio((prev) => ({
+      ...prev,
+      personal: { ...prev.personal, [field]: nextVal },
+    }));
+
+    setSelectedTarget({
+      field,
+      text: clean,
+      start,
+      end: start + replacement.length,
+    });
+
+    setTimeout(() => {
+      if (el) {
+        el.focus();
+        el.setSelectionRange(start, start + replacement.length);
+      }
+    }, 0);
+  };
+
+  const applyFormatToSelection = (
+    field: "headline" | "bio",
+    ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement | null>,
+    mode: "bold" | "clear"
+  ) => {
+    const el = ref.current;
+    const currentVal = portfolio.personal[field] || "";
+    let start = el && el.selectionStart !== null ? el.selectionStart : 0;
+    let end = el && el.selectionEnd !== null ? el.selectionEnd : 0;
+
+    if (start === end && selectedTarget && selectedTarget.field === field && selectedTarget.start < selectedTarget.end) {
+      start = selectedTarget.start;
+      end = selectedTarget.end;
+    }
+
+    if (start === end) {
+      alert("Please select the text in the box first!");
+      if (el) el.focus();
+      return;
+    }
+
+    const rawSelected = currentVal.substring(start, end);
+    const clean = rawSelected
+      .replace(/^\{\{#[0-9a-fA-F]{3,8}\|(.+?)\}\}$/, "$1")
+      .replace(/^==(.+?)==$/, "$1")
+      .replace(/^\^\^(.+?)\^\^$/, "$1")
+      .replace(/^\*\*(.+?)\*\*$/, "$1");
+
+    const replacement = mode === "bold" ? `**${clean}**` : clean;
+    const nextVal = currentVal.substring(0, start) + replacement + currentVal.substring(end);
+
+    setPortfolio((prev) => ({
+      ...prev,
+      personal: { ...prev.personal, [field]: nextVal },
+    }));
+
+    setSelectedTarget({
+      field,
+      text: clean,
+      start,
+      end: start + replacement.length,
+    });
+
+    setTimeout(() => {
+      if (el) {
+        el.focus();
+        el.setSelectionRange(start, start + replacement.length);
+      }
+    }, 0);
+  };
 
   const wrapTextSelection = (
     ref: React.RefObject<HTMLTextAreaElement | HTMLInputElement | null>,
@@ -162,6 +323,86 @@ export default function AdminPage() {
       const updated = [...(prev.quickStats || [])];
       updated[index] = { ...updated[index], [field]: val };
       return { ...prev, quickStats: updated };
+    });
+  };
+
+  // ── Experience Handlers ──
+  const handleAddExperience = () => {
+    const newExp: Experience = {
+      id: "exp-" + Date.now(),
+      role: "New Role Title",
+      company: "Company or Institution",
+      companyUrl: "",
+      location: "City, Country",
+      period: "2025 – Present",
+      type: "Academic & Mentorship",
+      isCurrent: true,
+      description: "Brief overview of responsibilities and scope in this role.",
+      highlights: ["Key achievement or project contribution."],
+      skillsUsed: ["Python", "Problem Solving"],
+    };
+    setPortfolio((prev) => ({
+      ...prev,
+      experiences: [...(prev.experiences || []), newExp],
+    }));
+  };
+
+  const handleRemoveExperience = (idx: number) => {
+    if (!confirm("Are you sure you want to delete this experience entry?")) return;
+    setPortfolio((prev) => ({
+      ...prev,
+      experiences: (prev.experiences || []).filter((_, i) => i !== idx),
+    }));
+  };
+
+  const handleMoveExperience = (idx: number, direction: "up" | "down") => {
+    setPortfolio((prev) => {
+      const list = [...(prev.experiences || [])];
+      const target = direction === "up" ? idx - 1 : idx + 1;
+      if (target < 0 || target >= list.length) return prev;
+      const temp = list[idx];
+      list[idx] = list[target];
+      list[target] = temp;
+      return { ...prev, experiences: list };
+    });
+  };
+
+  const handleUpdateExperience = (idx: number, field: keyof Experience, val: any) => {
+    setPortfolio((prev) => {
+      const list = [...(prev.experiences || [])];
+      list[idx] = { ...list[idx], [field]: val };
+      return { ...prev, experiences: list };
+    });
+  };
+
+  const handleAddExperienceHighlight = (expIdx: number) => {
+    setPortfolio((prev) => {
+      const list = [...(prev.experiences || [])];
+      const currentH = list[expIdx].highlights || [];
+      list[expIdx] = {
+        ...list[expIdx],
+        highlights: [...currentH, "Key achievement or project impact."],
+      };
+      return { ...prev, experiences: list };
+    });
+  };
+
+  const handleRemoveExperienceHighlight = (expIdx: number, hIdx: number) => {
+    setPortfolio((prev) => {
+      const list = [...(prev.experiences || [])];
+      const currentH = (list[expIdx].highlights || []).filter((_, i) => i !== hIdx);
+      list[expIdx] = { ...list[expIdx], highlights: currentH };
+      return { ...prev, experiences: list };
+    });
+  };
+
+  const handleUpdateExperienceHighlight = (expIdx: number, hIdx: number, val: string) => {
+    setPortfolio((prev) => {
+      const list = [...(prev.experiences || [])];
+      const currentH = [...(list[expIdx].highlights || [])];
+      currentH[hIdx] = val;
+      list[expIdx] = { ...list[expIdx], highlights: currentH };
+      return { ...prev, experiences: list };
     });
   };
 
@@ -379,6 +620,46 @@ export default function AdminPage() {
       console.error("Failed to load messages", err);
     } finally {
       setIsLoadingMessages(false);
+    }
+  };
+
+  const handleDeleteMessage = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this inquiry? This cannot be undone.")) return;
+    try {
+      const res = await fetch(`/api/contact?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (json.success) {
+        setMessages((prev) => prev.filter((m) => m.id !== id));
+        setToastMessage("✓ Inquiry deleted successfully!");
+        setTimeout(() => setToastMessage(null), 3000);
+      } else {
+        alert("Failed to delete inquiry: " + (json.error || "Server error"));
+      }
+    } catch (err) {
+      console.error("Delete error", err);
+      alert("Error deleting inquiry.");
+    }
+  };
+
+  const handleClearAllMessages = async () => {
+    if (!confirm("Are you sure you want to clear ALL inquiries? This action cannot be undone.")) return;
+    try {
+      const res = await fetch(`/api/contact?id=all`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (json.success) {
+        setMessages([]);
+        setToastMessage("✓ All inquiries cleared!");
+        setTimeout(() => setToastMessage(null), 3000);
+      } else {
+        alert("Failed to clear inquiries: " + (json.error || "Server error"));
+      }
+    } catch (err) {
+      console.error("Clear error", err);
+      alert("Error clearing inquiries.");
     }
   };
 
@@ -853,13 +1134,45 @@ export default function AdminPage() {
     ? portfolio.certificateCategories
     : DEFAULT_CERT_CATS;
 
+  // Active 7-day daily thoughts helper
+  const activeThoughtsList: DailyThought[] =
+    portfolio.dailyThoughts && portfolio.dailyThoughts.length === 7
+      ? portfolio.dailyThoughts
+      : DEFAULT_DAILY_THOUGHTS;
+
+  const updateDailyThought = (dayIndex: number, field: "quote" | "persona" | "dayName", value: string) => {
+    const updated = activeThoughtsList.map((item) => {
+      if (item.dayIndex === dayIndex) {
+        return { ...item, [field]: value };
+      }
+      return item;
+    });
+    setPortfolio((prev) => ({
+      ...prev,
+      dailyThoughts: updated,
+    }));
+  };
+
+  const resetDailyThought = (dayIndex: number) => {
+    const defaultItem = DEFAULT_DAILY_THOUGHTS.find((d) => d.dayIndex === dayIndex);
+    if (!defaultItem) return;
+    const updated = activeThoughtsList.map((item) => {
+      if (item.dayIndex === dayIndex) {
+        return { ...defaultItem };
+      }
+      return item;
+    });
+    setPortfolio((prev) => ({
+      ...prev,
+      dailyThoughts: updated,
+    }));
+  };
+
   const navTabs = [
     { id: "cover", label: "Cover Hero", title: "Cover Page Manager", desc: "Hero portrait, wordmark, roles & cover buttons", icon: Sliders },
-    { id: "about", label: "Profile & Bio", title: "Profile & Dossier Manager", desc: "Photo framing, personal statement, bio highlights & workplace", icon: User },
-    { id: "highlights", label: "Highlights", title: "Highlights & Key Metrics", desc: "Section header stamps, live highlighter & benchmark stats", icon: Sparkles },
-    { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderGit2, count: portfolio.projects.length },
+    { id: "about", label: "Profile & Bio", title: "Profile, Bio & Dossier", desc: "All-in-one: Photo mount, statement, bio highlighter, benchmarks & roadmap", icon: User },
+    { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderCode, count: portfolio.projects.length },
     { id: "certificates", label: "Certificates", title: "Credentials & Laurels", desc: "Verified credentials, verification links & categories", icon: Award, count: portfolio.certificates.length },
-    { id: "milestones", label: "Milestones", title: "Roadmap & Milestones", desc: "Academic journey, semester goals & timeline events", icon: Layers, count: (portfolio.milestones || []).length || 3 },
     { id: "skills", label: "Skills Arsenal", title: "Technical Skills Arsenal", desc: "Category groupings, badges, proficiency & skill tags", icon: Code2, count: portfolio.skills.length },
     { id: "contact", label: "Inquiries & Dispatch", title: "Inquiries & Live Station", desc: "Location coordinates, local time, status & incoming contact dispatches", icon: Send, count: messages.filter((m) => !m.read).length || undefined, alert: messages.some((m) => !m.read) },
   ];
@@ -969,38 +1282,73 @@ export default function AdminPage() {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveTab(tab.id as AdminTab);
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-mono text-xs transition-all cursor-pointer text-left group ${
-                  isActive
-                    ? "bg-stone-900 text-white font-black shadow-[3px_3px_0_#f59e0b] border border-stone-800"
-                    : "text-stone-700 hover:text-black hover:bg-stone-100 font-bold"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon
-                    className={`w-4 h-4 transition-colors ${
-                      isActive ? "text-amber-400" : "text-stone-500 group-hover:text-black"
-                    }`}
-                  />
-                  <span>{tab.label}</span>
-                </div>
-                {tab.count !== undefined && (
-                  <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
-                      isActive
-                        ? "bg-amber-400 text-black"
-                        : "bg-stone-200 text-stone-700 group-hover:bg-stone-300"
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
+              <React.Fragment key={tab.id}>
+                <button
+                  onClick={() => {
+                    setActiveTab(tab.id as AdminTab);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-mono text-xs transition-all cursor-pointer text-left group ${
+                    isActive
+                      ? "bg-stone-900 text-white font-black shadow-[3px_3px_0_#f59e0b] border border-stone-800"
+                      : "text-stone-700 hover:text-black hover:bg-stone-100 font-bold"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon
+                      className={`w-4 h-4 transition-colors ${
+                        isActive ? "text-amber-400" : "text-stone-500 group-hover:text-black"
+                      }`}
+                    />
+                    <span>{tab.label}</span>
+                  </div>
+                  {tab.id === "cover" ? (
+                    <span className="text-[10px] font-mono font-bold text-amber-400 bg-stone-800 px-2 py-0.5 rounded-md">
+                      {coverSubView === "desktop" ? "💻 PC" : "📱 Phone"}
+                    </span>
+                  ) : tab.count !== undefined ? (
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                        isActive
+                          ? "bg-amber-400 text-black"
+                          : "bg-stone-200 text-stone-700 group-hover:bg-stone-300"
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  ) : null}
+                </button>
+
+                {/* Cover Sub-Views Dropdown (Desktop vs Mobile) */}
+                {tab.id === "cover" && isActive && (
+                  <div className="ml-5 pl-2.5 border-l-2 border-stone-200 space-y-1 pt-1 pb-1">
+                    <button
+                      type="button"
+                      onClick={() => setCoverSubView("desktop")}
+                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg font-mono text-[11px] transition-all cursor-pointer text-left ${
+                        coverSubView === "desktop"
+                          ? "bg-amber-400 text-black shadow-xs font-black"
+                          : "text-stone-600 hover:text-black hover:bg-stone-100 font-bold"
+                      }`}
+                    >
+                      <span>💻</span>
+                      <span>Desktop View</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCoverSubView("mobile")}
+                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg font-mono text-[11px] transition-all cursor-pointer text-left ${
+                        coverSubView === "mobile"
+                          ? "bg-amber-400 text-black shadow-xs font-black"
+                          : "text-stone-600 hover:text-black hover:bg-stone-100 font-bold"
+                      }`}
+                    >
+                      <span>📱</span>
+                      <span>Mobile View</span>
+                    </button>
+                  </div>
                 )}
-              </button>
+              </React.Fragment>
             );
           })}
         </div>
@@ -1092,306 +1440,1288 @@ export default function AdminPage() {
         {/* Content Container */}
         <main className="flex-1 p-4 sm:p-7 max-w-6xl w-full mx-auto space-y-8">
 
-        {/* ── TAB: COVER HERO MANAGER (LAPTOP & PHONE DEDICATED SECTIONS) ── */}
+        {/* ── TAB: COVER HERO MANAGER (DYNAMIC DESKTOP & MOBILE VIEWS WITH REAL-TIME PREVIEW) ── */}
         {activeTab === "cover" && (
-          <div className="space-y-8">
-            {/* Header intro */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-6">
+            {/* Top Control Bar with Sub-Section Selector & Actions */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                <h2 className="font-['Space_Grotesk'] text-xl sm:text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
                   <Sliders className="w-6 h-6 text-amber-500" />
                   <span>Cover Page Manager</span>
                 </h2>
-                <p className="font-mono text-xs text-stone-500 mt-1">
-                  Yahan se aap <strong>Big Screen / Laptop</strong> aur <strong>Mobile Phone</strong> dono covers ka text, pills, aur photos alag-alag customize kar sakte hain.
+                <p className="font-mono text-xs text-stone-500 mt-0.5">
+                  Customize Laptop / Desktop layout &amp; Mobile Phone cover independently with instant live preview.
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer shrink-0 flex items-center gap-1.5 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save All Cover Changes"}</span>
-              </button>
-            </div>
-
-            {/* ── 1. LAPTOP / BIG SCREEN COVER CONFIG ── */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="p-2 rounded-xl bg-indigo-100 text-indigo-900 border border-indigo-300">
-                    💻
-                  </span>
-                  <div>
-                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      Laptop &amp; Big Screen Cover (Desktop View)
-                    </h3>
-                    <p className="font-mono text-xs text-stone-500">
-                      Tablets, Laptops aur Desktop screens par ye interactive Doodle Crew cover show hota hai.
-                    </p>
-                  </div>
-                </div>
-                <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-indigo-50 text-indigo-800 border border-indigo-200 px-2.5 py-1 rounded-full">
-                  Desktop &bull; Large Screen
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                    Giant Stamped Ink Wordmark:
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. HARSH ARYAN"
-                    value={portfolio.personal.desktopWordmark || portfolio.personal.name || ""}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, desktopWordmark: e.target.value },
-                      }))
-                    }
-                    className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-sm focus:border-black focus:bg-white focus:outline-none transition-all"
-                  />
-                  <span className="block font-mono text-[10px] text-stone-400 mt-1">
-                    Characters is giant wordmark ke letters par baithte hain.
-                  </span>
+              {/* View Switcher: Dropdown & Segmented Toggle */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                {/* Dropdown Selector */}
+                <div className="relative">
+                  <select
+                    value={coverSubView}
+                    onChange={(e) => setCoverSubView(e.target.value as "desktop" | "mobile")}
+                    className="pl-3.5 pr-8 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 font-mono text-xs font-black uppercase text-stone-900 border border-stone-300 cursor-pointer focus:outline-none focus:border-black appearance-none"
+                  >
+                    <option value="desktop">💻 Desktop / Laptop View</option>
+                    <option value="mobile">📱 Mobile / Phone View</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-stone-600 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
 
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                    Desktop Role Badge:
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Teaching Assistant • IIT Madras"
-                    value={portfolio.personal.desktopRole || portfolio.personal.role || ""}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, desktopRole: e.target.value },
-                      }))
-                    }
-                    className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-sm focus:border-black focus:bg-white focus:outline-none transition-all"
-                  />
-                  <span className="block font-mono text-[10px] text-stone-400 mt-1">
-                    Hero section me green live-dot ke sath pill me show hota hai.
-                  </span>
+                {/* Segmented Toggle Pills */}
+                <div className="inline-flex p-1 rounded-xl bg-stone-100 border border-stone-200">
+                  <button
+                    type="button"
+                    onClick={() => setCoverSubView("desktop")}
+                    className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      coverSubView === "desktop"
+                        ? "bg-black text-white shadow-xs font-black"
+                        : "text-stone-600 hover:text-black"
+                    }`}
+                  >
+                    <span>💻 Desktop</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCoverSubView("mobile")}
+                    className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      coverSubView === "mobile"
+                        ? "bg-black text-white shadow-xs font-black"
+                        : "text-stone-600 hover:text-black"
+                    }`}
+                  >
+                    <span>📱 Mobile</span>
+                  </button>
                 </div>
-              </div>
 
-              <div>
-                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                  Desktop Headline / Subtitle:
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="e.g. Exploring Data Science, Machine Learning Foundations & Scientific Computing."
-                  value={portfolio.personal.desktopHeadline || portfolio.personal.headline || ""}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, desktopHeadline: e.target.value },
-                    }))
-                  }
-                  className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                  Architecture Tagline:
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. DESIGN · CODE · MACHINE LEARNING"
-                  value={portfolio.personal.desktopTagline || "DESIGN · CODE · MACHINE LEARNING"}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, desktopTagline: e.target.value },
-                    }))
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all"
-                />
+                {/* Quick Save */}
+                <button
+                  type="button"
+                  onClick={handleSaveAll}
+                  disabled={isSaving}
+                  className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>{isSaving ? "Saving..." : "Save"}</span>
+                </button>
               </div>
             </div>
 
-            {/* ── 2. PHONE / MOBILE COVER CONFIG (With Badges & Tagline) ── */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300">
-                    📱
-                  </span>
-                  <div>
-                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      Mobile Phone Cover (Portrait Photo &amp; Highlighter Pills)
-                    </h3>
-                    <p className="font-mono text-xs text-stone-500">
-                      Smartphones par fullscreen hero portrait ke upar Highlighter Pills aur Tagline show hoti hain.
-                    </p>
-                  </div>
-                </div>
-                <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full">
-                  Mobile &bull; Portrait View
-                </span>
-              </div>
+            {/* ── SIDE-BY-SIDE: FORM CONTROLS (LEFT) + REAL-TIME PREVIEW (RIGHT) ── */}
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8 items-start">
+              
+              {/* ── LEFT: FORM INPUTS FOR SELECTED VIEW ── */}
+              <div className="xl:col-span-7 space-y-6">
 
-              {/* Editable Name & Badges */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                <div className="md:col-span-8 space-y-4">
-                  {/* Hero Name */}
-                  <div>
-                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                      Phone Hero Name (Permanent Marker):
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. HARSH ARYAN"
-                      value={portfolio.personal.name || ""}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, name: e.target.value },
-                        }))
-                      }
-                      className="w-full px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-sm focus:border-black focus:bg-white focus:outline-none transition-all"
-                    />
-                  </div>
+                {/* ========================================================
+                    SUB-VIEW A: DESKTOP / LAPTOP COVER CONFIGURATION
+                ======================================================== */}
+                {coverSubView === "desktop" && (
+                  <div className="space-y-6">
+                    {/* View Intro Card */}
+                    <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200 text-indigo-950 flex items-center gap-3">
+                      <span className="text-2xl">💻</span>
+                      <div>
+                        <div className="font-mono text-xs font-black uppercase tracking-wide text-indigo-900">
+                          Active Mode: Desktop Two-Column Hero
+                        </div>
+                        <div className="font-mono text-[11px] text-indigo-700">
+                          Laptop &amp; Big Screens par Studio Photo Frame (Left) aur Name Typography (Right) render hota hai.
+                        </div>
+                      </div>
+                    </div>
 
-                  {/* Current Role / Internship Status Badge with Toggle */}
-                  <div className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-200 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="font-mono text-xs font-black uppercase text-stone-900">
-                          Current Role / Internship Badge
-                        </span>
+                    {/* 1. Desktop Photo Frame Settings */}
+                    <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
+                      <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
+                        <ImageIcon className="w-4 h-4 text-amber-500" />
+                        <h3 className="font-mono text-xs font-black uppercase text-stone-900">
+                          1. Studio Photo Frame (Left Column)
+                        </h3>
                       </div>
 
-                      {/* Show / Hide Toggle Button */}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: {
-                              ...prev.personal,
-                              showMobileCurrentRole: prev.personal.showMobileCurrentRole === false ? true : false,
-                            },
-                          }))
-                        }
-                        className={`px-3 py-1 rounded-full font-mono text-[10px] font-black uppercase transition-all cursor-pointer flex items-center gap-1.5 border ${
-                          portfolio.personal.showMobileCurrentRole !== false
-                            ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
-                            : "bg-stone-200 text-stone-600 border-stone-300"
-                        }`}
-                      >
-                        <span>{portfolio.personal.showMobileCurrentRole !== false ? "● SHOWN ON COVER" : "○ HIDDEN"}</span>
-                      </button>
-                    </div>
+                      {/* Photo URL */}
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Cover Photo Link (Google Drive / Direct URL):
+                        </label>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <input
+                            type="text"
+                            placeholder="e.g. https://drive.google.com/file/d/.../view"
+                            value={portfolio.personal.coverPhotoUrl || ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, coverPhotoUrl: e.target.value },
+                              }))
+                            }
+                            className="flex-1 px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                          {portfolio.personal.coverPhotoUrl && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, coverPhotoUrl: "" },
+                                }))
+                              }
+                              className="px-3 py-2 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 font-mono text-xs cursor-pointer"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+                      </div>
 
-                    <div>
-                      <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                        Role Title &amp; Organization:
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Teaching Assistant • IIT Madras"
-                        value={portfolio.personal.mobileBadge1 || "Teaching Assistant • IIT Madras"}
-                        onChange={(e) =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, mobileBadge1: e.target.value },
-                          }))
-                        }
-                        className="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                      />
-                      <span className="block font-mono text-[10px] text-stone-400 mt-1">
-                        Phone cover par pulsating green dot ke sath <strong>CURRENT ROLE</strong> badge me dikhta hai. Agar hide karna ho toh upar toggle switch use karein.
-                      </span>
-                    </div>
-                  </div>
+                      {/* Google Drive Status */}
+                      {isGoogleDriveUrl(portfolio.personal.coverPhotoUrl) && (
+                        <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                          <div className="text-[11px]">
+                            Google Drive link verified: <span className="font-bold">{extractGoogleDriveId(portfolio.personal.coverPhotoUrl)}</span>
+                          </div>
+                        </div>
+                      )}
 
-                  {/* Punchy Narrative Tagline */}
-                  <div>
-                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5 flex items-center gap-1.5">
-                      <span>✍️</span>
-                      <span>Mobile Narrative Tagline:</span>
-                    </label>
-                    <textarea
-                      rows={2}
-                      placeholder="e.g. Teaching Machines To Learn • Building Scientific Software"
-                      value={portfolio.personal.mobileTagline ?? "Teaching Machines To Learn • Building Scientific Software"}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, mobileTagline: e.target.value },
-                        }))
-                      }
-                      className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all"
-                    />
-                    <span className="block font-mono text-[10px] text-stone-400 mt-1">
-                      Highlighter pills ke theek neeche handwritten font me show hota hai.
-                    </span>
-                  </div>
+                      {/* Photo Upload & Reset Buttons */}
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
+                          <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
+                          <span>Upload Image from Device</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                try {
+                                  setIsSaving(true);
+                                  setToastMessage("Optimizing image for cover frame...");
+                                  const compressed = await compressImageFile(file);
+                                  const updated = {
+                                    ...portfolio,
+                                    personal: {
+                                      ...portfolio.personal,
+                                      coverPhotoUrl: compressed,
+                                    },
+                                  };
+                                  setPortfolio(updated);
+                                  await saveInstantly(updated, "✅ Cover photo uploaded successfully!");
+                                } catch (err) {
+                                  alert("Failed to process image.");
+                                } finally {
+                                  setIsSaving(false);
+                                }
+                              }
+                            }}
+                          />
+                        </label>
 
-                  {/* Mobile Cover Photo Manager */}
-                  <div className="pt-2 space-y-3">
-                    <label className="block font-mono text-xs font-bold text-stone-700">
-                      Mobile Cover Photo (Google Drive ya Direct Link):
-                    </label>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input
-                        type="text"
-                        placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
-                        value={portfolio.personal.coverPhotoUrl || ""}
-                        onChange={(e) =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, coverPhotoUrl: e.target.value },
-                          }))
-                        }
-                        className="flex-1 px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                      />
-                      {portfolio.personal.coverPhotoUrl && (
                         <button
                           type="button"
                           onClick={() =>
                             setPortfolio((prev) => ({
                               ...prev,
-                              personal: { ...prev.personal, coverPhotoUrl: "" },
+                              personal: { ...prev.personal, coverPhotoUrl: "/harsh-cover.jpg" },
                             }))
                           }
-                          className="px-3 py-2 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 font-mono text-xs cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer"
                         >
-                          Clear
+                          Reset to /harsh-cover.jpg
                         </button>
-                      )}
+                      </div>
+
+                      {/* Frame Overlays: Radar Chip + Plaque Tag */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Radar Chip (Top-Left of Photo):
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. LIVE TA @ IIT MADRAS"
+                            value={portfolio.personal.desktopPhotoChip || "LIVE TA @ IIT MADRAS"}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, desktopPhotoChip: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Plaque Tag (Bottom-Right of Frame):
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. AI & DS"
+                            value={portfolio.personal.desktopPhotoTag || "AI & DS"}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, desktopPhotoTag: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Google Drive Status */}
-                    {isGoogleDriveUrl(portfolio.personal.coverPhotoUrl) && (
+                    {/* 2. Desktop Name & Header Typography */}
+                    <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
+                      <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
+                        <User className="w-4 h-4 text-amber-500" />
+                        <h3 className="font-mono text-xs font-black uppercase text-stone-900">
+                          2. Name Typography &amp; Eyebrow (Right Column)
+                        </h3>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Hero Name Heading:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. HARSH ARYAN"
+                            value={portfolio.personal.name || ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, name: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-sm font-bold focus:border-black focus:bg-white focus:outline-none"
+                          />
+                          <span className="block font-mono text-[10px] text-stone-400 mt-1">
+                            Right column me bold display font me render hota hai.
+                          </span>
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Dossier Eyebrow Pill:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. PORTFOLIO DOSSIER • 2026"
+                            value={portfolio.personal.desktopEyebrow || "PORTFOLIO DOSSIER • 2026"}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, desktopEyebrow: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                          <span className="block font-mono text-[10px] text-stone-400 mt-1">
+                            Name ke theek upar green pulsing badge me show hota hai.
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Role & Workplace */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Current Role Title:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Teaching Assistant"
+                            value={portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutCurrentWork: e.target.value, role: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Workplace / Institute:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. IIT Madras"
+                            value={portfolio.personal.aboutWorkPlace || "IIT Madras"}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutWorkPlace: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. Desktop Subtitle / Headline */}
+                    <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-3">
+                      <div className="flex items-center gap-2 pb-2 border-b border-stone-100">
+                        <Sparkles className="w-4 h-4 text-amber-500" />
+                        <h3 className="font-mono text-xs font-black uppercase text-stone-900">
+                          3. Subtitle / Bio Headline
+                        </h3>
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Desktop Subtitle Text:
+                        </label>
+                        <textarea
+                          rows={2}
+                          placeholder="e.g. Exploring Data Science, Machine Learning Foundations & Scientific Computing."
+                          value={portfolio.personal.desktopHeadline || portfolio.personal.headline || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, desktopHeadline: e.target.value },
+                            }))
+                          }
+                          className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* 4. Desktop 7-Day Thought of the Day / Daily Spark Manager */}
+                    <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
+                        <div className="flex items-center gap-2.5">
+                          <span className="p-2 rounded-xl bg-purple-100 text-purple-900 border border-purple-300 text-sm">
+                            ✨
+                          </span>
+                          <div>
+                            <h3 className="font-['Space_Grotesk'] text-base sm:text-lg font-black uppercase text-stone-900">
+                              4. Weekly Sparks: 7 Days Daily Thoughts Manager
+                            </h3>
+                            <p className="font-mono text-xs text-stone-500">
+                              Har ek din (Sunday se Saturday) ke liye unique thought &amp; persona customize karein. Live desktop cover par automatically us din ka thought display hoga.
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* View Switcher: Tabs vs All 7 Days Grid */}
+                        <div className="inline-flex p-1 rounded-xl bg-stone-100 border border-stone-200 self-start sm:self-auto shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setThoughtViewMode("tabs")}
+                            className={`px-3 py-1 rounded-lg font-mono text-[11px] font-bold transition-all cursor-pointer ${
+                              thoughtViewMode === "tabs"
+                                ? "bg-black text-white shadow-xs font-black"
+                                : "text-stone-600 hover:text-black"
+                            }`}
+                          >
+                            Single Day View
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setThoughtViewMode("grid")}
+                            className={`px-3 py-1 rounded-lg font-mono text-[11px] font-bold transition-all cursor-pointer ${
+                              thoughtViewMode === "grid"
+                                ? "bg-black text-white shadow-xs font-black"
+                                : "text-stone-600 hover:text-black"
+                            }`}
+                          >
+                            All 7 Days Grid
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Header & Signature Settings */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Card Heading (Shown above the thought):
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. A LITTLE THOUGHT FOR TODAY"
+                            value={portfolio.personal.coverDailyThoughtHeader || ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, coverDailyThoughtHeader: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Bottom Signature:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. — Harsh’s Daily Thoughts"
+                            value={portfolio.personal.coverDailyThoughtSignature || ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, coverDailyThoughtSignature: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      {/* 7-Day Day Selector Bar */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs font-mono font-bold text-stone-600">
+                          <span>Select Day to Edit ({activeThoughtsList.length} Days Configured):</span>
+                          <span className="text-emerald-700 font-extrabold flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span>Today is {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][todayWeekday]}</span>
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                          {activeThoughtsList.map((dayItem) => {
+                            const isToday = dayItem.dayIndex === todayWeekday;
+                            const isSelected = dayItem.dayIndex === selectedThoughtDay;
+                            const DAY_EMOJIS = ["☀️", "🚀", "🛠️", "💡", "🧭", "🎨", "⚡"];
+
+                            return (
+                              <button
+                                key={dayItem.dayIndex}
+                                type="button"
+                                onClick={() => setSelectedThoughtDay(dayItem.dayIndex)}
+                                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                                  isSelected
+                                    ? "bg-black text-white border-black shadow-[2px_2px_0_#f59e0b] scale-[1.02]"
+                                    : "bg-white hover:bg-stone-50 border-stone-200 text-stone-800"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between gap-1 w-full">
+                                  <span className="font-mono text-xs font-black uppercase flex items-center gap-1">
+                                    <span>{DAY_EMOJIS[dayItem.dayIndex] || "✦"}</span>
+                                    <span>{dayItem.dayName.slice(0, 3)}</span>
+                                  </span>
+                                  {isToday && (
+                                    <span className={`text-[8px] font-black px-1.5 py-0.2 rounded-full uppercase ${
+                                      isSelected ? "bg-emerald-400 text-black" : "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                                    }`}>
+                                      Today
+                                    </span>
+                                  )}
+                                </div>
+                                <span className={`text-[9.5px] font-mono truncate mt-1 ${
+                                  isSelected ? "text-amber-300 font-bold" : "text-stone-500"
+                                }`}>
+                                  {dayItem.persona}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* MODE A: Single Day Focused Editor */}
+                      {thoughtViewMode === "tabs" && (
+                        <div className="p-5 sm:p-6 rounded-2xl bg-amber-50/50 border-2 border-black shadow-[3px_3px_0_#000] space-y-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-black/10">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl">
+                                {["☀️", "🚀", "🛠️", "💡", "🧭", "🎨", "⚡"][selectedThoughtDay] || "📅"}
+                              </span>
+                              <div>
+                                <h4 className="font-['Space_Grotesk'] text-base font-black uppercase text-stone-900">
+                                  {activeThoughtsList[selectedThoughtDay]?.dayName}&apos;s Daily Thought
+                                </h4>
+                                <span className="font-mono text-[10px] text-stone-500 font-bold">
+                                  Day #{selectedThoughtDay} • {selectedThoughtDay === todayWeekday ? "Active on Cover Today!" : "Scheduled for " + activeThoughtsList[selectedThoughtDay]?.dayName}
+                                </span>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => resetDailyThought(selectedThoughtDay)}
+                              className="px-2.5 py-1 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 text-stone-700 font-mono text-[10px] font-bold cursor-pointer self-start sm:self-auto flex items-center gap-1"
+                              title="Reset this day to default quote"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              <span>Reset to Default</span>
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                                Day Label:
+                              </label>
+                              <input
+                                type="text"
+                                value={activeThoughtsList[selectedThoughtDay]?.dayName || ""}
+                                onChange={(e) => updateDailyThought(selectedThoughtDay, "dayName", e.target.value)}
+                                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                              />
+                            </div>
+
+                            <div className="md:col-span-2">
+                              <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                                Persona / Author Tag (Shown in Card Pill):
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="e.g. The Philosopher, The Builder, The Thinker..."
+                                value={activeThoughtsList[selectedThoughtDay]?.persona || ""}
+                                onChange={(e) => updateDailyThought(selectedThoughtDay, "persona", e.target.value)}
+                                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                              />
+                            </div>
+
+                            <div className="md:col-span-3">
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block font-mono text-xs font-bold text-stone-700">
+                                  Quote / Thought for {activeThoughtsList[selectedThoughtDay]?.dayName}:
+                                </label>
+                                <span className="font-mono text-[10px] text-stone-400">
+                                  {(activeThoughtsList[selectedThoughtDay]?.quote || "").length} characters
+                                </span>
+                              </div>
+                              <textarea
+                                rows={3}
+                                placeholder="Enter inspiring thought for this day..."
+                                value={activeThoughtsList[selectedThoughtDay]?.quote || ""}
+                                onChange={(e) => updateDailyThought(selectedThoughtDay, "quote", e.target.value)}
+                                className="w-full p-3.5 rounded-xl bg-white border border-stone-300 font-mono text-xs leading-relaxed focus:border-black focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* MODE B: All 7 Days Grid Editor */}
+                      {thoughtViewMode === "grid" && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                          {activeThoughtsList.map((dayItem) => {
+                            const isToday = dayItem.dayIndex === todayWeekday;
+                            const DAY_EMOJIS = ["☀️", "🚀", "🛠️", "💡", "🧭", "🎨", "⚡"];
+
+                            return (
+                              <div
+                                key={dayItem.dayIndex}
+                                className={`p-4 rounded-2xl border-2 transition-all space-y-3 ${
+                                  isToday
+                                    ? "bg-amber-50/70 border-black shadow-[3px_3px_0_#f59e0b]"
+                                    : "bg-white border-stone-200 shadow-xs"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between pb-2 border-b border-stone-100">
+                                  <div className="flex items-center gap-1.5 font-mono text-xs font-black uppercase text-stone-900">
+                                    <span>{DAY_EMOJIS[dayItem.dayIndex]}</span>
+                                    <span>{dayItem.dayName}</span>
+                                    {isToday && (
+                                      <span className="text-[8px] bg-emerald-500 text-white px-1.5 py-0.2 rounded font-black">
+                                        TODAY
+                                      </span>
+                                    )}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => resetDailyThought(dayItem.dayIndex)}
+                                    className="text-[10px] font-mono text-stone-400 hover:text-stone-800"
+                                    title="Reset to default"
+                                  >
+                                    Reset
+                                  </button>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <div>
+                                    <label className="block font-mono text-[10px] font-bold text-stone-500 mb-0.5">
+                                      Persona:
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={dayItem.persona}
+                                      onChange={(e) => updateDailyThought(dayItem.dayIndex, "persona", e.target.value)}
+                                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 font-mono text-xs font-bold focus:border-black focus:bg-white focus:outline-none"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="block font-mono text-[10px] font-bold text-stone-500 mb-0.5">
+                                      Quote:
+                                    </label>
+                                    <textarea
+                                      rows={2}
+                                      value={dayItem.quote}
+                                      onChange={(e) => updateDailyThought(dayItem.dayIndex, "quote", e.target.value)}
+                                      className="w-full p-2.5 rounded-lg bg-stone-50 border border-stone-200 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ========================================================
+                    SUB-VIEW B: MOBILE / PHONE COVER CONFIGURATION
+                ======================================================== */}
+                {coverSubView === "mobile" && (
+                  <div className="space-y-6">
+                    {/* View Intro Card */}
+                    <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 flex items-center gap-3">
+                      <span className="text-2xl">📱</span>
+                      <div>
+                        <div className="font-mono text-xs font-black uppercase tracking-wide text-amber-900">
+                          Active Mode: Mobile Portrait Cover
+                        </div>
+                        <div className="font-mono text-[11px] text-amber-700">
+                          Phone screens par fullscreen portrait photo, white bold name, sticker note aur social icons render hote hain.
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 1. Mobile Photo Manager */}
+                    <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
+                      <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
+                        <ImageIcon className="w-4 h-4 text-amber-500" />
+                        <h3 className="font-mono text-xs font-black uppercase text-stone-900">
+                          1. Mobile Portrait Photo
+                        </h3>
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Mobile Photo Link (Google Drive ya Direct Link):
+                        </label>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <input
+                            type="text"
+                            placeholder="e.g. https://drive.google.com/file/d/.../view"
+                            value={portfolio.personal.coverPhotoUrl || ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, coverPhotoUrl: e.target.value },
+                              }))
+                            }
+                            className="flex-1 px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                          {portfolio.personal.coverPhotoUrl && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, coverPhotoUrl: "" },
+                                }))
+                              }
+                              className="px-3 py-2 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 font-mono text-xs cursor-pointer"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Drive verified */}
+                      {isGoogleDriveUrl(portfolio.personal.coverPhotoUrl) && (
+                        <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                          <div className="text-[11px]">
+                            Google Drive link verified: <span className="font-bold">{extractGoogleDriveId(portfolio.personal.coverPhotoUrl)}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
+                          <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
+                          <span>Select Image from Device</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                try {
+                                  setIsSaving(true);
+                                  setToastMessage("Optimizing image for mobile...");
+                                  const compressed = await compressImageFile(file);
+                                  const updated = {
+                                    ...portfolio,
+                                    personal: { ...portfolio.personal, coverPhotoUrl: compressed },
+                                  };
+                                  setPortfolio(updated);
+                                  await saveInstantly(updated, "✅ Mobile cover photo updated successfully!");
+                                } catch (err) {
+                                  alert("Failed to process image.");
+                                } finally {
+                                  setIsSaving(false);
+                                }
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* 2. Mobile Name & Current Role */}
+                    <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
+                      <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
+                        <User className="w-4 h-4 text-amber-500" />
+                        <h3 className="font-mono text-xs font-black uppercase text-stone-900">
+                          2. Phone Hero Name &amp; Role Badge
+                        </h3>
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Phone Hero Name:
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. HARSH ARYAN"
+                          value={portfolio.personal.name || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, name: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-sm font-bold focus:border-black focus:bg-white focus:outline-none"
+                        />
+                      </div>
+
+                      {/* Current Role Toggle Box */}
+                      <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-xs font-black uppercase text-stone-900">
+                            Mobile Current Role Badge:
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: {
+                                  ...prev.personal,
+                                  showMobileCurrentRole: prev.personal.showMobileCurrentRole === false ? true : false,
+                                },
+                              }))
+                            }
+                            className={`px-3 py-1 rounded-full font-mono text-[10px] font-black uppercase transition-all cursor-pointer border ${
+                              portfolio.personal.showMobileCurrentRole !== false
+                                ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
+                                : "bg-stone-200 text-stone-600 border-stone-300"
+                            }`}
+                          >
+                            <span>{portfolio.personal.showMobileCurrentRole !== false ? "● SHOWN ON COVER" : "○ HIDDEN"}</span>
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Role Title:
+                            </label>
+                            <input
+                              type="text"
+                              value={portfolio.personal.role || "Teaching Assistant"}
+                              onChange={(e) =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, role: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Workplace / College:
+                            </label>
+                            <input
+                              type="text"
+                              value={portfolio.personal.aboutWorkPlace || "IIT Madras"}
+                              onChange={(e) =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, aboutWorkPlace: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Mobile Narrative Tagline */}
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Mobile Handwritten Tagline Quote:
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={portfolio.personal.mobileTagline ?? "Teaching Machines To Learn • Building Scientific Software"}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, mobileTagline: e.target.value },
+                            }))
+                          }
+                          className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* 3. Mobile Social Links */}
+                    <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-3">
+                      <div className="flex items-center gap-2 pb-2 border-b border-stone-100">
+                        <Send className="w-4 h-4 text-amber-500" />
+                        <h3 className="font-mono text-xs font-black uppercase text-stone-900">
+                          3. Social Connect Links (Mobile Sticker)
+                        </h3>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">GitHub URL:</label>
+                          <input
+                            type="text"
+                            value={portfolio.socialLinks.github}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                socialLinks: { ...prev.socialLinks, github: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">LinkedIn URL:</label>
+                          <input
+                            type="text"
+                            value={portfolio.socialLinks.linkedin}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                socialLinks: { ...prev.socialLinks, linkedin: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* ── RIGHT: REAL-TIME LIVE VISUAL PREVIEW (STICKY) ── */}
+              <div className="xl:col-span-5 sticky top-20 space-y-3">
+                {/* Preview Header Card */}
+                <div className="p-3.5 rounded-2xl bg-white border border-stone-200 shadow-xs flex items-center justify-between">
+                  <div className="flex items-center gap-2 font-mono text-xs font-black uppercase">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+                    <span>Live Real-Time Preview</span>
+                  </div>
+                  <span className="font-mono text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                    {coverSubView === "desktop" ? "💻 Desktop" : "📱 Mobile"}
+                  </span>
+                </div>
+
+                {/* ── DESKTOP COVER MINIATURE PREVIEW ── */}
+                {coverSubView === "desktop" && (
+                  <div className="p-4 rounded-3xl bg-[#edf6fa] dark:bg-[#0c0d12] border-2 border-black dark:border-stone-700 shadow-lg space-y-3 overflow-hidden select-none">
+                    <div className="text-[10px] font-mono font-bold text-stone-500 uppercase tracking-wider flex items-center justify-between pb-2 border-b border-black/10">
+                      <span>Desktop 2-Column Hero Stage</span>
+                      <span className="text-emerald-600 font-bold">● Active View</span>
+                    </div>
+
+                    {/* Miniature 2-Column Grid */}
+                    <div className="grid grid-cols-12 gap-3 items-center pt-1">
+                      {/* Left: Studio Photo Frame */}
+                      <div className="col-span-5">
+                        <div className="relative rounded-2xl bg-white dark:bg-stone-900 border-2 border-black p-2 shadow-[3px_3px_0_#000] space-y-1.5">
+                          <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden bg-stone-200 border border-black/30">
+                            <img
+                              src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl) || "/harsh-cover.jpg"}
+                              alt="Cover Preview"
+                              className="w-full h-full object-cover object-top"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
+                              }}
+                            />
+                          </div>
+                          {/* Lower Plaque */}
+                          <div className="flex items-center justify-between text-[8px] font-mono font-bold pt-0.5 border-t border-dashed border-stone-300">
+                            <span className="truncate font-black text-black">{portfolio.personal.name || "HARSH ARYAN"}</span>
+                            <span className="text-amber-600 font-extrabold text-[7.5px]">{portfolio.personal.desktopPhotoTag || "AI & DS"}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: Name & Details */}
+                      <div className="col-span-7 space-y-1.5 text-left">
+                        {/* Name */}
+                        <div className="font-hero-heading text-lg font-black uppercase tracking-tight text-black dark:text-white leading-none truncate">
+                          {portfolio.personal.name || "HARSH ARYAN"}
+                        </div>
+
+                        {/* Role Pill */}
+                        <div className="inline-flex items-center gap-1 py-0.5 px-2 rounded-lg bg-amber-100 border border-black text-[8px] font-mono font-bold shadow-[1px_1px_0_#000]">
+                          <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                          <span className="font-black text-black truncate max-w-[90px]">
+                            {portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}
+                          </span>
+                          <span className="text-stone-400">•</span>
+                          <span className="text-amber-700 font-black truncate max-w-[70px]">
+                            {portfolio.personal.aboutWorkPlace || "IIT Madras"}
+                          </span>
+                        </div>
+
+                        {/* Subtitle */}
+                        <p className="text-[7.5px] font-mono text-stone-600 line-clamp-2 leading-tight">
+                          {portfolio.personal.desktopHeadline || portfolio.personal.headline || "Exploring Data Science, Machine Learning Foundations & Scientific Computing"}
+                        </p>
+
+                        {/* Action Buttons Mock */}
+                        <div className="flex items-center gap-1 pt-0.5">
+                          <span className="px-1.5 py-0.5 rounded bg-indigo-600 text-white font-mono text-[6.5px] font-black uppercase shadow-xs">
+                            Projects ↗
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded bg-white text-black border border-black font-mono text-[6.5px] font-bold shadow-xs">
+                            About
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded bg-white text-black border border-black font-mono text-[6.5px] font-bold shadow-xs">
+                            Contact
+                          </span>
+                        </div>
+
+                        {/* Miniature Daily Spark Note Box */}
+                        <div className="mt-2 p-1.5 rounded-lg bg-white/90 dark:bg-stone-900/90 border border-black/20 shadow-[1.5px_1.5px_0_#000] text-[7.5px] font-mono space-y-0.5">
+                          <div className="flex items-center justify-between text-[6.5px] font-black text-purple-700 dark:text-purple-300">
+                            <span>✦ {portfolio.personal.coverDailyThoughtHeader || "A LITTLE THOUGHT FOR TODAY"}</span>
+                            <span className="bg-purple-100 dark:bg-purple-950 px-1 py-0.2 rounded text-[6px]">
+                              {activeThoughtsList[selectedThoughtDay]?.persona || "Daily Spark"}
+                            </span>
+                          </div>
+                          <p className="italic text-stone-800 dark:text-stone-200 line-clamp-1">
+                            &quot;{activeThoughtsList[selectedThoughtDay]?.quote || "Teach machines to learn. Never stop learning yourself."}&quot;
+                          </p>
+                          <div className="flex items-center justify-between text-[6px] text-stone-500 pt-0.5">
+                            <span className="text-amber-600 font-bold">
+                              Preview: {activeThoughtsList[selectedThoughtDay]?.dayName || "Today"}
+                            </span>
+                            <span>{portfolio.personal.coverDailyThoughtSignature || "— Harsh’s Daily Thoughts"}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-[9px] font-mono text-center text-stone-500 pt-1 border-t border-black/10">
+                      💡 Desktop cover changes are saved directly into the CMS.
+                    </div>
+                  </div>
+                )}
+
+                {/* ── MOBILE COVER REALISTIC PHONE MOCKUP PREVIEW ── */}
+                {coverSubView === "mobile" && (
+                  <div className="flex flex-col items-center">
+                    <div className="relative w-56 h-[440px] rounded-[36px] p-2 bg-stone-900 border-4 border-stone-800 shadow-2xl overflow-hidden flex flex-col select-none">
+                      {/* Phone Screen Container */}
+                      <div className="relative w-full h-full rounded-[26px] overflow-hidden bg-stone-950 flex flex-col justify-between">
+                        {/* Background Portrait Photo */}
+                        <img
+                          src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl) || "/harsh-cover.jpg"}
+                          alt="Cover Mobile Preview"
+                          className="absolute inset-0 w-full h-full object-cover object-[center_top]"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
+                          }}
+                        />
+
+                        {/* Gradient vignettes */}
+                        <div className="absolute top-0 inset-x-0 h-14 bg-gradient-to-b from-black/70 to-transparent pointer-events-none" />
+                        <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-black via-black/85 to-transparent pointer-events-none" />
+
+                        {/* Dynamic Camera Notch at Top */}
+                        <div className="relative z-10 w-full px-4 pt-2 flex items-center justify-between">
+                          <span className="font-mono text-[7px] text-white/80">9:41</span>
+                          <div className="w-12 h-3 rounded-full bg-black border border-white/10" />
+                          <span className="font-mono text-[7px] text-emerald-400">5G</span>
+                        </div>
+
+                        {/* Bottom Phone Details & Sticker Note */}
+                        <div className="relative z-10 p-2.5 flex flex-col items-center text-center space-y-1.5">
+                          {/* Hero Name Heading */}
+                          <div
+                            className="font-hero-heading text-lg text-white font-black uppercase tracking-wider leading-none select-none"
+                            style={{
+                              textShadow: "1.5px 1.5px 0 #000, -1px -1px 0 #000, 2px 2px 0 #f59e0b",
+                            }}
+                          >
+                            {portfolio.personal.name || "HARSH ARYAN"}
+                          </div>
+
+                          {/* Sticker Note Mock */}
+                          <div className="w-full rounded-xl p-2 bg-[#fffef5] border border-black shadow-[2px_2px_0_#000] space-y-1 text-black">
+                            {/* Role Badge */}
+                            {portfolio.personal.showMobileCurrentRole !== false && (
+                              <div className="py-0.5 px-2 rounded-md bg-emerald-500/10 border border-emerald-500/30 flex flex-col items-center">
+                                <span className="font-mono text-[7px] font-black uppercase text-emerald-800 flex items-center gap-1">
+                                  <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                                  <span>{portfolio.personal.role || "Teaching Assistant"}</span>
+                                </span>
+                                <span className="font-mono text-[6.5px] font-extrabold uppercase text-amber-700">
+                                  {portfolio.personal.aboutWorkPlace || "IIT Madras"}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Tagline */}
+                            <p className="text-[7.5px] font-bold italic text-stone-700 line-clamp-2 leading-tight">
+                              &ldquo;{portfolio.personal.mobileTagline || "Teaching Machines To Learn • Building Scientific Software"}&rdquo;
+                            </p>
+
+                            {/* Social Icons */}
+                            <div className="flex items-center justify-center gap-2 pt-0.5 border-t border-dashed border-stone-300">
+                              <span className="w-4 h-4 rounded-full bg-black text-white text-[7px] flex items-center justify-center">GH</span>
+                              <span className="w-4 h-4 rounded-full bg-[#0077b5] text-white text-[7px] flex items-center justify-center">IN</span>
+                              <span className="w-4 h-4 rounded-full bg-[#f59e0b] text-white text-[7px] flex items-center justify-center">@</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <span className="mt-2 text-[10px] font-mono text-stone-500">
+                      📱 Real-time smartphone preview
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: ABOUT & DOSSIER MANAGER ── */}
+        {activeTab === "about" && (
+          <div className="space-y-8">
+            {/* Header intro & Save CTA */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-mono text-[10px] font-black uppercase">
+                    Live Section #01
+                  </span>
+                  <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    SYNCED WITH ABOUT SECTION
+                  </span>
+                </div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <User className="w-6 h-6 text-amber-500" />
+                  <span>Profile, Bio &amp; Dossier (All-in-One)</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
+                  Framed Exhibition Photo, Identity Plaque, Statement &amp; Bio with <strong>Multi-Color Highlighter</strong>, Key Benchmarks, aur <strong>Trajectory Milestones</strong> ko live preview ke sath ek hi jagah manage karein.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleSaveAll}
+                  disabled={isSaving}
+                  className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{isSaving ? "Saving..." : "Save Profile & Bio"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Sub-Section Switcher Tabs */}
+            <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-stone-100 border border-stone-200">
+              {[
+                { id: "all", label: "✦ All Sections", count: "5" },
+                { id: "identity", label: "🪪 Photo & Plaque", count: "Mount" },
+                { id: "bio", label: "✍️ Statement, Bio & Highlighter", count: "Colors" },
+                { id: "benchmarks", label: "⚡ Key Benchmarks", count: (portfolio.quickStats || []).length.toString() },
+                {
+                  id: "experience",
+                  label: "💼 Experience",
+                  count: portfolio.personal.showExperienceSection === false ? "Hidden" : ((portfolio.experiences || []).length || 1).toString(),
+                },
+                {
+                  id: "milestones",
+                  label: "🚀 Trajectory Milestones",
+                  count: portfolio.personal.showDevelopmentTrajectory === false ? "Hidden" : ((portfolio.milestones || []).length || 3).toString(),
+                },
+              ].map((sub) => (
+                <button
+                  key={sub.id}
+                  type="button"
+                  onClick={() => setAboutSubView(sub.id as any)}
+                  className={`px-3.5 py-2 rounded-xl font-mono text-xs transition-all cursor-pointer flex items-center gap-2 ${
+                    aboutSubView === sub.id
+                      ? "bg-white text-stone-950 font-black shadow-xs border border-stone-300"
+                      : "text-stone-600 hover:text-black font-bold hover:bg-white/60"
+                  }`}
+                >
+                  <span>{sub.label}</span>
+                  <span
+                    className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
+                      aboutSubView === sub.id
+                        ? "bg-amber-300 text-stone-900"
+                        : "bg-stone-200 text-stone-600"
+                    }`}
+                  >
+                    {sub.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* ── 1. FRAMED PHOTO & IDENTITY PLAQUE ── */}
+            {(aboutSubView === "all" || aboutSubView === "identity") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-stone-900 text-amber-300 border border-black text-sm">
+                      🖼️
+                    </span>
+                    <div>
+                      <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                        1. Studio Photo Frame &amp; Identity Plaque
+                      </h3>
+                      <p className="font-mono text-xs text-stone-500">
+                        Bespoke architectural photo frame (Washi tape mount) aur frame ke integrated lower chin details.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-full">
+                    Left Column Mount
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                  {/* Left Column: Form Inputs (7 cols) */}
+                  <div className="lg:col-span-7 space-y-4">
+                    {/* Section Heading & Subtitle */}
+                    <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+                      <div className="font-mono text-xs font-black uppercase text-stone-800 flex items-center gap-1.5">
+                        <span>🏷️</span>
+                        <span>Section Header &amp; Subtitle (Live Above Frame)</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Section Main Heading:
+                          </label>
+                          <input
+                            type="text"
+                            value={portfolio.personal.aboutHeading ?? "Behind the Terminal"}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutHeading: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                            placeholder="e.g. Behind the Terminal"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Section Subtitle:
+                          </label>
+                          <input
+                            type="text"
+                            value={portfolio.personal.aboutSubtitle ?? ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutSubtitle: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
+                            placeholder="Curious mind blending machine learning..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Photo Source Input */}
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
+                        Framed Photo URL (Google Drive ya Direct Link):
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
+                          value={portfolio.personal.aboutPhotoUrl || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, aboutPhotoUrl: e.target.value },
+                            }))
+                          }
+                          className="flex-1 px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        />
+                        {portfolio.personal.aboutPhotoUrl && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutPhotoUrl: "" },
+                              }))
+                            }
+                            className="px-3 py-1.5 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 font-mono text-xs cursor-pointer"
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Drive verified indicator */}
+                    {isGoogleDriveUrl(portfolio.personal.aboutPhotoUrl) && (
                       <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                        <div>
-                          <div className="font-bold">Google Drive link detected!</div>
-                          <div className="text-[11px] text-emerald-700">
-                            Drive ID: <span className="font-mono font-bold">{extractGoogleDriveId(portfolio.personal.coverPhotoUrl)}</span> — Auto-converted into high-speed CDN image link.
-                          </div>
+                        <div className="text-[11px]">
+                          Google Drive Link Verified: File ID <span className="font-bold">{extractGoogleDriveId(portfolio.personal.aboutPhotoUrl)}</span> (Auto-converts to high-res thumbnail)
                         </div>
                       </div>
                     )}
 
-                    {/* Upload button */}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
+                    {/* Device Upload & Reset Default */}
+                    <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                      <label className="px-3.5 py-2 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
                         <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
-                        <span>📁 Select Image from Device</span>
+                        <span>📁 Upload Photo From Device</span>
                         <input
                           type="file"
                           accept="image/*"
@@ -1401,19 +2731,16 @@ export default function AdminPage() {
                             if (file) {
                               try {
                                 setIsSaving(true);
-                                setToastMessage("Optimizing & compressing image for mobile...");
+                                setToastMessage("Compressing & saving image...");
                                 const compressed = await compressImageFile(file);
                                 const updated = {
                                   ...portfolio,
-                                  personal: {
-                                    ...portfolio.personal,
-                                    coverPhotoUrl: compressed,
-                                  },
+                                  personal: { ...portfolio.personal, aboutPhotoUrl: compressed },
                                 };
                                 setPortfolio(updated);
-                                await saveInstantly(updated, "✅ Cover photo uploaded & saved successfully!");
-                              } catch (err) {
-                                alert("Failed to process image. Please try another image file.");
+                                await saveInstantly(updated, "✅ About photo uploaded & saved!");
+                              } catch {
+                                alert("Failed to process image.");
                               } finally {
                                 setIsSaving(false);
                               }
@@ -1427,655 +2754,1371 @@ export default function AdminPage() {
                         onClick={async () => {
                           const updated = {
                             ...portfolio,
-                            personal: { ...portfolio.personal, coverPhotoUrl: "/harsh-cover.jpg" },
+                            personal: { ...portfolio.personal, aboutPhotoUrl: "/harsh-cover.jpg" },
                           };
                           setPortfolio(updated);
                           await saveInstantly(updated, "✅ Reset to default /harsh-cover.jpg!");
                         }}
-                        className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer active:translate-y-0.5"
+                        className="px-3.5 py-2 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer flex items-center gap-1.5"
                       >
-                        Reset to Default (/harsh-cover.jpg)
+                        <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Reset Default Photo</span>
+                      </button>
+                    </div>
+
+                    {/* ── LOWER CHIN DETAILS (Integrated Identity Plaque) ── */}
+                    <div className="p-4 rounded-2xl bg-stone-50 border border-stone-300 space-y-3.5">
+                      <div className="font-mono text-xs font-black uppercase text-stone-900 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <span>🪪</span>
+                          <span>Frame Lower Chin Identity Details:</span>
+                        </span>
+                        <span className="text-[10px] text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300 font-bold">
+                          Live On About Frame
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Plaque Name:
+                          </label>
+                          <input
+                            type="text"
+                            value={portfolio.personal.name || ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, name: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                            placeholder="HARSH ARYAN"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Current Role / Work:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Teaching Assistant"
+                            value={portfolio.personal.aboutCurrentWork ?? "Teaching Assistant"}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutCurrentWork: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Workplace / Institution:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. IIT Madras"
+                            value={portfolio.personal.aboutWorkPlace ?? "IIT Madras"}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutWorkPlace: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Live Coordinates / Location:
+                          </label>
+                          <input
+                            type="text"
+                            value={portfolio.personal.location || ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, location: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
+                            placeholder="e.g. Chennai, India"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Live Studio Frame Preview (5 cols) */}
+                  <div className="lg:col-span-5 flex flex-col items-center">
+                    <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-stone-500 mb-2.5">
+                      <Eye className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Live Studio Frame Preview:</span>
+                    </div>
+
+                    {/* Frame Preview Card */}
+                    <div className="w-full max-w-[280px]">
+                      {/* Realistic Washi Tape Mount */}
+                      <div className="w-28 h-5 bg-[#fde047]/85 border-t border-b border-black/25 shadow-xs rotate-[-1.5deg] mx-auto -mb-2.5 z-20 relative rounded-[2px]" />
+
+                      {/* Unified Frame Body */}
+                      <div className="rounded-2xl border-2 border-black bg-[#fffdfa] shadow-[6px_6px_0_#000] p-3.5 space-y-3">
+                        {/* Photo Inset Recess */}
+                        <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden border border-black/20 bg-stone-100 shadow-inner group">
+                          <img
+                            src={formatGoogleDriveImageUrl(portfolio.personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
+                            alt="About Frame Live Preview"
+                            className="w-full h-full object-cover object-top"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
+                            }}
+                          />
+                          {/* Corner Tabs */}
+                          <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-t-2 border-l-2 border-black/60 pointer-events-none" />
+                          <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 border-t-2 border-r-2 border-black/60 pointer-events-none" />
+                          <div className="absolute bottom-1.5 left-1.5 w-2.5 h-2.5 border-b-2 border-l-2 border-black/60 pointer-events-none" />
+                          <div className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-b-2 border-r-2 border-black/60 pointer-events-none" />
+                        </div>
+
+                        {/* Integrated Lower Chin */}
+                        <div className="pt-2.5 border-t-2 border-dashed border-stone-300 space-y-2">
+                          <div className="font-['Space_Grotesk'] text-lg font-black uppercase text-black leading-none truncate">
+                            {portfolio.personal.name || "HARSH ARYAN"}
+                          </div>
+
+                          <div className="flex flex-col items-start gap-1">
+                            {/* Role badge with pulse */}
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-stone-900 font-mono text-[10px] font-bold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                              <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}</span>
+                            </div>
+
+                            {/* Workplace badge */}
+                            <div className="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-amber-100 border border-amber-300 text-amber-950 font-mono text-[10px] font-bold">
+                              <span>{portfolio.personal.aboutWorkPlace || "IIT Madras"}</span>
+                            </div>
+                          </div>
+
+                          {/* Coordinates */}
+                          {portfolio.personal.location && (
+                            <div className="pt-2 border-t border-stone-200 flex items-center gap-1.5 text-[10px] font-mono text-stone-600">
+                              <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
+                              <span>{portfolio.personal.location}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── 2. PERSONAL STATEMENT, BIO & MULTI-COLOR HIGHLIGHTER ── */}
+            {(aboutSubView === "all" || aboutSubView === "bio") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
+                      ✍️
+                    </span>
+                    <div>
+                      <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                        2. Personal Statement, Narrative Bio &amp; Multi-Color Highlighter
+                      </h3>
+                      <p className="font-mono text-xs text-stone-500">
+                        Text select karke koi vi custom color se highlight karein. Arbitrary color picker, palette swatches aur live formatted preview right below!
+                      </p>
+                    </div>
+                  </div>
+                  <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-1 rounded-full">
+                    Any Color Highlight
+                  </span>
+                </div>
+
+                {/* ── UNIFIED COLOR PICKER TOOLBAR ── */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-stone-50 border-2 border-stone-300 space-y-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Palette className="w-4 h-4 text-amber-500" />
+                      <span className="font-mono text-xs font-black uppercase text-stone-900">
+                        Highlighter Color Studio
+                      </span>
+                    </div>
+                    {/* Active Selected Text Indicator */}
+                    {selectedTarget && selectedTarget.start < selectedTarget.end ? (
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-200/90 border border-amber-400 font-mono text-[11px] font-bold text-stone-900">
+                        <span>✦ Target:</span>
+                        <span className="underline decoration-wavy">
+                          &quot;{selectedTarget.text.slice(0, 30)}{selectedTarget.text.length > 30 ? "..." : ""}&quot;
+                        </span>
+                        <span className="text-[9px] uppercase px-1.5 py-0.2 bg-black text-white rounded">
+                          {selectedTarget.field}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="font-mono text-[11px] text-stone-500">
+                        👉 Select any text in Headline ya Bio, then click a color below
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Color Picker & Preset Swatches */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    {/* Native Color Picker + Hex Input */}
+                    <div className="flex items-center gap-2 p-1.5 rounded-xl bg-white border border-stone-300 shadow-2xs">
+                      <input
+                        type="color"
+                        value={highlighterColor}
+                        onChange={(e) => setHighlighterColor(e.target.value)}
+                        className="w-8 h-8 rounded-lg cursor-pointer border-0 p-0 bg-transparent"
+                        title="Pick any custom color"
+                      />
+                      <input
+                        type="text"
+                        value={highlighterColor}
+                        onChange={(e) => setHighlighterColor(e.target.value)}
+                        placeholder="#f59e0b"
+                        className="w-20 px-2 py-1 font-mono text-xs font-bold text-stone-900 focus:outline-none uppercase"
+                      />
+                    </div>
+
+                    {/* Quick Palette Chips */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {HIGHLIGHT_PALETTE.map((c) => (
+                        <button
+                          key={c.hex}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            setHighlighterColor(c.hex);
+                            if (selectedTarget && selectedTarget.start < selectedTarget.end) {
+                              const ref = selectedTarget.field === "headline" ? headlineInputRef : bioTextareaRef;
+                              applyColorHighlight(selectedTarget.field, ref, c.hex);
+                            }
+                          }}
+                          className={`px-2.5 py-1.5 rounded-xl font-mono text-[10px] font-bold border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5 ${
+                            highlighterColor.toLowerCase() === c.hex.toLowerCase()
+                              ? "border-black bg-stone-900 text-white shadow-xs font-black"
+                              : "border-stone-300 bg-white text-stone-700 hover:border-black"
+                          }`}
+                        >
+                          <span
+                            className="w-2.5 h-2.5 rounded-full"
+                            style={{ backgroundColor: c.hex }}
+                          />
+                          <span>{c.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── 2A. HEADLINE (STATEMENT) EDITOR ── */}
+                <div className="space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <label className="font-mono text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-500" />
+                      <span>Personal Statement (Headline):</span>
+                    </label>
+
+                    {/* Toolbar for Headline */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => applyColorHighlight("headline", headlineInputRef, highlighterColor)}
+                        className="px-3 py-1 rounded-lg text-black font-mono text-[11px] font-bold border-2 border-black shadow-[1.5px_1.5px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5 hover:brightness-105"
+                        style={{ backgroundColor: highlighterColor }}
+                        title="Highlight selected text in Headline with active color"
+                      >
+                        <span className="w-2 h-2 rounded-full bg-black/80" />
+                        <span>Highlight Selection</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => applyFormatToSelection("headline", headlineInputRef, "bold")}
+                        className="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-900 font-mono text-[11px] font-bold border border-stone-300 cursor-pointer flex items-center gap-1 active:translate-y-0.5"
+                        title="Wrap selected text in **bold**"
+                      >
+                        <Type className="w-3 h-3 text-stone-600" />
+                        <span>Bold</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => applyFormatToSelection("headline", headlineInputRef, "clear")}
+                        className="px-2 py-1 rounded-lg bg-white hover:bg-red-50 text-stone-600 hover:text-red-600 font-mono text-[11px] border border-stone-300 cursor-pointer flex items-center gap-1 active:translate-y-0.5"
+                        title="Remove highlight/bold from selected text"
+                      >
+                        <Eraser className="w-3 h-3" />
+                        <span>Clear</span>
                       </button>
                     </div>
                   </div>
+
+                  <input
+                    ref={headlineInputRef}
+                    type="text"
+                    value={portfolio.personal.headline || ""}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, headline: e.target.value },
+                      }))
+                    }
+                    onSelect={(e) => {
+                      const el = e.currentTarget;
+                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
+                        setSelectedTarget({
+                          field: "headline",
+                          text: el.value.substring(el.selectionStart, el.selectionEnd),
+                          start: el.selectionStart,
+                          end: el.selectionEnd,
+                        });
+                      }
+                    }}
+                    onMouseUp={(e) => {
+                      const el = e.currentTarget;
+                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
+                        setSelectedTarget({
+                          field: "headline",
+                          text: el.value.substring(el.selectionStart, el.selectionEnd),
+                          start: el.selectionStart,
+                          end: el.selectionEnd,
+                        });
+                      }
+                    }}
+                    onKeyUp={(e) => {
+                      const el = e.currentTarget;
+                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
+                        setSelectedTarget({
+                          field: "headline",
+                          text: el.value.substring(el.selectionStart, el.selectionEnd),
+                          start: el.selectionStart,
+                          end: el.selectionEnd,
+                        });
+                      }
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none font-bold"
+                    placeholder="e.g. Exploring Data Science, Machine Learning Foundations & Scientific Computing."
+                  />
+                  <div className="font-mono text-[10px] text-stone-400">
+                    Syntax: <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-700 font-bold">&#123;&#123;#hex|text&#125;&#125;</code> for custom color, <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-700 font-bold">==text==</code> for default highlight, <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-700 font-bold">**text**</code> for bold.
+                  </div>
                 </div>
 
-                {/* 📱 Real-Time Live Phone Mockup Preview */}
-                <div className="md:col-span-4 flex flex-col items-center">
-                  <div className="font-mono text-[11px] font-bold text-stone-500 mb-1.5">
-                    Live Phone Mockup Preview:
-                  </div>
-                  <div className="relative w-44 h-80 rounded-3xl p-1 bg-stone-900 border-2 border-stone-700 shadow-xl overflow-hidden flex flex-col">
-                    <div className="relative w-full h-full rounded-[22px] overflow-hidden bg-stone-800 flex flex-col justify-between">
-                      <img
-                        src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl) || "/harsh-cover.jpg"}
-                        alt="Cover Preview"
-                        className="absolute inset-0 w-full h-full object-cover object-[center_top]"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-transparent pointer-events-none" />
+                {/* ── 2B. NARRATIVE BIO EDITOR ── */}
+                <div className="space-y-2 pt-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <label className="font-mono text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <span>About Me Narrative Bio:</span>
+                    </label>
 
-                      {/* Top Bar inside Mockup */}
-                      <div className="relative z-10 w-full px-2 pt-2 flex justify-end">
-                        <span className="font-mono text-[7px] text-white bg-black/75 px-1.5 py-0.5 rounded-full border border-stone-600">
-                          ADMIN
-                        </span>
-                      </div>
+                    {/* Toolbar for Bio */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => applyColorHighlight("bio", bioTextareaRef, highlighterColor)}
+                        className="px-3 py-1 rounded-lg text-black font-mono text-[11px] font-bold border-2 border-black shadow-[1.5px_1.5px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5 hover:brightness-105"
+                        style={{ backgroundColor: highlighterColor }}
+                        title="Highlight selected text in Bio with active color"
+                      >
+                        <span className="w-2 h-2 rounded-full bg-black/80" />
+                        <span>Highlight Selection</span>
+                      </button>
 
-                      {/* Bottom Details inside Mockup */}
-                      <div className="relative z-10 p-2 text-center flex flex-col items-center">
-                        <span
-                          className="font-hero-heading text-[13px] text-white tracking-wide leading-none select-none mb-1.5"
-                          style={{
-                            fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
-                            textShadow: `1px 1px 0 #000, -1px -1px 0 #000, 2px 2px 0 ${coverAccentColor}`,
-                          }}
-                        >
-                          {portfolio.personal.name || "HARSH ARYAN"}
-                        </span>
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => applyFormatToSelection("bio", bioTextareaRef, "bold")}
+                        className="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-900 font-mono text-[11px] font-bold border border-stone-300 cursor-pointer flex items-center gap-1 active:translate-y-0.5"
+                        title="Wrap selected text in **bold**"
+                      >
+                        <Type className="w-3 h-3 text-stone-600" />
+                        <span>Bold</span>
+                      </button>
 
-                        {/* Live Badges Preview: Teaching Assistant with IIT Madras underneath */}
-                        {portfolio.personal.showMobileCurrentRole !== false && (
-                          <div className="flex flex-col items-center justify-center mb-1 px-2 py-1 rounded-xl bg-black/85 border border-emerald-400/50 w-full max-w-[130px]">
-                            <span className="text-white text-[7.5px] font-bold uppercase tracking-wider flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                              <span className="text-emerald-300 font-mono text-[7px]">Teaching Assistant</span>
-                            </span>
-                            <span className="text-amber-300 font-mono text-[6.5px] font-bold uppercase tracking-wider mt-0.5">
-                              IIT Madras
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Live Tagline Preview */}
-                        <p className="text-stone-300 text-[8px] font-drawing-kids tracking-wider line-clamp-2 max-w-[140px]">
-                          {portfolio.personal.mobileTagline || "Teaching Machines To Learn • Building Scientific Software"}
-                        </p>
-                      </div>
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => applyFormatToSelection("bio", bioTextareaRef, "clear")}
+                        className="px-2 py-1 rounded-lg bg-white hover:bg-red-50 text-stone-600 hover:text-red-600 font-mono text-[11px] border border-stone-300 cursor-pointer flex items-center gap-1 active:translate-y-0.5"
+                        title="Remove highlight/bold from selected text"
+                      >
+                        <Eraser className="w-3 h-3" />
+                        <span>Clear</span>
+                      </button>
                     </div>
                   </div>
 
-                  <div className="mt-2 flex items-center gap-1.5 font-mono text-[10px] text-stone-600 bg-stone-100 px-2.5 py-1 rounded-full border border-stone-200">
-                    <span className="w-2.5 h-2.5 rounded-full border border-black shadow-[1px_1px_0_#000]" style={{ backgroundColor: coverAccentColor }} />
-                    <span>Auto Accent: <strong className="font-bold">{coverAccentColor}</strong></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ── 3. SOCIAL & CONTACT LINKS (Both Devices) ── */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
-              <h3 className="font-mono text-sm font-black uppercase text-stone-900">
-                Primary Social &amp; Contact Links
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">GitHub URL:</label>
-                  <input
-                    type="text"
-                    value={portfolio.socialLinks.github}
+                  <textarea
+                    ref={bioTextareaRef}
+                    rows={6}
+                    value={portfolio.personal.bio || ""}
                     onChange={(e) =>
                       setPortfolio((prev) => ({
                         ...prev,
-                        socialLinks: { ...prev.socialLinks, github: e.target.value },
+                        personal: { ...prev.personal, bio: e.target.value },
                       }))
                     }
-                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    onSelect={(e) => {
+                      const el = e.currentTarget;
+                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
+                        setSelectedTarget({
+                          field: "bio",
+                          text: el.value.substring(el.selectionStart, el.selectionEnd),
+                          start: el.selectionStart,
+                          end: el.selectionEnd,
+                        });
+                      }
+                    }}
+                    onMouseUp={(e) => {
+                      const el = e.currentTarget;
+                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
+                        setSelectedTarget({
+                          field: "bio",
+                          text: el.value.substring(el.selectionStart, el.selectionEnd),
+                          start: el.selectionStart,
+                          end: el.selectionEnd,
+                        });
+                      }
+                    }}
+                    onKeyUp={(e) => {
+                      const el = e.currentTarget;
+                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
+                        setSelectedTarget({
+                          field: "bio",
+                          text: el.value.substring(el.selectionStart, el.selectionEnd),
+                          start: el.selectionStart,
+                          end: el.selectionEnd,
+                        });
+                      }
+                    }}
+                    className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none leading-relaxed transition-all"
+                    placeholder="Enter your detailed bio narrative..."
                   />
                 </div>
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">LinkedIn URL:</label>
-                  <input
-                    type="text"
-                    value={portfolio.socialLinks.linkedin}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        socialLinks: { ...prev.socialLinks, linkedin: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-              </div>
-            </div>
 
-            {/* Bottom Save Bar */}
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-8 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-sm font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Apply & Save All Cover Settings"}</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ── TAB: ABOUT & DOSSIER MANAGER ── */}
-        {activeTab === "about" && (
-          <div className="space-y-8">
-            {/* Header intro & Save CTA */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                  <User className="w-6 h-6 text-amber-500" />
-                  <span>About Page &amp; Dossier Manager</span>
-                </h2>
-                <p className="font-mono text-xs text-stone-500 mt-1">
-                  Yahan se aap About page ki <strong>Framed Photo</strong>, <strong>OG Plaque (Name, Work &amp; Workplace)</strong>, <strong>Content Highlights</strong>, <strong>Quick Stats Capsules</strong>, <strong>Skills</strong>, aur <strong>Roadmap Milestones</strong> edit kar sakte hain.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer shrink-0 flex items-center gap-1.5 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save All About Changes"}</span>
-              </button>
-            </div>
-
-            {/* ── 1. FRAMED PHOTO & "OG" EXHIBITION PLAQUE ── */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="p-2 rounded-xl bg-stone-900 text-amber-300 border border-black text-sm">
-                    🖼️
-                  </span>
-                  <div>
-                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      Framing Photo &amp; &quot;OG&quot; Exhibition Plaque
-                    </h3>
-                    <p className="font-mono text-xs text-stone-500">
-                      Classic dark moulding frame, archival ivory mat, photo corner tag, aur frame ke theek neeche authentic identity plaque.
-                    </p>
-                  </div>
-                </div>
-                <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-stone-100 text-stone-800 border border-stone-300 px-2.5 py-1 rounded-full">
-                  Exhibition Mount
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                {/* Photo Inputs & Plaque Fields (Left 7 cols) */}
-                <div className="md:col-span-7 space-y-4">
-                  {/* Photo Link Input */}
-                  <div>
-                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                      About Photo (Google Drive ya Direct Image URL):
+                {/* ── 2C. AUTO-HIGHLIGHT KEYWORDS (GLOBAL) ── */}
+                <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/90 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="font-mono text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Auto-Highlight Keywords (Comma Separated):</span>
                     </label>
-                    <div className="flex gap-2">
+                    <span className="text-[10px] font-mono text-stone-500">
+                      Applied automatically without typing markup
+                    </span>
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="e.g. Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"
+                    value={portfolio.personal.aboutHighlightedWords ?? "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"}
+                    onChange={(e) =>
+                      setPortfolio((prev) => ({
+                        ...prev,
+                        personal: { ...prev.personal, aboutHighlightedWords: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                  />
+
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                    <span className="font-mono text-[11px] text-stone-600 font-bold">
+                      Default Keyword Auto-Color:
+                    </span>
+                    <div className="flex items-center gap-2">
                       <input
-                        type="text"
-                        placeholder="e.g. https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
-                        value={portfolio.personal.aboutPhotoUrl || ""}
+                        type="color"
+                        value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
                         onChange={(e) =>
                           setPortfolio((prev) => ({
                             ...prev,
-                            personal: { ...prev.personal, aboutPhotoUrl: e.target.value },
+                            personal: { ...prev.personal, aboutHighlightColor: e.target.value },
                           }))
                         }
-                        className="flex-1 px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent"
                       />
-                      {portfolio.personal.aboutPhotoUrl && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, aboutPhotoUrl: "" },
-                            }))
-                          }
-                          className="px-3 py-1.5 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 font-mono text-xs cursor-pointer"
-                        >
-                          Clear
-                        </button>
-                      )}
+                      <input
+                        type="text"
+                        value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                        onChange={(e) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, aboutHighlightColor: e.target.value },
+                          }))
+                        }
+                        className="w-20 px-2 py-0.5 rounded border border-stone-300 font-mono text-[11px] font-bold uppercase text-stone-900"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── 2D. LIVE FORMATTED PREVIEW ── */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-stone-900 text-white space-y-3.5 border-2 border-black shadow-[3px_3px_0_#f59e0b]">
+                  <div className="flex items-center justify-between border-b border-stone-800 pb-2.5">
+                    <span className="font-mono text-xs font-black uppercase text-amber-400 flex items-center gap-1.5">
+                      <Eye className="w-4 h-4" />
+                      <span>Live Formatted Preview (Real-Time Rendering):</span>
+                    </span>
+                    <span className="font-mono text-[10px] text-stone-400 bg-stone-800 px-2 py-0.5 rounded border border-stone-700">
+                      Matches Live About Page
+                    </span>
+                  </div>
+
+                  {/* Statement Live */}
+                  <div className="space-y-1">
+                    <div className="font-mono text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                      [PERSONAL STATEMENT]
+                    </div>
+                    <div className="font-semibold text-base sm:text-lg text-white leading-snug">
+                      <FormattedHighlightedText
+                        text={portfolio.personal.headline}
+                        highlightKeywords={portfolio.personal.aboutHighlightedWords}
+                        highlightColor={portfolio.personal.aboutHighlightColor || highlighterColor}
+                      />
                     </div>
                   </div>
 
-                  {/* Device Upload / Reset */}
-                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
-                    <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
-                      <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
-                      <span>📁 Select Image from Device</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            try {
-                              setIsSaving(true);
-                              setToastMessage("Compressing & saving image...");
-                              const compressed = await compressImageFile(file);
-                              const updated = {
-                                ...portfolio,
-                                personal: { ...portfolio.personal, aboutPhotoUrl: compressed },
-                              };
-                              setPortfolio(updated);
-                              await saveInstantly(updated, "✅ About photo uploaded & saved!");
-                            } catch {
-                              alert("Failed to process image.");
-                            } finally {
-                              setIsSaving(false);
-                            }
-                          }
-                        }}
-                      />
-                    </label>
+                  {/* Bio Live */}
+                  <div className="space-y-1 pt-2 border-t border-stone-800 text-xs sm:text-sm text-stone-300 leading-relaxed">
+                    <FormattedHighlightedText
+                      text={portfolio.personal.bio}
+                      highlightKeywords={portfolio.personal.aboutHighlightedWords}
+                      highlightColor={portfolio.personal.aboutHighlightColor || highlighterColor}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
+            {/* ── 3. KEY BENCHMARKS (QUICK STATS CAPSULES) ── */}
+            {(aboutSubView === "all" || aboutSubView === "benchmarks") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-cyan-100 text-cyan-900 border border-cyan-300 text-sm">
+                      ⚡
+                    </span>
+                    <div>
+                      <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                        3. Key Benchmarks (Quick Stats Cards)
+                      </h3>
+                      <p className="font-mono text-xs text-stone-500">
+                        About section me Statement aur Bio ke theek neeche render hone wale 4 slim benchmark capsules.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddQuickStat}
+                    className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Stat Capsule</span>
+                  </button>
+                </div>
+
+                {/* Edit Form Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {(portfolio.quickStats || []).map((stat, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3"
+                    >
+                      <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                        <span className="font-mono text-xs font-black uppercase text-stone-600">
+                          Card #{idx + 1}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleMoveQuickStat(idx, "up")}
+                            disabled={idx === 0}
+                            className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                            title="Move Left/Up"
+                          >
+                            <ArrowUp className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveQuickStat(idx, "down")}
+                            disabled={idx === (portfolio.quickStats || []).length - 1}
+                            className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                            title="Move Right/Down"
+                          >
+                            <ArrowDown className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveQuickStat(idx)}
+                            className="p-1 rounded bg-white border border-stone-300 text-red-500 hover:bg-red-50 cursor-pointer ml-1"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                          Value (Big Stat):
+                        </label>
+                        <input
+                          type="text"
+                          value={stat.value}
+                          onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
+                          placeholder="e.g. 6+"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                          Label:
+                        </label>
+                        <input
+                          type="text"
+                          value={stat.label}
+                          onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                          placeholder="e.g. Specialization"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                          Sublabel:
+                        </label>
+                        <input
+                          type="text"
+                          value={stat.sublabel}
+                          onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-[11px] text-stone-600 focus:border-black focus:outline-none"
+                          placeholder="e.g. Machine Learning & AI"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Live Slim Cards Preview */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-stone-100 border border-stone-300 space-y-3">
+                  <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                    <span className="font-mono text-xs font-black uppercase text-stone-800 flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5 text-stone-600" />
+                      <span>Live Key Benchmarks Preview (Actual Site Cards):</span>
+                    </span>
+                    <span className="font-mono text-[10px] text-stone-500">
+                      [KEY BENCHMARKS]
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+                    {(portfolio.quickStats || []).map((st, i) => (
+                      <div
+                        key={i}
+                        className="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0_#000] transition-all"
+                      >
+                        <div className="text-xl sm:text-2xl font-black text-black font-mono tracking-tight leading-none">
+                          {st.value || "0"}
+                        </div>
+                        <div className="text-[10px] sm:text-[11px] font-mono font-bold text-stone-700 uppercase tracking-wider mt-1.5 leading-tight">
+                          {st.label || "METRIC"}
+                        </div>
+                        {st.sublabel && (
+                          <div className="text-[9px] font-mono text-stone-400 truncate mt-0.5 leading-tight">
+                            {st.sublabel}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── 4. PROFESSIONAL EXPERIENCE CATALOG ── */}
+            {(aboutSubView === "all" || aboutSubView === "experience") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-sky-100 text-sky-900 border border-sky-300 text-sm">
+                      💼
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                          4. Professional Experience & Roles
+                        </h3>
+                        {portfolio.personal.showExperienceSection === false && (
+                          <span className="px-2 py-0.5 rounded-md bg-red-100 text-red-800 border border-red-300 font-mono text-[10px] font-black uppercase">
+                            Section Hidden
+                          </span>
+                        )}
+                      </div>
+                      <p className="font-mono text-xs text-stone-500">
+                        Manage teaching roles, internships, research assistantships & industry experience
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                    {/* Hide / Unhide Toggle */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: {
+                            ...prev.personal,
+                            showExperienceSection: prev.personal.showExperienceSection === false ? true : false,
+                          },
+                        }))
+                      }
+                      className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer ${
+                        portfolio.personal.showExperienceSection === false
+                          ? "bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100 shadow-xs"
+                          : "bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 shadow-xs"
+                      }`}
+                      title={
+                        portfolio.personal.showExperienceSection === false
+                          ? "Click to display Experience section on the main page"
+                          : "Click to hide Experience section from the main page"
+                      }
+                    >
+                      {portfolio.personal.showExperienceSection === false ? (
+                        <>
+                          <EyeOff className="w-3.5 h-3.5 text-rose-600" />
+                          <span>● Section Hidden</span>
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                            Section Visible
+                          </span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleAddExperience}
+                      className="px-3 py-1.5 rounded-xl bg-black text-white font-mono text-xs font-bold hover:bg-stone-800 transition-colors flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0_#000]"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Experience</span>
+                    </button>
+                  </div>
+                </div>
+
+                {portfolio.personal.showExperienceSection === false && (
+                  <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 flex items-start gap-2.5 text-xs text-amber-900 font-mono">
+                    <span className="text-base">ℹ️</span>
+                    <div>
+                      <strong className="font-bold">Experience Section is currently hidden:</strong> It will not show on the live homepage between Core Capabilities and Trajectory. Click <strong>"Section Hidden"</strong> above to make it visible.
+                    </div>
+                  </div>
+                )}
+
+                {/* Experience Cards List */}
+                <div className="space-y-6">
+                  {(!portfolio.experiences || portfolio.experiences.length === 0) ? (
+                    <div className="p-8 text-center border-2 border-dashed border-stone-300 rounded-2xl space-y-3">
+                      <p className="font-mono text-sm text-stone-500">No experience roles added yet.</p>
+                      <button
+                        type="button"
+                        onClick={handleAddExperience}
+                        className="px-4 py-2 rounded-xl bg-black text-white font-mono text-xs font-bold hover:bg-stone-800 transition-all cursor-pointer shadow-[2px_2px_0_#000]"
+                      >
+                        + Add First Experience Role
+                      </button>
+                    </div>
+                  ) : (
+                    portfolio.experiences.map((exp, idx) => (
+                      <div
+                        key={exp.id || idx}
+                        className="p-5 sm:p-6 rounded-2xl border-2 border-black bg-stone-50/70 shadow-[3px_3px_0_#000] space-y-5"
+                      >
+                        {/* Entry Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-stone-200 gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="px-2.5 py-1 rounded-lg bg-black text-white font-mono text-xs font-black">
+                              Role #{idx + 1}
+                            </span>
+                            <span className="font-['Space_Grotesk'] text-sm sm:text-base font-black text-stone-900">
+                              {exp.role || "Untitled Role"}
+                            </span>
+                            <span className="font-mono text-xs text-stone-500">
+                              @ {exp.company || "Company"}
+                            </span>
+                            {exp.isCurrent && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono text-[10px] font-bold">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                                Current Active Role
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1.5 self-end sm:self-auto">
+                            <button
+                              type="button"
+                              onClick={() => handleMoveExperience(idx, "up")}
+                              disabled={idx === 0}
+                              className={`p-1.5 rounded-lg border border-black bg-white transition-all ${
+                                idx === 0 ? "opacity-30 cursor-not-allowed" : "hover:bg-stone-100 cursor-pointer shadow-[1px_1px_0_#000]"
+                              }`}
+                              title="Move Up"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5 text-stone-700" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveExperience(idx, "down")}
+                              disabled={idx === (portfolio.experiences || []).length - 1}
+                              className={`p-1.5 rounded-lg border border-black bg-white transition-all ${
+                                idx === (portfolio.experiences || []).length - 1
+                                  ? "opacity-30 cursor-not-allowed"
+                                  : "hover:bg-stone-100 cursor-pointer shadow-[1px_1px_0_#000]"
+                              }`}
+                              title="Move Down"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5 text-stone-700" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveExperience(idx)}
+                              className="p-1.5 rounded-lg border border-red-300 bg-red-50 hover:bg-red-100 text-red-600 transition-all cursor-pointer shadow-[1px_1px_0_#ef4444]"
+                              title="Delete Role"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Fields Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                              Role Title *
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.role || ""}
+                              onChange={(e) => handleUpdateExperience(idx, "role", e.target.value)}
+                              placeholder="e.g. Teaching Assistant"
+                              className="w-full px-3 py-2 border-2 border-black rounded-xl font-mono text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-yellow-400"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                              Company / Institution *
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.company || ""}
+                              onChange={(e) => handleUpdateExperience(idx, "company", e.target.value)}
+                              placeholder="e.g. IIT Madras"
+                              className="w-full px-3 py-2 border-2 border-black rounded-xl font-mono text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-yellow-400"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                              Company Website URL
+                            </label>
+                            <input
+                              type="url"
+                              value={exp.companyUrl || ""}
+                              onChange={(e) => handleUpdateExperience(idx, "companyUrl", e.target.value)}
+                              placeholder="https://..."
+                              className="w-full px-3 py-2 border-2 border-black rounded-xl font-mono text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-yellow-400"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                              Time Period *
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.period || ""}
+                              onChange={(e) => handleUpdateExperience(idx, "period", e.target.value)}
+                              placeholder="e.g. Aug 2024 – Present"
+                              className="w-full px-3 py-2 border-2 border-black rounded-xl font-mono text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-yellow-400"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                              Location
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.location || ""}
+                              onChange={(e) => handleUpdateExperience(idx, "location", e.target.value)}
+                              placeholder="e.g. Chennai, India / Remote"
+                              className="w-full px-3 py-2 border-2 border-black rounded-xl font-mono text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-yellow-400"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                              Role Type / Domain Tag
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.type || ""}
+                              onChange={(e) => handleUpdateExperience(idx, "type", e.target.value)}
+                              placeholder="e.g. Academic & Mentorship"
+                              className="w-full px-3 py-2 border-2 border-black rounded-xl font-mono text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-yellow-400"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Current Role Checkbox */}
+                        <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-stone-200">
+                          <input
+                            type="checkbox"
+                            id={`current-role-${idx}`}
+                            checked={exp.isCurrent || false}
+                            onChange={(e) => handleUpdateExperience(idx, "isCurrent", e.target.checked)}
+                            className="w-4 h-4 rounded-sm border-2 border-black accent-yellow-400 cursor-pointer"
+                          />
+                          <label
+                            htmlFor={`current-role-${idx}`}
+                            className="font-mono text-xs font-bold text-stone-800 cursor-pointer select-none"
+                          >
+                            Currently active position (Displays glowing live green pulse badge on website)
+                          </label>
+                        </div>
+
+                        {/* Role Description */}
+                        <div>
+                          <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                            Role Description / Scope
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={exp.description || ""}
+                            onChange={(e) => handleUpdateExperience(idx, "description", e.target.value)}
+                            placeholder="Describe your primary role, mentoring responsibilities, or technical focus..."
+                            className="w-full px-3 py-2 border-2 border-black rounded-xl font-mono text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-yellow-400"
+                          />
+                        </div>
+
+                        {/* Key Highlights / Bullets */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="block text-xs font-mono font-bold text-stone-700">
+                              Key Impacts & Achievements (Bullet Points)
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => handleAddExperienceHighlight(idx)}
+                              className="px-2 py-1 rounded-lg bg-stone-200 hover:bg-stone-300 font-mono text-[10px] font-bold text-stone-800 transition-colors flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus className="w-3 h-3" /> Add Impact Bullet
+                            </button>
+                          </div>
+
+                          <div className="space-y-2">
+                            {(exp.highlights || []).map((highlight, hIdx) => (
+                              <div key={hIdx} className="flex items-center gap-2">
+                                <span className="font-mono text-xs text-amber-500 font-black">✦</span>
+                                <input
+                                  type="text"
+                                  value={highlight}
+                                  onChange={(e) => handleUpdateExperienceHighlight(idx, hIdx, e.target.value)}
+                                  placeholder="Key achievement or metric..."
+                                  className="flex-1 px-3 py-1.5 border border-stone-300 rounded-lg font-mono text-xs bg-white focus:outline-hidden focus:border-black"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveExperienceHighlight(idx, hIdx)}
+                                  className="p-1.5 text-stone-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                                  title="Remove Highlight"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Tech Stack / Skills Used */}
+                        <div>
+                          <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                            Skills & Technologies Used (Comma-separated)
+                          </label>
+                          <input
+                            type="text"
+                            value={(exp.skillsUsed || []).join(", ")}
+                            onChange={(e) => {
+                              const items = e.target.value
+                                .split(",")
+                                .map((s) => s.trim())
+                                .filter(Boolean);
+                              handleUpdateExperience(idx, "skillsUsed", items);
+                            }}
+                            placeholder="e.g. Python, Machine Learning, Data Science, Git"
+                            className="w-full px-3 py-2 border-2 border-black rounded-xl font-mono text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-yellow-400"
+                          />
+                          <p className="font-mono text-[10px] text-stone-400 mt-1">
+                            Separate skills with commas. They will appear as neat tags on the website card.
+                          </p>
+                        </div>
+
+                        {/* Live Experience Preview Card */}
+                        <div className="mt-4 pt-4 border-t border-dashed border-stone-300">
+                          <div className="text-[10px] font-mono font-black uppercase text-stone-500 tracking-wider mb-2">
+                            ✦ Live Neo-Brutalist Card Preview:
+                          </div>
+                          <div className="p-4 sm:p-5 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] relative space-y-3">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-stone-100 border border-black font-mono text-[10px] font-bold text-stone-800">
+                                  💼 {exp.type || "Role"}
+                                </span>
+                                {exp.isCurrent && (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 border border-emerald-400 font-mono text-[10px] font-black text-emerald-800">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                                    Active Now
+                                  </span>
+                                )}
+                              </div>
+                              <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 border border-stone-300">
+                                📅 {exp.period || "Period"}
+                              </span>
+                            </div>
+
+                            <div>
+                              <h4 className="font-['Space_Grotesk'] text-base font-black text-stone-900 leading-tight">
+                                {exp.role || "Role Title"}
+                              </h4>
+                              <div className="flex flex-wrap items-center gap-2 mt-1 text-xs font-mono font-bold text-stone-600">
+                                <span>🏢 {exp.company || "Company"}</span>
+                                {exp.location && <span>• 📍 {exp.location}</span>}
+                              </div>
+                            </div>
+
+                            {exp.description && (
+                              <p className="font-mono text-xs text-stone-600 leading-relaxed">
+                                {exp.description}
+                              </p>
+                            )}
+
+                            {(exp.highlights || []).length > 0 && (
+                              <ul className="space-y-1">
+                                {(exp.highlights || []).map((h, i) => (
+                                  <li key={i} className="flex items-start gap-1.5 font-mono text-[11px] text-stone-700">
+                                    <span className="text-amber-500 font-black">✦</span>
+                                    <span>{h}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+
+                            {(exp.skillsUsed || []).length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 pt-2 border-t border-stone-100">
+                                {(exp.skillsUsed || []).map((sk, i) => (
+                                  <span
+                                    key={i}
+                                    className="px-2 py-0.5 rounded-md bg-stone-100 border border-stone-300 font-mono text-[10px] font-bold text-stone-700"
+                                  >
+                                    #{sk}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ── 5. DEVELOPMENT TRAJECTORY (ROADMAP MILESTONES) ── */}
+            {(aboutSubView === "all" || aboutSubView === "milestones") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-sm">
+                      🚀
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                          5. Development Trajectory (Roadmap Milestones)
+                        </h3>
+                        {portfolio.personal.showDevelopmentTrajectory === false && (
+                          <span className="px-2 py-0.5 rounded-md bg-red-100 text-red-800 border border-red-300 font-mono text-[10px] font-black uppercase">
+                            Hidden from Site
+                          </span>
+                        )}
+                      </div>
+                      <p className="font-mono text-xs text-stone-500">
+                        Sequential roadmap phases showcasing core algorithms, exploratory mathematical modeling, and AI system engineering.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Hide / Unhide Section Toggle */}
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const current = portfolio.personal.showDevelopmentTrajectory !== false;
+                        const updated = {
+                          ...portfolio,
+                          personal: {
+                            ...portfolio.personal,
+                            showDevelopmentTrajectory: !current,
+                          },
+                        };
+                        setPortfolio(updated);
+                        await saveInstantly(
+                          updated,
+                          !current
+                            ? "✅ Development Trajectory section is now VISIBLE on site!"
+                            : "⚠️ Development Trajectory section is now HIDDEN from site!"
+                        );
+                      }}
+                      className={`px-3.5 py-1.5 rounded-xl font-mono text-xs font-black uppercase transition-all cursor-pointer border flex items-center gap-1.5 active:translate-y-0.5 ${
+                        portfolio.personal.showDevelopmentTrajectory !== false
+                          ? "bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 shadow-xs"
+                          : "bg-stone-200 hover:bg-stone-300 text-stone-700 border-stone-400"
+                      }`}
+                      title={portfolio.personal.showDevelopmentTrajectory !== false ? "Click to hide section from main site" : "Click to show section on main site"}
+                    >
+                      {portfolio.personal.showDevelopmentTrajectory !== false ? (
+                        <>
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>● Section Visible</span>
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="w-3.5 h-3.5 text-red-600" />
+                          <span>○ Section Hidden</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleAddMilestone}
+                      className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Trajectory Phase</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Notice banner when section is hidden */}
+                {portfolio.personal.showDevelopmentTrajectory === false && (
+                  <div className="p-3.5 rounded-2xl bg-amber-50 border-2 border-dashed border-amber-300 text-amber-900 font-mono text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <EyeOff className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>
+                        Ye poora <strong>DEVELOPMENT TRAJECTORY</strong> section abhi main website par <strong>HIDDEN</strong> hai. Live site par ye render nahi hoga.
+                      </span>
+                    </div>
                     <button
                       type="button"
                       onClick={async () => {
                         const updated = {
                           ...portfolio,
-                          personal: { ...portfolio.personal, aboutPhotoUrl: "/harsh-cover.jpg" },
+                          personal: {
+                            ...portfolio.personal,
+                            showDevelopmentTrajectory: true,
+                          },
                         };
                         setPortfolio(updated);
-                        await saveInstantly(updated, "✅ Reset to /harsh-cover.jpg!");
+                        await saveInstantly(updated, "✅ Development Trajectory section is now VISIBLE on site!");
                       }}
-                      className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer"
+                      className="px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-mono text-xs font-bold cursor-pointer shrink-0 self-start sm:self-auto"
                     >
-                      Reset Default
+                      Unhide / Show Section
                     </button>
                   </div>
+                )}
 
-                  {/* Corner Photo Tag */}
-                  <div>
-                    <label className="block font-mono text-xs font-bold text-amber-900 mb-1.5 flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-amber-400 border border-black inline-block" />
-                      <span>Photo Corner Tag / Badge (Right bottom of photo):</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. ✦ TA @ IIT MADRAS"
-                      value={portfolio.personal.aboutPhotoTag ?? "✦ TA @ IIT MADRAS"}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, aboutPhotoTag: e.target.value },
-                        }))
-                      }
-                      className="w-full px-3.5 py-2 rounded-xl bg-amber-50/50 border border-amber-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                    />
-                    <span className="block font-mono text-[10px] text-stone-400 mt-1">
-                      Framed photo ke bottom-right corner me gold ribbon badge ki tarah show hota hai.
+                {/* Milestones Edit Cards */}
+                <div className="space-y-4">
+                  {(portfolio.milestones && portfolio.milestones.length > 0
+                    ? portfolio.milestones
+                    : [
+                        { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+                        { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+                        { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+                      ]
+                  ).map((m, mIdx, arr) => (
+                    <div
+                      key={mIdx}
+                      className="p-4 sm:p-5 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3"
+                    >
+                      <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-lg border border-emerald-300">
+                            PHASE {m.phaseNumber || `0${mIdx + 1}`}
+                          </span>
+                          <input
+                            type="text"
+                            value={m.period}
+                            placeholder="e.g. Foundations, Data & Math"
+                            onChange={(e) => handleUpdateMilestone(mIdx, "period", e.target.value)}
+                            className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleMoveMilestone(mIdx, "up")}
+                            disabled={mIdx === 0}
+                            className="p-1.5 rounded-lg bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveMilestone(mIdx, "down")}
+                            disabled={mIdx === arr.length - 1}
+                            className="p-1.5 rounded-lg bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMilestone(mIdx)}
+                            className="p-1.5 rounded-lg bg-white border border-stone-300 text-red-500 hover:bg-red-50 cursor-pointer ml-1"
+                            title="Delete Phase"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Phase Title:
+                          </label>
+                          <input
+                            type="text"
+                            value={m.title}
+                            onChange={(e) => handleUpdateMilestone(mIdx, "title", e.target.value)}
+                            className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                            Phase Subtitle:
+                          </label>
+                          <input
+                            type="text"
+                            value={m.subtitle}
+                            onChange={(e) => handleUpdateMilestone(mIdx, "subtitle", e.target.value)}
+                            className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Phase Description:
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={m.description}
+                          onChange={(e) => handleUpdateMilestone(mIdx, "description", e.target.value)}
+                          className="w-full p-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs text-stone-800 focus:border-black focus:outline-none leading-relaxed"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Live Trajectory Roadmap Preview (Real Website Banners) */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-stone-100 border border-stone-300 space-y-3">
+                  <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                    <span className="font-mono text-xs font-black uppercase text-stone-800 flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Live Trajectory Roadmap Preview (Actual Site Cards):</span>
+                    </span>
+                    <span className="font-mono text-[10px] text-stone-500">
+                      [ROADMAP]
                     </span>
                   </div>
 
-                  {/* ── OG PLAQUE DETAILS (Under the frame) ── */}
-                  <div className="p-4 rounded-2xl bg-stone-50 border border-stone-300 space-y-3.5">
-                    <div className="font-mono text-xs font-black uppercase text-stone-900 flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <span>🏛️</span>
-                        <span>OG Exhibition Plaque Details (Frame Ke Niche):</span>
-                      </span>
-                      <span className="text-[10px] text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-                        Live Displayed
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Plaque Name:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.name || ""}
-                          onChange={(e) =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, name: e.target.value },
-                            }))
-                          }
-                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Current Work / Role:
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="e.g. Teaching Assistant"
-                          value={portfolio.personal.aboutCurrentWork ?? "Teaching Assistant"}
-                          onChange={(e) =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, aboutCurrentWork: e.target.value },
-                            }))
-                          }
-                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Work Place / Org:
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="e.g. IIT Madras"
-                          value={portfolio.personal.aboutWorkPlace ?? "IIT Madras"}
-                          onChange={(e) =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, aboutWorkPlace: e.target.value },
-                            }))
-                          }
-                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Location:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.location || ""}
-                          onChange={(e) =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, location: e.target.value },
-                            }))
-                          }
-                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Degree &amp; Major:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.degree || ""}
-                          onChange={(e) =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, degree: e.target.value },
-                            }))
-                          }
-                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Live Preview Unified Frame (Right 5 cols) */}
-                <div className="md:col-span-5 flex flex-col items-center">
-                  <div className="font-mono text-[11px] font-bold text-stone-500 mb-2">
-                    Live Unified Frame Preview:
-                  </div>
-
-                  {/* The Unified Frame Preview */}
-                  <div className="w-full max-w-[270px]">
-                    {/* Washi Tape */}
-                    <div className="w-24 h-5 bg-[#fde047]/85 border-t border-b border-black/25 shadow-xs rotate-[-1.5deg] mx-auto -mb-2.5 z-20 relative rounded-[2px]" />
-
-                    {/* Frame Body */}
-                    <div className="rounded-2xl border-2 border-black bg-[#fffdfa] shadow-[5px_5px_0_#000] p-3 space-y-2.5">
-                      {/* Photo Inset */}
-                      <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden border border-black/25 bg-stone-100">
-                        <img
-                          src={formatGoogleDriveImageUrl(portfolio.personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
-                          alt="About Frame Preview"
-                          className="w-full h-full object-cover object-top"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
-                          }}
-                        />
-                        {/* Corner Tabs */}
-                        <div className="absolute top-1 left-1 w-2.5 h-2.5 border-t border-l border-black/60 pointer-events-none" />
-                        <div className="absolute top-1 right-1 w-2.5 h-2.5 border-t border-r border-black/60 pointer-events-none" />
-                        <div className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b border-l border-black/60 pointer-events-none" />
-                        <div className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b border-r border-black/60 pointer-events-none" />
-                      </div>
-
-                      {/* Integrated Chin Details */}
-                      <div className="pt-2 border-t-2 border-dashed border-stone-300 space-y-2">
-                        <div className="font-['Space_Grotesk'] text-base font-black uppercase text-black leading-none truncate">
-                          {portfolio.personal.name || "HARSH ARYAN"}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {(portfolio.milestones && portfolio.milestones.length > 0
+                      ? portfolio.milestones
+                      : [
+                          { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+                          { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+                          { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+                        ]
+                    ).map((m, idx) => {
+                      const milestoneThemes = [
+                        { badgeBg: "bg-amber-400 text-black", border: "border-amber-300", accentText: "text-amber-800" },
+                        { badgeBg: "bg-emerald-500 text-white", border: "border-emerald-300", accentText: "text-emerald-800" },
+                        { badgeBg: "bg-indigo-600 text-white", border: "border-indigo-300", accentText: "text-indigo-800" },
+                      ];
+                      const t = milestoneThemes[idx % milestoneThemes.length];
+                      return (
+                        <div
+                          key={idx}
+                          className="p-4 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-2 flex flex-col justify-between"
+                        >
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-black uppercase ${t.badgeBg}`}>
+                                PHASE {m.phaseNumber || `0${idx + 1}`}
+                              </span>
+                              <span className={`font-mono text-[11px] font-bold ${t.accentText}`}>
+                                {m.period}
+                              </span>
+                            </div>
+                            <h4 className="font-black text-sm uppercase text-black leading-snug">
+                              {m.title}
+                            </h4>
+                            <p className="text-[11px] font-mono font-bold text-stone-500">
+                              {m.subtitle}
+                            </p>
+                            <p className="text-xs text-stone-600 leading-relaxed pt-1">
+                              {m.description}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-start gap-1 text-[9px] font-mono font-bold">
-                          <span className="px-1.5 py-0.5 rounded bg-stone-100 border border-stone-300 text-stone-900 flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}</span>
-                          </span>
-                          <span className="px-1.5 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-950">
-                            {portfolio.personal.aboutWorkPlace || "IIT Madras"}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between pt-1 border-t border-stone-200 text-[9px] font-mono text-stone-500">
-                          <span>📍 {portfolio.personal.location || "India"}</span>
-                        </div>
-                      </div>
-                    </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* ── 2. PERSONAL STATEMENT, BIO & LIVE HIGHLIGHTER ── */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
-                    ✍️
-                  </span>
-                  <div>
-                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      Statement, Bio &amp; Content Highlighter
-                    </h3>
-                    <p className="font-mono text-xs text-stone-500">
-                      Apne words aur names ko highlight karein (Yellow marker, Cyan marker, ya Bold).
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Header Zone & Title Customization */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                    Section Header Badge Stamp:
-                  </label>
-                  <input
-                    type="text"
-                    value={portfolio.personal.aboutZoneBadge ?? "✦ THE ARCHITECT & MIND"}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, aboutZoneBadge: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                    Section Heading:
-                  </label>
-                  <input
-                    type="text"
-                    value={portfolio.personal.aboutHeading ?? "Behind the Terminal"}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, aboutHeading: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Subtitle / Description */}
-              <div>
-                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                  Section Subtitle / Description:
-                </label>
-                <input
-                  type="text"
-                  value={portfolio.personal.aboutSubtitle ?? "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed."}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, aboutSubtitle: e.target.value },
-                    }))
-                  }
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:outline-none"
-                />
-              </div>
-
-              {/* Headline / Big Statement */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="font-mono text-xs font-bold text-stone-700">
-                    Personal Headline (Bold Statement):
-                  </label>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        wrapTextSelection(
-                          headlineInputRef,
-                          "==",
-                          "==",
-                          "highlighted",
-                          portfolio.personal.headline || "",
-                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, headline: val } }))
-                        )
-                      }
-                      className="px-2 py-0.5 rounded-md bg-amber-200 hover:bg-amber-300 text-stone-900 font-mono text-[10px] font-bold border border-amber-400 cursor-pointer"
-                      title="Wrap selection in Yellow highlight"
-                    >
-                      🟡 Yellow ==text==
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        wrapTextSelection(
-                          headlineInputRef,
-                          "^^",
-                          "^^",
-                          "highlighted",
-                          portfolio.personal.headline || "",
-                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, headline: val } }))
-                        )
-                      }
-                      className="px-2 py-0.5 rounded-md bg-cyan-200 hover:bg-cyan-300 text-stone-900 font-mono text-[10px] font-bold border border-cyan-400 cursor-pointer"
-                      title="Wrap selection in Cyan highlight"
-                    >
-                      🔵 Cyan ^^text^^
-                    </button>
-                  </div>
-                </div>
-                <input
-                  ref={headlineInputRef}
-                  type="text"
-                  value={portfolio.personal.headline || ""}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, headline: e.target.value },
-                    }))
-                  }
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:outline-none"
-                />
-              </div>
-
-              {/* Bio Narrative */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="font-mono text-xs font-bold text-stone-700">
-                    About Me Narrative Bio:
-                  </label>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        wrapTextSelection(
-                          bioTextareaRef,
-                          "==",
-                          "==",
-                          "highlighted",
-                          portfolio.personal.bio || "",
-                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, bio: val } }))
-                        )
-                      }
-                      className="px-2.5 py-1 rounded-md bg-amber-200 hover:bg-amber-300 text-stone-900 font-mono text-[10px] font-bold border border-amber-400 cursor-pointer"
-                      title="Wrap selection in Yellow highlight"
-                    >
-                      🟡 Yellow Highlight (==word==)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        wrapTextSelection(
-                          bioTextareaRef,
-                          "^^",
-                          "^^",
-                          "highlighted",
-                          portfolio.personal.bio || "",
-                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, bio: val } }))
-                        )
-                      }
-                      className="px-2.5 py-1 rounded-md bg-cyan-200 hover:bg-cyan-300 text-stone-900 font-mono text-[10px] font-bold border border-cyan-400 cursor-pointer"
-                      title="Wrap selection in Cyan highlight"
-                    >
-                      🔵 Cyan Highlight (^^word^^)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        wrapTextSelection(
-                          bioTextareaRef,
-                          "**",
-                          "**",
-                          "bold",
-                          portfolio.personal.bio || "",
-                          (val) => setPortfolio((prev) => ({ ...prev, personal: { ...prev.personal, bio: val } }))
-                        )
-                      }
-                      className="px-2.5 py-1 rounded-md bg-stone-200 hover:bg-stone-300 text-stone-900 font-mono text-[10px] font-bold border border-stone-400 cursor-pointer"
-                      title="Wrap selection in Bold"
-                    >
-                      𝗕 Bold (**word**)
-                    </button>
-                  </div>
-                </div>
-                <textarea
-                  ref={bioTextareaRef}
-                  rows={5}
-                  value={portfolio.personal.bio || ""}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, bio: e.target.value },
-                    }))
-                  }
-                  className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none transition-all leading-relaxed"
-                />
-              </div>
-            </div>
+            )}
 
             {/* Bottom Final Save Button for Profile */}
             <div className="flex justify-end pt-2">
@@ -2086,374 +4129,7 @@ export default function AdminPage() {
                 className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
               >
                 <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Profile Changes"}</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ── TAB: HIGHLIGHTS & KEY METRICS ── */}
-        {activeTab === "highlights" && (
-          <div className="space-y-8">
-            {/* Header intro & Save CTA */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                  <Sparkles className="w-6 h-6 text-amber-500" />
-                  <span>Highlights &amp; Section Metrics</span>
-                </h2>
-                <p className="font-mono text-xs text-stone-500 mt-1">
-                  Section Header stamps, Auto-highlighted words &amp; custom colors (without boxes), aur Quick Stats capsules.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer shrink-0 flex items-center gap-1.5 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Highlights"}</span>
-              </button>
-            </div>
-
-            {/* ── 1. SECTION HEADINGS & ZONE STAMP ── */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-              <div className="flex items-center gap-2.5 pb-4 border-b border-stone-200">
-                <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
-                  🏷️
-                </span>
-                <div>
-                  <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                    Section Header Stamp &amp; Titles
-                  </h3>
-                  <p className="font-mono text-xs text-stone-500">
-                    Portfolio ke About section ka zone badge, main heading aur subtitle customize karein.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                    Section Header Badge Stamp:
-                  </label>
-                  <input
-                    type="text"
-                    value={portfolio.personal.aboutZoneBadge ?? "✦ THE ARCHITECT & MIND"}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, aboutZoneBadge: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                    Section Heading:
-                  </label>
-                  <input
-                    type="text"
-                    value={portfolio.personal.aboutHeading ?? "Behind the Terminal"}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, aboutHeading: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                  Section Subtitle / Description:
-                </label>
-                <input
-                  type="text"
-                  value={portfolio.personal.aboutSubtitle ?? "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed."}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, aboutSubtitle: e.target.value },
-                    }))
-                  }
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:outline-none"
-                />
-              </div>
-            </div>
-
-            {/* ── 2. AUTO-HIGHLIGHT KEYWORDS & COLOR PICKER ── */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-              <div className="flex items-center gap-2.5 pb-4 border-b border-stone-200">
-                <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
-                  ✨
-                </span>
-                <div>
-                  <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                    Auto-Highlight Keywords &amp; Custom Color
-                  </h3>
-                  <p className="font-mono text-xs text-stone-500">
-                    Jo words comma ke sath likhenge, wo portfolio bio me bina background box ke directly is custom text color me highlight ho jayenge.
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-mono text-xs font-bold text-stone-700 mb-1.5">
-                  Auto-Highlight Keywords (Comma Separated):
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"
-                  value={portfolio.personal.aboutHighlightedWords ?? "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"}
-                  onChange={(e) =>
-                    setPortfolio((prev) => ({
-                      ...prev,
-                      personal: { ...prev.personal, aboutHighlightedWords: e.target.value },
-                    }))
-                  }
-                  className="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none font-bold"
-                />
-              </div>
-
-              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/90 space-y-4">
-                <div className="flex items-center justify-between">
-                  <label className="font-mono text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                    <span>🎨</span>
-                    <span>Highlight Text Color:</span>
-                  </label>
-                  <span
-                    className="px-2.5 py-1 rounded-lg font-mono text-xs font-black text-white shadow-xs"
-                    style={{ backgroundColor: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
-                  >
-                    {portfolio.personal.aboutHighlightColor || "#f59e0b"}
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="relative flex items-center gap-2 p-1.5 rounded-xl bg-white border border-amber-300 shadow-2xs">
-                    <input
-                      type="color"
-                      value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, aboutHighlightColor: e.target.value },
-                        }))
-                      }
-                      className="w-8 h-8 rounded-lg cursor-pointer border-0 p-0 bg-transparent"
-                    />
-                    <input
-                      type="text"
-                      value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, aboutHighlightColor: e.target.value },
-                        }))
-                      }
-                      placeholder="#f59e0b"
-                      className="w-24 px-2 py-1 font-mono text-xs font-bold text-stone-900 focus:outline-none uppercase"
-                    />
-                  </div>
-
-                  {/* 8 Curated Quick Preset Color Chips */}
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {[
-                      { name: "Warm Amber", hex: "#f59e0b" },
-                      { name: "Fresh Emerald", hex: "#10b981" },
-                      { name: "Royal Indigo", hex: "#6366f1" },
-                      { name: "Coral Rose", hex: "#f43f5e" },
-                      { name: "Electric Purple", hex: "#a855f7" },
-                      { name: "Ocean Cyan", hex: "#06b6d4" },
-                      { name: "Sunset Orange", hex: "#f97316" },
-                      { name: "Golden Yellow", hex: "#eab308" },
-                    ].map((preset) => (
-                      <button
-                        key={preset.hex}
-                        type="button"
-                        onClick={() =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, aboutHighlightColor: preset.hex },
-                          }))
-                        }
-                        className={`px-2.5 py-1.5 rounded-xl font-mono text-[10px] font-bold border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5 ${
-                          (portfolio.personal.aboutHighlightColor || "#f59e0b").toLowerCase() === preset.hex.toLowerCase()
-                            ? "border-black bg-stone-900 text-white shadow-xs font-black"
-                            : "border-stone-300 bg-white text-stone-700 hover:border-black"
-                        }`}
-                      >
-                        <span
-                          className="w-2.5 h-2.5 rounded-full"
-                          style={{ backgroundColor: preset.hex }}
-                        />
-                        <span>{preset.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Live Text Sample Preview */}
-                <div className="p-3.5 rounded-xl bg-white border border-amber-200/90 shadow-2xs">
-                  <span className="font-mono text-[10px] uppercase font-bold text-stone-400 block mb-1">
-                    Live Sample Preview:
-                  </span>
-                  <p className="font-['Space_Grotesk'] text-sm text-stone-800 font-semibold leading-relaxed">
-                    Undergraduate in AI &amp; Data Science at{" "}
-                    <span
-                      style={{ color: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
-                      className="font-bold underline decoration-wavy underline-offset-4"
-                    >
-                      IIT Madras
-                    </span>
-                    , specializing in{" "}
-                    <span
-                      style={{ color: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
-                      className="font-bold"
-                    >
-                      Machine Learning
-                    </span>{" "}
-                    and{" "}
-                    <span
-                      style={{ color: portfolio.personal.aboutHighlightColor || "#f59e0b" }}
-                      className="font-bold"
-                    >
-                      Scientific Computing
-                    </span>
-                    .
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* ── 3. QUICK STATS CAPSULES ── */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="p-2 rounded-xl bg-cyan-100 text-cyan-900 border border-cyan-300 text-sm">
-                    ⚡
-                  </span>
-                  <div>
-                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      Quick Stats Capsules (4 Metrix Badges)
-                    </h3>
-                    <p className="font-mono text-xs text-stone-500">
-                      About page par show hone wale metric capsules ko add, edit, reorder, ya delete karein.
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleAddQuickStat}
-                  className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Stat Capsule</span>
-                </button>
-              </div>
-
-              {/* List of Quick Stat Capsules */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {(portfolio.quickStats || []).map((stat, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3"
-                  >
-                    <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                      <span className="font-mono text-xs font-black uppercase text-stone-500">
-                        Capsule #{idx + 1}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => handleMoveQuickStat(idx, "up")}
-                          disabled={idx === 0}
-                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
-                          title="Move Up"
-                        >
-                          <ChevronUp className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleMoveQuickStat(idx, "down")}
-                          disabled={idx === (portfolio.quickStats?.length || 0) - 1}
-                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
-                          title="Move Down"
-                        >
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveQuickStat(idx)}
-                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 cursor-pointer ml-1"
-                          title="Delete Capsule"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Big Value (e.g. AI &amp; DS, 6+, 150+):
-                        </label>
-                        <input
-                          type="text"
-                          value={stat.value}
-                          onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Label (e.g. SPECIALIZATION):
-                        </label>
-                        <input
-                          type="text"
-                          value={stat.label}
-                          onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-[10px] font-bold text-stone-500 mb-1">
-                        Sublabel (Optional context):
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Machine Learning & Analytics"
-                        value={stat.sublabel || ""}
-                        onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
-                        className="w-full px-3 py-1 rounded-lg bg-white border border-stone-200 font-mono text-xs text-stone-700 focus:border-black focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Bottom Final Save Button for Highlights */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Highlights Changes"}</span>
+                <span>{isSaving ? "Saving..." : "Save Profile & Bio Changes"}</span>
               </button>
             </div>
           </div>
@@ -2619,174 +4295,6 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── TAB: ROADMAP & MILESTONES ── */}
-        {activeTab === "milestones" && (
-          <div className="space-y-8">
-            {/* Header intro & Save CTA */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                  <Layers className="w-6 h-6 text-amber-500" />
-                  <span>Development Trajectory ({(portfolio.milestones || []).length || 3} Phases)</span>
-                </h2>
-                <p className="font-mono text-xs text-stone-500 mt-1">
-                  Sequential roadmap phases showcasing foundations, mathematical modeling, and AI system engineering.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={handleAddMilestone}
-                  className="px-3.5 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Trajectory Phase</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveAll}
-                  disabled={isSaving}
-                  className="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>{isSaving ? "Saving..." : "Save Milestones"}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Milestones Cards */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="p-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-sm">
-                    🚀
-                  </span>
-                  <div>
-                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      Development Trajectory (Roadmap Milestones)
-                    </h3>
-                    <p className="font-mono text-xs text-stone-500">
-                      About page ke Trajectory phases ko edit, add ya remove karein.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {(portfolio.milestones && portfolio.milestones.length > 0
-                  ? portfolio.milestones
-                  : [
-                      { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
-                      { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
-                      { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
-                    ]
-                ).map((m, mIdx, arr) => (
-                  <div
-                    key={mIdx}
-                    className="p-4 sm:p-5 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3"
-                  >
-                    <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-lg border border-emerald-300">
-                          PHASE {m.phaseNumber || `0${mIdx + 1}`}
-                        </span>
-                        <input
-                          type="text"
-                          value={m.period}
-                          placeholder="e.g. Foundations, Data & Math"
-                          onChange={(e) => handleUpdateMilestone(mIdx, "period", e.target.value)}
-                          className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => handleMoveMilestone(mIdx, "up")}
-                          disabled={mIdx === 0}
-                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
-                          title="Move Up"
-                        >
-                          <ChevronUp className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleMoveMilestone(mIdx, "down")}
-                          disabled={mIdx === arr.length - 1}
-                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
-                          title="Move Down"
-                        >
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveMilestone(mIdx)}
-                          className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-red-600 hover:border-red-400 cursor-pointer ml-1"
-                          title="Delete Phase"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Phase Title:
-                        </label>
-                        <input
-                          type="text"
-                          value={m.title}
-                          onChange={(e) => handleUpdateMilestone(mIdx, "title", e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Phase Subtitle:
-                        </label>
-                        <input
-                          type="text"
-                          value={m.subtitle}
-                          onChange={(e) => handleUpdateMilestone(mIdx, "subtitle", e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                        Phase Description:
-                      </label>
-                      <textarea
-                        rows={2}
-                        value={m.description}
-                        onChange={(e) => handleUpdateMilestone(mIdx, "description", e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs text-stone-800 focus:border-black focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Bottom Final Save Button for Milestones */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Milestones Changes"}</span>
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* ── TAB: PROJECTS MANAGER ── */}
         {activeTab === "projects" && (
           <div className="space-y-6">
@@ -2809,6 +4317,69 @@ export default function AdminPage() {
                 <Plus className="w-4 h-4 stroke-[3]" />
                 <span>Add New Project</span>
               </button>
+            </div>
+
+            {/* Navigation & Mobile Dock Icon Selector */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <div className="font-mono text-xs font-black uppercase tracking-wider text-stone-900 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>Projects Navigation Icon (Laptop Menu &amp; Mobile Dock)</span>
+                  </div>
+                  <p className="text-[11px] font-mono text-stone-500">
+                    Choose which icon represents Projects across both laptop dropdown and mobile bottom dock
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[10px] text-stone-400">Current:</span>
+                  <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 font-mono text-[10px] font-bold uppercase">
+                    {portfolio.personal.projectsNavIcon || "foldercode"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                {[
+                  { id: "foldercode", label: "Folder Code (<>)", icon: FolderCode, desc: "Clean Code Folder" },
+                  { id: "code", label: "Code Brackets (</>)", icon: Code2, desc: "Classic Developer Brackets" },
+                  { id: "folder", label: "Clean Folder", icon: Folder, desc: "Minimalist Directory" },
+                  { id: "terminal", label: "Terminal (>_)", icon: Terminal, desc: "Command Terminal" },
+                  { id: "layers", label: "Stack Layers", icon: Layers, desc: "Architectural Build" },
+                ].map((opt) => {
+                  const isSelected = (portfolio.personal.projectsNavIcon || "foldercode") === opt.id;
+                  const IconComp = opt.icon;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={async () => {
+                        const updated = {
+                          ...portfolio,
+                          personal: {
+                            ...portfolio.personal,
+                            projectsNavIcon: opt.id as any,
+                          },
+                        };
+                        setPortfolio(updated);
+                        await saveInstantly(updated, `✓ Projects icon changed to "${opt.label}"!`);
+                      }}
+                      className={`px-3 py-2 rounded-xl font-mono text-xs font-bold border transition-all cursor-pointer flex items-center gap-2 ${
+                        isSelected
+                          ? "bg-black text-white border-black shadow-[2px_2px_0_#6366f1]"
+                          : "bg-stone-50 hover:bg-stone-100 text-stone-700 border-stone-200 hover:border-black"
+                      }`}
+                    >
+                      <IconComp className={`w-4 h-4 ${isSelected ? "text-indigo-400 stroke-[2.5]" : "text-stone-600"}`} />
+                      <span>{opt.label}</span>
+                      {isSelected && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Dynamic Project Categories Bar */}
@@ -3135,203 +4706,725 @@ export default function AdminPage() {
         {/* ── TAB: INQUIRIES & CONTACT ── */}
         {activeTab === "contact" && (
           <div className="space-y-6">
-            {/* 1. Live Coordinates & Current Dispatch Editor */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
-                <div>
-                  <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                    <MapPin className="w-6 h-6 text-cyan-600" />
-                    <span>Live Coordinates &amp; Current Dispatch</span>
-                  </h2>
-                  <p className="font-mono text-xs text-stone-500">
-                    Customize your live station, country, workplace/job, status notes, and timezone
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => saveInstantly(portfolio, "✓ Coordinates & dispatch station updated successfully!")}
-                  className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold shadow-[2px_2px_0_#666] active:translate-y-0.5 cursor-pointer self-start sm:self-auto"
-                >
-                  Save Dispatch Settings
-                </button>
+            {/* Top Bar for Contact & Dispatch */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm">
+              <div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <Send className="w-6 h-6 text-amber-500" />
+                  <span>Contact Page &amp; Inquiries Dispatch</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500">
+                  Full control over contact headers, inquiry form copy, live coordinates station, and received client messages
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Current Country */}
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                    Current Country:
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. India"
-                    value={portfolio.personal.currentCountry || ""}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, currentCountry: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-
-                {/* Current City & Location */}
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                    Current City / Location:
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Chennai, India"
-                    value={portfolio.personal.currentCity || ""}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, currentCity: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-
-                {/* Current Role / Workplace ("kha job kr rha hu") */}
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                    Current Workplace / Role (&ldquo;Kaha Job Kar Rahe Ho&rdquo;):
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Teaching Assistant @ IIT Madras"
-                    value={portfolio.personal.currentWork || ""}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, currentWork: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs font-bold text-amber-900 focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-
-                {/* Standard Timezone */}
-                <div>
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                    Standard Timezone:
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Asia/Kolkata (UTC+5:30 IST)"
-                    value={portfolio.personal.currentTimezone || ""}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, currentTimezone: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-
-                {/* Status Note / Availability */}
-                <div className="md:col-span-2">
-                  <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                    Current Status Note / Availability:
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Open for Opportunities & Collaborations"
-                    value={portfolio.personal.currentStatusNote || ""}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, currentStatusNote: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Classic Live Dispatch Preview */}
-              <div className="pt-2">
-                <div className="font-mono text-[11px] font-bold text-stone-500 mb-2">
-                  Live Dispatch Card Preview:
-                </div>
-                <div className="p-4 rounded-2xl border-2 border-black bg-stone-50 shadow-[3px_3px_0_#06b6d4] max-w-md font-mono text-xs space-y-2">
-                  <div className="flex items-center justify-between pb-2 border-b border-dashed border-stone-300">
-                    <span className="font-black text-cyan-900 uppercase">CURRENT COORDINATES</span>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">● LIVE STATION</span>
-                  </div>
-                  <div><strong className="text-stone-500">LOCATION:</strong> {portfolio.personal.currentCountry ? `${portfolio.personal.currentCountry} • ` : ""}{portfolio.personal.currentCity || portfolio.personal.location || "India"}</div>
-                  <div><strong className="text-stone-500">STATION/JOB:</strong> <span className="font-bold text-amber-800">{portfolio.personal.currentWork || "Teaching Assistant @ IIT Madras"}</span></div>
-                  <div><strong className="text-stone-500">STATUS:</strong> &ldquo;{portfolio.personal.currentStatusNote || "Open for Opportunities"}&rdquo;</div>
-                </div>
-              </div>
+              <button
+                type="button"
+                onClick={() => saveInstantly(portfolio, "✓ Contact page & dispatch settings updated successfully!")}
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold shadow-[2px_2px_0_#666] active:translate-y-0.5 cursor-pointer flex items-center gap-2 self-start sm:self-auto shrink-0"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save Contact Settings"}</span>
+              </button>
             </div>
 
-            {/* 2. Contact Inquiries */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                    <Send className="w-6 h-6 text-amber-500" />
-                    <span>Contact Inquiries ({messages.length})</span>
-                  </h2>
-                  <p className="font-mono text-xs text-stone-500">Messages sent via your portfolio contact form</p>
-                </div>
-
+            {/* Quick Sub-Section Switcher Tabs */}
+            <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-stone-100 border border-stone-200">
+              {[
+                { id: "all", label: "✦ All Settings", count: "5" },
+                { id: "copy", label: "📝 Header & Doodles", count: "Copy" },
+                { id: "form", label: "📮 Inquiry Form & Email", count: "Form" },
+                { id: "coordinates", label: "📍 Live Coordinates & Clock", count: "Station" },
+                { id: "footer", label: "🏛️ Site Footer", count: "Footer" },
+                { id: "inquiries", label: "📬 Inquiries Dispatch", count: messages.length.toString() },
+              ].map((sub) => (
                 <button
+                  key={sub.id}
                   type="button"
-                  onClick={fetchMessages}
-                  className="px-3.5 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                  onClick={() => setContactSubTab(sub.id as any)}
+                  className={`px-3.5 py-2 rounded-xl font-mono text-xs transition-all cursor-pointer flex items-center gap-2 ${
+                    contactSubTab === sub.id
+                      ? "bg-white text-stone-950 font-black shadow-xs border border-stone-300"
+                      : "text-stone-600 hover:text-black font-bold hover:bg-white/60"
+                  }`}
                 >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Refresh</span>
-                </button>
-              </div>
-
-            {isLoadingMessages ? (
-              <div className="py-12 text-center text-stone-500 font-mono text-xs">
-                Loading messages...
-              </div>
-            ) : messages.length === 0 ? (
-              <div className="py-12 text-center text-stone-500 font-mono text-xs bg-stone-50 rounded-2xl border border-stone-200">
-                No inquiries received yet. Test by submitting the contact form on your portfolio!
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className="p-4 rounded-2xl border border-stone-200 bg-stone-50 space-y-2"
+                  <span>{sub.label}</span>
+                  <span
+                    className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
+                      contactSubTab === sub.id
+                        ? "bg-amber-300 text-stone-900"
+                        : "bg-stone-200 text-stone-600"
+                    }`}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-black text-sm text-stone-900">{msg.name}</span>
-                        <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-mono text-[10px] font-bold uppercase">
-                          {msg.category}
-                        </span>
-                      </div>
-                      <span className="font-mono text-[10px] text-stone-400">
-                        {new Date(msg.timestamp).toLocaleDateString()}
-                      </span>
-                    </div>
+                    {sub.count}
+                  </span>
+                </button>
+              ))}
+            </div>
 
-                    <a href={`mailto:${msg.email}`} className="font-mono text-xs text-indigo-600 hover:underline block font-bold">
-                      {msg.email}
-                    </a>
-
-                    <p className="font-mono text-xs text-stone-700 bg-white border border-stone-200 p-3 rounded-xl whitespace-pre-wrap leading-relaxed">
-                      {msg.message}
+            {/* ── 1. CONTACT PAGE HEADER & HANDWRITTEN DOODLES ── */}
+            {(contactSubTab === "all" || contactSubTab === "copy") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex items-center gap-2.5 pb-4 border-b border-stone-200">
+                  <span className="p-2 rounded-xl bg-rose-100 text-rose-900 border border-rose-300 text-sm">
+                    📝
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      1. Contact Header &amp; Visual Doodles
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      Main heading, introductory subtitle, and airmail letter doodle sticker
                     </p>
                   </div>
-                ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Section Heading Title *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Send a Dispatch"
+                      value={portfolio.personal.contactTitle || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactTitle: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Airmail Doodle Handwritten Note (Sticky Pill)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. drop a note anytime 💌"
+                      value={portfolio.personal.contactDoodleNote || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactDoodleNote: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Introductory Subtitle / Scope Description
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="e.g. Have an interesting machine learning challenge, internship opportunity, or algorithmic project in mind? Drop your inquiry directly into my terminal."
+                      value={portfolio.personal.contactSubtitle || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactSubtitle: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── 2. INQUIRY FORM & DIRECT EMAIL SETTINGS ── */}
+            {(contactSubTab === "all" || contactSubTab === "form") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex items-center gap-2.5 pb-4 border-b border-stone-200">
+                  <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
+                    📮
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      2. Direct Inquiry Form &amp; Outreach Settings
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      Customize form card title, postal mailbox doodle badge, button text, and direct mail
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Form Card Header Label
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. DIRECT INQUIRY DISPATCH"
+                      value={portfolio.personal.contactFormTitle || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactFormTitle: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Mailbox Doodle Handwritten Note
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. direct dispatch 📬"
+                      value={portfolio.personal.contactMailboxNote || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactMailboxNote: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Submit Button Label
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. SEND DISPATCH"
+                      value={portfolio.personal.contactButtonText || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactButtonText: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Direct Electronic Mail (Email Address)
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="e.g. harsharyan@outlook.com"
+                      value={portfolio.personal.email || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, email: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Success Banner Message (Shown after form submission)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Thank you! Your message has been received directly. I will follow up shortly."
+                      value={portfolio.personal.contactSuccessMessage || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactSuccessMessage: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── 3. LIVE COORDINATES & CURRENT DISPATCH STATION ── */}
+            {(contactSubTab === "all" || contactSubTab === "coordinates") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex items-center gap-2.5 pb-4 border-b border-stone-200">
+                  <span className="p-2 rounded-xl bg-cyan-100 text-cyan-900 border border-cyan-300 text-sm">
+                    📍
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      3. Live Coordinates &amp; Current Dispatch Station
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      Location coordinates, current workplace, real-time ticking clock timezone, status note &amp; stamp
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Card Title */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Coordinates Card Title
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. CURRENT COORDINATES"
+                      value={portfolio.personal.contactCoordinatesTitle || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactCoordinatesTitle: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Live Station Badge */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Station Badge Text
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. LIVE STATION"
+                      value={portfolio.personal.currentStationBadge || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, currentStationBadge: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Current Country */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Current Country
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. India"
+                      value={portfolio.personal.currentCountry || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, currentCountry: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Current City & Location */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Current City / Location
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Chennai, India"
+                      value={portfolio.personal.currentCity || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, currentCity: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Current Role / Workplace ("kha job kr rha hu") */}
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Current Workplace / Role (&ldquo;Kaha Job Kar Rahe Ho&rdquo;) *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Teaching Assistant @ IIT Madras"
+                      value={portfolio.personal.currentWork || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, currentWork: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border-2 border-black font-mono text-xs font-bold text-amber-900 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    />
+                  </div>
+
+                  {/* Standard Timezone Label */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Timezone Label Display
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. UTC+5:30 (IST)"
+                      value={portfolio.personal.currentTimezone || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, currentTimezone: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Timezone IANA (For auto ticking clock) */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Timezone IANA Identifier (Controls Live Clock)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Asia/Kolkata, America/New_York, Europe/London"
+                      value={portfolio.personal.currentTimezoneIana || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, currentTimezoneIana: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Status Note / Availability */}
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Current Status Note / Availability
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Open for Opportunities & Collaborations"
+                      value={portfolio.personal.currentStatusNote || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, currentStatusNote: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Dispatch Stamp Left */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Bottom Stamp (Left Text)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. DISPATCH VERIFIED"
+                      value={portfolio.personal.contactStampText || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactStampText: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Dispatch Stamp Right */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                      Bottom Stamp (Right Code)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. IND // 2026"
+                      value={portfolio.personal.contactStampCode || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, contactStampCode: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Live Bento Preview */}
+                <div className="pt-4 border-t border-dashed border-stone-300 space-y-2">
+                  <div className="text-[10px] font-mono font-black uppercase text-stone-500 tracking-wider">
+                    ✦ Live Station Card Preview:
+                  </div>
+                  <div className="p-4 sm:p-5 rounded-2xl border-2 border-black bg-stone-50 shadow-[3px_3px_0_#06b6d4] max-w-lg font-mono text-xs space-y-2.5">
+                    <div className="flex items-center justify-between pb-2 border-b border-dashed border-stone-300">
+                      <span className="font-black text-cyan-900 uppercase">
+                        {portfolio.personal.contactCoordinatesTitle || "CURRENT COORDINATES"}
+                      </span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        {portfolio.personal.currentStationBadge || "LIVE STATION"}
+                      </span>
+                    </div>
+                    <div>
+                      <strong className="text-stone-500">LOCATION:</strong>{" "}
+                      {portfolio.personal.currentCountry ? `${portfolio.personal.currentCountry} • ` : ""}
+                      {portfolio.personal.currentCity || portfolio.personal.location || "Chennai, India"}
+                    </div>
+                    <div>
+                      <strong className="text-stone-500">STATION/JOB:</strong>{" "}
+                      <span className="font-black text-amber-800">
+                        {portfolio.personal.currentWork || "Teaching Assistant @ IIT Madras"}
+                      </span>
+                    </div>
+                    <div>
+                      <strong className="text-stone-500">STATUS:</strong>{" "}
+                      <span className="italic text-stone-700">
+                        &ldquo;{portfolio.personal.currentStatusNote || "Open for Opportunities"}&rdquo;
+                      </span>
+                    </div>
+                    <div className="pt-2 border-t border-stone-200 flex items-center justify-between text-[10px] text-stone-400">
+                      <span>{portfolio.personal.contactStampText || "DISPATCH VERIFIED"}</span>
+                      <span className="font-bold text-stone-600">{portfolio.personal.contactStampCode || "IND // 2026"}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── 4. CONTACT INQUIRIES DISPATCH (WITH DELETE & REPLY) ── */}
+            {(contactSubTab === "all" || contactSubTab === "inquiries") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-sm">
+                      📬
+                    </span>
+                    <div>
+                      <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900 flex items-center gap-2">
+                        <span>Incoming Inquiries &amp; Dispatches</span>
+                        <span className="px-2 py-0.5 rounded-full bg-black text-white font-mono text-xs font-bold">
+                          {messages.length}
+                        </span>
+                      </h3>
+                      <p className="font-mono text-xs text-stone-500">
+                        Inquiries submitted via your portfolio. Reply directly or delete manually once resolved.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {messages.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleClearAllMessages}
+                        className="px-3 py-1.5 rounded-xl border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-700 font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1 shadow-xs"
+                        title="Clear all inquiries"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Clear All</span>
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={fetchMessages}
+                      className="px-3.5 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Refresh</span>
+                    </button>
+                  </div>
+                </div>
+
+                {isLoadingMessages ? (
+                  <div className="py-12 text-center text-stone-500 font-mono text-xs">
+                    Loading inquiries...
+                  </div>
+                ) : messages.length === 0 ? (
+                  <div className="py-12 text-center text-stone-500 font-mono text-xs bg-stone-50 rounded-2xl border-2 border-dashed border-stone-300 space-y-2">
+                    <p className="font-bold text-stone-700">No inquiries received yet.</p>
+                    <p className="text-stone-500">Test by submitting the contact form on your portfolio website!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className="p-5 rounded-2xl border-2 border-black bg-stone-50/80 shadow-[3px_3px_0_#000] space-y-3 transition-all hover:bg-white"
+                      >
+                        {/* Header: Name, Category, Timestamp, Actions */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-stone-200">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-mono font-black text-sm text-stone-900">
+                              {msg.name}
+                            </span>
+                            <span className="px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-950 border border-amber-400 font-mono text-[10px] font-bold uppercase">
+                              {msg.category || "General Inquiry"}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2 self-end sm:self-auto">
+                            <span className="font-mono text-[10px] text-stone-400">
+                              📅 {new Date(msg.timestamp).toLocaleString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+
+                            {/* Reply Button */}
+                            <a
+                              href={`mailto:${msg.email}?subject=Re: Portfolio Inquiry - ${encodeURIComponent(msg.category || "General")}&body=Hi ${encodeURIComponent(msg.name)},%0D%0A%0D%0AThank you for reaching out!%0D%0A%0D%0A`}
+                              className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-mono text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                              title="Send Email Reply"
+                            >
+                              <Mail className="w-3.5 h-3.5" />
+                              <span>Reply</span>
+                            </a>
+
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteMessage(msg.id)}
+                              className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-mono text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-[1px_1px_0_#e11d48]"
+                              title="Delete inquiry manually"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Sender Email */}
+                        <div className="text-xs font-mono font-bold text-indigo-700 flex items-center gap-1.5">
+                          <span>✉️</span>
+                          <a href={`mailto:${msg.email}`} className="hover:underline">
+                            {msg.email}
+                          </a>
+                        </div>
+
+                        {/* Message Body */}
+                        <div className="p-3.5 rounded-xl bg-white border border-stone-200 font-mono text-xs text-stone-800 whitespace-pre-wrap leading-relaxed shadow-inner">
+                          {msg.message}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── 5. SITE FOOTER & SOCIUS EASTER EGG MANAGER ── */}
+            {(contactSubTab === "all" || contactSubTab === "footer") && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex items-center gap-2.5 pb-4 border-b border-stone-200">
+                  <span className="p-2 rounded-xl bg-purple-100 text-purple-900 border border-purple-300 text-sm">
+                    🏛️
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      5. Site Footer Branding &amp; Socius Easter Egg
+                    </h3>
+                    <p className="font-mono text-xs text-stone-500">
+                      Customize footer brand name, subtitle moniker, bottom tagline, and secret 5-click easter egg text.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Brand Name */}
+                  <div className="space-y-1.5">
+                    <label className="block font-mono text-xs font-bold text-stone-700">
+                      Footer Brand Name:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. HARSH ARYAN"
+                      value={portfolio.personal.footerBrandName || portfolio.personal.name || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, footerBrandName: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Footer Subtitle */}
+                  <div className="space-y-1.5">
+                    <label className="block font-mono text-xs font-bold text-stone-700">
+                      Footer Subtitle Moniker:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Teaching machines to learn • Scientific software"
+                      value={portfolio.personal.footerSubtitle || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, footerSubtitle: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Footer Tagline */}
+                  <div className="space-y-1.5">
+                    <label className="block font-mono text-xs font-bold text-stone-700">
+                      Bottom Slim Tagline:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. crafting with code &amp; mathematics"
+                      value={portfolio.personal.footerTagline || ""}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, footerTagline: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Easter Egg Trigger Text */}
+                  <div className="space-y-1.5">
+                    <label className="block font-mono text-xs font-bold text-stone-700">
+                      Secret 5-Click Admin Trigger Text:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. socius"
+                      value={portfolio.personal.footerEasterEggText || "socius"}
+                      onChange={(e) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: { ...prev.personal, footerEasterEggText: e.target.value },
+                        }))
+                      }
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                    />
+                    <p className="font-mono text-[11px] text-stone-400">
+                      Clicking this 5 times in the site footer opens the Socius admin console.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>
-        </div>
-      )}
+        )}
         </main>
       </div>
 

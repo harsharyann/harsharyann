@@ -17,6 +17,9 @@ import {
   CheckCircle2,
   ArrowRight,
   Send,
+  Building2,
+  Calendar,
+  ExternalLink,
 } from "lucide-react"
 
 /**
@@ -226,14 +229,50 @@ function PaperPlaneFlightDoodle({ className = "" }: { className?: string }) {
 }
 
 /**
+ * Handcrafted Bespoke Doodle #4 — The Experience Briefcase
+ */
+function ExperienceBriefcaseDoodle() {
+  return (
+    <div className="relative inline-flex items-center gap-1.5 select-none" aria-hidden="true">
+      <svg
+        className="w-8 sm:w-10 h-6 sm:h-7 text-amber-500 dark:text-amber-400 rotate-[3deg]"
+        viewBox="0 0 44 32"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* Handle */}
+        <path d="M 16 8 C 16 3, 28 3, 28 8" />
+        {/* Bag outline */}
+        <rect x="4" y="8" width="36" height="21" rx="3" fill="#fef3c7" stroke="currentColor" />
+        {/* Straps / latches */}
+        <line x1="14" y1="8" x2="14" y2="29" stroke="currentColor" strokeDasharray="2 2" />
+        <line x1="30" y1="8" x2="30" y2="29" stroke="currentColor" strokeDasharray="2 2" />
+        {/* Center lock */}
+        <rect x="20" y="15" width="4" height="4" rx="1" fill="#f59e0b" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+      <span
+        className="hidden sm:inline font-mono text-[11px] font-bold text-stone-500 dark:text-stone-400 tracking-wider"
+        style={{ fontFamily: "'Patrick Hand', cursive" }}
+      >
+        work track 💼
+      </span>
+    </div>
+  )
+}
+
+/**
  * Content Highlighter Parser:
  * Supports:
- * - `==yellow highlight==`
+ * - `{{#color|custom colored highlight}}` (Any arbitrary hex color!)
+ * - `==yellow / default highlight==`
  * - `^^cyan highlight^^`
  * - `**bold text**`
  * - Auto-highlighting of comma-separated keywords
  */
-function FormattedHighlightedText({
+export function FormattedHighlightedText({
   text,
   highlightKeywords = "",
   highlightColor = "#f59e0b",
@@ -254,11 +293,33 @@ function FormattedHighlightedText({
 
   const parseLine = (line: string) => {
     const tokens: React.ReactNode[] = [];
-    const regex = /(==.+?==|\^\^.+?\^\^|\*\*.+?\*\*)/g;
+    // Matches {{#HEX|text}} or ==text== or ^^text^^ or **text**
+    const regex = /(\{\{#[0-9a-fA-F]{3,8}\|.+?\}\}|==.+?==|\^\^.+?\^\^|\*\*.+?\*\*)/g;
     const parts = line.split(regex);
 
     parts.forEach((part, idx) => {
       if (!part) return;
+
+      // 1. Custom Arbitrary Color: {{#HEX|inner}}
+      if (part.startsWith("{{#") && part.endsWith("}}")) {
+        const pipeIdx = part.indexOf("|");
+        if (pipeIdx > 3) {
+          const customColor = part.slice(2, pipeIdx);
+          const inner = part.slice(pipeIdx + 1, -2);
+          tokens.push(
+            <span
+              key={idx}
+              className="font-bold transition-colors duration-200"
+              style={{ color: customColor }}
+            >
+              {inner}
+            </span>
+          );
+          return;
+        }
+      }
+
+      // 2. Default Highlight: ==inner==
       if (part.startsWith("==") && part.endsWith("==")) {
         const inner = part.slice(2, -2);
         tokens.push(
@@ -270,52 +331,62 @@ function FormattedHighlightedText({
             {inner}
           </span>
         );
-      } else if (part.startsWith("^^") && part.endsWith("^^")) {
+        return;
+      }
+
+      // 3. Cyan Highlight: ^^inner^^
+      if (part.startsWith("^^") && part.endsWith("^^")) {
         const inner = part.slice(2, -2);
         tokens.push(
           <span
             key={idx}
             className="font-bold transition-colors duration-200"
-            style={{ color: highlightColor || "#f59e0b" }}
+            style={{ color: "#06b6d4" }}
           >
             {inner}
           </span>
         );
-      } else if (part.startsWith("**") && part.endsWith("**")) {
+        return;
+      }
+
+      // 4. Bold: **inner**
+      if (part.startsWith("**") && part.endsWith("**")) {
         const inner = part.slice(2, -2);
         tokens.push(
           <strong key={idx} className="font-black text-black dark:text-white">
             {inner}
           </strong>
         );
-      } else {
-        if (keywordsList.length > 0) {
-          const escaped = keywordsList
-            .map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-            .join("|");
-          const kwRegex = new RegExp(`(${escaped})`, "gi");
-          const subParts = part.split(kwRegex);
-          subParts.forEach((sub, sIdx) => {
-            const isMatch = keywordsList.some(
-              (kw) => kw.toLowerCase() === sub.toLowerCase()
+        return;
+      }
+
+      // 5. Keyword Auto-Matching
+      if (keywordsList.length > 0) {
+        const escaped = keywordsList
+          .map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+          .join("|");
+        const kwRegex = new RegExp(`(${escaped})`, "gi");
+        const subParts = part.split(kwRegex);
+        subParts.forEach((sub, sIdx) => {
+          const isMatch = keywordsList.some(
+            (kw) => kw.toLowerCase() === sub.toLowerCase()
+          );
+          if (isMatch) {
+            tokens.push(
+              <span
+                key={`${idx}-${sIdx}`}
+                className="font-bold transition-colors duration-200"
+                style={{ color: highlightColor || "#f59e0b" }}
+              >
+                {sub}
+              </span>
             );
-            if (isMatch) {
-              tokens.push(
-                <span
-                  key={`${idx}-${sIdx}`}
-                  className="font-bold transition-colors duration-200"
-                  style={{ color: highlightColor || "#f59e0b" }}
-                >
-                  {sub}
-                </span>
-              );
-            } else {
-              tokens.push(sub);
-            }
-          });
-        } else {
-          tokens.push(part);
-        }
+          } else {
+            tokens.push(sub);
+          }
+        });
+      } else {
+        tokens.push(part);
       }
     });
 
@@ -325,7 +396,7 @@ function FormattedHighlightedText({
   return (
     <>
       {paragraphs.map((p, pIdx) => (
-        <p key={pIdx} className="leading-relaxed">
+        <p key={pIdx} className="leading-relaxed whitespace-pre-line">
           {parseLine(p)}
         </p>
       ))}
@@ -335,7 +406,31 @@ function FormattedHighlightedText({
 
 export function AboutSection({ id = "about" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
-  const { personal, skills, quickStats, milestones } = portfolio
+  const { personal, skills, quickStats, milestones, experiences } = portfolio
+
+  // Dynamic experience items with fallback
+  const experiencesList = (experiences && experiences.length > 0)
+    ? experiences
+    : [
+        {
+          id: "exp-1",
+          role: "Teaching Assistant",
+          company: "Indian Institute of Technology Madras (IIT Madras)",
+          companyUrl: "https://www.iitm.ac.in",
+          location: "Chennai, India",
+          period: "2024 – Present",
+          type: "Academic & Mentorship",
+          isCurrent: true,
+          description:
+            "Guiding undergraduate student cohorts in fundamental computer science, Python programming, and algorithmic problem-solving methodologies.",
+          highlights: [
+            "Mentoring 150+ students through hands-on computational labs and code reviews.",
+            "Assisting course instructors in designing rigorous algorithm and data structure problem sets.",
+            "Hosting interactive problem-solving clinics bridging mathematical theory with Python code.",
+          ],
+          skillsUsed: ["Python", "Algorithms", "Data Structures", "Computational Thinking", "Mentorship"],
+        },
+      ];
 
   // Dynamic milestone phases from portfolio state with fallback
   const timelineMilestones = (milestones && milestones.length > 0)
@@ -595,52 +690,208 @@ export function AboutSection({ id = "about" }: { id?: string }) {
         </div>
       </div>
 
-      {/* ── TRAJECTORY MILESTONES ── */}
-      <div className="space-y-6 pt-4">
-        <div className="flex items-center justify-between pb-3 border-b-2 border-black/15 dark:border-white/10">
-          <div className="flex items-center gap-2">
-            <span className="sketch-stamp bg-emerald-600 text-white font-black">
-              DEVELOPMENT TRAJECTORY
-            </span>
-            <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
-              [ROADMAP]
-            </span>
+      {/* ── PROFESSIONAL EXPERIENCE (Conditional Show/Hide) ── */}
+      {personal?.showExperienceSection !== false && (
+        <div className="space-y-6 pt-4">
+          <div className="flex items-center justify-between pb-3 border-b-2 border-black/15 dark:border-white/10">
+            <div className="flex items-center gap-2">
+              <span className="sketch-stamp bg-amber-400 text-black font-black">
+                WORK &amp; LEADERSHIP
+              </span>
+              <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
+                [EXPERIENCE]
+              </span>
+            </div>
+            <ExperienceBriefcaseDoodle />
           </div>
-          <TrajectoryArrowDoodle />
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {timelineMilestones.map((m, idx) => {
-            const theme = milestoneThemes[idx % milestoneThemes.length];
-            return (
-              <div
-                key={m.phaseNumber || idx}
-                className="p-5 rounded-[28px] liquid-bento-card space-y-3 flex flex-col justify-between"
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-black uppercase ${theme.badgeBg}`}>
-                      PHASE {m.phaseNumber}
-                    </span>
-                    <span className={`font-mono text-xs font-bold ${theme.accentText}`}>
-                      {m.period}
-                    </span>
+          <div className="grid grid-cols-1 gap-6">
+            {experiencesList.map((exp, idx) => {
+              const cardThemes = [
+                {
+                  border: "border-black dark:border-white",
+                  shadow: "shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff]",
+                  badgeBg: "bg-amber-400 text-black",
+                  accent: "text-amber-700 dark:text-amber-400",
+                },
+                {
+                  border: "border-black dark:border-white",
+                  shadow: "shadow-[6px_6px_0_#10b981] dark:shadow-[6px_6px_0_#34d399]",
+                  badgeBg: "bg-emerald-500 text-white",
+                  accent: "text-emerald-700 dark:text-emerald-400",
+                },
+                {
+                  border: "border-black dark:border-white",
+                  shadow: "shadow-[6px_6px_0_#6366f1] dark:shadow-[6px_6px_0_#818cf8]",
+                  badgeBg: "bg-indigo-600 text-white",
+                  accent: "text-indigo-700 dark:text-indigo-400",
+                },
+              ];
+              const t = cardThemes[idx % cardThemes.length];
+
+              return (
+                <div
+                  key={exp.id || idx}
+                  className={`p-6 sm:p-7 rounded-[26px] bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 ${t.border} ${t.shadow} space-y-4 transition-all duration-300 hover:-translate-y-1`}
+                >
+                  {/* Top Bar: Role Title & Status Pills */}
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b border-stone-200 dark:border-stone-800">
+                    <div className="space-y-1.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="font-['Space_Grotesk'] text-xl sm:text-2xl font-black uppercase text-black dark:text-white tracking-tight leading-tight">
+                          {exp.role}
+                        </h3>
+                        {exp.type && (
+                          <span className="px-2.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-[10px] font-bold text-stone-700 dark:text-stone-300 uppercase">
+                            ✦ {exp.type}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-stone-600 dark:text-stone-400">
+                        {/* Company */}
+                        <div className="flex items-center gap-1.5 font-bold text-stone-900 dark:text-stone-200">
+                          <Building2 className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                          {exp.companyUrl ? (
+                            <Link
+                              href={exp.companyUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:underline hover:text-amber-600 dark:hover:text-amber-400 inline-flex items-center gap-1"
+                            >
+                              <span>{exp.company}</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </Link>
+                          ) : (
+                            <span>{exp.company}</span>
+                          )}
+                        </div>
+
+                        {/* Location */}
+                        {exp.location && (
+                          <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400">
+                            <span>•</span>
+                            <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
+                            <span>{exp.location}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Period & Active Status Badge */}
+                    <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+                      {exp.isCurrent ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 dark:bg-emerald-950/40 border border-emerald-500/40 text-emerald-900 dark:text-emerald-300 font-mono text-xs font-black shadow-2xs">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                          <span>{exp.period || "Current"}</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-200 font-mono text-xs font-bold">
+                          <Calendar className="w-3 h-3 text-stone-500" />
+                          <span>{exp.period}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <h3 className="font-black text-base uppercase tracking-tight text-black dark:text-white">
-                    {m.title}
-                  </h3>
-                  <p className="text-xs font-mono font-bold text-stone-600 dark:text-stone-400">
-                    {m.subtitle}
-                  </p>
-                  <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed pt-1">
-                    {m.description}
-                  </p>
+
+                  {/* Description Paragraph */}
+                  {exp.description && (
+                    <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
+                      {exp.description}
+                    </p>
+                  )}
+
+                  {/* Highlights Bullet List */}
+                  {exp.highlights && exp.highlights.length > 0 && (
+                    <div className="space-y-2 pt-1">
+                      <div className="font-mono text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                        [KEY CONTRIBUTIONS &amp; IMPACT]
+                      </div>
+                      <ul className="space-y-1.5">
+                        {exp.highlights.map((h, hIdx) => (
+                          <li
+                            key={hIdx}
+                            className="flex items-start gap-2 text-xs sm:text-sm text-stone-800 dark:text-stone-200 leading-relaxed"
+                          >
+                            <span className="text-amber-500 font-black shrink-0 mt-0.5">✦</span>
+                            <span>{h}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Skills / Stack Chips */}
+                  {exp.skillsUsed && exp.skillsUsed.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-dashed border-stone-200 dark:border-stone-800">
+                      <span className="font-mono text-[10px] font-bold text-stone-400 uppercase mr-1">
+                        Domain:
+                      </span>
+                      {exp.skillsUsed.map((skill) => (
+                        <span
+                          key={skill}
+                          className="px-2.5 py-0.5 rounded-full border border-black/15 dark:border-white/15 bg-stone-100 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100 font-mono text-[11px] font-bold"
+                        >
+                          ✦ {skill}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ── TRAJECTORY MILESTONES (Conditional Show/Hide) ── */}
+      {personal?.showDevelopmentTrajectory !== false && (
+        <div className="space-y-6 pt-4">
+          <div className="flex items-center justify-between pb-3 border-b-2 border-black/15 dark:border-white/10">
+            <div className="flex items-center gap-2">
+              <span className="sketch-stamp bg-emerald-600 text-white font-black">
+                DEVELOPMENT TRAJECTORY
+              </span>
+              <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
+                [ROADMAP]
+              </span>
+            </div>
+            <TrajectoryArrowDoodle />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {timelineMilestones.map((m, idx) => {
+              const theme = milestoneThemes[idx % milestoneThemes.length];
+              return (
+                <div
+                  key={m.phaseNumber || idx}
+                  className="p-5 rounded-[28px] liquid-bento-card space-y-3 flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-black uppercase ${theme.badgeBg}`}>
+                        PHASE {m.phaseNumber}
+                      </span>
+                      <span className={`font-mono text-xs font-bold ${theme.accentText}`}>
+                        {m.period}
+                      </span>
+                    </div>
+                    <h3 className="font-black text-base uppercase tracking-tight text-black dark:text-white">
+                      {m.title}
+                    </h3>
+                    <p className="text-xs font-mono font-bold text-stone-600 dark:text-stone-400">
+                      {m.subtitle}
+                    </p>
+                    <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed pt-1">
+                      {m.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </section>
   )
 }

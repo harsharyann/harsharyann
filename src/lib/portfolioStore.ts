@@ -98,7 +98,7 @@ export function getStoredMessages(): ContactMessage[] {
   }
 
   try {
-    if (fs.existsSync(STORE_PATH)) {
+    if (fs.existsSync(MESSAGES_PATH)) {
       const raw = fs.readFileSync(MESSAGES_PATH, "utf8");
       const parsed = JSON.parse(raw);
       memoryMessagesCache = parsed;
@@ -156,6 +156,22 @@ export function deleteStoredMessage(id: string): boolean {
   } catch {
     try {
       fs.writeFileSync(TMP_MESSAGES_PATH, JSON.stringify(updated, null, 2), "utf8");
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+export function clearAllStoredMessages(): boolean {
+  memoryMessagesCache = [];
+
+  try {
+    fs.writeFileSync(MESSAGES_PATH, JSON.stringify([], null, 2), "utf8");
+    return true;
+  } catch {
+    try {
+      fs.writeFileSync(TMP_MESSAGES_PATH, JSON.stringify([], null, 2), "utf8");
       return true;
     } catch {
       return false;

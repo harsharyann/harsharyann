@@ -31,9 +31,10 @@ export default function Home() {
     };
   }, [isCoverOpen]);
 
-  // 8-Second Auto Transition fallback (synced with desktop live countdown)
+  // 8-Second Auto Transition fallback (synced with desktop live countdown; phone requires tap)
   useEffect(() => {
     if (!isCoverOpen) return;
+    if (typeof window !== "undefined" && window.innerWidth < 768) return;
 
     const autoTransitionTimer = setTimeout(() => {
       closeCover();

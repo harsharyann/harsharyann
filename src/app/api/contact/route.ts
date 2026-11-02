@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getStoredMessages, saveStoredMessage, deleteStoredMessage } from "@/lib/portfolioStore";
+import { getStoredMessages, saveStoredMessage, deleteStoredMessage, clearAllStoredMessages } from "@/lib/portfolioStore";
 import { isAuthenticated } from "@/lib/auth";
 
 export async function GET() {
@@ -15,7 +15,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, category, message } = body;
+    const { name, email, category, subject, message } = body;
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     const saved = saveStoredMessage({
       name: String(name).trim(),
       email: String(email).trim(),
-      category: String(category || "General Inquiry").trim(),
+      category: String(category || subject || "General Inquiry").trim(),
       message: String(message).trim(),
     });
 
@@ -49,6 +49,11 @@ export async function DELETE(req: Request) {
     const id = url.searchParams.get("id");
     if (!id) {
       return NextResponse.json({ error: "Message id is required" }, { status: 400 });
+    }
+
+    if (id === "all") {
+      const ok = clearAllStoredMessages();
+      return NextResponse.json({ success: ok, clearedAll: true });
     }
 
     const ok = deleteStoredMessage(id);

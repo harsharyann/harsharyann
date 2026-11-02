@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Lock, Sparkles, Home, User, FolderGit2, Award, Mail } from "lucide-react";
+import { Lock, Sparkles, Home, User, FolderCode, Code2, Folder, Terminal, Layers, Award, Mail } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 
 interface NavSection {
@@ -19,7 +19,7 @@ interface NavSection {
 
 export function MagazineNav() {
   const pathname = usePathname();
-  const { isCoverOpen, openCover } = usePortfolio();
+  const { isCoverOpen, openCover, data: portfolio } = usePortfolio();
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("cover");
   const [isScrolled, setIsScrolled] = useState(false);
@@ -83,6 +83,15 @@ export function MagazineNav() {
             const rect = el.getBoundingClientRect();
             if (rect.top <= midTop && rect.bottom >= midBottom) {
               setActiveSection((prev) => (prev !== id ? id : prev));
+              if (typeof window !== "undefined") {
+                try {
+                  sessionStorage.setItem("socius_cover_dismissed", "true");
+                  sessionStorage.setItem("socius_last_section", id);
+                  if (window.history && window.location.hash !== `#${id}`) {
+                    window.history.replaceState(null, "", `/#${id}`);
+                  }
+                } catch {}
+              }
               ticking = false;
               return;
             }
@@ -101,6 +110,24 @@ export function MagazineNav() {
   if (pathname === "/admin") {
     return null;
   }
+
+  const getProjectsIcon = (active: boolean) => {
+    const iconType = portfolio?.personal?.projectsNavIcon || "foldercode";
+    const iconClass = `w-4 h-4 transition-transform group-hover:scale-110 ${active ? "stroke-[2.5]" : "stroke-2"}`;
+    switch (iconType) {
+      case "code":
+        return <Code2 className={iconClass} />;
+      case "folder":
+        return <Folder className={iconClass} />;
+      case "terminal":
+        return <Terminal className={iconClass} />;
+      case "layers":
+        return <Layers className={iconClass} />;
+      case "foldercode":
+      default:
+        return <FolderCode className={iconClass} />;
+    }
+  };
 
   const sections: NavSection[] = [
     {
@@ -123,9 +150,7 @@ export function MagazineNav() {
       badge: "Work",
       shortLabel: "Projects",
       accentHex: "#6366f1",
-      icon: (active) => (
-        <FolderGit2 className={`w-4 h-4 transition-transform group-hover:scale-110 ${active ? "stroke-[2.5]" : "stroke-2"}`} />
-      ),
+      icon: (active) => getProjectsIcon(active),
     },
     {
       name: "Certificates",
@@ -278,7 +303,7 @@ export function MagazineNav() {
                 >
                   <span className="flex items-center gap-2">
                     <Lock className="w-3.5 h-3.5" />
-                    <span>Admin CMS Console</span>
+                    <span>Socius</span>
                   </span>
                   <span className="text-[9px] bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 px-1.5 py-0.5 rounded">
                     Locked

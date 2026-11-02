@@ -74,10 +74,10 @@ export function SiteFooter() {
           {/* Brand & Mini Moniker */}
           <div className="space-y-1">
             <h3 className="font-['Space_Grotesk'] text-xl sm:text-2xl font-black uppercase tracking-tight text-black dark:text-white">
-              {personal?.name || "HARSH ARYAN"}
+              {personal?.footerBrandName || personal?.name || "HARSH ARYAN"}
             </h3>
             <p className="font-mono text-xs text-stone-500 dark:text-stone-400">
-              Teaching machines to learn • Scientific software
+              {personal?.footerSubtitle || "Teaching machines to learn • Scientific software"}
             </p>
           </div>
 
@@ -181,7 +181,7 @@ export function SiteFooter() {
         {/* ── LOWER SLIM TIER: SECRET SOCIUS 5-CLICK TRIGGER ── */}
         <div className="flex items-center justify-between text-[11px] font-mono text-stone-400 dark:text-stone-600 pt-1">
           <div className="text-[10px] tracking-wide">
-            crafting with code &amp; mathematics
+            {personal?.footerTagline || "crafting with code & mathematics"}
           </div>
 
           {/* Secret 5-click easter egg button */}
@@ -192,7 +192,7 @@ export function SiteFooter() {
             title={clickCount > 0 ? `${5 - clickCount} more...` : undefined}
             aria-label="Socius"
           >
-            socius
+            {personal?.footerEasterEggText || "socius"}
           </button>
         </div>
       </div>

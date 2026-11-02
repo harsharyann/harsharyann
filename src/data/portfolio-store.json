@@ -1,14 +1,14 @@
 {
   "personal": {
     "name": "Harsh Aryan",
-    "role": "AI & Data Science Student & Teaching Assistant",
+    "role": " Teaching Assistant",
     "headline": "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",
     "bio": "I am Harsh Aryan, a developer passionate about Artificial Intelligence, Data Science, and Scientific Computing. My fascination began when I wrote my first Python script to automate a repetitive task; seeing lines of logic produce tangible results sparked an obsession that has guided my work ever since.\n\nWhile modern AI moves at breakneck speed, I believe real engineering requires solid anchors. Rather than jumping straight to high-level wrappers, I spend my time understanding the foundational mathematics—Linear Algebra, Multivariate Calculus, and Probability—implementing algorithms from scratch before relying on abstractions.",
     "college": "IIT Madras",
     "degree": "Data Science and Applications",
     "year": "Undergraduate",
     "cgpa": "Active Student",
-    "location": "India & Open for Opportunities",
+    "location": "India ",
     "availability": "Seeking Summer 2026 Early Internships & Hackathon Collaborations",
     "email": "harsharyan@outlook.com",
     "resumeUrl": "/Harsh_Aryan_Resume.pdf",
@@ -34,7 +34,32 @@
     "currentCity": "Chennai, India",
     "currentWork": "Teaching Assistant @ IIT Madras",
     "currentStatusNote": "Active & Open for Opportunities",
-    "currentTimezone": "Asia/Kolkata (UTC+5:30 IST)"
+    "currentTimezone": "Asia/Kolkata (UTC+5:30 IST)",
+    "currentTimezoneIana": "Asia/Kolkata",
+    "desktopPhotoChip": "Teaching Assistant",
+    "showDevelopmentTrajectory": true,
+    "showExperienceSection": false,
+    "contactTitle": "Send a Dispatch",
+    "contactSubtitle": "Have an interesting machine learning challenge, internship opportunity, or algorithmic project in mind? Drop your inquiry directly into my terminal.",
+    "contactDoodleNote": "drop a note anytime 💌",
+    "contactFormTitle": "DIRECT INQUIRY DISPATCH",
+    "contactMailboxNote": "direct dispatch 📬",
+    "contactButtonText": "SEND DISPATCH",
+    "contactSuccessMessage": "Thank you! Your message has been received directly. I will follow up shortly.",
+    "contactEmailLabel": "ELECTRONIC MAIL",
+    "contactCoordinatesTitle": "CURRENT COORDINATES",
+    "currentStationBadge": "LIVE STATION",
+    "contactStampText": "DISPATCH VERIFIED",
+    "contactStampCode": "IND // 2026",
+    "projectsNavIcon": "foldercode",
+    "coverDailyThoughtHeader": "A LITTLE THOUGHT FOR TODAY",
+    "coverDailyThoughtQuote": "Every great invention begins with an unreasonable idea.",
+    "coverDailyThoughtAuthor": "The Dreamer",
+    "coverDailyThoughtSignature": "Harsh's Daily Thoughts",
+    "footerBrandName": "HARSH ARYAN",
+    "footerSubtitle": "Teaching machines to learn • Scientific software",
+    "footerTagline": "crafting with code & mathematics",
+    "footerEasterEggText": "socius"
   },
   "socialLinks": {
     "github": "https://github.com",
@@ -324,34 +349,6 @@
       ],
       "description": "",
       "verificationSource": "Coursera"
-    },
-    {
-      "id": "cert-1793486557158",
-      "title": "fdvd",
-      "issuer": "fdf",
-      "issueDate": "2026",
-      "credentialId": "",
-      "credentialUrl": "",
-      "imageUrl": "https://lh3.googleusercontent.com/d/1a3CqNLtTCeV24d6Jr1rB43O3Z4jqFun8",
-      "category": "Programing",
-      "skillsLearned": [
-        "Python"
-      ],
-      "description": ""
-    },
-    {
-      "id": "cert-1793486500372",
-      "title": "fv",
-      "issuer": "df",
-      "issueDate": "2026",
-      "credentialId": "",
-      "credentialUrl": "",
-      "imageUrl": "https://lh3.googleusercontent.com/d/1a3CqNLtTCeV24d6Jr1rB43O3Z4jqFun8",
-      "category": "Extra Caricullam",
-      "skillsLearned": [
-        "Python"
-      ],
-      "description": ""
     }
   ],
   "projectCategories": [
@@ -386,6 +383,88 @@
       "title": "Modern AI Systems & Interactive Tools",
       "subtitle": "Full-Stack AI Prototypes & Deployment",
       "description": "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows."
+    }
+  ],
+  "experiences": [
+    {
+      "id": "exp-1793605703313",
+      "role": "Freelancer",
+      "company": "Socius",
+      "companyUrl": "socius.com",
+      "location": "Remote",
+      "period": "2023-Present",
+      "type": "UI & UX Designer",
+      "isCurrent": true,
+      "description": "Brief overview of responsibilities and scope in this role.",
+      "highlights": [
+        "Key achievement or project contribution."
+      ],
+      "skillsUsed": [
+        "Python",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "exp-1793605796248",
+      "role": "TEACHING ASSISANT ",
+      "company": "IIT MADRAS",
+      "companyUrl": "NDDN",
+      "location": "CHENNAI,INDIA",
+      "period": "2027-PRESENT",
+      "type": "Academic & Mentorship",
+      "isCurrent": false,
+      "description": "Brief overview of responsibilities and scope in this role.",
+      "highlights": [
+        "Key achievement or project contribution."
+      ],
+      "skillsUsed": [
+        "Python",
+        "Problem Solving"
+      ]
+    }
+  ],
+  "dailyThoughts": [
+    {
+      "dayIndex": 0,
+      "dayName": "Sunday",
+      "persona": "The Philosopher",
+      "quote": "Teach machines to learn. Never stop learning yourself."
+    },
+    {
+      "dayIndex": 1,
+      "dayName": "Monday",
+      "persona": "The Dreamer",
+      "quote": "Every great invention begins with an unreasonable idea."
+    },
+    {
+      "dayIndex": 2,
+      "dayName": "Tuesday",
+      "persona": "The Builder",
+      "quote": "Dreams don't compile themselves. Start building."
+    },
+    {
+      "dayIndex": 3,
+      "dayName": "Wednesday",
+      "persona": "The Thinker",
+      "quote": "Somewhere between logic and imagination, I build."
+    },
+    {
+      "dayIndex": 4,
+      "dayName": "Thursday",
+      "persona": "The Explorer",
+      "quote": "Stay curious. The universe has more bugs than features."
+    },
+    {
+      "dayIndex": 5,
+      "dayName": "Friday",
+      "persona": "The Creator",
+      "quote": "Code is how I turn 'what if' into 'what's next'."
+    },
+    {
+      "dayIndex": 6,
+      "dayName": "Saturday",
+      "persona": "The Rebel",
+      "quote": "Why follow the blueprint when you can invent one?"
     }
   ]
 }
