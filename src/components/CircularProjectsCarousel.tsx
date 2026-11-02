@@ -558,7 +558,6 @@ export function CircularProjectsCarousel({
                   <div className="p-2.5 rounded-lg border-2 border-black/20 dark:border-stone-700 bg-white dark:bg-stone-900/80 shadow-[2px_2px_0_rgba(0,0,0,0.1)] space-y-1">
                     <div className="flex items-center justify-between font-mono text-[9px] font-black uppercase tracking-wider text-stone-600 dark:text-stone-400">
                       <span>KEY BENCHMARKS</span>
-                      <span className="text-xs">📊</span>
                     </div>
                     <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
                       {activeProject.metrics.map((m, i) => (
