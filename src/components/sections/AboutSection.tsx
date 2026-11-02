@@ -746,56 +746,126 @@ export function AboutSection({ id = "about" }: { id?: string }) {
       {/* ── TECHNICAL ARSENAL ── */}
       <div className="space-y-6 pt-4">
         <div className="flex items-center justify-between pb-3 border-b-2 border-black/15 dark:border-white/10">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span className="sketch-stamp bg-indigo-600 text-white font-black">
               CORE CAPABILITIES
             </span>
-            <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
-              [STACK OVERVIEW]
+            <span className="font-mono text-xs font-black uppercase text-stone-400 dark:text-stone-500">
+              // TECHNICAL ARSENAL
             </span>
           </div>
           <PaperPlaneFlightDoodle />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-5 sm:gap-6 pt-2">
           {skills?.map((group, idx) => {
             const themes = [
               {
-                bg: "bg-amber-50/50 dark:bg-stone-900",
-                shadow: "shadow-[4px_4px_0_#f59e0b] dark:shadow-[4px_4px_0_#fbbf24]",
-                text: "text-amber-900 dark:text-amber-300",
-                icon: <Code2 className="w-4 h-4 text-amber-600" />,
+                bg: "bg-[#fffef7] dark:bg-[#15161e]",
+                border: "border-2 border-black dark:border-amber-400/80",
+                shadow: "shadow-[5px_5px_0_#f59e0b] dark:shadow-[5px_5px_0_#fbbf24]",
+                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#f59e0b]",
+                tape: "bg-amber-300 dark:bg-amber-400",
+                badgeBg: "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950/70 dark:text-amber-200 dark:border-amber-700",
+                starColor: "text-amber-500 dark:text-amber-400",
+                chipHover: "hover:border-amber-500 hover:bg-amber-50/70 dark:hover:border-amber-400 dark:hover:bg-amber-950/40",
+                icon: <Code2 className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />,
               },
               {
-                bg: "bg-purple-50/50 dark:bg-stone-900",
-                shadow: "shadow-[4px_4px_0_#8b5cf6] dark:shadow-[4px_4px_0_#a855f7]",
-                text: "text-purple-900 dark:text-purple-300",
-                icon: <Brain className="w-4 h-4 text-purple-600" />,
+                bg: "bg-[#fafffa] dark:bg-[#121815]",
+                border: "border-2 border-black dark:border-emerald-400/80",
+                shadow: "shadow-[5px_5px_0_#10b981] dark:shadow-[5px_5px_0_#34d399]",
+                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#10b981]",
+                tape: "bg-emerald-300 dark:bg-emerald-400",
+                badgeBg: "bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-950/70 dark:text-emerald-200 dark:border-emerald-700",
+                starColor: "text-emerald-500 dark:text-emerald-400",
+                chipHover: "hover:border-emerald-500 hover:bg-emerald-50/70 dark:hover:border-emerald-400 dark:hover:bg-emerald-950/40",
+                icon: <Brain className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />,
               },
               {
-                bg: "bg-cyan-50/50 dark:bg-stone-900",
-                shadow: "shadow-[4px_4px_0_#06b6d4] dark:shadow-[4px_4px_0_#38bdf8]",
-                text: "text-cyan-900 dark:text-cyan-300",
-                icon: <Laptop className="w-4 h-4 text-cyan-600" />,
+                bg: "bg-[#fafaff] dark:bg-[#151422]",
+                border: "border-2 border-black dark:border-indigo-400/80",
+                shadow: "shadow-[5px_5px_0_#6366f1] dark:shadow-[5px_5px_0_#818cf8]",
+                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#6366f1]",
+                tape: "bg-indigo-300 dark:bg-indigo-400",
+                badgeBg: "bg-indigo-100 text-indigo-950 border-indigo-300 dark:bg-indigo-950/70 dark:text-indigo-200 dark:border-indigo-700",
+                starColor: "text-indigo-500 dark:text-indigo-400",
+                chipHover: "hover:border-indigo-500 hover:bg-indigo-50/70 dark:hover:border-indigo-400 dark:hover:bg-indigo-950/40",
+                icon: <Laptop className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />,
+              },
+              {
+                bg: "bg-[#f7feff] dark:bg-[#11181c]",
+                border: "border-2 border-black dark:border-cyan-400/80",
+                shadow: "shadow-[5px_5px_0_#06b6d4] dark:shadow-[5px_5px_0_#38bdf8]",
+                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#06b6d4]",
+                tape: "bg-cyan-300 dark:bg-cyan-400",
+                badgeBg: "bg-cyan-100 text-cyan-950 border-cyan-300 dark:bg-cyan-950/70 dark:text-cyan-200 dark:border-cyan-700",
+                starColor: "text-cyan-500 dark:text-cyan-400",
+                chipHover: "hover:border-cyan-500 hover:bg-cyan-50/70 dark:hover:border-cyan-400 dark:hover:bg-cyan-950/40",
+                icon: <FolderGit2 className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />,
+              },
+              {
+                bg: "bg-[#fff8fa] dark:bg-[#1c1216]",
+                border: "border-2 border-black dark:border-rose-400/80",
+                shadow: "shadow-[5px_5px_0_#f43f5e] dark:shadow-[5px_5px_0_#fb7185]",
+                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#f43f5e]",
+                tape: "bg-rose-300 dark:bg-rose-400",
+                badgeBg: "bg-rose-100 text-rose-950 border-rose-300 dark:bg-rose-950/70 dark:text-rose-200 dark:border-rose-700",
+                starColor: "text-rose-500 dark:text-rose-400",
+                chipHover: "hover:border-rose-500 hover:bg-rose-50/70 dark:hover:border-rose-400 dark:hover:bg-rose-950/40",
+                icon: <Sparkles className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />,
               },
             ];
             const t = themes[idx % themes.length];
+            const total = skills.length;
+            // Balance layout: if 5 items, row 1 = 3 items (2 cols each), row 2 = 2 items (3 cols each)
+            const colSpan =
+              total === 5
+                ? idx < 3
+                  ? "lg:col-span-2"
+                  : "lg:col-span-3"
+                : total === 4 || total === 2
+                ? "lg:col-span-3"
+                : "lg:col-span-2";
+
             return (
               <div
                 key={group.category}
-                className="p-5 rounded-[28px] liquid-bento-card space-y-3"
+                className={`relative p-5 sm:p-6 rounded-3xl ${colSpan} ${t.bg} ${t.border} ${t.shadow} ${t.hoverShadow} transition-all duration-200 hover:-translate-y-1 flex flex-col justify-between space-y-4`}
               >
-                <div className={`flex items-center gap-2 font-mono text-xs font-black uppercase ${t.text}`}>
-                  {t.icon}
-                  <span>{group.category}</span>
+                {/* Washi tape pin on top */}
+                <div
+                  className={`absolute -top-2 left-1/2 -translate-x-1/2 w-14 sm:w-16 h-3 ${t.tape} border border-black/25 dark:border-white/20 shadow-xs rotate-[-1deg] rounded-xs pointer-events-none z-10`}
+                  aria-hidden="true"
+                />
+
+                {/* Header row */}
+                <div className="flex items-center justify-between gap-2 pb-2.5 border-b-2 border-dashed border-black/15 dark:border-white/15">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md font-mono text-[10px] font-black uppercase tracking-wider border ${t.badgeBg}`}
+                    >
+                      <span>0{idx + 1}</span>
+                    </span>
+                    <span className="font-mono text-xs font-black uppercase tracking-wide text-black dark:text-white flex items-center gap-1.5">
+                      {t.icon}
+                      <span>{group.category}</span>
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-stone-500 dark:text-stone-400 px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 shrink-0">
+                    {group.items?.length || 0} tools
+                  </span>
                 </div>
-                <div className="flex flex-wrap gap-1.5 font-mono text-xs">
+
+                {/* Skill chips */}
+                <div className="flex flex-wrap gap-2 font-mono text-xs flex-1 items-start">
                   {group.items?.map((item) => (
                     <span
                       key={item}
-                      className="px-2.5 py-1 rounded-full border border-black/20 dark:border-white/20 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold shadow-xs"
+                      className={`px-3 py-1.5 rounded-xl border border-black/20 dark:border-white/20 bg-white/95 dark:bg-stone-900/90 text-stone-900 dark:text-stone-100 font-bold shadow-xs hover:scale-105 hover:-translate-y-0.5 hover:shadow-[2px_2px_0_#000] dark:hover:shadow-[2px_2px_0_#fff] transition-all duration-150 flex items-center gap-1.5 select-none ${t.chipHover}`}
                     >
-                      ✦ {item}
+                      <span className={`${t.starColor} text-[10px]`}>✦</span>
+                      <span>{item}</span>
                     </span>
                   ))}
                 </div>
