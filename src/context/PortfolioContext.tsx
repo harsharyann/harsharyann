@@ -29,9 +29,15 @@ const LOCAL_STORAGE_KEY = "socius_portfolio_data";
 const COVER_SESSION_KEY = "socius_cover_dismissed";
 const LAST_SECTION_KEY = "socius_last_section";
 
-export function PortfolioProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<PortfolioData>(initialDefaultData);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export function PortfolioProvider({
+  children,
+  initialData,
+}: {
+  children: React.ReactNode;
+  initialData?: PortfolioData;
+}) {
+  const [data, setData] = useState<PortfolioData>(initialData || initialDefaultData);
+  const [isLoading, setIsLoading] = useState<boolean>(!initialData);
   const [isCoverOpen, setIsCoverOpen] = useState<boolean>(true);
 
   // Sync Cover State on initial load / refresh so user STAYS on the page they were on
@@ -98,8 +104,8 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const refreshData = async () => {
-    // 1. Instantly read from local storage if available so there is zero flash of old data
-    if (typeof window !== "undefined") {
+    // 1. If no initialData was injected by SSR, read from localStorage for instant display
+    if (typeof window !== "undefined" && !initialData) {
       try {
         const local = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (local) {
@@ -111,7 +117,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
       } catch {}
     }
 
-    // 2. Fetch latest synced data from server
+    // 2. Fetch latest synced data from server in the background
     try {
       const res = await fetch(`/api/portfolio?_t=${Date.now()}`, {
         cache: "no-store",

@@ -114,7 +114,7 @@ export default function AdminPage() {
   const [coverAccentColor, setCoverAccentColor] = useState<string>("#facc15");
 
   useEffect(() => {
-    const photo = formatGoogleDriveImageUrl(portfolio.personal?.coverPhotoUrl) || "/harsh-cover.jpg";
+    const photo = formatGoogleDriveImageUrl(portfolio.personal?.coverPhotoUrl);
     extractVibrantColor(photo, "#facc15").then(setCoverAccentColor);
   }, [portfolio.personal?.coverPhotoUrl]);
 
@@ -1519,27 +1519,14 @@ export default function AdminPage() {
                 </p>
               </div>
 
-              {/* View Switcher: Dropdown & Segmented Toggle */}
+              {/* View Switcher: Segmented Toggle & Quick Save */}
               <div className="flex flex-wrap items-center gap-2.5">
-                {/* Dropdown Selector */}
-                <div className="relative">
-                  <select
-                    value={coverSubView}
-                    onChange={(e) => setCoverSubView(e.target.value as "desktop" | "mobile")}
-                    className="pl-3.5 pr-8 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 font-mono text-xs font-black uppercase text-stone-900 border border-stone-300 cursor-pointer focus:outline-none focus:border-black appearance-none"
-                  >
-                    <option value="desktop">💻 Desktop / Laptop View</option>
-                    <option value="mobile">📱 Mobile / Phone View</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-stone-600 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-
                 {/* Segmented Toggle Pills */}
                 <div className="inline-flex p-1 rounded-xl bg-stone-100 border border-stone-200">
                   <button
                     type="button"
                     onClick={() => setCoverSubView("desktop")}
-                    className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-3.5 py-1.5 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                       coverSubView === "desktop"
                         ? "bg-black text-white shadow-xs font-black"
                         : "text-stone-600 hover:text-black"
@@ -1550,7 +1537,7 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => setCoverSubView("mobile")}
-                    className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-3.5 py-1.5 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                       coverSubView === "mobile"
                         ? "bg-black text-white shadow-xs font-black"
                         : "text-stone-600 hover:text-black"
@@ -1584,19 +1571,6 @@ export default function AdminPage() {
                 ======================================================== */}
                 {coverSubView === "desktop" && (
                   <div className="space-y-6">
-                    {/* View Intro Card */}
-                    <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200 text-indigo-950 flex items-center gap-3">
-                      <span className="text-2xl">💻</span>
-                      <div>
-                        <div className="font-mono text-xs font-black uppercase tracking-wide text-indigo-900">
-                          Active Mode: Desktop Two-Column Hero
-                        </div>
-                        <div className="font-mono text-[11px] text-indigo-700">
-                          Laptop &amp; Big Screens par Studio Photo Frame (Left) aur Name Typography (Right) render hota hai.
-                        </div>
-                      </div>
-                    </div>
-
                     {/* 1. Desktop Photo Frame Settings */}
                     <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
                       <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
@@ -1685,112 +1659,63 @@ export default function AdminPage() {
                             }}
                           />
                         </label>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, coverPhotoUrl: "/harsh-cover.jpg" },
-                            }))
-                          }
-                          className="px-3 py-1.5 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer"
-                        >
-                          Reset to /harsh-cover.jpg
-                        </button>
                       </div>
 
-                      {/* Frame Overlays: Radar Chip + Plaque Tag */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
-                        <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                            Radar Chip (Top-Left of Photo):
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. LIVE TA @ IIT MADRAS"
-                            value={portfolio.personal.desktopPhotoChip || "LIVE TA @ IIT MADRAS"}
-                            onChange={(e) =>
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: { ...prev.personal, desktopPhotoChip: e.target.value },
-                              }))
-                            }
-                            className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                            Plaque Tag (Bottom-Right of Frame):
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. AI & DS"
-                            value={portfolio.personal.desktopPhotoTag || "AI & DS"}
-                            onChange={(e) =>
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: { ...prev.personal, desktopPhotoTag: e.target.value },
-                              }))
-                            }
-                            className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          />
-                        </div>
+                      {/* Frame Overlay: Plaque Tag (Bottom-Right of Frame) */}
+                      <div className="pt-2">
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Photo Plaque Tag (Bottom-Right of Frame):
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. AI & DS"
+                          value={portfolio.personal.desktopPhotoTag ?? ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, desktopPhotoTag: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        />
+                        <span className="block font-mono text-[10px] text-stone-400 mt-1">
+                          Studio photo frame ke niche right corner plaque me show hota hai (e.g. AI &amp; DS).
+                        </span>
                       </div>
                     </div>
 
-                    {/* 2. Desktop Name & Header Typography */}
+                    {/* 2. Desktop Name & Roles */}
                     <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
                       <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
                         <User className="w-4 h-4 text-amber-500" />
                         <h3 className="font-mono text-xs font-black uppercase text-stone-900">
-                          2. Name Typography &amp; Eyebrow (Right Column)
+                          2. Name Typography &amp; Roles (Right Column)
                         </h3>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                            Hero Name Heading:
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. HARSH ARYAN"
-                            value={portfolio.personal.name || ""}
-                            onChange={(e) =>
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: { ...prev.personal, name: e.target.value },
-                              }))
-                            }
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-sm font-bold focus:border-black focus:bg-white focus:outline-none"
-                          />
-                          <span className="block font-mono text-[10px] text-stone-400 mt-1">
-                            Right column me bold display font me render hota hai.
-                          </span>
-                        </div>
-
-                        <div>
-                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                            Dossier Eyebrow Pill:
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. PORTFOLIO DOSSIER • 2026"
-                            value={portfolio.personal.desktopEyebrow || "PORTFOLIO DOSSIER • 2026"}
-                            onChange={(e) =>
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: { ...prev.personal, desktopEyebrow: e.target.value },
-                              }))
-                            }
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          />
-                          <span className="block font-mono text-[10px] text-stone-400 mt-1">
-                            Name ke theek upar green pulsing badge me show hota hai.
-                          </span>
-                        </div>
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Hero Name Heading:
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. HARSH ARYAN"
+                          value={portfolio.personal.name || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: {
+                                ...prev.personal,
+                                name: e.target.value,
+                                desktopWordmark: e.target.value,
+                              },
+                            }))
+                          }
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-sm font-bold focus:border-black focus:bg-white focus:outline-none"
+                        />
+                        <span className="block font-mono text-[10px] text-stone-400 mt-1">
+                          Right column me bold display font me aur top brand header me render hota hai.
+                        </span>
                       </div>
 
                       {/* Role & Workplace */}
@@ -1802,7 +1727,7 @@ export default function AdminPage() {
                           <input
                             type="text"
                             placeholder="e.g. Teaching Assistant"
-                            value={portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}
+                            value={portfolio.personal.aboutCurrentWork ?? portfolio.personal.role ?? ""}
                             onChange={(e) =>
                               setPortfolio((prev) => ({
                                 ...prev,
@@ -1820,7 +1745,7 @@ export default function AdminPage() {
                           <input
                             type="text"
                             placeholder="e.g. IIT Madras"
-                            value={portfolio.personal.aboutWorkPlace || "IIT Madras"}
+                            value={portfolio.personal.aboutWorkPlace ?? ""}
                             onChange={(e) =>
                               setPortfolio((prev) => ({
                                 ...prev,
@@ -2146,19 +2071,6 @@ export default function AdminPage() {
                 ======================================================== */}
                 {coverSubView === "mobile" && (
                   <div className="space-y-6">
-                    {/* View Intro Card */}
-                    <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 flex items-center gap-3">
-                      <span className="text-2xl">📱</span>
-                      <div>
-                        <div className="font-mono text-xs font-black uppercase tracking-wide text-amber-900">
-                          Active Mode: Mobile Portrait Cover
-                        </div>
-                        <div className="font-mono text-[11px] text-amber-700">
-                          Phone screens par fullscreen portrait photo, white bold name, sticker note aur social icons render hote hain.
-                        </div>
-                      </div>
-                    </div>
-
                     {/* 1. Mobile Photo Manager */}
                     <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
                       <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
@@ -2306,11 +2218,12 @@ export default function AdminPage() {
                             </label>
                             <input
                               type="text"
-                              value={portfolio.personal.role || "Teaching Assistant"}
+                              placeholder="e.g. Teaching Assistant"
+                              value={portfolio.personal.role ?? portfolio.personal.aboutCurrentWork ?? ""}
                               onChange={(e) =>
                                 setPortfolio((prev) => ({
                                   ...prev,
-                                  personal: { ...prev.personal, role: e.target.value },
+                                  personal: { ...prev.personal, role: e.target.value, aboutCurrentWork: e.target.value },
                                 }))
                               }
                               className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
@@ -2323,7 +2236,8 @@ export default function AdminPage() {
                             </label>
                             <input
                               type="text"
-                              value={portfolio.personal.aboutWorkPlace || "IIT Madras"}
+                              placeholder="e.g. IIT Madras"
+                              value={portfolio.personal.aboutWorkPlace ?? ""}
                               onChange={(e) =>
                                 setPortfolio((prev) => ({
                                   ...prev,
@@ -2343,7 +2257,8 @@ export default function AdminPage() {
                         </label>
                         <textarea
                           rows={2}
-                          value={portfolio.personal.mobileTagline ?? "Teaching Machines To Learn • Building Scientific Software"}
+                          placeholder="e.g. Teaching Machines To Learn • Building Scientific Software"
+                          value={portfolio.personal.mobileTagline ?? ""}
                           onChange={(e) =>
                             setPortfolio((prev) => ({
                               ...prev,
@@ -2360,16 +2275,17 @@ export default function AdminPage() {
                       <div className="flex items-center gap-2 pb-2 border-b border-stone-100">
                         <Send className="w-4 h-4 text-amber-500" />
                         <h3 className="font-mono text-xs font-black uppercase text-stone-900">
-                          3. Social Connect Links (Mobile Sticker)
+                          3. Social Connect Links (Cover &amp; Mobile Sticker)
                         </h3>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                           <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">GitHub URL:</label>
                           <input
                             type="text"
-                            value={portfolio.socialLinks.github}
+                            placeholder="https://github.com/..."
+                            value={portfolio.socialLinks.github || ""}
                             onChange={(e) =>
                               setPortfolio((prev) => ({
                                 ...prev,
@@ -2384,11 +2300,28 @@ export default function AdminPage() {
                           <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">LinkedIn URL:</label>
                           <input
                             type="text"
-                            value={portfolio.socialLinks.linkedin}
+                            placeholder="https://linkedin.com/in/..."
+                            value={portfolio.socialLinks.linkedin || ""}
                             onChange={(e) =>
                               setPortfolio((prev) => ({
                                 ...prev,
                                 socialLinks: { ...prev.socialLinks, linkedin: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">Email Address:</label>
+                          <input
+                            type="email"
+                            placeholder="you@example.com"
+                            value={portfolio.personal.email || ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, email: e.target.value },
                               }))
                             }
                             className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
@@ -2428,12 +2361,9 @@ export default function AdminPage() {
                         <div className="relative rounded-2xl bg-white dark:bg-stone-900 border-2 border-black p-2 shadow-[3px_3px_0_#000] space-y-1.5">
                           <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden bg-stone-200 border border-black/30">
                             <img
-                              src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl) || "/harsh-cover.jpg"}
+                              src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl)}
                               alt="Cover Preview"
                               className="w-full h-full object-cover object-top"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
-                              }}
                             />
                           </div>
                           {/* Lower Plaque */}
@@ -2516,12 +2446,9 @@ export default function AdminPage() {
                       <div className="relative w-full h-full rounded-[26px] overflow-hidden bg-stone-950 flex flex-col justify-between">
                         {/* Background Portrait Photo */}
                         <img
-                          src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl) || "/harsh-cover.jpg"}
+                          src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl)}
                           alt="Cover Mobile Preview"
                           className="absolute inset-0 w-full h-full object-cover object-[center_top]"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
-                          }}
                         />
 
                         {/* Gradient vignettes */}
@@ -2812,22 +2739,6 @@ export default function AdminPage() {
                           }}
                         />
                       </label>
-
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const updated = {
-                            ...portfolio,
-                            personal: { ...portfolio.personal, aboutPhotoUrl: "/harsh-cover.jpg" },
-                          };
-                          setPortfolio(updated);
-                          await saveInstantly(updated, "✅ Reset to default /harsh-cover.jpg!");
-                        }}
-                        className="px-3.5 py-2 rounded-xl border border-stone-200 hover:border-stone-400 bg-stone-100 text-stone-700 font-mono text-xs cursor-pointer flex items-center gap-1.5"
-                      >
-                        <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
-                        <span>Reset Default Photo</span>
-                      </button>
                     </div>
 
                     {/* ── LOWER CHIN DETAILS (Integrated Identity Plaque) ── */}
@@ -2868,11 +2779,11 @@ export default function AdminPage() {
                           <input
                             type="text"
                             placeholder="e.g. Teaching Assistant"
-                            value={portfolio.personal.aboutCurrentWork ?? "Teaching Assistant"}
+                            value={portfolio.personal.aboutCurrentWork ?? portfolio.personal.role ?? ""}
                             onChange={(e) =>
                               setPortfolio((prev) => ({
                                 ...prev,
-                                personal: { ...prev.personal, aboutCurrentWork: e.target.value },
+                                personal: { ...prev.personal, aboutCurrentWork: e.target.value, role: e.target.value },
                               }))
                             }
                             className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
@@ -2886,7 +2797,7 @@ export default function AdminPage() {
                           <input
                             type="text"
                             placeholder="e.g. IIT Madras"
-                            value={portfolio.personal.aboutWorkPlace ?? "IIT Madras"}
+                            value={portfolio.personal.aboutWorkPlace ?? ""}
                             onChange={(e) =>
                               setPortfolio((prev) => ({
                                 ...prev,
@@ -2935,12 +2846,9 @@ export default function AdminPage() {
                         {/* Photo Inset Recess */}
                         <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden border border-black/20 bg-stone-100 shadow-inner group">
                           <img
-                            src={formatGoogleDriveImageUrl(portfolio.personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
+                            src={formatGoogleDriveImageUrl(portfolio.personal.aboutPhotoUrl || portfolio.personal.coverPhotoUrl)}
                             alt="About Frame Live Preview"
                             className="w-full h-full object-cover object-top"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = "/harsh-cover.jpg";
-                            }}
                           />
                           {/* Corner Tabs */}
                           <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-t-2 border-l-2 border-black/60 pointer-events-none" />
@@ -5471,7 +5379,7 @@ export default function AdminPage() {
                     <input
                       type="text"
                       placeholder="e.g. socius"
-                      value={portfolio.personal.footerEasterEggText || "socius"}
+                      value={portfolio.personal.footerEasterEggText ?? ""}
                       onChange={(e) =>
                         setPortfolio((prev) => ({
                           ...prev,

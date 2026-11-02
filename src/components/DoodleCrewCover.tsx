@@ -612,13 +612,11 @@ export function DoodleCrewCover({
   const { theme } = useTheme()
   const isDark = theme === "dark"
   const { data: portfolio, closeCover } = usePortfolio()
-  const word = (portfolio?.personal?.desktopWordmark || portfolio?.personal?.name || wordmark).toUpperCase()
+  const word = (portfolio?.personal?.name || portfolio?.personal?.desktopWordmark || wordmark).toUpperCase()
   const chars = React.useMemo(() => Array.from(word), [word])
 
   // Dynamic photo and photo-extracted palette synchronization
-  const photoSrc =
-    formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl) ||
-    "/harsh-cover.jpg";
+  const photoSrc = formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl);
   const [displayPhotoSrc, setDisplayPhotoSrc] = React.useState<string>(photoSrc);
   const [photoPalette, setPhotoPalette] = React.useState<PhotoPalette>(DEFAULT_PHOTO_PALETTE);
 
@@ -1119,7 +1117,7 @@ export function DoodleCrewCover({
           <div className="dcf-top-left">
             <div className="dcf-brand-stamp">
               <img src="/icon.svg" alt="App Logo" className="w-4 h-4 object-contain inline-block rounded-xs shrink-0" />
-              <span>{portfolio?.personal?.desktopWordmark || portfolio?.personal?.name || "HARSH ARYAN"}</span>
+              <span>{portfolio?.personal?.name || portfolio?.personal?.desktopWordmark || "HARSH ARYAN"}</span>
             </div>
           </div>
 
@@ -1130,7 +1128,7 @@ export function DoodleCrewCover({
             </div>
             <div className="dcf-social-group">
               <a
-                href="https://github.com/harsharyann"
+                href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="dcf-social-link is-github"
@@ -1140,7 +1138,7 @@ export function DoodleCrewCover({
                 <GithubIcon className="w-4 h-4" />
               </a>
               <a
-                href="https://linkedin.com"
+                href={portfolio?.socialLinks?.linkedin || "https://linkedin.com"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="dcf-social-link is-linkedin"
@@ -1150,7 +1148,13 @@ export function DoodleCrewCover({
                 <LinkedinIcon className="w-4 h-4" />
               </a>
               <a
-                href="mailto:harsharyan@outlook.com"
+                href={
+                  portfolio?.personal?.email
+                    ? portfolio.personal.email.startsWith("mailto:")
+                      ? portfolio.personal.email
+                      : `mailto:${portfolio.personal.email}`
+                    : "mailto:harsharyan@outlook.com"
+                }
                 className="dcf-social-link is-mail"
                 title="Email"
                 aria-label="Send Email"
@@ -1206,7 +1210,6 @@ export function DoodleCrewCover({
                   unoptimized
                   sizes="(max-width: 1024px) 300px, 340px"
                   className="object-cover object-top group-hover:scale-105 transition-transform duration-500 select-none"
-                  onError={() => setDisplayPhotoSrc("/harsh-cover.jpg")}
                 />
 
                 {/* Minimal Architectural Camera Corner Brackets */}

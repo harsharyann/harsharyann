@@ -80,10 +80,7 @@ export function MobileDoodleCover() {
   };
 
   // Resolve photo source
-  const photoSrc =
-    formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl) ||
-    "/harsh-cover.jpg";
-
+  const photoSrc = formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl);
   const [displayPhotoSrc, setDisplayPhotoSrc] = useState<string>(photoSrc);
 
   useEffect(() => {
@@ -147,9 +144,6 @@ export function MobileDoodleCover() {
             unoptimized
             sizes="100vw"
             className="object-cover object-[center_top] filter brightness-[1.02] contrast-[1.04]"
-            onError={() => {
-              setDisplayPhotoSrc("/harsh-cover.jpg");
-            }}
           />
         </motion.div>
 
@@ -230,12 +224,12 @@ export function MobileDoodleCover() {
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                   </span>
                   <span className="font-['Space_Grotesk'] text-xs sm:text-sm font-black uppercase tracking-tight text-emerald-700 dark:text-emerald-300">
-                    Teaching Assistant
+                    {portfolio?.personal?.role || portfolio?.personal?.aboutCurrentWork || "Teaching Assistant"}
                   </span>
                 </div>
                 {/* IIT Madras directly underneath Teaching Assistant (No building emoji) */}
                 <div className="mt-0.5 font-mono text-[11px] sm:text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-300">
-                  IIT Madras
+                  {portfolio?.personal?.aboutWorkPlace || "IIT Madras"}
                 </div>
               </div>
             )}

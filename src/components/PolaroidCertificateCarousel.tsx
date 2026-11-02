@@ -24,6 +24,7 @@ import {
   formatGoogleDriveThumbnailUrl,
   isGoogleDriveUrl,
 } from "@/lib/googleDrive"
+import { usePortfolio } from "@/context/PortfolioContext"
 
 export function clamp(v: number, a: number, b: number): number {
   return Math.min(b, Math.max(a, v))
@@ -165,6 +166,10 @@ export function formatVerificationText(cert: Certificate): string {
 }
 
 function SecurityWatermarkOverlay() {
+  const { data: portfolio } = usePortfolio();
+  const ownerName = portfolio?.personal?.name ? portfolio.personal.name.toUpperCase() : "HARSH ARYAN";
+  const watermarkText = `✦ ${ownerName} CREDENTIALS • ${ownerName} CREDENTIALS • ${ownerName} CREDENTIALS • ${ownerName} CREDENTIALS ✦`;
+
   return (
     <div
       className="absolute inset-0 pointer-events-none select-none overflow-hidden z-25 opacity-15 dark:opacity-25"
@@ -176,7 +181,7 @@ function SecurityWatermarkOverlay() {
             key={row}
             className="whitespace-nowrap font-mono text-[11px] sm:text-xs font-black uppercase tracking-widest text-black dark:text-white select-none -rotate-12 translate-x-[-6%]"
           >
-            ✦ HARSH ARYAN CREDENTIALS • HARSH ARYAN CREDENTIALS • HARSH ARYAN CREDENTIALS • HARSH ARYAN CREDENTIALS ✦
+            {watermarkText}
           </div>
         ))}
       </div>

@@ -527,7 +527,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             {/* Top Inset Photo Recess */}
             <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden border-2 border-black/20 dark:border-white/20 bg-stone-200 dark:bg-stone-900 shadow-inner group">
               <Image
-                src={formatGoogleDriveImageUrl(personal.aboutPhotoUrl) || "/harsh-cover.jpg"}
+                src={formatGoogleDriveImageUrl(personal.aboutPhotoUrl || personal.coverPhotoUrl)}
                 alt={personal.name}
                 fill
                 priority

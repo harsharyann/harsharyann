@@ -5,6 +5,7 @@ import { MagazineNav } from "@/components/MagazineNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { PortfolioProvider } from "@/context/PortfolioContext";
 import { FluidBackground } from "@/components/FluidBackground";
+import { getStoredPortfolioData } from "@/lib/portfolioStore";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -40,6 +41,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const initialPortfolioData = getStoredPortfolioData();
+
   return (
     <html lang="en" className="bg-transparent text-black" suppressHydrationWarning>
       <head>
@@ -76,7 +79,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-news-texture flex flex-col antialiased selection:bg-indigo-600 selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-200 pb-24 md:pb-0">
         <ThemeProvider>
-          <PortfolioProvider>
+          <PortfolioProvider initialData={initialPortfolioData}>
             <FluidBackground />
             <ScrollProgressBar />
             <MagazineNav />
