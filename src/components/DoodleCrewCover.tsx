@@ -1150,222 +1150,7 @@ export function DoodleCrewCover({
       {/* Main Cover Canvas */}
       <main className="dcf-main-canvas" ref={worldRef}>
 
-        {/* Author Portrait Polaroid Flank (Bottom-Left) */}
-        <aside className="dcf-side-flank is-left group cursor-pointer" aria-label="Harsh Aryan - Polaroid Portrait">
-          <div className="dcf-flank-tape is-left-tape" style={{ backgroundColor: photoPalette.dominant }} />
-          <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-black/30 bg-stone-900 mb-2">
-            <Image
-              src={displayPhotoSrc}
-              alt="Harsh Aryan"
-              fill
-              unoptimized
-              className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
-              onError={() => setDisplayPhotoSrc("/harsh-cover.jpg")}
-            />
-            <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded-xs bg-emerald-500 text-black font-mono text-[9px] font-black uppercase">
-              LIVE TA
-            </div>
-          </div>
-          <div className="flex items-center justify-between text-[11px] font-bold font-mono">
-            <span className="truncate">{portfolio?.personal?.name || "Harsh Aryan"}</span>
-            <span className="text-amber-600 dark:text-amber-400 font-black">IIT-M</span>
-          </div>
-        </aside>
-
-        {/* Portfolio Quick Dossier (Bottom-Right) */}
-        <aside className="dcf-side-flank is-right" aria-label="Portfolio Quick Dossier">
-          <div className="dcf-flank-tape is-right-tape" />
-          <div className="dcf-flank-header">
-            <svg className="dcf-flank-tag-svg" viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
-              <path d="M3 10L10 3H17V10L10 17L3 10Z" fill="#fbbf24" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-              <circle cx="14" cy="6" r="1.5" fill="currentColor" />
-            </svg>
-            <span className="dcf-flank-tag">DOSSIER METRICS</span>
-          </div>
-          <div className="dcf-flank-stat-row">
-            <span className="dcf-flank-stat-val">6+</span>
-            <span className="dcf-flank-stat-lbl">AI &amp; Web Projects</span>
-          </div>
-          <div className="dcf-flank-stat-row">
-            <span className="dcf-flank-stat-val">150+</span>
-            <span className="dcf-flank-stat-lbl">DSA &amp; Logic Solved</span>
-          </div>
-          <div className="dcf-flank-barcode">
-            <span className="dcf-flank-bars">||| |||| | | |||| ||</span>
-            <span className="dcf-flank-issn">ISSN 2026-AI</span>
-          </div>
-        </aside>
-
-        {/* Wordmark & Live Doodle Characters Stage */}
-        <div className="dcf-stage">
-          <h1 className="dcf-sr">HARSH ARYAN</h1>
-          <svg
-            ref={svgRef}
-            className="dcf-svg"
-            viewBox={`${view.x.toFixed(1)} ${view.y.toFixed(1)} ${view.w.toFixed(1)} ${view.h.toFixed(1)}`}
-            aria-hidden="false"
-            role="group"
-            aria-label="Harsh Aryan — Doodle Crew Wordmark"
-          >
-            <defs>
-              {/* Force Amanojaku @font-face inside SVG context */}
-              <style>{`
-                @font-face {
-                  font-family: 'Amanojaku';
-                  src: url('/fonts/Amanojaku-Demo.otf') format('opentype'),
-                       url('/fonts/Amanojaku Demo.otf') format('opentype');
-                  font-weight: 100 900;
-                  font-style: normal;
-                  font-display: swap;
-                }
-              `}</style>
-
-              {/* Pure B&W Cross-hatch pattern */}
-              <pattern id={`${uid}-hatch`} width="4.6" height="4.6" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
-                <line x1="0" y1="0" x2="0" y2="4.6" stroke="#000000" strokeWidth="1.25" />
-              </pattern>
-
-              {/* Line boil filters */}
-              {[0, 1, 2].map((k) => (
-                <filter key={k} id={`${uid}-boil${k}`} x="-10%" y="-10%" width="120%" height="120%">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed={k * 7 + 3} result="n" />
-                  <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G" />
-                </filter>
-              ))}
-
-              {/* Dry-brush ink stamp filter */}
-              <filter id={`${uid}-ink`} x="-4%" y="-6%" width="108%" height="112%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="11" result="edge" />
-                <feDisplacementMap in="SourceGraphic" in2="edge" scale="5" xChannelSelector="R" yChannelSelector="G" result="rough" />
-                <feTurbulence type="fractalNoise" baseFrequency="0.018 0.32" numOctaves="2" seed="4" result="streak" />
-                <feColorMatrix in="streak" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -16 5.6" result="streakA" />
-                <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="1" seed="9" result="speck" />
-                <feColorMatrix in="speck" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -24 7.0" result="speckA" />
-                <feComposite in="streakA" in2="speckA" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="holes" />
-                <feComposite in="rough" in2="holes" operator="out" />
-              </filter>
-            </defs>
-
-            {/* Behind characters & ground */}
-            <g ref={(el) => void (crewLayerRefs.current[0] = el)}>
-              <g className="dcf-ground">
-                <path className="dcf-draw" pathLength={1} d={ground.d} style={{ "--d": tl.ground + "ms" } as React.CSSProperties} />
-                <path className="dcf-tufts dcf-fade" d={ground.tufts} style={{ "--d": tl.ground + 450 + "ms" } as React.CSSProperties} />
-                {ground.pebbles.map((pb, k) => (
-                  <ellipse key={k} className="dcf-pebble dcf-fade" cx={pb.x} cy={pb.y} rx={pb.r * 1.5} ry={pb.r} style={{ "--d": tl.ground + 550 + "ms" } as React.CSSProperties} />
-                ))}
-              </g>
-              {placed.filter((p) => p.seat === "behind").map((p) => renderCrew(p, "body"))}
-            </g>
-
-            {/* Giant Letters stamping down — Option A Neo-Pop Colourful Letters */}
-            {chars.map((c, i) =>
-              c === " " ? null : (
-                <g key={i} className="dcf-letter" style={{ "--d": tl.letter(i) + "ms", "--r": ((hash(i * 2.3) - 0.5) * 8).toFixed(2) + "deg" } as React.CSSProperties}>
-                  <g className="dcf-glyph">
-                    {/* 3D Comic drop shadow */}
-                    <text
-                      x={layout.x[i] + 4.5}
-                      y={4.5}
-                      fontSize={FONT_SIZE}
-                      fontWeight={900}
-                      style={{ fontFamily: "'Amanojaku', 'Dela Gothic One', sans-serif" }}
-                      className="dcf-letter-shadow"
-                    >
-                      {c}
-                    </text>
-                    {/* Main Vibrant Letter */}
-                    <text
-                      x={layout.x[i]}
-                      y={0}
-                      fontSize={FONT_SIZE}
-                      fontWeight={900}
-                      style={{
-                        fontFamily: "'Amanojaku', 'Dela Gothic One', sans-serif",
-                        fill: photoPalette?.letters?.length
-                          ? photoPalette.letters[i % photoPalette.letters.length]
-                          : (isDark ? DARK_LETTER_COLORS[i % DARK_LETTER_COLORS.length] : LETTER_COLORS[i % LETTER_COLORS.length]),
-                      }}
-                      className="dcf-letter-main"
-                      filter={`url(#${uid}-ink)`}
-                    >
-                      {c}
-                    </text>
-                  </g>
-                  <path
-                    className="dcf-dust"
-                    d={
-                      "M" +
-                      (layout.x[i] - 6) +
-                      " -6 l-16 -6 M" +
-                      (layout.x[i] - 4) +
-                      " -16 l-12 -12 M" +
-                      (layout.x[i] + layout.w[i] + 6) +
-                      " -6 l16 -6 M" +
-                      (layout.x[i] + layout.w[i] + 4) +
-                      " -16 l12 -12"
-                    }
-                  />
-                </g>
-              )
-            )}
-
-            {/* Front & top characters */}
-            <g ref={(el) => void (crewLayerRefs.current[1] = el)}>
-              {placed.filter((p) => p.seat === "behind").map((p) => renderCrew(p, "front"))}
-              {placed.filter((p) => p.seat !== "behind").map((p) => renderCrew(p, "body"))}
-            </g>
-
-            {/* Click Hitboxes for characters */}
-            {interactive &&
-              placed.map((p) => {
-                const bx = p.flip > 0 ? [p.art.box.l, p.art.box.r] : [-p.art.box.r, -p.art.box.l]
-                const top = p.art.box.t
-                const bottom = p.seat === "behind" ? -30 : p.art.box.b
-                return (
-                  <rect
-                    key={"hit" + p.i}
-                    className="dcf-hit"
-                    x={p.x + bx[0] * p.scale}
-                    y={p.y + top * p.scale}
-                    width={(bx[1] - bx[0]) * p.scale}
-                    height={(bottom - top) * p.scale}
-                    rx={12}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={(p.m.name || p.m.kind) + (p.m.says ? ": " + p.m.says : "")}
-                    onClick={() => poke(p.i)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault()
-                        poke(p.i)
-                      }
-                    }}
-                  />
-                )
-              })}
-          </svg>
-
-          {/* Speech Bubbles on Click */}
-          <div className="dcf-bubbles" aria-live="polite">
-            {placed.map((p) =>
-              talking === p.i && p.m.says ? (
-                <div
-                  key={p.i}
-                  className={"dcf-bubble" + (p.x > view.x + view.w * 0.72 ? " is-left" : "")}
-                  style={{
-                    left: pct(p.x, view.x, view.w),
-                    top: pct(p.y + p.art.box.t * p.scale - 8, view.y, view.h),
-                  }}
-                >
-                  <span className="dcf-bubble-speaker">{p.m.name}:</span> {p.m.says}
-                </div>
-              ) : null
-            )}
-          </div>
-        </div>
-
-        {/* Floating Doodles */}
+        {/* Floating Doodles (Ambient playful stars & sparks in background) */}
         {doodleList.length > 0 && (
           <div className="dcf-doodles" aria-hidden="true">
             {doodleList.map((d, k) => (
@@ -1386,156 +1171,216 @@ export function DoodleCrewCover({
           </div>
         )}
 
-        {/* Hero Headline & Call to Action */}
-        <div className="dcf-hero-copy">
-          {/* Active Role — Stacked Editorial Badge (Teaching Assistant + IIT Madras directly underneath) */}
-          <div className="dcf-hero-roles dcf-rise" style={{ "--d": "460ms" } as React.CSSProperties} aria-label="Harsh Aryan - Current Role">
-            <div className="dcf-hero-role-pill is-ta group cursor-default flex flex-col items-center justify-center gap-0.5 py-1 px-4 rounded-xl" title="Teaching Assistant @ IIT Madras">
-              <div className="flex items-center gap-1.5">
-                <span className="dcf-role-live-dot" aria-hidden="true" />
-                <span className="dcf-role-text-bold text-[11px] sm:text-xs font-extrabold uppercase tracking-wide">Teaching Assistant</span>
+        {/* ── TWO-COLUMN HERO STAGE (Photo Frame on Left + Modern Typography & Actions on Right) ── */}
+        <div className="relative z-10 w-full max-w-5xl xl:max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-10 items-center justify-center my-auto py-2 sm:py-4 px-3 sm:px-6">
+          
+          {/* ── LEFT COLUMN: Modern Studio Portrait Photo Frame ── */}
+          <div className="md:col-span-5 flex justify-center order-1">
+            <div className="relative group mx-auto w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[340px] rounded-3xl bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] p-3.5 sm:p-4 space-y-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-[9px_9px_0_#000] dark:hover:shadow-[9px_9px_0_#fff]">
+              
+              {/* Photo Inset Frame */}
+              <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden border-2 border-black/20 dark:border-white/20 bg-stone-200 dark:bg-stone-900 shadow-inner group">
+                <Image
+                  src={displayPhotoSrc}
+                  alt={portfolio?.personal?.name || "Harsh Aryan"}
+                  fill
+                  priority
+                  unoptimized
+                  sizes="(max-width: 1024px) 300px, 340px"
+                  className="object-cover object-top group-hover:scale-105 transition-transform duration-500 select-none"
+                  onError={() => setDisplayPhotoSrc("/harsh-cover.jpg")}
+                />
+
+                {/* Floating Live Radar Chip */}
+                <div className="absolute top-2.5 left-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 dark:bg-black/90 backdrop-blur-md border border-white/30 text-white font-mono text-[9px] font-black uppercase tracking-wider shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>LIVE TA @ IIT MADRAS</span>
+                </div>
+
+                {/* Minimal Architectural Camera Corner Brackets */}
+                <div className="absolute top-2.5 right-2.5 w-3.5 h-3.5 border-t-2 border-r-2 border-white/70 pointer-events-none" />
+                <div className="absolute bottom-2.5 left-2.5 w-3.5 h-3.5 border-b-2 border-l-2 border-white/70 pointer-events-none" />
+                <div className="absolute bottom-2.5 right-2.5 w-3.5 h-3.5 border-b-2 border-r-2 border-white/70 pointer-events-none" />
               </div>
-              <div className="font-mono text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                IIT Madras
+
+              {/* Lower Plaque inside Frame */}
+              <div className="pt-2 border-t-2 border-dashed border-stone-300 dark:border-stone-700/80 flex items-center justify-between font-mono text-xs font-bold">
+                <span className="text-black dark:text-white uppercase tracking-wider font-black">
+                  {portfolio?.personal?.name || "HARSH ARYAN"}
+                </span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 font-black uppercase text-[10.5px]">
+                  AI &amp; DS
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Clean Modern Subtitle (Dynamic from CMS) */}
-          <div className="dcf-sub-copy dcf-rise" style={{ "--d": "490ms" } as React.CSSProperties}>
-            <p className="dcf-hero-headline-text">
+          {/* ── RIGHT COLUMN: Clean Name Typography, Role, Subtitle, Actions, Daily Spark ── */}
+          <div className="md:col-span-7 flex flex-col items-start text-left space-y-3 order-2">
+            
+            {/* Dossier Eyebrow Pill */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 font-mono text-[10px] font-black uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+              <span>PORTFOLIO DOSSIER • 2026</span>
+            </div>
+
+            {/* Clean, Bold Name Heading (No cartoon characters) */}
+            <div>
+              <h1 className="font-hero-heading text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-black dark:text-white leading-none select-none">
+                {portfolio?.personal?.name || "HARSH ARYAN"}
+              </h1>
+            </div>
+
+            {/* Active Role Pill */}
+            <div className="inline-flex items-center gap-2 py-1 px-3.5 rounded-xl bg-amber-100 dark:bg-stone-800/90 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-black dark:text-white font-mono">
+                  {portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role || "Teaching Assistant"}
+                </span>
+              </div>
+              <span className="text-stone-400 dark:text-stone-500 font-bold">•</span>
+              <span className="font-mono text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                {portfolio?.personal?.aboutWorkPlace || "IIT Madras"}
+              </span>
+            </div>
+
+            {/* Headline / Subtitle */}
+            <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 leading-relaxed max-w-xl">
               {portfolio?.personal?.desktopHeadline || portfolio?.personal?.headline || "Exploring Data Science, Machine Learning Foundations & Scientific Computing"}
             </p>
-          </div>
 
-          <div className="dcf-actions dcf-rise" style={{ "--d": "520ms" } as React.CSSProperties}>
-            <a
-              href="#projects"
-              onClick={(e) => {
-                e.preventDefault();
-                closeCover();
-                setTimeout(() => {
-                  document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-              }}
-              className="dcf-btn is-projects is-solid cursor-pointer"
-            >
-              <DoodleIcon kind="bolt" size={14} isDark={isDark} />
-              <span>Explore Projects</span>
-              <span className="dcf-btn-arrow">↗</span>
-            </a>
+            {/* 3 Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              <a
+                href="#projects"
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeCover();
+                  setTimeout(() => {
+                    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className="dcf-btn is-projects is-solid cursor-pointer"
+              >
+                <DoodleIcon kind="bolt" size={14} isDark={isDark} />
+                <span>Explore Projects</span>
+                <span className="dcf-btn-arrow">↗</span>
+              </a>
 
-            <a
-              href="#about"
-              onClick={(e) => {
-                e.preventDefault();
-                closeCover();
-                setTimeout(() => {
-                  document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-              }}
-              className="dcf-btn is-about is-outline cursor-pointer"
-            >
-              <DoodleIcon kind="star" size={14} isDark={isDark} />
-              <span>About &amp; Story</span>
-            </a>
+              <a
+                href="#about"
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeCover();
+                  setTimeout(() => {
+                    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className="dcf-btn is-about is-outline cursor-pointer"
+              >
+                <DoodleIcon kind="star" size={14} isDark={isDark} />
+                <span>About &amp; Story</span>
+              </a>
 
-            <a
-              href="#contact"
-              onClick={(e) => {
-                e.preventDefault();
-                closeCover();
-                setTimeout(() => {
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-              }}
-              className="dcf-btn is-contact is-outline cursor-pointer"
-            >
-              <DoodleIcon kind="plane" size={14} isDark={isDark} />
-              <span>Contact Desk</span>
-            </a>
-          </div>
-
-          {/* THE DAILY SPARK ✦ - 7 Days, 7 Quotes */}
-          <DailySpark isDark={isDark} />
-
-          {/* Enter Portfolio Action Link with "CLICK HERE" comic bubble & 8-second countdown */}
-          <div className="dcf-scroll-cue dcf-rise flex flex-col items-center gap-1 mt-1.5" style={{ "--d": "600ms" } as React.CSSProperties}>
-            {/* Comic Doodle Speech Bubble: "CLICK HERE 👇" */}
-            <div className="relative pointer-events-none -mb-0.5 z-20">
-              <div className="px-2 py-0.5 bg-yellow-300 text-black border-[1.5px] border-black rounded-full font-mono text-[9px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] flex items-center gap-1 animate-bounce select-none">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping shrink-0" />
-                <span>CLICK HERE</span>
-                <span className="text-[10px]">👇</span>
-                {/* Comic bubble pointer tail */}
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-yellow-300 border-r-[1.5px] border-b-[1.5px] border-black rotate-45" />
-              </div>
+              <a
+                href="#contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeCover();
+                  setTimeout(() => {
+                    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className="dcf-btn is-contact is-outline cursor-pointer"
+              >
+                <DoodleIcon kind="plane" size={14} isDark={isDark} />
+                <span>Contact Desk</span>
+              </a>
             </div>
 
-            {/* Interactive Physical Enter Button with Live 8s Countdown Ring */}
-            <button
-              type="button"
-              onClick={triggerLeave}
-              className="group relative inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-[#12131a]/95 backdrop-blur-xl border-[1.5px] border-black dark:border-white shadow-[2.5px_2.5px_0_#000] dark:shadow-[2.5px_2.5px_0_#fff] hover:shadow-[4px_4px_0_#f59e0b] hover:-translate-y-0.5 active:translate-y-0.5 transition-all cursor-pointer select-none"
-              aria-label="Click here to enter portfolio or wait for countdown"
-            >
-              {/* Circular SVG 8s Countdown Dial */}
-              <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 -rotate-90" viewBox="0 0 32 32">
-                  <circle
-                    cx="16"
-                    cy="16"
-                    r="12"
+            {/* Daily Spark Quote Box */}
+            <div className="w-full max-w-xl pt-0.5">
+              <DailySpark isDark={isDark} />
+            </div>
+
+            {/* Enter Portfolio Action Button with Countdown */}
+            <div className="flex items-center gap-3 pt-0.5">
+              {/* Comic Doodle Speech Bubble */}
+              <div className="relative pointer-events-none select-none">
+                <div className="px-2 py-0.5 bg-yellow-300 text-black border-[1.5px] border-black rounded-full font-mono text-[9px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] flex items-center gap-1 animate-bounce">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping shrink-0" />
+                  <span>CLICK HERE</span>
+                  <span className="text-[10px]">👉</span>
+                </div>
+              </div>
+
+              {/* Interactive Physical Enter Button with Live 8s Countdown Ring */}
+              <button
+                type="button"
+                onClick={triggerLeave}
+                className="group relative inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-[#12131a]/95 backdrop-blur-xl border-[1.5px] border-black dark:border-white shadow-[2.5px_2.5px_0_#000] dark:shadow-[2.5px_2.5px_0_#fff] hover:shadow-[4px_4px_0_#f59e0b] hover:-translate-y-0.5 active:translate-y-0.5 transition-all cursor-pointer select-none"
+                aria-label="Click here to enter portfolio or wait for countdown"
+              >
+                {/* Circular SVG 8s Countdown Dial */}
+                <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5 -rotate-90" viewBox="0 0 32 32">
+                    <circle
+                      cx="16"
+                      cy="16"
+                      r="12"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.8"
+                      className="text-stone-200 dark:text-stone-800"
+                    />
+                    <circle
+                      cx="16"
+                      cy="16"
+                      r="12"
+                      fill="none"
+                      stroke="#f59e0b"
+                      strokeWidth="3"
+                      strokeDasharray="75.4"
+                      strokeDashoffset={75.4 - (75.4 * countdown) / 8}
+                      strokeLinecap="round"
+                      className="transition-all duration-1000 ease-linear"
+                    />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center font-mono text-[8.5px] font-black text-amber-600 dark:text-amber-400">
+                    {countdown}
+                  </span>
+                </div>
+
+                {/* Action Label */}
+                <div className="flex items-center gap-1.5 text-left">
+                  <span className="font-['Space_Grotesk'] text-[11px] sm:text-xs font-black uppercase tracking-wider text-black dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                    ENTER PORTFOLIO ✦
+                  </span>
+                  <span className="font-mono text-[8.5px] text-stone-500 dark:text-stone-400 hidden sm:inline">
+                    ({countdown}s)
+                  </span>
+                </div>
+
+                {/* Bouncing Arrow Box */}
+                <div className="w-5 h-5 rounded-md bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shadow-xs group-hover:bg-amber-500 group-hover:text-black transition-colors shrink-0">
+                  <svg
+                    viewBox="0 0 16 16"
+                    width="10"
+                    height="10"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2.8"
-                    className="text-stone-200 dark:text-stone-800"
-                  />
-                  <circle
-                    cx="16"
-                    cy="16"
-                    r="12"
-                    fill="none"
-                    stroke="#f59e0b"
-                    strokeWidth="3"
-                    strokeDasharray="75.4"
-                    strokeDashoffset={75.4 - (75.4 * countdown) / 8}
+                    strokeWidth="2.4"
                     strokeLinecap="round"
-                    className="transition-all duration-1000 ease-linear"
-                  />
-                </svg>
-                <span className="absolute inset-0 flex items-center justify-center font-mono text-[8.5px] font-black text-amber-600 dark:text-amber-400">
-                  {countdown}
-                </span>
-              </div>
+                    strokeLinejoin="round"
+                    className="group-hover:translate-y-0.5 transition-transform"
+                  >
+                    <path d="M8 2 L8 13 M3 8 L8 13 L13 8" />
+                  </svg>
+                </div>
+              </button>
+            </div>
 
-              {/* Action Label */}
-              <div className="flex items-center gap-1.5 text-left">
-                <span className="font-['Space_Grotesk'] text-[11px] sm:text-xs font-black uppercase tracking-wider text-black dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                  ENTER PORTFOLIO ✦
-                </span>
-                <span className="font-mono text-[8.5px] text-stone-500 dark:text-stone-400 hidden sm:inline">
-                  ({countdown}s)
-                </span>
-              </div>
-
-              {/* Bouncing Arrow Box */}
-              <div className="w-5 h-5 rounded-md bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shadow-xs group-hover:bg-amber-500 group-hover:text-black transition-colors shrink-0">
-                <svg
-                  viewBox="0 0 16 16"
-                  width="10"
-                  height="10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="group-hover:translate-y-0.5 transition-transform"
-                >
-                  <path d="M8 2 L8 13 M3 8 L8 13 L13 8" />
-                </svg>
-              </div>
-            </button>
           </div>
         </div>
       </main>
