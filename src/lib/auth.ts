@@ -4,20 +4,21 @@ import crypto from "crypto";
 export const AUTH_COOKIE = "portfolio_admin_auth";
 export const GATE_COOKIE = "portfolio_admin_gate";
 
-export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "Harsharyann_";
-export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "harsh@2026";
-export const ADMIN_PIN = process.env.ADMIN_PIN || "202688";
-export const ADMIN_GATE_KEY = process.env.ADMIN_GATE_KEY || "socius2026";
-export const SECRET_KEY = process.env.ADMIN_SECRET_KEY || "harsh_socius_super_secret_hmac_key_2026_secured";
+export const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || "").trim();
+export const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || "").trim();
+export const ADMIN_PIN = (process.env.ADMIN_PIN || "").trim();
+export const ADMIN_GATE_KEY = (process.env.ADMIN_GATE_KEY || "socius").trim();
+export const SECRET_KEY = (process.env.ADMIN_SECRET_KEY || "socius_runtime_hmac_secret_key_default").trim();
 
 /**
  * Timing-safe string comparison to prevent timing attacks
  */
 export function safeCompare(a: string, b: string): boolean {
+  if (!a || !b) return false;
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
   if (bufA.length !== bufB.length) {
-    // Constant-time dummy compare
+    // Constant-time dummy compare to prevent length timing side-channel
     crypto.timingSafeEqual(bufA, bufA);
     return false;
   }
@@ -26,16 +27,23 @@ export function safeCompare(a: string, b: string): boolean {
 
 /**
  * Check 3-factor credentials: Username + Password + 6-Digit Master Security PIN
- * Note: Only the exact ADMIN_USERNAME is accepted (no fallback "admin" or "harsh" usernames).
+ * Requires environment variables to be set in .env.local or hosting dashboard.
  */
 export function checkCredentials(user: string, pass: string, pin: string): boolean {
   if (!user || !pass || !pin) return false;
+
+  // If credentials are not configured in environment variables, reject login for safety
+  if (!ADMIN_USERNAME || !ADMIN_PASSWORD || !ADMIN_PIN) {
+    console.error("CRITICAL: Admin credentials are not set in environment variables (.env.local or Hosting dashboard).");
+    return false;
+  }
+
   const normalizedUser = user.trim().toLowerCase();
-  const expectedUser = ADMIN_USERNAME.trim().toLowerCase();
+  const expectedUser = ADMIN_USERNAME.toLowerCase();
 
   const isUserValid = safeCompare(normalizedUser, expectedUser);
-  const isPassValid = safeCompare(pass.trim(), ADMIN_PASSWORD.trim());
-  const isPinValid = safeCompare(pin.trim(), ADMIN_PIN.trim());
+  const isPassValid = safeCompare(pass.trim(), ADMIN_PASSWORD);
+  const isPinValid = safeCompare(pin.trim(), ADMIN_PIN);
 
   return isUserValid && isPassValid && isPinValid;
 }
