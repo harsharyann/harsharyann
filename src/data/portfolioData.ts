@@ -276,8 +276,6 @@ export const portfolioData: PortfolioData = {
     contactEmailLabel: "ELECTRONIC MAIL",
     contactCoordinatesTitle: "CURRENT COORDINATES",
     currentStationBadge: "LIVE STATION",
-    contactStampText: "DISPATCH VERIFIED",
-    contactStampCode: "IND // 2026",
     projectsNavIcon: "foldercode",
     coverDailyThoughtHeader: "A LITTLE THOUGHT FOR TODAY",
     coverDailyThoughtQuote: "Every great invention begins with an unreasonable idea.",

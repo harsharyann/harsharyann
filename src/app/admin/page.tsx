@@ -5443,44 +5443,6 @@ export default function AdminPage() {
                       className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
                     />
                   </div>
-
-                  {/* Dispatch Stamp Left */}
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
-                      Bottom Stamp (Left Text)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. DISPATCH VERIFIED"
-                      value={portfolio.personal.contactStampText || ""}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, contactStampText: e.target.value },
-                        }))
-                      }
-                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Dispatch Stamp Right */}
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
-                      Bottom Stamp (Right Code)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. IND // 2026"
-                      value={portfolio.personal.contactStampCode || ""}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, contactStampCode: e.target.value },
-                        }))
-                      }
-                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                    />
-                  </div>
                 </div>
 
                 {/* Live Bento Preview */}
@@ -5514,10 +5476,6 @@ export default function AdminPage() {
                       <span className="italic text-stone-700">
                         &ldquo;{portfolio.personal.currentStatusNote || "Open for Opportunities"}&rdquo;
                       </span>
-                    </div>
-                    <div className="pt-2 border-t border-stone-200 flex items-center justify-between text-[10px] text-stone-400">
-                      <span>{portfolio.personal.contactStampText || "DISPATCH VERIFIED"}</span>
-                      <span className="font-bold text-stone-600">{portfolio.personal.contactStampCode || "IND // 2026"}</span>
                     </div>
                   </div>
                 </div>

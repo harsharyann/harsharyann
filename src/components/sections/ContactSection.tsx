@@ -585,12 +585,6 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
                 </span>
               </div>
             </div>
-
-            {/* Classic Dispatch Stamp at Bottom */}
-            <div className="pt-2 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-[10px] font-mono text-stone-400">
-              <span className="tracking-widest uppercase">{personal?.contactStampText || "DISPATCH VERIFIED"}</span>
-              <span className="font-bold text-stone-500">{personal?.contactStampCode || "IND // 2026"}</span>
-            </div>
           </div>
         </div>
       </div>
