@@ -76,12 +76,7 @@ interface ContactMessage {
 
 const DEFAULT_PROJECT_CATS: string[] = [];
 
-const DEFAULT_CERT_CATS = [
-  "Machine Learning",
-  "Data Science",
-  "Programming",
-  "Mathematics & Hackathons",
-];
+const DEFAULT_CERT_CATS: string[] = [];
 
 export default function AdminPage() {
   const router = useRouter();
@@ -4674,22 +4669,28 @@ export default function AdminPage() {
 
               {/* Category Badges with delete button */}
               <div className="flex flex-wrap gap-2 pt-1">
-                {certCats.map((cat) => (
-                  <span
-                    key={cat}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100 border border-stone-300 text-stone-800 font-mono text-xs font-bold shadow-xs hover:border-stone-400 transition-colors"
-                  >
-                    <span>{cat}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveCertCategory(cat)}
-                      className="w-4 h-4 rounded-full flex items-center justify-center text-stone-400 hover:text-white hover:bg-red-500 transition-colors cursor-pointer text-[10px]"
-                      title={`Remove "${cat}"`}
-                    >
-                      ✕
-                    </button>
+                {certCats.length === 0 ? (
+                  <span className="text-stone-400 font-mono text-xs italic">
+                    No custom categories added yet. Add one above or type a new one when creating a certificate.
                   </span>
-                ))}
+                ) : (
+                  certCats.map((cat) => (
+                    <span
+                      key={cat}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100 border border-stone-300 text-stone-800 font-mono text-xs font-bold shadow-xs hover:border-stone-400 transition-colors"
+                    >
+                      <span>{cat}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveCertCategory(cat)}
+                        className="w-4 h-4 rounded-full flex items-center justify-center text-stone-400 hover:text-white hover:bg-red-500 transition-colors cursor-pointer text-[10px]"
+                        title={`Remove "${cat}"`}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))
+                )}
               </div>
             </div>
 

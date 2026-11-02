@@ -106,6 +106,29 @@ function ClothespinGuideDoodle({ className = "" }: { className?: string }) {
   )
 }
 
+/**
+ * Handcrafted Doodle #3 — The Laurel Wreath & Medal 🏅
+ */
+function LaurelWreathDoodle({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative inline-flex items-center shrink-0 ${className}`} aria-hidden="true">
+      <svg
+        viewBox="0 0 40 40"
+        className="w-8 h-8 sm:w-10 sm:h-10 overflow-visible filter drop-shadow-[2px_2px_0_rgba(0,0,0,0.2)] dark:drop-shadow-[2px_2px_0_#fbbf24]"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+      >
+        <circle cx="20" cy="20" r="16" fill="#fbbf24" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
+        <circle cx="20" cy="20" r="12" fill="#fef08a" stroke="#d97706" strokeWidth="1.4" strokeDasharray="2.5 2" />
+        <path d="M 13 14 C 12 18 14 24 17 26 C 18 25 19 22 18 18 Z" fill="#d97706" stroke="none" />
+        <path d="M 27 14 C 28 18 26 24 23 26 C 22 25 21 22 22 18 Z" fill="#d97706" stroke="none" />
+        <path d="M 20 12 L 21.8 16.5 L 26.5 16.8 L 22.8 19.8 L 24 24.5 L 20 21.8 L 16 24.5 L 17.2 19.8 L 13.5 16.8 L 18.2 16.5 Z" fill="#ffffff" stroke="#000000" className="dark:stroke-black" strokeWidth="1.2" />
+      </svg>
+    </div>
+  )
+}
+
 export function CertificatesSection({ id = "certificates" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
   const certsList: Certificate[] = portfolio?.certificates || portfolioData.certificates
@@ -260,26 +283,43 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
         <PolaroidCertificateCarousel certificates={filtered} />
       </div>
 
-      {/* ── LAURELS, RESEARCH PAPERS & PUBLISHED BOOKS SUBSECTION (Strictly managed via Admin Console) ── */}
-      {showLaurelsSection && visibleLaurels.length > 0 && (
+      {/* ── LAURELS SUBSECTION (Strictly managed via Admin Console) ── */}
+      {showLaurelsSection && (
         <div className="pt-8 sm:pt-14 border-t-2 border-dashed border-black/30 dark:border-stone-800 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-black/15 dark:border-stone-800">
             <div className="space-y-1.5 max-w-2xl">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-mono text-[10px] font-black uppercase tracking-wider">
-                <Trophy className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                <span>Scholarship, Honors &amp; Publications</span>
+              <div className="flex items-center gap-3 flex-wrap">
+                <LaurelWreathDoodle />
+                <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading leading-none">
+                  {portfolio?.personal?.laurelsTitle || "LAURELS"}
+                </h3>
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-black border-2 border-black font-mono text-[10px] font-black uppercase shadow-[1.5px_1.5px_0_#000] rotate-[1deg]">
+                  HONORS
+                </span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading flex items-center gap-2">
-                <span>{portfolio?.personal?.laurelsTitle || "Laurels, Research & Published Works"}</span>
-              </h3>
               <p className="text-xs sm:text-sm font-mono text-stone-600 dark:text-stone-400">
-                {portfolio?.personal?.laurelsSubtitle || "Academic accolades, peer-reviewed research papers, and published technical literature."}
+                {portfolio?.personal?.laurelsSubtitle || "Academic accolades, hackathon triumphs, research publications & technical literature."}
               </p>
             </div>
           </div>
 
-          <div className="space-y-6">
-            {/* Type Filter Pills */}
+          {visibleLaurels.length === 0 ? (
+            <div className="p-10 sm:p-14 text-center rounded-[24px] bg-white/60 dark:bg-stone-900/40 border-2 border-dashed border-stone-300 dark:border-stone-700 font-mono space-y-3">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-100 dark:bg-amber-950/60 border-2 border-black dark:border-amber-400 flex items-center justify-center shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fbbf24]">
+                <Trophy className="w-6 h-6 text-amber-700 dark:text-amber-300" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-sm font-black uppercase text-stone-900 dark:text-stone-100">
+                  No Laurels Published Yet
+                </h4>
+                <p className="text-xs text-stone-500 dark:text-stone-400 max-w-md mx-auto">
+                  Accolades, research preprints, and books added through the Socius Admin Console will appear here automatically.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Type Filter Pills */}
             <div className="flex flex-wrap items-center gap-2 font-mono text-xs uppercase">
               <button
                 type="button"
@@ -459,8 +499,9 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
               </div>
             )}
           </div>
-        </div>
-      )}
-    </section>
+        )}
+      </div>
+    )}
+  </section>
   )
 }

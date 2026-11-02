@@ -61,8 +61,8 @@
     "footerTagline": "crafting with code & mathematics",
     "footerEasterEggText": "socius",
     "showLaurelsSection": true,
-    "laurelsTitle": "Laurels, Research & Published Works",
-    "laurelsSubtitle": "Academic accolades, peer-reviewed research papers, and published technical literature."
+    "laurelsTitle": "LAURELS",
+    "laurelsSubtitle": "Academic accolades, hackathon triumphs, research publications & technical literature."
   },
   "socialLinks": {
     "github": "https://github.com",
@@ -188,12 +188,7 @@
     }
   ],
   "projectCategories": [],
-  "certificateCategories": [
-    "Machine Learning",
-    "Data Science",
-    "Programming",
-    "Mathematics & Hackathons"
-  ],
+  "certificateCategories": [],
   "milestones": [
     {
       "phaseNumber": "01",
@@ -299,42 +294,5 @@
       "quote": "Why follow the blueprint when you can invent one?"
     }
   ],
-  "laurelItems": [
-    {
-      "id": "laurel-1",
-      "type": "award",
-      "title": "Freshman TechFest Hackathon — 2nd Runner Up",
-      "issuerOrPublisher": "College Innovation Council & Student Chapter",
-      "date": "2025",
-      "roleOrAward": "2nd Runner Up (45+ Teams)",
-      "link": "https://github.com/harsharyann",
-      "description": "Pitched CampusIQ AI student assistant within 24 hours among 45+ collegiate teams, recognized for rapid prototyping and utility.",
-      "badge": "Hackathon Laurel",
-      "isVisible": true
-    },
-    {
-      "id": "laurel-2",
-      "type": "paper",
-      "title": "Exploratory Latency Optimization in Edge Convolutional Networks",
-      "issuerOrPublisher": "Undergraduate Research Preprint / Symposium",
-      "date": "2025",
-      "roleOrAward": "Lead Author",
-      "link": "https://arxiv.org",
-      "description": "Study exploring tensor quantization techniques to achieve sub-15ms inference latencies on embedded edge devices using PyTorch.",
-      "badge": "Research Preprint",
-      "isVisible": true
-    },
-    {
-      "id": "laurel-3",
-      "type": "book",
-      "title": "Foundations of Linear Algebra & Python for Beginners",
-      "issuerOrPublisher": "Self-Published Technical Monograph & Guide",
-      "date": "2026",
-      "roleOrAward": "Author & Compiler",
-      "link": "https://github.com/harsharyann",
-      "description": "A compact illustrated reference guide bridging matrix transformations, vector spaces, and NumPy code for machine learning students.",
-      "badge": "Open Volume",
-      "isVisible": true
-    }
-  ]
+  "laurelItems": []
 }
