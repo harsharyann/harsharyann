@@ -99,7 +99,7 @@ export function MobileDoodleCover() {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="relative w-full h-[100dvh] touch-none select-none bg-[#090a0f] text-white flex flex-col justify-between overflow-hidden"
+      className="relative w-full h-[100dvh] touch-none select-none bg-[#07080d] text-white flex flex-col justify-between overflow-hidden"
       aria-label="Harsh Aryan Mobile Sketchbook Cover"
     >
       {/* ── EXPANDING NEON TAP RIPPLE EFFECT ── */}

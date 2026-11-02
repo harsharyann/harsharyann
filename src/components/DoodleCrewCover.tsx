@@ -599,6 +599,126 @@ export interface DoodleCrewCoverProps {
   className?: string
 }
 
+/**
+ * CoverBackgroundLayer — Architectural Sketchbook & Cyber Blueprint Canvas Background
+ * Renders authentic drafting paper grid in Light Mode, and Glowing Cyber Nebulae + Crosshair Blueprint in Dark Mode.
+ */
+function CoverBackgroundLayer({ isDark }: { isDark: boolean }) {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none z-0 overflow-hidden select-none"
+      style={{ contain: "strict" }}
+      aria-hidden="true"
+    >
+      {/* ── 1. Dark Mode Cyber Ambient Aurora Nebulae ── */}
+      {isDark && (
+        <>
+          {/* Top-Right Violet/Indigo Nebula behind Actions & Typography */}
+          <div
+            className="absolute -top-32 -right-32 w-[760px] h-[660px] rounded-full pointer-events-none opacity-90 blur-[100px]"
+            style={{
+              background: "radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(168, 85, 247, 0.12) 45%, transparent 70%)",
+            }}
+          />
+
+          {/* Center-Left Cyber Emerald / Teal Aura framing the Photo Frame */}
+          <div
+            className="absolute top-[28%] -left-44 w-[720px] h-[620px] rounded-full pointer-events-none opacity-85 blur-[100px]"
+            style={{
+              background: "radial-gradient(circle, rgba(20, 184, 166, 0.18) 0%, rgba(6, 182, 212, 0.09) 50%, transparent 70%)",
+            }}
+          />
+
+          {/* Bottom-Right Solar Star Gold Glow */}
+          <div
+            className="absolute -bottom-40 right-[8%] w-[680px] h-[580px] rounded-full pointer-events-none opacity-80 blur-[95px]"
+            style={{
+              background: "radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(239, 68, 68, 0.07) 50%, transparent 70%)",
+            }}
+          />
+        </>
+      )}
+
+      {/* ── 2. Minor Graph Paper Grid (24px x 24px Blueprint Pencil Lines) ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: isDark
+            ? "linear-gradient(to right, rgba(147, 197, 253, 0.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(147, 197, 253, 0.045) 1px, transparent 1px)"
+            : "linear-gradient(to right, rgba(24, 24, 27, 0.048) 1px, transparent 1px), linear-gradient(to bottom, rgba(24, 24, 27, 0.048) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+
+      {/* ── 3. Major Drafting Grid (120px x 120px Architectural Sections) ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: isDark
+            ? "linear-gradient(to right, rgba(99, 102, 241, 0.13) 1px, transparent 1px), linear-gradient(to bottom, rgba(99, 102, 241, 0.13) 1px, transparent 1px)"
+            : "linear-gradient(to right, rgba(24, 24, 27, 0.088) 1px, transparent 1px), linear-gradient(to bottom, rgba(24, 24, 27, 0.088) 1px, transparent 1px)",
+          backgroundSize: "120px 120px",
+        }}
+      />
+
+      {/* ── 3b. Dark Mode Crosshair Intersection Grid Nodes (120px Architectural Markers) ── */}
+      {isDark && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(circle at 0px 0px, rgba(56, 189, 248, 0.40) 1.5px, transparent 2.5px)",
+            backgroundSize: "120px 120px",
+          }}
+        />
+      )}
+
+      {/* ── 4. Subtle Notebook Margin Guide (Left architectural registration line) ── */}
+      <div
+        className="hidden md:block absolute top-0 bottom-0 left-[68px] lg:left-[88px] w-[1px] pointer-events-none transition-colors duration-500"
+        style={{
+          backgroundColor: isDark ? "rgba(244, 63, 94, 0.25)" : "rgba(239, 68, 68, 0.18)",
+          boxShadow: isDark ? "0 0 8px rgba(244, 63, 94, 0.4)" : "none",
+        }}
+      />
+
+      {/* ── 5. Micro Paper Fiber / Stardust Texture ── */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-40 dark:opacity-25"
+        style={{
+          backgroundImage: isDark
+            ? "radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 0)"
+            : "radial-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 0)",
+          backgroundSize: isDark ? "20px 20px" : "16px 16px",
+        }}
+      />
+
+      {/* ── 6. Ambient Studio Vignette ── */}
+      <div
+        className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+        style={{
+          backgroundImage: isDark
+            ? "radial-gradient(ellipse at 50% 15%, rgba(30, 41, 59, 0.35) 0%, rgba(14, 15, 20, 0.6) 65%, rgba(7, 8, 13, 0.95) 100%)"
+            : "radial-gradient(ellipse at 50% 15%, rgba(255, 255, 255, 0.75) 0%, rgba(250, 248, 243, 0.3) 60%, rgba(235, 230, 220, 0.45) 100%)",
+        }}
+      />
+
+      {/* ── 7. Technical Architectural Corner Crop Markers ── */}
+      <div className="absolute top-4 left-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
+        <span>{isDark ? "[ 01 // ORBITAL ARCHIVE ]" : "+ 01 // DRAFTING COVER"}</span>
+      </div>
+      <div className="absolute top-4 right-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
+        <span>{isDark ? "[ SYS // 2026.04 ]" : "SYSTEM // ARCHIVE"}</span>
+      </div>
+      <div className="absolute bottom-4 left-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
+        <span>{isDark ? "[ LAT 25.5941° N • LON 85.1376° E ]" : "COORDINATES [25°36'N, 85°08'E]"}</span>
+      </div>
+      <div className="absolute bottom-4 right-4 font-mono text-[9px] uppercase tracking-widest text-stone-400 dark:text-stone-500 pointer-events-none hidden lg:block opacity-60">
+        <span>{isDark ? "[ SEC-01 // HARSH ARYAN ]" : "HARSH ARYAN // PORTFOLIO"}</span>
+      </div>
+    </div>
+  )
+}
+
 export function DoodleCrewCover({
   wordmark = "HARSH ARYAN",
   tagline = "DESIGN · CODE · MACHINE LEARNING",
@@ -1111,6 +1231,9 @@ export function DoodleCrewCover({
     >
       <style>{COVER_CSS}</style>
 
+      {/* ── BACKGROUND LAYER: Rich Sketchbook Paper & Cyber Blueprint Canvas ── */}
+      <CoverBackgroundLayer isDark={isDark} />
+
       {/* Top Header Bar with Harsh Aryan stamp and Candy Social Links */}
       <header className="dcf-top-bar">
         <div className="dcf-top-inner">
@@ -1435,7 +1558,7 @@ const COVER_CSS = `
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: transparent;
+  background-color: #faf8f3;
   background-image: none;
   color: #000000;
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Roboto, sans-serif;
@@ -2117,7 +2240,7 @@ html:not(.dark) .dcf-btn.is-contact:hover {
 
 /* Dark Mode: Crisp B&W Aesthetic with Radiant Neon Wordmark */
 html.dark .dcf-root {
-  background-color: transparent;
+  background-color: #07080d;
   background-image: none;
   color: #ffffff;
 }

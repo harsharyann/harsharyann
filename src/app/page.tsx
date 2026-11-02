@@ -69,7 +69,7 @@ export default function Home() {
               transition: { duration: 0.85, ease: [0.76, 0, 0.24, 1] },
             }}
             style={{ perspective: "1400px", transformOrigin: "50% 15%" }}
-            className="fixed inset-0 z-50 w-full h-[100dvh] overflow-hidden touch-none select-none bg-[#edf6fa] dark:bg-[#090a0f] text-black dark:text-white transition-colors duration-300"
+            className="fixed inset-0 z-50 w-full h-[100dvh] overflow-hidden touch-none select-none bg-[#faf8f3] dark:bg-[#07080d] text-black dark:text-white transition-colors duration-300"
           >
             {/* Phone Cover (iOS & Android) — Dedicated Clean Portrait Layout */}
             <div className="block md:hidden w-full h-full">
