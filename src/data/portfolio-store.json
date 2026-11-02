@@ -170,23 +170,7 @@
       ]
     }
   ],
-  "certificates": [
-    {
-      "id": "cert-1793487658548",
-      "title": "Smart Teaching and Learning with AI",
-      "issuer": "POLITECNICO MILANO 1863",
-      "issueDate": "2026",
-      "credentialId": "",
-      "credentialUrl": "",
-      "imageUrl": "https://lh3.googleusercontent.com/d/1y2eKG3oZSlVpmcFFbGpyG1ERXvTYvvyR",
-      "category": "Machine Learning",
-      "skillsLearned": [
-        "Teaching USing AI"
-      ],
-      "description": "",
-      "verificationSource": "Coursera"
-    }
-  ],
+  "certificates": [],
   "projectCategories": [],
   "certificateCategories": [],
   "milestones": [

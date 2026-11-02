@@ -422,8 +422,18 @@ export function PolaroidCertificateCarousel({
 
   if (!certificates.length) {
     return (
-      <div className="sketch-box p-12 text-center font-mono text-sm">
-        No certificates found in this category.
+      <div className="p-10 sm:p-14 text-center rounded-[24px] bg-white/60 dark:bg-stone-900/40 border-2 border-dashed border-stone-300 dark:border-stone-700 font-mono space-y-3">
+        <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-100 dark:bg-amber-950/60 border-2 border-black dark:border-amber-400 flex items-center justify-center shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fbbf24]">
+          <Award className="w-6 h-6 text-amber-700 dark:text-amber-300" />
+        </div>
+        <div className="space-y-1">
+          <h4 className="text-sm font-black uppercase text-stone-900 dark:text-stone-100">
+            No Certificates Added Yet
+          </h4>
+          <p className="text-xs text-stone-500 dark:text-stone-400 max-w-md mx-auto">
+            Certificates and credentials added through the Socius Admin Console will appear here automatically.
+          </p>
+        </div>
       </div>
     )
   }

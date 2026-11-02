@@ -580,9 +580,14 @@ export function AboutSection({ id = "about" }: { id?: string }) {
         {/* Right Column: Statement, Bio with Live Highlighter, and Quick Stats */}
         <div className="lg:col-span-7 space-y-6">
           <div className="space-y-4 text-sm sm:text-base text-stone-800 dark:text-stone-200 leading-relaxed font-sans">
-            <p className="font-mono text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
-              [PERSONAL STATEMENT]
-            </p>
+            <div className="flex items-center gap-3 pb-0.5">
+              <span className="font-hero-heading text-2xl sm:text-3xl font-black uppercase tracking-tight text-amber-600 dark:text-amber-400">
+                Persona
+              </span>
+              <span className="px-2.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/70 border-2 border-black dark:border-amber-400/80 text-black dark:text-amber-200 font-mono text-[10px] font-black uppercase shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#fbbf24]">
+                STATEMENT
+              </span>
+            </div>
             <div className="font-semibold text-lg sm:text-xl text-black dark:text-white leading-snug">
               <FormattedHighlightedText
                 text={personal.headline}
