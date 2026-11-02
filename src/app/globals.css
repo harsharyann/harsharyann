@@ -12,7 +12,7 @@
   }
 
   html.dark {
-    --bg-canvas: #09090b;
+    --bg-canvas: #07080d;
     --text-primary: #ffffff;
     --text-secondary: #e4e4e7;
     --text-muted: #a1a1aa;
@@ -50,8 +50,9 @@ body {
 }
 
 html.dark ::selection {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #6366f1;
+  color: #ffffff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
 }
 
 /* Clean Glassmorphic Canvas Backdrop */
@@ -186,15 +187,15 @@ html.dark .glass-panel {
 }
 
 html.dark .liquid-bento-card {
-  background: rgba(22, 23, 30, 0.75);
-  backdrop-filter: blur(14px) saturate(150%);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  background: linear-gradient(145deg, rgba(16, 18, 28, 0.78) 0%, rgba(8, 9, 15, 0.86) 100%);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 
-    0 24px 48px -12px rgba(0, 0, 0, 0.55),
-    0 1px 2px 0 rgba(0, 0, 0, 0.25),
-    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.3);
+    0 24px 48px -12px rgba(0, 0, 0, 0.75),
+    0 1px 2px 0 rgba(0, 0, 0, 0.3),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 /* Fallback for browsers without backdrop-filter */
@@ -247,8 +248,9 @@ html.dark .liquid-bento-card::before {
 
   html.dark .liquid-bento-card:hover {
     box-shadow: 
-      0 32px 64px -14px rgba(0, 0, 0, 0.6),
-      0 0 0 1px rgba(255, 255, 255, 0.22),
+      0 32px 64px -14px rgba(0, 0, 0, 0.8),
+      0 0 0 1px rgba(129, 140, 248, 0.4),
+      0 0 28px rgba(99, 102, 241, 0.22),
       inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.35);
   }
 
@@ -270,7 +272,7 @@ html.dark .liquid-bento-card::before {
   html.dark .liquid-bento-card::after {
     background: radial-gradient(
       450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      rgba(56, 189, 248, 0.12),
+      rgba(99, 102, 241, 0.18),
       transparent 65%
     );
   }
@@ -290,14 +292,14 @@ html.dark .liquid-bento-card::before {
 }
 
 html.dark .sketch-box {
-  background: #171717;
-  border-color: #ffffff;
+  background: #0f1017;
+  border-color: rgba(255, 255, 255, 0.85);
   color: #ffffff;
-  box-shadow: 3px 3px 0 #ffffff;
+  box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.95);
 }
 
 .sketch-box-hover {
-  transition: transform 0.2s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.2s cubic-bezier(0.3, 1.4, 0.5, 1);
+  transition: transform 0.2s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.2s cubic-bezier(0.3, 1.4, 0.5, 1), border-color 0.2s ease;
 }
 
 .sketch-box-hover:hover {
@@ -306,7 +308,8 @@ html.dark .sketch-box {
 }
 
 html.dark .sketch-box-hover:hover {
-  box-shadow: 6px 6px 0 #ffffff;
+  border-color: #818cf8;
+  box-shadow: 5px 5px 0 #6366f1, 5px 5px 18px rgba(99, 102, 241, 0.35);
 }
 
 .sketch-stamp {
@@ -511,8 +514,8 @@ p {
 }
 
 html.dark ::-webkit-scrollbar-track {
-  background: #0c0c0c;
-  border-left-color: rgba(255, 255, 255, 0.15);
+  background: #07080d;
+  border-left: 1px dashed rgba(99, 102, 241, 0.25);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -521,5 +524,7 @@ html.dark ::-webkit-scrollbar-track {
 }
 
 html.dark ::-webkit-scrollbar-thumb {
-  background: #ffffff;
+  background: linear-gradient(180deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
 }

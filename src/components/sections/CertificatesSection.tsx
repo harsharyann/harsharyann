@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import { portfolioData, Certificate, LaurelItem } from "@/data/portfolioData"
 import { usePortfolio } from "@/context/PortfolioContext"
-import { Sparkles, Award, ShieldCheck, Trophy, BookOpen, FileText, ExternalLink, Eye, EyeOff, Bookmark, ArrowUpRight } from "lucide-react"
+import { Sparkles, Award, ShieldCheck, Trophy, BookOpen, FileText, ExternalLink, Bookmark, ArrowUpRight } from "lucide-react"
 import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCarousel"
 
 /**
@@ -111,7 +111,6 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
   const certsList: Certificate[] = portfolio?.certificates || portfolioData.certificates
   const [activeCategory, setActiveCategory] = useState("All")
   const [activeLaurelType, setActiveLaurelType] = useState<"all" | "award" | "paper" | "book">("all")
-  const [isLaurelsCollapsed, setIsLaurelsCollapsed] = useState(false)
 
   const showLaurelsSection = portfolio?.personal?.showLaurelsSection !== false
   const rawLaurelItems: LaurelItem[] = portfolio?.laurelItems || portfolioData.laurelItems || []
@@ -261,8 +260,8 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
         <PolaroidCertificateCarousel certificates={filtered} />
       </div>
 
-      {/* ── LAURELS, RESEARCH PAPERS & PUBLISHED BOOKS SUBSECTION ── */}
-      {showLaurelsSection && (
+      {/* ── LAURELS, RESEARCH PAPERS & PUBLISHED BOOKS SUBSECTION (Strictly managed via Admin Console) ── */}
+      {showLaurelsSection && visibleLaurels.length > 0 && (
         <div className="pt-8 sm:pt-14 border-t-2 border-dashed border-black/30 dark:border-stone-800 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-black/15 dark:border-stone-800">
             <div className="space-y-1.5 max-w-2xl">
@@ -277,210 +276,189 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
                 {portfolio?.personal?.laurelsSubtitle || "Academic accolades, peer-reviewed research papers, and published technical literature."}
               </p>
             </div>
-
-            {/* Hide / Unhide Collapse Toggle Button on Main Site */}
-            <button
-              type="button"
-              onClick={() => setIsLaurelsCollapsed((prev) => !prev)}
-              className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black dark:border-white bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 text-black dark:text-white font-mono text-xs font-bold shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5"
-            >
-              {isLaurelsCollapsed ? (
-                <>
-                  <Eye className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Show Section ({visibleLaurels.length})</span>
-                </>
-              ) : (
-                <>
-                  <EyeOff className="w-3.5 h-3.5 text-stone-500" />
-                  <span>Hide Section</span>
-                </>
-              )}
-            </button>
           </div>
 
-          {!isLaurelsCollapsed && (
-            <div className="space-y-6">
-              {/* Type Filter Pills */}
-              {visibleLaurels.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 font-mono text-xs uppercase">
-                  <button
-                    type="button"
-                    onClick={() => setActiveLaurelType("all")}
-                    className={`px-3 py-1 rounded-full border-2 border-black dark:border-white font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                      activeLaurelType === "all"
-                        ? "bg-black text-white shadow-[2px_2px_0_#f59e0b]"
-                        : "bg-white text-black dark:bg-stone-900 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#666]"
-                    }`}
-                  >
-                    <span>ALL ({visibleLaurels.length})</span>
-                  </button>
+          <div className="space-y-6">
+            {/* Type Filter Pills */}
+            <div className="flex flex-wrap items-center gap-2 font-mono text-xs uppercase">
+              <button
+                type="button"
+                onClick={() => setActiveLaurelType("all")}
+                className={`px-3 py-1 rounded-full border-2 border-black dark:border-stone-600 font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeLaurelType === "all"
+                    ? "bg-black text-white dark:bg-amber-400 dark:text-black dark:border-amber-400 shadow-[2px_2px_0_#f59e0b] dark:shadow-[2px_2px_0_#fbbf24]"
+                    : "bg-white text-black dark:bg-[#141522] dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c1e30] dark:hover:border-stone-500 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_rgba(255,255,255,0.15)]"
+                }`}
+              >
+                <span>ALL ({visibleLaurels.length})</span>
+              </button>
 
-                  {awardsList.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setActiveLaurelType("award")}
-                      className={`px-3 py-1 rounded-full border-2 border-black dark:border-white font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                        activeLaurelType === "award"
-                          ? "bg-amber-500 text-black shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-                          : "bg-white text-black dark:bg-stone-900 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#666]"
-                      }`}
-                    >
-                      <Trophy className="w-3 h-3 text-amber-700 dark:text-amber-300" />
-                      <span>AWARDS ({awardsList.length})</span>
-                    </button>
-                  )}
-
-                  {papersList.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setActiveLaurelType("paper")}
-                      className={`px-3 py-1 rounded-full border-2 border-black dark:border-white font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                        activeLaurelType === "paper"
-                          ? "bg-indigo-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-                          : "bg-white text-black dark:bg-stone-900 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#666]"
-                      }`}
-                    >
-                      <FileText className="w-3 h-3 text-indigo-300" />
-                      <span>RESEARCH PAPERS ({papersList.length})</span>
-                    </button>
-                  )}
-
-                  {booksList.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setActiveLaurelType("book")}
-                      className={`px-3 py-1 rounded-full border-2 border-black dark:border-white font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                        activeLaurelType === "book"
-                          ? "bg-rose-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
-                          : "bg-white text-black dark:bg-stone-900 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#666]"
-                      }`}
-                    >
-                      <BookOpen className="w-3 h-3 text-rose-300" />
-                      <span>BOOKS &amp; CHAPTERS ({booksList.length})</span>
-                    </button>
-                  )}
-                </div>
+              {awardsList.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveLaurelType("award")}
+                  className={`px-3 py-1 rounded-full border-2 border-black dark:border-amber-400/80 font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                    activeLaurelType === "award"
+                      ? "bg-amber-500 text-black shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fbbf24,0_0_12px_rgba(251,191,36,0.3)]"
+                      : "bg-white text-black dark:bg-[#141522] dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c1e30] shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_rgba(251,191,36,0.2)]"
+                  }`}
+                >
+                  <Trophy className="w-3 h-3 text-amber-700 dark:text-amber-300" />
+                  <span>AWARDS ({awardsList.length})</span>
+                </button>
               )}
 
-              {/* Items Bento Grid */}
-              {filteredLaurels.length === 0 ? (
-                <div className="p-8 sm:p-12 text-center rounded-2xl bg-white/60 dark:bg-stone-900/40 border-2 border-dashed border-stone-300 dark:border-stone-700 font-mono space-y-1.5">
-                  <p className="text-stone-800 dark:text-stone-200 font-bold text-sm">No items published in this category yet</p>
-                  <p className="text-stone-500 text-xs">Switch filters or add new awards, research papers, and books via the Socius Admin Console.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
-                  {filteredLaurels.map((item) => {
-                    const isAward = item.type === "award"
-                    const isPaper = item.type === "paper"
-                    const isBook = item.type === "book"
+              {papersList.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveLaurelType("paper")}
+                  className={`px-3 py-1 rounded-full border-2 border-black dark:border-indigo-400/80 font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                    activeLaurelType === "paper"
+                      ? "bg-indigo-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#818cf8,0_0_12px_rgba(129,140,248,0.3)]"
+                      : "bg-white text-black dark:bg-[#141522] dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c1e30] shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_rgba(129,140,248,0.2)]"
+                  }`}
+                >
+                  <FileText className="w-3 h-3 text-indigo-300" />
+                  <span>RESEARCH PAPERS ({papersList.length})</span>
+                </button>
+              )}
 
-                    const theme = isAward
-                      ? {
-                          border: "border-black dark:border-amber-400/80",
-                          shadow: "shadow-[4px_4px_0_#f59e0b] dark:shadow-[4px_4px_0_#fbbf24]",
-                          badge: "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950/80 dark:text-amber-200 dark:border-amber-700",
-                          washi: "bg-amber-200/90 dark:bg-amber-400/30",
-                          icon: <Trophy className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />,
-                          label: "Award & Laurel",
-                          btn: "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black",
-                        }
-                      : isPaper
-                      ? {
-                          border: "border-black dark:border-indigo-400/80",
-                          shadow: "shadow-[4px_4px_0_#6366f1] dark:shadow-[4px_4px_0_#818cf8]",
-                          badge: "bg-indigo-100 text-indigo-950 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-700",
-                          washi: "bg-indigo-200/90 dark:bg-indigo-400/30",
-                          icon: <FileText className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />,
-                          label: "Research Paper",
-                          btn: "bg-indigo-600 hover:bg-indigo-500 text-white border-2 border-black",
-                        }
-                      : {
-                          border: "border-black dark:border-rose-400/80",
-                          shadow: "shadow-[4px_4px_0_#f43f5e] dark:shadow-[4px_4px_0_#fb7185]",
-                          badge: "bg-rose-100 text-rose-950 border-rose-300 dark:bg-rose-950/80 dark:text-rose-200 dark:border-rose-700",
-                          washi: "bg-rose-200/90 dark:bg-rose-400/30",
-                          icon: <BookOpen className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />,
-                          label: "Published Book",
-                          btn: "bg-rose-600 hover:bg-rose-500 text-white border-2 border-black",
-                        }
+              {booksList.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveLaurelType("book")}
+                  className={`px-3 py-1 rounded-full border-2 border-black dark:border-rose-400/80 font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                    activeLaurelType === "book"
+                      ? "bg-rose-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fb7185,0_0_12px_rgba(251,113,133,0.3)]"
+                      : "bg-white text-black dark:bg-[#141522] dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c1e30] shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_rgba(251,113,133,0.2)]"
+                  }`}
+                >
+                  <BookOpen className="w-3 h-3 text-rose-300" />
+                  <span>BOOKS &amp; CHAPTERS ({booksList.length})</span>
+                </button>
+              )}
+            </div>
 
-                    return (
-                      <article
-                        key={item.id}
-                        className={`relative p-5 rounded-[24px] bg-white dark:bg-stone-900 border-2 ${theme.border} ${theme.shadow} flex flex-col justify-between space-y-4 transition-all duration-200 hover:-translate-y-0.5`}
-                      >
-                        {/* Washi tape sticker */}
-                        <div
-                          className={`absolute -top-2.5 right-6 w-14 h-3.5 ${theme.washi} border border-black/30 dark:border-white/30 rotate-2 rounded-xs pointer-events-none shadow-xs`}
-                          aria-hidden="true"
-                        />
+            {/* Items Bento Grid */}
+            {filteredLaurels.length === 0 ? (
+              <div className="p-8 sm:p-12 text-center rounded-2xl bg-white/60 dark:bg-stone-900/40 border-2 border-dashed border-stone-300 dark:border-stone-700 font-mono space-y-1.5">
+                <p className="text-stone-800 dark:text-stone-200 font-bold text-sm">No items published in this category yet</p>
+                <p className="text-stone-500 text-xs">Switch filters or add new awards, research papers, and books via the Socius Admin Console.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+                {filteredLaurels.map((item) => {
+                  const isAward = item.type === "award"
+                  const isPaper = item.type === "paper"
 
-                        <div className="space-y-3">
-                          {/* Card Header */}
-                          <div className="flex items-center justify-between gap-2 pb-2 border-b border-stone-200 dark:border-stone-800">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black uppercase border ${theme.badge}`}>
-                              {theme.icon}
-                              <span>{theme.label}</span>
-                            </span>
+                  const theme = isAward
+                    ? {
+                        border: "border-black dark:border-amber-400/90",
+                        shadow: "shadow-[4px_4px_0_#f59e0b] dark:shadow-[4px_4px_0_#fbbf24,0_0_24px_rgba(251,191,36,0.18)]",
+                        cardBg: "bg-white dark:bg-gradient-to-br dark:from-[#1d170a]/90 dark:via-[#13141f]/90 dark:to-[#080911]/95",
+                        badge: "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950/80 dark:text-amber-200 dark:border-amber-500/60 dark:shadow-[0_0_12px_rgba(245,158,11,0.25)]",
+                        washi: "bg-amber-200/90 dark:bg-amber-400/40 dark:shadow-[0_0_10px_rgba(251,191,36,0.5)] dark:border-amber-300/40",
+                        icon: <Trophy className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />,
+                        label: "Award & Laurel",
+                        btn: "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black dark:border-amber-300 dark:shadow-[2px_2px_0_#fbbf24]",
+                      }
+                    : isPaper
+                    ? {
+                        border: "border-black dark:border-indigo-400/90",
+                        shadow: "shadow-[4px_4px_0_#6366f1] dark:shadow-[4px_4px_0_#818cf8,0_0_24px_rgba(129,140,248,0.2)]",
+                        cardBg: "bg-white dark:bg-gradient-to-br dark:from-[#10142e]/90 dark:via-[#13141f]/90 dark:to-[#080911]/95",
+                        badge: "bg-indigo-100 text-indigo-950 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-500/60 dark:shadow-[0_0_12px_rgba(99,102,241,0.25)]",
+                        washi: "bg-indigo-200/90 dark:bg-indigo-400/40 dark:shadow-[0_0_10px_rgba(129,140,248,0.5)] dark:border-indigo-300/40",
+                        icon: <FileText className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />,
+                        label: "Research Paper",
+                        btn: "bg-indigo-600 hover:bg-indigo-500 text-white border-2 border-black dark:border-indigo-300 dark:shadow-[2px_2px_0_#818cf8]",
+                      }
+                    : {
+                        border: "border-black dark:border-rose-400/90",
+                        shadow: "shadow-[4px_4px_0_#f43f5e] dark:shadow-[4px_4px_0_#fb7185,0_0_24px_rgba(251,113,133,0.2)]",
+                        cardBg: "bg-white dark:bg-gradient-to-br dark:from-[#261019]/90 dark:via-[#13141f]/90 dark:to-[#080911]/95",
+                        badge: "bg-rose-100 text-rose-950 border-rose-300 dark:bg-rose-950/80 dark:text-rose-200 dark:border-rose-500/60 dark:shadow-[0_0_12px_rgba(244,63,94,0.25)]",
+                        washi: "bg-rose-200/90 dark:bg-rose-400/40 dark:shadow-[0_0_10px_rgba(251,113,133,0.5)] dark:border-rose-300/40",
+                        icon: <BookOpen className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />,
+                        label: "Published Book",
+                        btn: "bg-rose-600 hover:bg-rose-500 text-white border-2 border-black dark:border-rose-300 dark:shadow-[2px_2px_0_#fb7185]",
+                      }
 
-                            <div className="flex items-center gap-1.5 font-mono text-[10px] text-stone-500 dark:text-stone-400 font-bold">
-                              <span>{item.date}</span>
-                              {item.badge && (
-                                <span className="px-1.5 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
-                                  {item.badge}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                  return (
+                    <article
+                      key={item.id}
+                      className={`relative p-5 rounded-[24px] ${theme.cardBg} border-2 ${theme.border} ${theme.shadow} flex flex-col justify-between space-y-4 transition-all duration-200 hover:-translate-y-0.5`}
+                    >
+                      {/* Washi tape sticker */}
+                      <div
+                        className={`absolute -top-2.5 right-6 w-14 h-3.5 ${theme.washi} border border-black/30 rotate-2 rounded-xs pointer-events-none shadow-xs`}
+                        aria-hidden="true"
+                      />
 
-                          {/* Title */}
-                          <h4 className="font-['Space_Grotesk'] font-black text-base text-stone-900 dark:text-stone-100 leading-snug">
-                            {item.title}
-                          </h4>
+                      <div className="space-y-3">
+                        {/* Card Header */}
+                        <div className="flex items-center justify-between gap-2 pb-2 border-b border-stone-200 dark:border-stone-800">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black uppercase border ${theme.badge}`}>
+                            {theme.icon}
+                            <span>{theme.label}</span>
+                          </span>
 
-                          {/* Issuer / Publisher */}
-                          <div className="space-y-1">
-                            <p className="font-mono text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
-                              <Bookmark className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                              <span className="line-clamp-1">{item.issuerOrPublisher}</span>
-                            </p>
-                            {item.roleOrAward && (
-                              <p className="font-mono text-[11px] font-bold text-amber-700 dark:text-amber-400 line-clamp-1 pl-5">
-                                ✦ {item.roleOrAward}
-                              </p>
+                          <div className="flex items-center gap-1.5 font-mono text-[10px] text-stone-500 dark:text-stone-400 font-bold">
+                            <span>{item.date}</span>
+                            {item.badge && (
+                              <span className="px-1.5 py-0.5 rounded-md bg-stone-100 dark:bg-[#1a1b2b] text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                                {item.badge}
+                              </span>
                             )}
                           </div>
+                        </div>
 
-                          {/* Description */}
-                          {item.description && (
-                            <p className="font-mono text-xs text-stone-600 dark:text-stone-400 leading-relaxed line-clamp-3 pt-1">
-                              {item.description}
+                        {/* Title */}
+                        <h4 className="font-['Space_Grotesk'] font-black text-base text-stone-900 dark:text-stone-100 leading-snug">
+                          {item.title}
+                        </h4>
+
+                        {/* Issuer / Publisher */}
+                        <div className="space-y-1">
+                          <p className="font-mono text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
+                            <Bookmark className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                            <span className="line-clamp-1">{item.issuerOrPublisher}</span>
+                          </p>
+                          {item.roleOrAward && (
+                            <p className="font-mono text-[11px] font-bold text-amber-700 dark:text-amber-400 line-clamp-1 pl-5">
+                              ✦ {item.roleOrAward}
                             </p>
                           )}
                         </div>
 
-                        {/* Footer Link */}
-                        {item.link ? (
-                          <div className="pt-2 border-t border-stone-100 dark:border-stone-800">
-                            <a
-                              href={item.link}
-                              target="_blank"
-                              rel="noreferrer"
-                              className={`w-full py-2 px-3 rounded-xl font-mono text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-[2px_2px_0_#000] transition-all cursor-pointer ${theme.btn}`}
-                            >
-                              <span>{isAward ? "View Award Credential" : isPaper ? "Read Research Paper" : "View Publication"}</span>
-                              <ArrowUpRight className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-                        ) : null}
-                      </article>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+                        {/* Description */}
+                        {item.description && (
+                          <p className="font-mono text-xs text-stone-600 dark:text-stone-400 leading-relaxed line-clamp-3 pt-1">
+                            {item.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Footer Link */}
+                      {item.link ? (
+                        <div className="pt-2 border-t border-stone-100 dark:border-stone-800">
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={`w-full py-2 px-3 rounded-xl font-mono text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-[2px_2px_0_#000] transition-all cursor-pointer ${theme.btn}`}
+                          >
+                            <span>{isAward ? "View Award Credential" : isPaper ? "Read Research Paper" : "View Publication"}</span>
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                      ) : null}
+                    </article>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </section>
