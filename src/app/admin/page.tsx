@@ -65,6 +65,8 @@ import {
   Bookmark,
   Download,
   Upload,
+  ZoomIn,
+  Move,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
@@ -125,6 +127,216 @@ const SKILL_ICON_PRESETS = [
   { id: "book", label: "Theory / Book", emoji: "📚" },
   { id: "globe", label: "Web / Globe", emoji: "🌐" },
 ];
+
+interface PhotoFramingControlsProps {
+  label?: string;
+  zoom?: number;
+  positionX?: number;
+  positionY?: number;
+  onChange: (updates: { zoom?: number; positionX?: number; positionY?: number }) => void;
+  onReset: () => void;
+}
+
+function PhotoFramingControls({
+  label = "Photo Framing & Focal Adjustments",
+  zoom = 1,
+  positionX = 50,
+  positionY = 20,
+  onChange,
+  onReset,
+}: PhotoFramingControlsProps) {
+  const currentZoom = typeof zoom === "number" && !isNaN(zoom) ? zoom : 1;
+  const currentPosX = typeof positionX === "number" && !isNaN(positionX) ? positionX : 50;
+  const currentPosY = typeof positionY === "number" && !isNaN(positionY) ? positionY : 20;
+
+  return (
+    <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 shadow-xs space-y-3.5 my-3">
+      <div className="flex items-center justify-between pb-2 border-b border-amber-200/60">
+        <div className="flex items-center gap-2">
+          <Sliders className="w-4 h-4 text-amber-600" />
+          <span className="font-mono text-xs font-black uppercase text-stone-900 tracking-wide">
+            {label}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 font-mono text-[10px] text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-md border border-amber-300 font-bold">
+          <span>Zoom: {Math.round(currentZoom * 100)}%</span>
+          <span>•</span>
+          <span>X: {currentPosX}%</span>
+          <span>•</span>
+          <span>Y: {currentPosY}%</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
+        {/* Zoom / Scale Control */}
+        <div className="p-2.5 rounded-xl bg-white border border-stone-200 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[11px] font-bold text-stone-700 flex items-center gap-1">
+              <ZoomIn className="w-3.5 h-3.5 text-stone-500" />
+              Scale / Zoom
+            </span>
+            <span className="font-mono text-[10.5px] font-black text-amber-700">
+              {currentZoom.toFixed(2)}x
+            </span>
+          </div>
+          <input
+            type="range"
+            min="0.8"
+            max="2.2"
+            step="0.05"
+            value={currentZoom}
+            onChange={(e) => onChange({ zoom: parseFloat(e.target.value) })}
+            className="w-full accent-amber-500 cursor-pointer"
+          />
+          <div className="flex items-center justify-between gap-1 pt-0.5">
+            {[0.9, 1.0, 1.2, 1.4].map((z) => (
+              <button
+                key={z}
+                type="button"
+                onClick={() => onChange({ zoom: z })}
+                className={`flex-1 py-1 px-1 rounded text-[9.5px] font-mono font-bold transition-all ${
+                  Math.abs(currentZoom - z) < 0.03
+                    ? "bg-amber-500 text-white shadow-xs"
+                    : "bg-stone-100 hover:bg-stone-200 text-stone-700"
+                }`}
+              >
+                {z}x
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Vertical Position (Y-Axis) */}
+        <div className="p-2.5 rounded-xl bg-white border border-stone-200 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[11px] font-bold text-stone-700 flex items-center gap-1">
+              <Move className="w-3.5 h-3.5 text-stone-500" />
+              Vertical Pan (Y)
+            </span>
+            <span className="font-mono text-[10.5px] font-black text-amber-700">
+              {currentPosY}% {currentPosY <= 20 ? "(Top)" : currentPosY >= 70 ? "(Bottom)" : "(Mid)"}
+            </span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={currentPosY}
+            onChange={(e) => onChange({ positionY: parseInt(e.target.value, 10) })}
+            className="w-full accent-amber-500 cursor-pointer"
+          />
+          <div className="flex items-center justify-between gap-1 pt-0.5">
+            {[
+              { label: "Top (10%)", val: 10 },
+              { label: "Upper (25%)", val: 25 },
+              { label: "Mid (50%)", val: 50 },
+            ].map((p) => (
+              <button
+                key={p.val}
+                type="button"
+                onClick={() => onChange({ positionY: p.val })}
+                className={`flex-1 py-1 px-1 rounded text-[9px] font-mono font-bold transition-all ${
+                  Math.abs(currentPosY - p.val) <= 5
+                    ? "bg-amber-500 text-white shadow-xs"
+                    : "bg-stone-100 hover:bg-stone-200 text-stone-700"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Horizontal Position (X-Axis) */}
+        <div className="p-2.5 rounded-xl bg-white border border-stone-200 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[11px] font-bold text-stone-700 flex items-center gap-1">
+              <Move className="w-3.5 h-3.5 text-stone-500" />
+              Horizontal Pan (X)
+            </span>
+            <span className="font-mono text-[10.5px] font-black text-amber-700">
+              {currentPosX}% {currentPosX <= 30 ? "(Left)" : currentPosX >= 70 ? "(Right)" : "(Center)"}
+            </span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={currentPosX}
+            onChange={(e) => onChange({ positionX: parseInt(e.target.value, 10) })}
+            className="w-full accent-amber-500 cursor-pointer"
+          />
+          <div className="flex items-center justify-between gap-1 pt-0.5">
+            {[
+              { label: "Left (30%)", val: 30 },
+              { label: "Center (50%)", val: 50 },
+              { label: "Right (70%)", val: 70 },
+            ].map((p) => (
+              <button
+                key={p.val}
+                type="button"
+                onClick={() => onChange({ positionX: p.val })}
+                className={`flex-1 py-1 px-1 rounded text-[9px] font-mono font-bold transition-all ${
+                  Math.abs(currentPosX - p.val) <= 5
+                    ? "bg-amber-500 text-white shadow-xs"
+                    : "bg-stone-100 hover:bg-stone-200 text-stone-700"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Framing Presets & Reset */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-amber-200/50">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="font-mono text-[10px] font-bold text-stone-500 uppercase">Presets:</span>
+          <button
+            type="button"
+            onClick={() => onChange({ zoom: 1.05, positionX: 50, positionY: 10 })}
+            className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 hover:border-black font-mono text-[10px] font-bold text-stone-800 transition-all cursor-pointer shadow-xs"
+          >
+            👤 Headshot Top
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange({ zoom: 1.0, positionX: 50, positionY: 25 })}
+            className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 hover:border-black font-mono text-[10px] font-bold text-stone-800 transition-all cursor-pointer shadow-xs"
+          >
+            👔 Upper Torso
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange({ zoom: 1.0, positionX: 50, positionY: 50 })}
+            className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 hover:border-black font-mono text-[10px] font-bold text-stone-800 transition-all cursor-pointer shadow-xs"
+          >
+            🎯 Centered
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange({ zoom: 1.25, positionX: 50, positionY: 15 })}
+            className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 hover:border-black font-mono text-[10px] font-bold text-stone-800 transition-all cursor-pointer shadow-xs"
+          >
+            🔍 Portrait Zoom (1.25x)
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={onReset}
+          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 border border-stone-300 font-mono text-[10px] font-bold text-stone-700 transition-all cursor-pointer"
+        >
+          <RotateCcw className="w-3 h-3 text-stone-500" />
+          <span>Reset Framing</span>
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const router = useRouter();
@@ -2857,6 +3069,35 @@ export default function AdminPage() {
                         </label>
                       </div>
 
+                      <PhotoFramingControls
+                        label="Cover Photo Framing (Zoom & Pan)"
+                        zoom={portfolio.personal.coverPhotoZoom ?? 1}
+                        positionX={portfolio.personal.coverPhotoPositionX ?? 50}
+                        positionY={portfolio.personal.coverPhotoPositionY ?? 20}
+                        onChange={(updates) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: {
+                              ...prev.personal,
+                              ...(updates.zoom !== undefined && { coverPhotoZoom: updates.zoom }),
+                              ...(updates.positionX !== undefined && { coverPhotoPositionX: updates.positionX }),
+                              ...(updates.positionY !== undefined && { coverPhotoPositionY: updates.positionY }),
+                            },
+                          }))
+                        }
+                        onReset={() =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: {
+                              ...prev.personal,
+                              coverPhotoZoom: 1,
+                              coverPhotoPositionX: 50,
+                              coverPhotoPositionY: 20,
+                            },
+                          }))
+                        }
+                      />
+
                       {/* Frame Overlay: Plaque Tag (Bottom-Right of Frame) */}
                       <div className="pt-2">
                         <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
@@ -3363,6 +3604,34 @@ export default function AdminPage() {
                           />
                         </label>
                       </div>
+                      <PhotoFramingControls
+                        label="Mobile Cover Photo Framing (Zoom & Pan)"
+                        zoom={portfolio.personal.coverPhotoZoom ?? 1}
+                        positionX={portfolio.personal.coverPhotoPositionX ?? 50}
+                        positionY={portfolio.personal.coverPhotoPositionY ?? 20}
+                        onChange={(updates) =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: {
+                              ...prev.personal,
+                              ...(updates.zoom !== undefined && { coverPhotoZoom: updates.zoom }),
+                              ...(updates.positionX !== undefined && { coverPhotoPositionX: updates.positionX }),
+                              ...(updates.positionY !== undefined && { coverPhotoPositionY: updates.positionY }),
+                            },
+                          }))
+                        }
+                        onReset={() =>
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: {
+                              ...prev.personal,
+                              coverPhotoZoom: 1,
+                              coverPhotoPositionX: 50,
+                              coverPhotoPositionY: 20,
+                            },
+                          }))
+                        }
+                      />
                     </div>
 
                     {/* 2. Mobile Name & Current Role */}
@@ -3593,7 +3862,12 @@ export default function AdminPage() {
                             <img
                               src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl)}
                               alt="Cover Preview"
-                              className="w-full h-full object-cover object-top"
+                              className="w-full h-full object-cover"
+                              style={{
+                                objectPosition: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                                transform: `scale(${portfolio.personal.coverPhotoZoom ?? 1})`,
+                                transformOrigin: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                              }}
                             />
                           </div>
                           {/* Lower Plaque */}
@@ -3678,7 +3952,12 @@ export default function AdminPage() {
                         <img
                           src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl)}
                           alt="Cover Mobile Preview"
-                          className="absolute inset-0 w-full h-full object-cover object-[center_top]"
+                          className="absolute inset-0 w-full h-full object-cover"
+                          style={{
+                            objectPosition: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                            transform: `scale(${portfolio.personal.coverPhotoZoom ?? 1})`,
+                            transformOrigin: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                          }}
                         />
 
                         {/* Gradient vignettes */}
@@ -3983,6 +4262,35 @@ export default function AdminPage() {
                         />
                       </label>
                     </div>
+
+                    <PhotoFramingControls
+                      label="About Photo Framing (Zoom & Pan)"
+                      zoom={portfolio.personal.aboutPhotoZoom ?? 1}
+                      positionX={portfolio.personal.aboutPhotoPositionX ?? 50}
+                      positionY={portfolio.personal.aboutPhotoPositionY ?? 20}
+                      onChange={(updates) =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: {
+                            ...prev.personal,
+                            ...(updates.zoom !== undefined && { aboutPhotoZoom: updates.zoom }),
+                            ...(updates.positionX !== undefined && { aboutPhotoPositionX: updates.positionX }),
+                            ...(updates.positionY !== undefined && { aboutPhotoPositionY: updates.positionY }),
+                          },
+                        }))
+                      }
+                      onReset={() =>
+                        setPortfolio((prev) => ({
+                          ...prev,
+                          personal: {
+                            ...prev.personal,
+                            aboutPhotoZoom: 1,
+                            aboutPhotoPositionX: 50,
+                            aboutPhotoPositionY: 20,
+                          },
+                        }))
+                      }
+                    />
 
                     {/* ── LOWER CHIN DETAILS (Integrated Identity Plaque) ── */}
                     <div className="p-4 rounded-2xl bg-stone-50 border border-stone-300 space-y-3.5">
@@ -4320,7 +4628,12 @@ export default function AdminPage() {
                           <img
                             src={formatGoogleDriveImageUrl(portfolio.personal.aboutPhotoUrl || portfolio.personal.coverPhotoUrl)}
                             alt="About Frame Live Preview"
-                            className="w-full h-full object-cover object-top"
+                            className="w-full h-full object-cover"
+                            style={{
+                              objectPosition: `${portfolio.personal.aboutPhotoPositionX ?? 50}% ${portfolio.personal.aboutPhotoPositionY ?? 20}%`,
+                              transform: `scale(${portfolio.personal.aboutPhotoZoom ?? 1})`,
+                              transformOrigin: `${portfolio.personal.aboutPhotoPositionX ?? 50}% ${portfolio.personal.aboutPhotoPositionY ?? 20}%`,
+                            }}
                           />
                           {/* Corner Tabs */}
                           <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-t-2 border-l-2 border-black/60 pointer-events-none" />

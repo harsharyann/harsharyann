@@ -933,7 +933,12 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                 priority
                 unoptimized
                 sizes="(max-width: 640px) 320px, 380px"
-                className="object-cover object-top group-hover:scale-105 transition-transform duration-500 select-none"
+                className="object-cover group-hover:scale-105 transition-transform duration-500 select-none"
+                style={{
+                  objectPosition: `${personal.aboutPhotoPositionX ?? 50}% ${personal.aboutPhotoPositionY ?? 20}%`,
+                  transform: `scale(${personal.aboutPhotoZoom ?? 1})`,
+                  transformOrigin: `${personal.aboutPhotoPositionX ?? 50}% ${personal.aboutPhotoPositionY ?? 20}%`,
+                }}
               />
 
               {/* Photo Corner Mounting Brackets */}

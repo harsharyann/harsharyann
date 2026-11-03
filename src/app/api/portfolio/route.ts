@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { getStoredPortfolioData, saveStoredPortfolioData, resetStoredPortfolioData } from "@/lib/portfolioStore";
 import { isAuthenticated } from "@/lib/auth";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { portfolioData, PortfolioData } from "@/data/portfolioData";
 
 export async function GET(req: Request) {
   // Reading url forces dynamic execution
@@ -18,7 +19,14 @@ export async function GET(req: Request) {
         .maybeSingle();
 
       if (!error && data?.data && data.data.personal) {
-        return NextResponse.json(data.data, {
+        const mergedData: PortfolioData = {
+          ...data.data,
+          personal: {
+            ...portfolioData.personal,
+            ...data.data.personal,
+          },
+        };
+        return NextResponse.json(mergedData, {
           headers: {
             "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
             Pragma: "no-cache",

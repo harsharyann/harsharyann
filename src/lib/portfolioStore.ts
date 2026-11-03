@@ -34,8 +34,15 @@ export async function getFreshPortfolioData(): Promise<PortfolioData> {
         .maybeSingle();
 
       if (!error && data?.data && data.data.personal) {
-        memoryPortfolioCache = data.data;
-        return data.data;
+        const mergedData: PortfolioData = {
+          ...data.data,
+          personal: {
+            ...portfolioData.personal,
+            ...data.data.personal,
+          },
+        };
+        memoryPortfolioCache = mergedData;
+        return mergedData;
       }
     } catch (sbErr) {
       console.warn("Supabase SSR fetch notice, falling back:", sbErr);
@@ -73,25 +80,27 @@ export function getStoredPortfolioData(): PortfolioData {
   const tmpTime = (tmpData as any)?._lastSavedAt || 0;
   const diskTime = (diskData as any)?._lastSavedAt || 0;
 
+  let selected: PortfolioData | null = null;
   if (tmpData && diskData) {
-    const chosen = tmpTime >= diskTime ? tmpData : diskData;
-    memoryPortfolioCache = chosen;
-    return chosen;
+    selected = tmpTime >= diskTime ? tmpData : diskData;
+  } else if (tmpData) {
+    selected = tmpData;
+  } else if (diskData) {
+    selected = diskData;
+  } else if (memoryPortfolioCache) {
+    selected = memoryPortfolioCache;
   }
 
-  if (tmpData) {
-    memoryPortfolioCache = tmpData;
-    return tmpData;
-  }
-
-  if (diskData) {
-    memoryPortfolioCache = diskData;
-    return diskData;
-  }
-
-  // Fallback to in-memory cache if available
-  if (memoryPortfolioCache) {
-    return memoryPortfolioCache;
+  if (selected && selected.personal) {
+    const merged: PortfolioData = {
+      ...selected,
+      personal: {
+        ...portfolioData.personal,
+        ...selected.personal,
+      },
+    };
+    memoryPortfolioCache = merged;
+    return merged;
   }
 
   // Fallback to default portfolioData

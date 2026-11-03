@@ -144,7 +144,12 @@ export function MobileDoodleCover() {
             priority
             unoptimized
             sizes="100vw"
-            className="object-cover object-[center_top] filter brightness-[1.02] contrast-[1.04]"
+            className="object-cover filter brightness-[1.02] contrast-[1.04]"
+            style={{
+              objectPosition: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
+              transform: `scale(${portfolio?.personal?.coverPhotoZoom ?? 1})`,
+              transformOrigin: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
+            }}
           />
         </motion.div>
 

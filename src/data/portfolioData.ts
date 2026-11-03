@@ -135,6 +135,12 @@ export interface PortfolioData {
     resumeUrl: string;
     aboutPhotoUrl?: string;
     coverPhotoUrl?: string;
+    aboutPhotoZoom?: number;
+    aboutPhotoPositionX?: number;
+    aboutPhotoPositionY?: number;
+    coverPhotoZoom?: number;
+    coverPhotoPositionX?: number;
+    coverPhotoPositionY?: number;
     desktopWordmark?: string;
     desktopRole?: string;
     desktopHeadline?: string;
@@ -260,7 +266,13 @@ export const portfolioData: PortfolioData = {
     email: "harsharyan@outlook.com",
     resumeUrl: "/Harsh_Aryan_Resume.pdf",
     aboutPhotoUrl: "https://drive.google.com/file/d/1xLUZJagj-wfrrB2I3KAg-OLb95feTxHA/view?usp=sharing",
+    aboutPhotoZoom: 1,
+    aboutPhotoPositionX: 50,
+    aboutPhotoPositionY: 20,
     coverPhotoUrl: "https://drive.google.com/file/d/1xLUZJagj-wfrrB2I3KAg-OLb95feTxHA/view?usp=sharing",
+    coverPhotoZoom: 1,
+    coverPhotoPositionX: 50,
+    coverPhotoPositionY: 20,
     desktopWordmark: "HARSH ARYAN",
     desktopRole: "Teaching Assistant • IIT Madras",
     desktopHeadline: "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",

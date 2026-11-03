@@ -1314,7 +1314,12 @@ export function DoodleCrewCover({
                   priority
                   unoptimized
                   sizes="(max-width: 1024px) 300px, 340px"
-                  className="object-cover object-top group-hover:scale-105 transition-transform duration-500 select-none"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500 select-none"
+                  style={{
+                    objectPosition: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
+                    transform: `scale(${portfolio?.personal?.coverPhotoZoom ?? 1})`,
+                    transformOrigin: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
+                  }}
                 />
 
                 {/* Minimal Architectural Camera Corner Brackets */}
