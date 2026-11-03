@@ -1,10 +1,36 @@
 import { NextResponse } from "next/server";
 import { getStoredPortfolioData, saveStoredPortfolioData, resetStoredPortfolioData } from "@/lib/portfolioStore";
 import { isAuthenticated } from "@/lib/auth";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export async function GET(req: Request) {
   // Reading url forces dynamic execution
   new URL(req.url);
+
+  // 1. Try Supabase cloud database if configured
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("portfolio_data")
+        .select("data")
+        .eq("id", "main")
+        .maybeSingle();
+
+      if (!error && data?.data && data.data.personal) {
+        return NextResponse.json(data.data, {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
+        });
+      }
+    } catch (sbErr) {
+      console.warn("Supabase fetch notice, falling back to local store:", sbErr);
+    }
+  }
+
+  // 2. Fallback to local / memory store
   const data = getStoredPortfolioData();
   return NextResponse.json(data, {
     headers: {
@@ -32,9 +58,29 @@ export async function POST(req: Request) {
       _lastSavedAt: updatedData._lastSavedAt || Date.now(),
     };
 
-    const success = saveStoredPortfolioData(dataToSave);
-    if (!success) {
-      return NextResponse.json({ error: "Failed to persist portfolio data" }, { status: 500 });
+    // 1. Always save to local / serverless store
+    saveStoredPortfolioData(dataToSave);
+
+    // 2. If Supabase is configured, persist directly to Supabase cloud table!
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error: sbErr } = await supabase
+          .from("portfolio_data")
+          .upsert(
+            {
+              id: "main",
+              data: dataToSave,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "id" }
+          );
+
+        if (sbErr) {
+          console.error("Supabase upsert error:", sbErr);
+        }
+      } catch (sbErr) {
+        console.error("Supabase upsert exception:", sbErr);
+      }
     }
 
     // Optional background sync to GitHub repository if GITHUB_TOKEN is configured in environment
@@ -104,5 +150,23 @@ export async function PUT() {
   }
 
   const data = getStoredPortfolioData();
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await supabase
+        .from("portfolio_data")
+        .upsert(
+          {
+            id: "main",
+            data,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "id" }
+        );
+    } catch (sbErr) {
+      console.error("Supabase reset exception:", sbErr);
+    }
+  }
+
   return NextResponse.json({ success: true, data });
 }
