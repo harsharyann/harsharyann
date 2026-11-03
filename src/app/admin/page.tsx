@@ -94,7 +94,7 @@ export default function AdminPage() {
     document.documentElement.classList.remove("dark");
     document.documentElement.classList.add("light");
     refreshData();
-  }, [refreshData]);
+  }, []);
 
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -107,12 +107,14 @@ export default function AdminPage() {
   const [inactivityNotice, setInactivityNotice] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // CMS Form State - keeps synchronized with server data
+  // CMS Form State - only initialize on mount to protect user inputs from being wiped out
   const [portfolio, setPortfolio] = useState<PortfolioData>(initialData);
+  const isFormInitializedRef = React.useRef(false);
 
   useEffect(() => {
-    if (initialData && initialData.personal) {
+    if (!isFormInitializedRef.current && initialData && initialData.personal) {
       setPortfolio(initialData);
+      isFormInitializedRef.current = true;
     }
   }, [initialData]);
   type AdminTab = "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
@@ -1001,7 +1003,7 @@ export default function AdminPage() {
 
   const handleDeleteProject = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
-    const updatedProjects = portfolio.projects.filter((p) => p.id !== id);
+    const updatedProjects = (portfolio.projects || []).filter((p) => p.id !== id);
     const newPortfolio: PortfolioData = {
       ...portfolio,
       projects: updatedProjects,
@@ -1569,9 +1571,9 @@ export default function AdminPage() {
   const navTabs = [
     { id: "cover", label: "Cover Hero", title: "Cover Page Manager", desc: "Hero portrait, wordmark, roles & cover buttons", icon: Sliders },
     { id: "about", label: "Profile & Bio", title: "Profile, Bio & Dossier", desc: "All-in-one: Photo mount, statement, bio highlighter, benchmarks & roadmap", icon: User },
-    { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderCode, count: portfolio.projects.length },
-    { id: "certificates", label: "Certificates", title: "Credentials & Laurels", desc: "Verified credentials, verification links & categories", icon: Award, count: portfolio.certificates.length },
-    { id: "skills", label: "Skills Arsenal", title: "Technical Skills Arsenal", desc: "Category groupings, badges, proficiency & skill tags", icon: Code2, count: portfolio.skills.length },
+    { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderCode, count: portfolio.projects?.length || 0 },
+    { id: "certificates", label: "Certificates", title: "Credentials & Laurels", desc: "Verified credentials, verification links & categories", icon: Award, count: portfolio.certificates?.length || 0 },
+    { id: "skills", label: "Skills Arsenal", title: "Technical Skills Arsenal", desc: "Category groupings, badges, proficiency & skill tags", icon: Code2, count: portfolio.skills?.length || 0 },
     { id: "contact", label: "Inquiries & Dispatch", title: "Inquiries & Live Station", desc: "Location coordinates, local time, status & incoming contact dispatches", icon: Send, count: messages.filter((m) => !m.read).length || undefined, alert: messages.some((m) => !m.read) },
   ];
 
@@ -3948,7 +3950,7 @@ export default function AdminPage() {
                       </button>
                     </div>
                   ) : (
-                    portfolio.experiences.map((exp, idx) => (
+                    (portfolio.experiences || []).map((exp, idx) => (
                       <div
                         key={exp.id || idx}
                         className="p-5 sm:p-6 rounded-2xl border-2 border-black bg-stone-50/70 shadow-[3px_3px_0_#000] space-y-5"
@@ -4541,7 +4543,7 @@ export default function AdminPage() {
               <div>
                 <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
                   <Code2 className="w-6 h-6 text-amber-500" />
-                  <span>Technical Arsenal &amp; Skills ({portfolio.skills.length} Categories)</span>
+                  <span>Technical Arsenal &amp; Skills ({portfolio.skills?.length || 0} Categories)</span>
                 </h2>
                 <p className="font-mono text-xs text-stone-500 mt-1">
                   Skills categories aur har category ke toolchips ko customize karein.
@@ -4826,7 +4828,7 @@ export default function AdminPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900">
-                  Projects Catalog ({portfolio.projects.length})
+                  Projects Catalog ({portfolio.projects?.length || 0})
                 </h2>
                 <p className="font-mono text-xs text-stone-500">
                   Manage projects, dynamic categories, GitHub repositories, and live demo links
@@ -5057,7 +5059,7 @@ export default function AdminPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900">
-                  Certificates &amp; Credentials ({portfolio.certificates.length})
+                  Certificates &amp; Credentials ({portfolio.certificates?.length || 0})
                 </h2>
                 <p className="font-mono text-xs text-stone-500">
                   Manage accredited courses, certificates, photo previews, and custom categories
@@ -5146,7 +5148,7 @@ export default function AdminPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {portfolio.certificates.map((cert) => (
+                {(portfolio.certificates || []).map((cert) => (
                   <div
                     key={cert.id}
                     className="p-5 rounded-2xl bg-white border-2 border-stone-200 hover:border-black flex flex-col justify-between space-y-4 shadow-sm hover:shadow-[4px_4px_0_#000] transition-all"

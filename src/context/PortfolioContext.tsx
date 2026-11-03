@@ -111,7 +111,7 @@ export function PortfolioProvider({
     }
   }, []);
 
-  const refreshData = async () => {
+  const refreshData = useCallback(async () => {
     // 1. Fetch latest synced data from server in the background (authoritative source)
     try {
       const res = await fetch(`/api/portfolio?_t=${Date.now()}`, {
@@ -148,7 +148,7 @@ export function PortfolioProvider({
         }
       } catch {}
     }
-  };
+  }, []);
 
   useEffect(() => {
     refreshData();
