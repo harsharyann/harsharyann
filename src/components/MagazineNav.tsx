@@ -397,25 +397,40 @@ export function MagazineNav() {
                 );
               })}
 
-              {/* Admin Portal Shortcut */}
+              {/* Admin Portal Shortcut (Single Click) */}
               <div className="pt-2 mt-2 border-t-2 border-dashed border-black/10 dark:border-white/10">
                 <Link
                   href="/admin"
-                  className="flex items-center justify-between p-2.5 rounded-xl bg-purple-50/80 dark:bg-purple-950/25 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-900 dark:text-purple-300 transition-all font-mono text-xs font-bold group"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/25 border border-amber-300 dark:border-amber-700/60 hover:bg-amber-200/80 dark:hover:bg-amber-900/40 text-stone-900 dark:text-stone-100 transition-all font-mono text-xs font-bold group cursor-pointer"
                 >
                   <span className="flex items-center gap-2">
-                    <img src="/icon.svg" alt="Socius" className="w-3.5 h-3.5 object-contain rounded-xs" />
-                    <span className="font-black uppercase tracking-wide">Socius</span>
+                    <img src="/icon.svg" alt="Socius" className="w-3.5 h-3.5 object-contain rounded-xs group-hover:scale-110 transition-transform" />
+                    <span className="font-black uppercase tracking-wide">Socius Admin</span>
                   </span>
-                  <span className="text-[9.5px] font-bold bg-purple-200/80 dark:bg-purple-900/60 text-purple-900 dark:text-purple-200 border border-purple-300 dark:border-purple-700 px-2 py-0.5 rounded-md flex items-center gap-1">
-                    <Lock className="w-3 h-3" />
-                    Locked
+                  <span className="text-[9.5px] font-bold bg-amber-200/90 dark:bg-amber-900/60 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <span>Open ↗</span>
                   </span>
                 </Link>
               </div>
             </div>
           </div>
         )}
+
+        {/* ── SINGLE-CLICK SOCIUS ADMIN BUTTON (DESKTOP) ── */}
+        <Link
+          href="/admin"
+          className="group relative inline-flex items-center gap-1.5 font-mono text-xs font-black uppercase px-3.5 py-2.5 rounded-full border-2 border-black dark:border-white bg-white/95 dark:bg-stone-900/95 text-stone-900 dark:text-stone-100 hover:bg-amber-300 dark:hover:bg-amber-400 hover:text-black dark:hover:text-black shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] transition-all duration-200 select-none cursor-pointer hover:-translate-y-0.5 active:translate-y-0.5"
+          title="Open Socius Admin Console (Single Click)"
+          aria-label="Socius Admin Console"
+        >
+          <img
+            src="/icon.svg"
+            alt="Socius"
+            className="w-3.5 h-3.5 object-contain rounded-xs group-hover:scale-110 transition-transform"
+          />
+          <span className="tracking-wide">Socius</span>
+        </Link>
 
         {/* ── THE MENU BUTTON ── */}
         <button

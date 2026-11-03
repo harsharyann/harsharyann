@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -704,34 +704,43 @@ export default function AdminPage() {
     }
   }, [isAuthenticated, activeTab]);
 
-  // ── INACTIVITY AUTO-LOGOUT (20 Minutes Timeout) ──
+  // Handle Logout (Memoized and declared before effects)
+  const handleLogout = useCallback(async () => {
+    try {
+      await fetch("/api/admin/auth", { method: "DELETE" });
+      setIsAuthenticated(false);
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  }, []);
+
+  // ── INACTIVITY AUTO-LOGOUT (15 Minutes of Inactivity) ──
   useEffect(() => {
     if (!isAuthenticated) return;
 
     let lastInteraction = Date.now();
-    const INACTIVITY_LIMIT_MS = 20 * 60 * 1000; // 20 minutes
+    const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 minutes
 
     const recordActivity = () => {
       lastInteraction = Date.now();
     };
 
-    const events = ["mousemove", "mousedown", "keydown", "touchstart", "scroll", "wheel"];
+    const events = ["mousemove", "mousedown", "keydown", "touchstart", "scroll", "wheel", "click"];
     events.forEach((evt) => window.addEventListener(evt, recordActivity, { passive: true }));
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - lastInteraction;
       if (elapsed >= INACTIVITY_LIMIT_MS) {
-        // Trigger auto-logout due to inactivity
         handleLogout();
-        setInactivityNotice("Security lock: Session auto-logged out due to 20 minutes of inactivity.");
+        setInactivityNotice("Session expired: Admin Console automatically logged out due to 15 minutes of inactivity.");
       }
-    }, 15000); // Check every 15s
+    }, 5000); // Check every 5s
 
     return () => {
       events.forEach((evt) => window.removeEventListener(evt, recordActivity));
       clearInterval(interval);
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, handleLogout]);
 
   // ── Google OAuth Sign-In (Exclusively Restricted to Harsh Aryan's Google Account) ──
   const googleBtnRef = React.useRef<HTMLDivElement>(null);
@@ -766,9 +775,13 @@ export default function AdminPage() {
       process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
       "991231055777-u46rvuq7lu46d2jqa8i2o94uv6vo5g04.apps.googleusercontent.com";
 
-    const initGsi = () => {
+    let retryTimer: NodeJS.Timeout | null = null;
+
+    const renderGoogleBtn = () => {
       const google = (window as any).google;
-      if (google?.accounts?.id && googleBtnRef.current) {
+      if (!google?.accounts?.id || !googleBtnRef.current) return false;
+
+      try {
         google.accounts.id.initialize({
           client_id: clientId,
           callback: handleGoogleCredentialResponse,
@@ -781,37 +794,36 @@ export default function AdminPage() {
           text: "continue_with",
           shape: "pill",
         });
+        return true;
+      } catch (err) {
+        console.warn("GSI render error:", err);
+        return false;
       }
     };
 
-    if ((window as any).google?.accounts?.id) {
-      initGsi();
-      return;
+    // Load GIS script if not present
+    let script = document.querySelector('script[src*="accounts.google.com/gsi/client"]') as HTMLScriptElement;
+    if (!script) {
+      script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
     }
 
-    const existingScript = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
-    if (existingScript) {
-      existingScript.addEventListener("load", initGsi);
-      return;
-    }
+    // Polling retry to ensure button renders immediately once googleBtnRef is mounted in DOM
+    let attempts = 0;
+    retryTimer = setInterval(() => {
+      attempts++;
+      if (renderGoogleBtn() || attempts > 50) {
+        if (retryTimer) clearInterval(retryTimer);
+      }
+    }, 100);
 
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = initGsi;
-    document.body.appendChild(script);
+    return () => {
+      if (retryTimer) clearInterval(retryTimer);
+    };
   }, [isAuthenticated]);
-
-  // Handle Logout
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/admin/auth", { method: "DELETE" });
-      setIsAuthenticated(false);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   // ── Central Instant Save Handler (Reflects Fatak Se Without Bugs) ──
   const saveInstantly = async (dataToSave: PortfolioData, successMsg: string = "Saved to Socius!") => {

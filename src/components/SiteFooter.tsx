@@ -14,24 +14,10 @@ export function SiteFooter() {
   const socialLinks = portfolio?.socialLinks;
   const router = useRouter();
 
-  // Secret 5-Click Easter Egg to open Admin (/admin)
-  const [clickCount, setClickCount] = useState(0);
-  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
-
+  // Single-Click Trigger to open Admin Console (/admin)
   const handleSociusClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    const nextCount = clickCount + 1;
-    setClickCount(nextCount);
-
-    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
-    clickTimerRef.current = setTimeout(() => {
-      setClickCount(0);
-    }, 2500);
-
-    if (nextCount >= 5) {
-      setClickCount(0);
-      router.push("/admin");
-    }
+    router.push("/admin");
   };
 
   const scrollToTop = () => {
@@ -184,13 +170,13 @@ export function SiteFooter() {
             {personal?.footerTagline || "crafting with code & mathematics"}
           </div>
 
-          {/* Secret 5-click easter egg button */}
+          {/* Single-Click Socius Admin Button */}
           <button
             type="button"
             onClick={handleSociusClick}
-            className="font-mono text-[11px] text-stone-400/80 dark:text-stone-600 hover:text-stone-800 dark:hover:text-stone-300 transition-colors select-none cursor-pointer tracking-wider lowercase"
-            title={clickCount > 0 ? `${5 - clickCount} more...` : undefined}
-            aria-label="Socius"
+            className="font-mono text-[11px] text-stone-400/80 dark:text-stone-600 hover:text-amber-600 dark:hover:text-amber-400 transition-colors select-none cursor-pointer tracking-wider lowercase hover:underline"
+            title="Open Socius Admin Console (Single Click)"
+            aria-label="Open Socius Admin Console"
           >
             {personal?.footerEasterEggText || "socius"}
           </button>

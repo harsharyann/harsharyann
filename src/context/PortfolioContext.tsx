@@ -152,7 +152,51 @@ export function PortfolioProvider({
 
   useEffect(() => {
     refreshData();
-  }, []);
+  }, [refreshData]);
+
+  // ── Instant Cross-Tab & In-Tab Sync Listener (Reflects Fatak Se) ──
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // 1. Cross-tab storage listener: fires when another tab (e.g. /admin) writes to localStorage
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === LOCAL_STORAGE_KEY && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed && parsed.personal) {
+            setData(parsed);
+          }
+        } catch {}
+      }
+    };
+
+    // 2. In-tab custom sync event
+    const handleCustomSync = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && customEvent.detail.personal) {
+        setData(customEvent.detail);
+      }
+    };
+
+    // 3. Tab visibility / focus refetch
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        refreshData();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("portfolio-data-synced", handleCustomSync);
+    window.addEventListener("focus", handleVisibility);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("portfolio-data-synced", handleCustomSync);
+      window.removeEventListener("focus", handleVisibility);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [refreshData]);
 
   const updateData = async (newData: PortfolioData): Promise<boolean> => {
     // Optimistically update React state and local storage immediately
@@ -160,6 +204,7 @@ export function PortfolioProvider({
     if (typeof window !== "undefined") {
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newData));
+        window.dispatchEvent(new CustomEvent("portfolio-data-synced", { detail: newData }));
       } catch (e) {
         console.warn("localStorage write error:", e);
       }
