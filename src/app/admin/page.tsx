@@ -735,7 +735,6 @@ export default function AdminPage() {
 
   // ── Google OAuth Sign-In (Exclusively Restricted to Harsh Aryan's Google Account) ──
   const googleBtnRef = React.useRef<HTMLDivElement>(null);
-  const [hasGoogleClientId, setHasGoogleClientId] = useState(false);
 
   const handleGoogleCredentialResponse = async (response: any) => {
     if (!response?.credential) return;
@@ -763,9 +762,9 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (isAuthenticated) return;
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId) return;
-    setHasGoogleClientId(true);
+    const clientId =
+      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+      "991231055777-u46rvuq7lu46d2jqa8i2o94uv6vo5g04.apps.googleusercontent.com";
 
     const initGsi = () => {
       const google = (window as any).google;
@@ -1282,44 +1281,14 @@ export default function AdminPage() {
             </div>
 
             {/* Google Sign-In Container */}
-            <div className="space-y-3 py-2">
+            <div className="space-y-3 py-2 flex flex-col items-center">
               {isLoggingIn ? (
-                <div className="py-3.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400 text-amber-900 dark:text-amber-200 font-mono text-xs flex items-center justify-center gap-2 shadow-xs">
+                <div className="w-full py-3.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400 text-amber-900 dark:text-amber-200 font-mono text-xs flex items-center justify-center gap-2 shadow-xs">
                   <RefreshCw className="w-4 h-4 animate-spin text-amber-600" />
                   <span className="font-bold">Signing in...</span>
                 </div>
               ) : (
                 <div ref={googleBtnRef} className="w-full flex justify-center min-h-[44px]" />
-              )}
-
-              {!hasGoogleClientId && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    alert("Google Client ID is not configured in .env.local");
-                  }}
-                  className="w-full py-2.5 px-4 rounded-xl border-2 border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 font-mono text-xs font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
-                >
-                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.28-2.1 3.66-5.2 3.66-9.12z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.13C3.27 21.37 7.35 24 12 24z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.57H1.26C.46 8.16 0 9.98 0 12s.46 3.84 1.26 5.43l4.02-3.14z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.63 1.26 6.57l4.02 3.14c.95-2.83 3.6-4.96 6.72-4.96z"
-                    />
-                  </svg>
-                  <span>Sign in with Google</span>
-                </button>
               )}
             </div>
 
