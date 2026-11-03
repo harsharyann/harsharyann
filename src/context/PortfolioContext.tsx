@@ -104,7 +104,7 @@ export function PortfolioProvider({
   }, []);
 
   const refreshData = async () => {
-    // 1. Fetch latest synced data from server in the background (always fresh across all browsers)
+    // 1. Fetch latest synced data from server in the background
     try {
       const res = await fetch(`/api/portfolio?_t=${Date.now()}`, {
         cache: "no-store",
@@ -113,6 +113,20 @@ export function PortfolioProvider({
       if (res.ok) {
         const json = await res.json();
         if (json && json.personal) {
+          // If server has data, check if localStorage has newer client updates (e.g. on read-only serverless host)
+          if (typeof window !== "undefined") {
+            try {
+              const local = localStorage.getItem(LOCAL_STORAGE_KEY);
+              if (local) {
+                const parsed = JSON.parse(local);
+                if (parsed && Array.isArray(parsed.projects) && parsed.projects.length > (json.projects?.length || 0)) {
+                  setData(parsed);
+                  return;
+                }
+              }
+            } catch {}
+          }
+
           setData(json);
           if (typeof window !== "undefined") {
             try {

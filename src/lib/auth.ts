@@ -118,10 +118,20 @@ export function verifyGatePass(token: string | undefined): boolean {
 }
 
 /**
- * Check if the current incoming request has a valid signed session cookie
+ * Check if the current incoming request has a valid signed session cookie or gate pass cookie
  */
 export async function isAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE)?.value;
-  return verifySessionToken(token).valid;
+  if (verifySessionToken(token).valid) {
+    return true;
+  }
+
+  // Also accept a verified gate pass cookie (unlocked via secret admin gate key)
+  const gateToken = cookieStore.get(GATE_COOKIE)?.value;
+  if (verifyGatePass(gateToken)) {
+    return true;
+  }
+
+  return false;
 }
