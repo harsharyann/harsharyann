@@ -510,9 +510,6 @@ export function CircularProjectsCarousel({
                     <span className="sketch-stamp text-[10px] bg-black text-white dark:bg-white dark:text-black font-black">
                       FEATURED BUILD 0{activeIndex + 1} / 0{projectsLength}
                     </span>
-                    <span className="font-mono text-[11px] font-bold text-stone-500 dark:text-stone-400">
-                      [{activeProject.id}]
-                    </span>
                   </div>
 
                   <span className="font-mono text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-black dark:border-white bg-amber-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_#fff]">

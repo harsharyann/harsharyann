@@ -487,9 +487,6 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
                       <span className={`sketch-stamp text-[10.5px] ${t.stampBg}`}>
                         PROJ #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                       </span>
-                      <span className="hidden sm:inline-block text-[9.5px] font-bold text-stone-500 dark:text-stone-400">
-                        ID: {proj.id}
-                      </span>
                     </div>
 
                     <span
