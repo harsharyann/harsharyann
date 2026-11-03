@@ -764,32 +764,44 @@ export default function AdminPage() {
   useEffect(() => {
     if (isAuthenticated) return;
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (clientId) {
-      setHasGoogleClientId(true);
-      const script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        if ((window as any).google?.accounts?.id && googleBtnRef.current) {
-          (window as any).google.accounts.id.initialize({
-            client_id: clientId,
-            callback: handleGoogleCredentialResponse,
-          });
-          (window as any).google.accounts.id.renderButton(googleBtnRef.current, {
-            theme: "outline",
-            size: "large",
-            width: "100%",
-            text: "continue_with",
-            shape: "pill",
-          });
-        }
-      };
-      document.body.appendChild(script);
-      return () => {
-        if (script.parentNode) script.parentNode.removeChild(script);
-      };
+    if (!clientId) return;
+    setHasGoogleClientId(true);
+
+    const initGsi = () => {
+      const google = (window as any).google;
+      if (google?.accounts?.id && googleBtnRef.current) {
+        google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleCredentialResponse,
+        });
+        googleBtnRef.current.innerHTML = "";
+        google.accounts.id.renderButton(googleBtnRef.current, {
+          theme: "outline",
+          size: "large",
+          width: 320,
+          text: "continue_with",
+          shape: "pill",
+        });
+      }
+    };
+
+    if ((window as any).google?.accounts?.id) {
+      initGsi();
+      return;
     }
+
+    const existingScript = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
+    if (existingScript) {
+      existingScript.addEventListener("load", initGsi);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = initGsi;
+    document.body.appendChild(script);
   }, [isAuthenticated]);
 
   // Handle Logout
