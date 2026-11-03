@@ -24,17 +24,15 @@ let memoryPortfolioCache: PortfolioData | null = null;
 let memoryMessagesCache: ContactMessage[] | null = null;
 
 export function getStoredPortfolioData(): PortfolioData {
-  if (memoryPortfolioCache) {
-    return memoryPortfolioCache;
-  }
-
-  // 1. Try local src/data/portfolio-store.json
+  // 1. Always attempt reading fresh from local src/data/portfolio-store.json on disk
   try {
     if (fs.existsSync(STORE_PATH)) {
       const raw = fs.readFileSync(STORE_PATH, "utf8");
       const parsed = JSON.parse(raw);
-      memoryPortfolioCache = parsed;
-      return parsed;
+      if (parsed && parsed.personal) {
+        memoryPortfolioCache = parsed;
+        return parsed;
+      }
     }
   } catch (err) {
     console.error("Error reading portfolio-store.json:", err);
@@ -45,36 +43,49 @@ export function getStoredPortfolioData(): PortfolioData {
     if (fs.existsSync(TMP_STORE_PATH)) {
       const raw = fs.readFileSync(TMP_STORE_PATH, "utf8");
       const parsed = JSON.parse(raw);
-      memoryPortfolioCache = parsed;
-      return parsed;
+      if (parsed && parsed.personal) {
+        memoryPortfolioCache = parsed;
+        return parsed;
+      }
     }
   } catch {}
 
-  // 3. Fallback to default portfolioData
+  // 3. Fallback to in-memory cache if available
+  if (memoryPortfolioCache) {
+    return memoryPortfolioCache;
+  }
+
+  // 4. Fallback to default portfolioData
   memoryPortfolioCache = portfolioData;
   return portfolioData;
 }
 
 export function saveStoredPortfolioData(newData: PortfolioData): boolean {
   memoryPortfolioCache = newData;
+  let written = false;
 
-  // Try writing to project folder (local dev)
+  // 1. Try writing to project folder (local dev)
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     fs.writeFileSync(STORE_PATH, JSON.stringify(newData, null, 2), "utf8");
-    return true;
-  } catch {
-    // If running in read-only filesystem (Vercel serverless)
-    try {
-      fs.writeFileSync(TMP_STORE_PATH, JSON.stringify(newData, null, 2), "utf8");
-      return true;
-    } catch (tmpErr) {
+    written = true;
+  } catch (err) {
+    console.warn("Could not write to STORE_PATH, writing to tmp:", err);
+  }
+
+  // 2. Also write to serverless /tmp
+  try {
+    fs.writeFileSync(TMP_STORE_PATH, JSON.stringify(newData, null, 2), "utf8");
+    written = true;
+  } catch (tmpErr) {
+    if (!written) {
       console.warn("Could not write to tmp, relying on in-memory cache:", tmpErr);
-      return true; // Still return true so API doesn't fail
     }
   }
+
+  return true;
 }
 
 export function resetStoredPortfolioData(): boolean {

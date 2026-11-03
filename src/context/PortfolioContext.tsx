@@ -104,20 +104,7 @@ export function PortfolioProvider({
   }, []);
 
   const refreshData = async () => {
-    // 1. If no initialData was injected by SSR, read from localStorage for instant display
-    if (typeof window !== "undefined" && !initialData) {
-      try {
-        const local = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (local) {
-          const parsed = JSON.parse(local);
-          if (parsed && parsed.personal) {
-            setData(parsed);
-          }
-        }
-      } catch {}
-    }
-
-    // 2. Fetch latest synced data from server in the background
+    // 1. Fetch latest synced data from server in the background (always fresh across all browsers)
     try {
       const res = await fetch(`/api/portfolio?_t=${Date.now()}`, {
         cache: "no-store",
@@ -132,12 +119,26 @@ export function PortfolioProvider({
               localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(json));
             } catch {}
           }
+          return;
         }
       }
     } catch (err) {
-      console.warn("Could not fetch remote portfolio data, using local/default:", err);
+      console.warn("Could not fetch remote portfolio data, falling back to local:", err);
     } finally {
       setIsLoading(false);
+    }
+
+    // 2. Offline fallback to localStorage
+    if (typeof window !== "undefined") {
+      try {
+        const local = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (parsed && parsed.personal) {
+            setData(parsed);
+          }
+        }
+      } catch {}
     }
   };
 
@@ -147,16 +148,6 @@ export function PortfolioProvider({
 
   const updateData = async (newData: PortfolioData): Promise<boolean> => {
     try {
-      setData({ ...newData });
-      // Instantly save to local storage
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newData));
-        } catch (e) {
-          console.warn("localStorage write error:", e);
-        }
-      }
-
       const res = await fetch("/api/portfolio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -166,18 +157,24 @@ export function PortfolioProvider({
 
       if (res.ok) {
         const result = await res.json();
-        if (result.data) {
-          setData({ ...result.data });
-          if (typeof window !== "undefined") {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(result.data));
+        const savedData = result.data || newData;
+        setData({ ...savedData });
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedData));
+          } catch (e) {
+            console.warn("localStorage write error:", e);
           }
         }
         return true;
       }
-      return true; // Return true as local state & storage was saved successfully
+
+      const errResult = await res.json().catch(() => ({}));
+      console.error("Save to /api/portfolio failed:", res.status, errResult);
+      return false;
     } catch (err) {
       console.error("Failed to update portfolio data:", err);
-      return true; // Still true locally
+      return false;
     }
   };
 

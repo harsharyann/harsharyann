@@ -25,6 +25,15 @@ function getClientIp(req: Request): string {
   return "local-client";
 }
 
+function isSecureCookie(req: Request): boolean {
+  if (process.env.NODE_ENV !== "production") return false;
+  const proto = req.headers.get("x-forwarded-proto");
+  if (proto && proto.includes("https")) return true;
+  const url = req.url || "";
+  if (url.startsWith("https://")) return true;
+  return false;
+}
+
 export async function GET() {
   const authed = await isAuthenticated();
   const cookieStore = await cookies();
@@ -66,8 +75,8 @@ export async function POST(req: Request) {
         name: GATE_COOKIE,
         value: createGatePass(),
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: isSecureCookie(req),
+        sameSite: "lax",
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
       });
@@ -120,8 +129,8 @@ export async function POST(req: Request) {
       name: AUTH_COOKIE,
       value: sessionToken,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: isSecureCookie(req),
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
@@ -131,8 +140,8 @@ export async function POST(req: Request) {
       name: GATE_COOKIE,
       value: gatePass,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: isSecureCookie(req),
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });

@@ -4901,12 +4901,12 @@ export default function AdminPage() {
                     )}
 
                     {proj.liveUrl ? (
-                      <a href={proj.liveUrl} target="_blank" rel="noreferrer" className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 font-bold hover:underline">
-                        <span>Live Demo</span>
+                      <a href={proj.liveUrl} target="_blank" rel="noreferrer" className="text-red-600 hover:text-red-800 flex items-center gap-1 font-bold hover:underline">
+                        <span>Live</span>
                         <ExternalLink className="w-3 h-3" />
                       </a>
                     ) : (
-                      <span className="text-stone-400 text-[11px]">No Live Demo</span>
+                      <span className="text-stone-400 text-[11px]">No Live Link</span>
                     )}
                   </div>
                 </div>

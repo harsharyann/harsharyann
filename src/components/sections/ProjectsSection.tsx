@@ -586,10 +586,14 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
                         href={proj.liveUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className={`px-3 py-1.5 rounded-lg font-mono text-[11px] font-black uppercase flex items-center gap-1 transition-all ${t.btnSecondary}`}
+                        className="px-3 py-1.5 rounded-lg font-mono text-[11px] font-black uppercase flex items-center gap-1.5 transition-all bg-red-600 hover:bg-red-500 text-white border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] hover:-translate-y-0.5"
                       >
-                        <ExternalLink className="w-3 h-3" />
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
+                        </span>
                         <span>Live</span>
+                        <ArrowUpRight className="w-3 h-3" />
                       </a>
                     )}
                   </div>

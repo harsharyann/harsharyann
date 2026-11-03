@@ -9,6 +9,13 @@ import {
   ADMIN_GATE_KEY,
 } from "@/lib/auth";
 
+function isSecureRequest(request: NextRequest): boolean {
+  if (process.env.NODE_ENV !== "production") return false;
+  const proto = request.headers.get("x-forwarded-proto");
+  if (proto && proto.includes("https")) return true;
+  return request.nextUrl.protocol === "https:";
+}
+
 export function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
 
@@ -37,8 +44,8 @@ export function proxy(request: NextRequest) {
       name: GATE_COOKIE,
       value: createGatePass(),
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: isSecureRequest(request),
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days gate pass
       path: "/",
     });

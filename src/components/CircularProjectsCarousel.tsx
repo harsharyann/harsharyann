@@ -590,7 +590,7 @@ export function CircularProjectsCarousel({
                   </div>
                 </div>
 
-                {/* Action Buttons: GitHub Repo & Live Demo */}
+                {/* Action Buttons: GitHub Repo & Red Live Button */}
                 <div className="pt-2 flex flex-wrap sm:flex-nowrap items-center gap-2.5">
                   <a
                     href={activeProject.githubUrl}
@@ -608,10 +608,13 @@ export function CircularProjectsCarousel({
                       href={activeProject.liveUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-mono font-black uppercase tracking-wider py-2.5 px-5 rounded-xl bg-white text-black dark:bg-stone-900 dark:text-white border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] hover:-translate-y-0.5 transition-transform flex items-center justify-center gap-2 flex-1"
+                      className="text-xs font-mono font-black uppercase tracking-wider py-2.5 px-5 rounded-xl bg-red-600 hover:bg-red-500 text-white border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] hover:-translate-y-0.5 transition-transform flex items-center justify-center gap-2 flex-1"
                     >
-                      <ExternalLink className="w-4 h-4" />
-                      <span>Live Demo</span>
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                      </span>
+                      <span>Live</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </a>
                   )}
