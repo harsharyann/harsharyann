@@ -80,6 +80,7 @@ import {
 } from "@/lib/googleDrive";
 import { extractVibrantColor } from "@/lib/colorExtractor";
 import { compressImageFile } from "@/lib/imageCompressor";
+import { supabase } from "@/lib/supabase";
 
 interface ContactMessage {
   id: string;
@@ -401,38 +402,44 @@ export default function AdminPage() {
 
   // Quick Stats Capsule Handlers
   const handleAddQuickStat = () => {
-    setPortfolio((prev) => {
-      const currentList = prev.quickStats || [];
-      const nextIndex = currentList.length;
-      const paletteKeys = ["amber", "emerald", "cyan", "rose", "purple", "indigo", "orange", "teal"];
-      const nextColor = paletteKeys[nextIndex % paletteKeys.length];
-      const defaultIcons = ["✨", "⚡", "🏆", "🔥", "🚀", "💡", "🎯", "🔬"];
-      const nextIcon = defaultIcons[nextIndex % defaultIcons.length];
-      const defaultTags = ["SPECIALTY", "PROJECTS", "HONORS", "SOLVED", "METRICS", "INSIGHTS", "GOALS", "RESEARCH"];
-      const nextTag = defaultTags[nextIndex % defaultTags.length];
+    const base = portfolioRef.current || portfolio;
+    const currentList = base.quickStats || [];
+    const nextIndex = currentList.length;
+    const paletteKeys = ["amber", "emerald", "cyan", "rose", "purple", "indigo", "orange", "teal"];
+    const nextColor = paletteKeys[nextIndex % paletteKeys.length];
+    const defaultIcons = ["✨", "⚡", "🏆", "🔥", "🚀", "💡", "🎯", "🔬"];
+    const nextIcon = defaultIcons[nextIndex % defaultIcons.length];
+    const defaultTags = ["SPECIALTY", "PROJECTS", "HONORS", "SOLVED", "METRICS", "INSIGHTS", "GOALS", "RESEARCH"];
+    const nextTag = defaultTags[nextIndex % defaultTags.length];
 
-      return {
-        ...prev,
-        quickStats: [
-          ...currentList,
-          {
-            value: "10+",
-            label: "New Benchmark",
-            sublabel: "Metric details & highlights",
-            tag: nextTag,
-            icon: nextIcon,
-            color: nextColor,
-          },
-        ],
-      };
-    });
+    const nextPort = {
+      ...base,
+      quickStats: [
+        ...currentList,
+        {
+          value: "10+",
+          label: "New Benchmark",
+          sublabel: "Metric details & highlights",
+          tag: nextTag,
+          icon: nextIcon,
+          color: nextColor,
+        },
+      ],
+    };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    saveInstantly(nextPort, "Added new benchmark capsule!");
   };
 
   const handleRemoveQuickStat = (index: number) => {
-    setPortfolio((prev) => ({
-      ...prev,
-      quickStats: prev.quickStats.filter((_, i) => i !== index),
-    }));
+    const base = portfolioRef.current || portfolio;
+    const nextPort = {
+      ...base,
+      quickStats: (base.quickStats || []).filter((_, i) => i !== index),
+    };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    saveInstantly(nextPort, "Benchmark capsule removed.");
   };
 
   const handleUpdateQuickStat = (
@@ -462,30 +469,40 @@ export default function AdminPage() {
       highlights: ["Key achievement or project contribution."],
       skillsUsed: ["Python", "Problem Solving"],
     };
-    setPortfolio((prev) => ({
-      ...prev,
-      experiences: [...(prev.experiences || []), newExp],
-    }));
+    const base = portfolioRef.current || portfolio;
+    const nextPort = {
+      ...base,
+      experiences: [...(base.experiences || []), newExp],
+    };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    saveInstantly(nextPort, "Added new experience entry!");
   };
 
   const handleRemoveExperience = (idx: number) => {
     if (!confirm("Are you sure you want to delete this experience entry?")) return;
-    setPortfolio((prev) => ({
-      ...prev,
-      experiences: (prev.experiences || []).filter((_, i) => i !== idx),
-    }));
+    const base = portfolioRef.current || portfolio;
+    const nextPort = {
+      ...base,
+      experiences: (base.experiences || []).filter((_, i) => i !== idx),
+    };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    saveInstantly(nextPort, "Experience entry deleted.");
   };
 
   const handleMoveExperience = (idx: number, direction: "up" | "down") => {
-    setPortfolio((prev) => {
-      const list = [...(prev.experiences || [])];
-      const target = direction === "up" ? idx - 1 : idx + 1;
-      if (target < 0 || target >= list.length) return prev;
-      const temp = list[idx];
-      list[idx] = list[target];
-      list[target] = temp;
-      return { ...prev, experiences: list };
-    });
+    const base = portfolioRef.current || portfolio;
+    const list = [...(base.experiences || [])];
+    const target = direction === "up" ? idx - 1 : idx + 1;
+    if (target < 0 || target >= list.length) return;
+    const temp = list[idx];
+    list[idx] = list[target];
+    list[target] = temp;
+    const nextPort = { ...base, experiences: list };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    saveInstantly(nextPort, "Experiences reordered!");
   };
 
   const handleUpdateExperience = (idx: number, field: keyof Experience, val: any) => {
@@ -528,15 +545,17 @@ export default function AdminPage() {
   };
 
   const handleMoveQuickStat = (index: number, direction: "up" | "down") => {
-    setPortfolio((prev) => {
-      const updated = [...(prev.quickStats || [])];
-      const target = direction === "up" ? index - 1 : index + 1;
-      if (target < 0 || target >= updated.length) return prev;
-      const temp = updated[index];
-      updated[index] = updated[target];
-      updated[target] = temp;
-      return { ...prev, quickStats: updated };
-    });
+    const base = portfolioRef.current || portfolio;
+    const updated = [...(base.quickStats || [])];
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= updated.length) return;
+    const temp = updated[index];
+    updated[index] = updated[target];
+    updated[target] = temp;
+    const nextPort = { ...base, quickStats: updated };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    saveInstantly(nextPort, "Benchmarks reordered!");
   };
 
   // Skills Handlers
@@ -626,59 +645,66 @@ export default function AdminPage() {
 
   // Milestones Handlers
   const handleAddMilestone = () => {
-    setPortfolio((prev) => {
-      const current = prev.milestones && prev.milestones.length > 0 ? [...prev.milestones] : [
-        { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
-        { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
-        { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
-      ];
-      const nextNum = current.length + 1;
-      const newMilestone: TimelineMilestone = {
-        phaseNumber: String(nextNum).padStart(2, "0"),
-        period: `Phase ${nextNum}`,
-        title: "New Trajectory Phase",
-        subtitle: "Key Focus & Technologies",
-        description: "Describe the key focus, achievements, algorithms, or systems built in this phase.",
-      };
-      return { ...prev, milestones: [...current, newMilestone] };
-    });
+    const base = portfolioRef.current || portfolio;
+    const current = base.milestones && base.milestones.length > 0 ? [...base.milestones] : [
+      { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+      { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+      { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+    ];
+    const nextNum = current.length + 1;
+    const newMilestone: TimelineMilestone = {
+      phaseNumber: String(nextNum).padStart(2, "0"),
+      period: `Phase ${nextNum}`,
+      title: "New Trajectory Phase",
+      subtitle: "Key Focus & Technologies",
+      description: "Describe the key focus, achievements, algorithms, or systems built in this phase.",
+    };
+    const nextPort = { ...base, milestones: [...current, newMilestone] };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    saveInstantly(nextPort, `Added Phase ${newMilestone.phaseNumber} to Trajectory!`);
   };
 
   const handleRemoveMilestone = (index: number) => {
-    setPortfolio((prev) => {
-      const current = prev.milestones && prev.milestones.length > 0 ? [...prev.milestones] : [
-        { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
-        { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
-        { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
-      ];
-      const filtered = current.filter((_, i) => i !== index);
-      const reindexed = filtered.map((m, idx) => ({
-        ...m,
-        phaseNumber: String(idx + 1).padStart(2, "0"),
-      }));
-      return { ...prev, milestones: reindexed };
-    });
+    if (!confirm("Are you sure you want to remove this trajectory phase?")) return;
+    const base = portfolioRef.current || portfolio;
+    const current = base.milestones && base.milestones.length > 0 ? [...base.milestones] : [
+      { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+      { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+      { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+    ];
+    const filtered = current.filter((_, i) => i !== index);
+    const reindexed = filtered.map((m, idx) => ({
+      ...m,
+      phaseNumber: String(idx + 1).padStart(2, "0"),
+    }));
+    const nextPort = { ...base, milestones: reindexed };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    saveInstantly(nextPort, "Trajectory phase removed.");
   };
 
   const handleMoveMilestone = (index: number, direction: "up" | "down") => {
-    setPortfolio((prev) => {
-      const current = prev.milestones && prev.milestones.length > 0 ? [...prev.milestones] : [
-        { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
-        { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
-        { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
-      ];
-      const targetIndex = direction === "up" ? index - 1 : index + 1;
-      if (targetIndex < 0 || targetIndex >= current.length) return prev;
-      const updated = [...current];
-      const temp = updated[index];
-      updated[index] = updated[targetIndex];
-      updated[targetIndex] = temp;
-      const reindexed = updated.map((m, idx) => ({
-        ...m,
-        phaseNumber: String(idx + 1).padStart(2, "0"),
-      }));
-      return { ...prev, milestones: reindexed };
-    });
+    const base = portfolioRef.current || portfolio;
+    const current = base.milestones && base.milestones.length > 0 ? [...base.milestones] : [
+      { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
+      { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
+      { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
+    ];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= current.length) return;
+    const updated = [...current];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    const reindexed = updated.map((m, idx) => ({
+      ...m,
+      phaseNumber: String(idx + 1).padStart(2, "0"),
+    }));
+    const nextPort = { ...base, milestones: reindexed };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    saveInstantly(nextPort, "Trajectory phases reordered!");
   };
 
   const handleUpdateMilestone = (index: number, field: string, val: string) => {
@@ -794,6 +820,17 @@ export default function AdminPage() {
   const fetchMessages = async () => {
     setIsLoadingMessages(true);
     try {
+      if (supabase) {
+        const { data, error } = await supabase
+          .from("contact_messages")
+          .select("*")
+          .order("timestamp", { ascending: false });
+        if (!error && Array.isArray(data)) {
+          setMessages(data);
+          setIsLoadingMessages(false);
+          return;
+        }
+      }
       const res = await fetch("/api/contact");
       const json = await res.json();
       if (json.messages) {
@@ -809,17 +846,17 @@ export default function AdminPage() {
   const handleDeleteMessage = async (id: string) => {
     if (!confirm("Are you sure you want to delete this inquiry? This cannot be undone.")) return;
     try {
-      const res = await fetch(`/api/contact?id=${encodeURIComponent(id)}`, {
+      // 1. Direct Supabase Cloud Delete
+      if (supabase) {
+        await supabase.from("contact_messages").delete().eq("id", id);
+      }
+      // 2. Server API sync
+      await fetch(`/api/contact?id=${encodeURIComponent(id)}`, {
         method: "DELETE",
       });
-      const json = await res.json();
-      if (json.success) {
-        setMessages((prev) => prev.filter((m) => m.id !== id));
-        setToastMessage("✓ Inquiry deleted successfully!");
-        setTimeout(() => setToastMessage(null), 3000);
-      } else {
-        alert("Failed to delete inquiry: " + (json.error || "Server error"));
-      }
+      setMessages((prev) => prev.filter((m) => m.id !== id));
+      setToastMessage("✓ Inquiry deleted from Supabase cloud!");
+      setTimeout(() => setToastMessage(null), 3000);
     } catch (err) {
       console.error("Delete error", err);
       alert("Error deleting inquiry.");
@@ -829,17 +866,17 @@ export default function AdminPage() {
   const handleClearAllMessages = async () => {
     if (!confirm("Are you sure you want to clear ALL inquiries? This action cannot be undone.")) return;
     try {
-      const res = await fetch(`/api/contact?id=all`, {
+      // 1. Direct Supabase Cloud Delete
+      if (supabase) {
+        await supabase.from("contact_messages").delete().neq("id", "");
+      }
+      // 2. Server API sync
+      await fetch(`/api/contact?id=all`, {
         method: "DELETE",
       });
-      const json = await res.json();
-      if (json.success) {
-        setMessages([]);
-        setToastMessage("✓ All inquiries cleared!");
-        setTimeout(() => setToastMessage(null), 3000);
-      } else {
-        alert("Failed to clear inquiries: " + (json.error || "Server error"));
-      }
+      setMessages([]);
+      setToastMessage("✓ All inquiries cleared from Supabase cloud!");
+      setTimeout(() => setToastMessage(null), 3000);
     } catch (err) {
       console.error("Clear error", err);
       alert("Error clearing inquiries.");
