@@ -88,8 +88,9 @@ export default function AdminPage() {
   const router = useRouter();
   const { data: initialData, updateData } = usePortfolio();
 
-  // Enforce Light Theme strictly on Socius Admin Console
+  // Enforce Light Theme strictly on Socius Admin Console & set tab title
   useEffect(() => {
+    document.title = "Harsh Aryan | ADMIN";
     document.documentElement.classList.remove("dark");
     document.documentElement.classList.add("light");
   }, []);

@@ -61,8 +61,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: `${name} | ${role} • ${college}`,
-      template: `%s | ${name}`,
+      default: "Harsh Aryan",
+      template: `%s | Harsh Aryan`,
     },
     description: headline,
     keywords: customKeywords,
@@ -250,7 +250,8 @@ export default function RootLayout({
     <html lang="en" className="bg-transparent text-black" suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-        <link rel="alternate icon" href="/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/app-logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
