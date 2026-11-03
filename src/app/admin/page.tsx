@@ -1230,6 +1230,21 @@ export default function AdminPage() {
     await saveInstantly(newPortfolio, "Project deleted.");
   };
 
+  const handleToggleProjectVisibility = async (id: string) => {
+    const base = portfolioRef.current || portfolio;
+    const updated = (base.projects || []).map((p) => {
+      if (p.id === id) {
+        const nextState = p.isVisible === false ? true : false;
+        return { ...p, isVisible: nextState };
+      }
+      return p;
+    });
+    const nextPort = { ...base, projects: updated };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    await saveInstantly(nextPort, "Project visibility updated!");
+  };
+
   // ── Certificate Actions ──
   const openNewCertModal = () => {
     const cats = (portfolio.certificateCategories && portfolio.certificateCategories.length > 0)
@@ -1393,6 +1408,21 @@ export default function AdminPage() {
     setPortfolio(newPortfolio);
     portfolioRef.current = newPortfolio;
     await saveInstantly(newPortfolio, "Certificate deleted.");
+  };
+
+  const handleToggleCertVisibility = async (id: string) => {
+    const base = portfolioRef.current || portfolio;
+    const updated = (base.certificates || []).map((c) => {
+      if (c.id === id) {
+        const nextState = c.isVisible === false ? true : false;
+        return { ...c, isVisible: nextState };
+      }
+      return c;
+    });
+    const nextPort = { ...base, certificates: updated };
+    setPortfolio(nextPort);
+    portfolioRef.current = nextPort;
+    await saveInstantly(nextPort, "Certificate visibility updated!");
   };
 
   // ── Laurel, Paper & Book Actions ──
@@ -2680,15 +2710,25 @@ export default function AdminPage() {
                           </span>
                           <button
                             type="button"
-                            onClick={() =>
-                              setPortfolio((prev) => ({
-                                ...prev,
+                            onClick={async () => {
+                              const base = portfolioRef.current || portfolio;
+                              const nextVal = base.personal.showMobileCurrentRole === false ? true : false;
+                              const nextPort = {
+                                ...base,
                                 personal: {
-                                  ...prev.personal,
-                                  showMobileCurrentRole: prev.personal.showMobileCurrentRole === false ? true : false,
+                                  ...base.personal,
+                                  showMobileCurrentRole: nextVal,
                                 },
-                              }))
-                            }
+                              };
+                              setPortfolio(nextPort);
+                              portfolioRef.current = nextPort;
+                              await saveInstantly(
+                                nextPort,
+                                nextVal
+                                  ? "✅ Mobile role pill is now VISIBLE on cover!"
+                                  : "⚠️ Mobile role pill is now HIDDEN from cover!"
+                              );
+                            }}
                             className={`px-3 py-1 rounded-full font-mono text-[10px] font-black uppercase transition-all cursor-pointer border ${
                               portfolio.personal.showMobileCurrentRole !== false
                                 ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
@@ -4348,15 +4388,25 @@ export default function AdminPage() {
                     {/* Hide / Unhide Toggle */}
                     <button
                       type="button"
-                      onClick={() =>
-                        setPortfolio((prev) => ({
-                          ...prev,
+                      onClick={async () => {
+                        const base = portfolioRef.current || portfolio;
+                        const nextVal = base.personal.showExperienceSection === false ? true : false;
+                        const nextPort = {
+                          ...base,
                           personal: {
-                            ...prev.personal,
-                            showExperienceSection: prev.personal.showExperienceSection === false ? true : false,
+                            ...base.personal,
+                            showExperienceSection: nextVal,
                           },
-                        }))
-                      }
+                        };
+                        setPortfolio(nextPort);
+                        portfolioRef.current = nextPort;
+                        await saveInstantly(
+                          nextPort,
+                          nextVal
+                            ? "✅ Experience section is now VISIBLE on site!"
+                            : "⚠️ Experience section is now HIDDEN from site!"
+                        );
+                      }}
                       className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer ${
                         portfolio.personal.showExperienceSection === false
                           ? "bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100 shadow-xs"
@@ -4396,11 +4446,32 @@ export default function AdminPage() {
                 </div>
 
                 {portfolio.personal.showExperienceSection === false && (
-                  <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 flex items-start gap-2.5 text-xs text-amber-900 font-mono">
-                    <span className="text-base">ℹ️</span>
-                    <div>
-                      <strong className="font-bold">Experience Section is currently hidden:</strong> It will not show on the live homepage between Core Capabilities and Trajectory. Click <strong>"Section Hidden"</strong> above to make it visible.
+                  <div className="p-3.5 rounded-2xl bg-amber-50 border-2 border-dashed border-amber-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-900 font-mono">
+                    <div className="flex items-center gap-2">
+                      <EyeOff className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>
+                        <strong className="font-bold">Experience Section is currently hidden:</strong> Ye section main homepage par render nahi hoga.
+                      </span>
                     </div>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const base = portfolioRef.current || portfolio;
+                        const nextPort = {
+                          ...base,
+                          personal: {
+                            ...base.personal,
+                            showExperienceSection: true,
+                          },
+                        };
+                        setPortfolio(nextPort);
+                        portfolioRef.current = nextPort;
+                        await saveInstantly(nextPort, "✅ Experience section is now VISIBLE on site!");
+                      }}
+                      className="px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-mono text-xs font-bold cursor-pointer shrink-0 self-start sm:self-auto"
+                    >
+                      Unhide / Show Section
+                    </button>
                   </div>
                 )}
 
@@ -5586,8 +5657,25 @@ export default function AdminPage() {
                             <span>{proj.color}</span>
                           </span>
                         )}
+                        {proj.isVisible === false && (
+                          <span className="px-2 py-0.5 rounded-full bg-rose-100 border border-rose-300 text-rose-800 font-mono text-[9px] font-bold uppercase">
+                            Hidden
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleProjectVisibility(proj.id)}
+                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                            proj.isVisible !== false
+                              ? "bg-stone-100 hover:bg-stone-200 text-stone-700 hover:text-black"
+                              : "bg-rose-100 hover:bg-rose-200 text-rose-700"
+                          }`}
+                          title={proj.isVisible !== false ? "Hide project from main site" : "Show project on main site"}
+                        >
+                          {proj.isVisible !== false ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                        </button>
                         <button
                           type="button"
                           onClick={() => openEditProjectModal(proj)}
@@ -5750,7 +5838,9 @@ export default function AdminPage() {
                 {(portfolio.certificates || []).map((cert) => (
                   <div
                     key={cert.id}
-                    className="p-5 rounded-2xl bg-white border-2 border-stone-200 hover:border-black flex flex-col justify-between space-y-4 shadow-sm hover:shadow-[4px_4px_0_#000] transition-all"
+                    className={`p-5 rounded-2xl bg-white border-2 border-stone-200 hover:border-black flex flex-col justify-between space-y-4 shadow-sm hover:shadow-[4px_4px_0_#000] transition-all ${
+                      cert.isVisible === false ? "opacity-60 bg-stone-50 border-dashed" : ""
+                    }`}
                   >
                     <div className="flex gap-4">
                       {/* Certificate Photo / Image Thumbnail (if added) */}
@@ -5807,6 +5897,18 @@ export default function AdminPage() {
                             )}
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleCertVisibility(cert.id)}
+                              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                                cert.isVisible !== false
+                                  ? "bg-stone-100 hover:bg-stone-200 text-stone-700 hover:text-black"
+                                  : "bg-rose-100 hover:bg-rose-200 text-rose-700"
+                              }`}
+                              title={cert.isVisible !== false ? "Hide certificate from main site" : "Show certificate on main site"}
+                            >
+                              {cert.isVisible !== false ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                            </button>
                             <button
                               type="button"
                               onClick={() => openEditCertModal(cert)}

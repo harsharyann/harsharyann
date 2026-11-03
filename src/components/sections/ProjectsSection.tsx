@@ -177,9 +177,9 @@ function TerminalDoodle({ className = "" }: { className?: string }) {
 
 export function ProjectsSection({ id = "projects" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
-  const projectsList: Project[] = Array.isArray(portfolio?.projects)
+  const projectsList: Project[] = (Array.isArray(portfolio?.projects)
     ? portfolio.projects
-    : []
+    : []).filter((p) => p.isVisible !== false)
   const [activeCategory, setActiveCategory] = useState("All")
   const [viewMode, setViewMode] = useState<"3d" | "grid">("3d")
 

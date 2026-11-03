@@ -11,6 +11,7 @@ export interface Project {
   liveUrl?: string;
   imageGradient: string;
   color?: string;
+  isVisible?: boolean;
 }
 
 export interface Certificate {
@@ -26,6 +27,7 @@ export interface Certificate {
   description: string;
   verificationSource?: string;
   color?: string;
+  isVisible?: boolean;
 }
 
 export interface LaurelItem {

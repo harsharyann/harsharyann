@@ -131,7 +131,9 @@ function LaurelWreathDoodle({ className = "" }: { className?: string }) {
 
 export function CertificatesSection({ id = "certificates" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
-  const certsList: Certificate[] = Array.isArray(portfolio?.certificates) ? portfolio.certificates : []
+  const certsList: Certificate[] = (Array.isArray(portfolio?.certificates)
+    ? portfolio.certificates
+    : []).filter((c) => c.isVisible !== false)
   const [activeCategory, setActiveCategory] = useState("All")
   const [activeLaurelType, setActiveLaurelType] = useState<"all" | "award" | "paper" | "book">("all")
 
