@@ -1271,37 +1271,22 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* Header / Security Badge */}
-            <div className="flex flex-col items-center text-center space-y-2 pt-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/70 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 font-mono text-[10px] font-bold text-amber-800 dark:text-amber-300 shadow-xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
-                <span>RESTRICTED ADMIN VAULT</span>
-              </div>
+            {/* Header */}
+            <div className="flex flex-col items-center text-center space-y-1.5 pt-2 pb-1">
               <h2 className="font-mono text-base font-black uppercase tracking-wider text-stone-900 dark:text-stone-100">
-                Single Sign-On Authentication
+                Admin Console
               </h2>
-              <p className="font-mono text-xs text-stone-500 dark:text-stone-400 max-w-xs leading-relaxed">
-                Protected exclusively for Harsh Aryan. Authenticate using your verified Google account.
+              <p className="font-mono text-xs text-stone-500 dark:text-stone-400">
+                Sign in with your Google account to continue
               </p>
             </div>
 
-            {/* Authorized Email Pill */}
-            <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-stone-200 dark:border-stone-800 flex items-center justify-between font-mono text-xs">
-              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-bold text-[11px]">harsharyan.work@gmail.com</span>
-              </div>
-              <span className="text-[9.5px] uppercase font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-700">
-                Authorized
-              </span>
-            </div>
-
             {/* Google Sign-In Container */}
-            <div className="space-y-3 pt-1">
+            <div className="space-y-3 py-2">
               {isLoggingIn ? (
                 <div className="py-3.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400 text-amber-900 dark:text-amber-200 font-mono text-xs flex items-center justify-center gap-2 shadow-xs">
                   <RefreshCw className="w-4 h-4 animate-spin text-amber-600" />
-                  <span className="font-bold">Verifying Google Credentials...</span>
+                  <span className="font-bold">Signing in...</span>
                 </div>
               ) : (
                 <div ref={googleBtnRef} className="w-full flex justify-center min-h-[44px]" />
@@ -1311,9 +1296,7 @@ export default function AdminPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    alert(
-                      "To enable 1-Click Google Sign-In for your account:\n\n1. Ensure NEXT_PUBLIC_GOOGLE_CLIENT_ID is set in .env.local\n\nOnly harsharyan.work@gmail.com will be granted access!"
-                    );
+                    alert("Google Client ID is not configured in .env.local");
                   }}
                   className="w-full py-2.5 px-4 rounded-xl border-2 border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 font-mono text-xs font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
                 >
@@ -1335,13 +1318,9 @@ export default function AdminPage() {
                       d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.63 1.26 6.57l4.02 3.14c.95-2.83 3.6-4.96 6.72-4.96z"
                     />
                   </svg>
-                  <span>Sign in with Google (Harsh Aryan Only)</span>
+                  <span>Sign in with Google</span>
                 </button>
               )}
-
-              <p className="text-[10px] font-mono text-center text-stone-400">
-                🔒 256-Bit OAuth 2.0 Encrypted • Single Authorized Identity
-              </p>
             </div>
 
             {/* Return link */}
