@@ -314,6 +314,166 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
       btnSecondary:
         "border-2 border-amber-500 dark:border-amber-400 text-amber-900 dark:text-amber-200 bg-white dark:bg-stone-900 hover:bg-amber-50 dark:hover:bg-amber-950/40 shadow-[2px_2px_0_#f59e0b]",
     },
+    amber: {
+      accent: "#f59e0b",
+      border: "border-black dark:border-amber-400/80",
+      cardBg:
+        "bg-gradient-to-br from-amber-50/75 via-white to-orange-50/35 dark:from-stone-900 dark:via-amber-950/25 dark:to-stone-900",
+      shadow: "shadow-[4px_4px_0_#f59e0b] dark:shadow-[4px_4px_0_#fbbf24]",
+      washi: "bg-amber-200/90 dark:bg-amber-400/30",
+      stampBg: "bg-amber-500 text-black dark:bg-amber-400 dark:text-black",
+      badgeClass:
+        "bg-amber-100 text-amber-900 border-amber-400 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-600",
+      metricsBox:
+        "bg-amber-50/90 dark:bg-stone-800/80 border-amber-200 dark:border-amber-800/80 text-amber-950 dark:text-amber-200",
+      metricBullet: "text-amber-600 dark:text-amber-400",
+      techPill:
+        "border-amber-300 dark:border-amber-700 bg-white dark:bg-stone-800 text-amber-800 dark:text-amber-200 shadow-[1px_1px_0_#f59e0b]",
+      btnPrimary:
+        "bg-amber-500 hover:bg-amber-600 text-black dark:bg-amber-400 dark:hover:bg-amber-500 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]",
+      btnSecondary:
+        "border-2 border-amber-500 dark:border-amber-400 text-amber-900 dark:text-amber-200 bg-white dark:bg-stone-900 hover:bg-amber-50 dark:hover:bg-amber-950/40 shadow-[2px_2px_0_#f59e0b]",
+    },
+    emerald: {
+      accent: "#10b981",
+      border: "border-black dark:border-emerald-400/80",
+      cardBg:
+        "bg-gradient-to-br from-emerald-50/75 via-white to-teal-50/35 dark:from-stone-900 dark:via-emerald-950/25 dark:to-stone-900",
+      shadow: "shadow-[4px_4px_0_#10b981] dark:shadow-[4px_4px_0_#34d399]",
+      washi: "bg-emerald-200/90 dark:bg-emerald-400/30",
+      stampBg: "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-white",
+      badgeClass:
+        "bg-emerald-100 text-emerald-900 border-emerald-400 dark:bg-emerald-950/60 dark:text-emerald-200 dark:border-emerald-600",
+      metricsBox:
+        "bg-emerald-50/90 dark:bg-stone-800/80 border-emerald-200 dark:border-emerald-800/80 text-emerald-950 dark:text-emerald-200",
+      metricBullet: "text-emerald-600 dark:text-emerald-400",
+      techPill:
+        "border-emerald-300 dark:border-emerald-700 bg-white dark:bg-stone-800 text-emerald-800 dark:text-emerald-200 shadow-[1px_1px_0_#10b981]",
+      btnPrimary:
+        "bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]",
+      btnSecondary:
+        "border-2 border-emerald-600 dark:border-emerald-400 text-emerald-800 dark:text-emerald-200 bg-white dark:bg-stone-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 shadow-[2px_2px_0_#10b981]",
+    },
+    cyan: {
+      accent: "#06b6d4",
+      border: "border-black dark:border-sky-400/80",
+      cardBg:
+        "bg-gradient-to-br from-sky-50/75 via-white to-cyan-50/35 dark:from-stone-900 dark:via-sky-950/25 dark:to-stone-900",
+      shadow: "shadow-[4px_4px_0_#0284c7] dark:shadow-[4px_4px_0_#38bdf8]",
+      washi: "bg-sky-200/90 dark:bg-sky-400/30",
+      stampBg: "bg-sky-600 text-white dark:bg-sky-500 dark:text-white",
+      badgeClass:
+        "bg-sky-100 text-sky-900 border-sky-400 dark:bg-sky-950/60 dark:text-sky-200 dark:border-sky-600",
+      metricsBox:
+        "bg-sky-50/90 dark:bg-stone-800/80 border-sky-200 dark:border-sky-800/80 text-sky-950 dark:text-sky-200",
+      metricBullet: "text-sky-600 dark:text-sky-400",
+      techPill:
+        "border-sky-300 dark:border-sky-700 bg-white dark:bg-stone-800 text-sky-800 dark:text-sky-200 shadow-[1px_1px_0_#0284c7]",
+      btnPrimary:
+        "bg-sky-600 hover:bg-sky-700 text-white dark:bg-sky-500 dark:hover:bg-sky-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]",
+      btnSecondary:
+        "border-2 border-sky-600 dark:border-sky-400 text-sky-800 dark:text-sky-200 bg-white dark:bg-stone-900 hover:bg-sky-50 dark:hover:bg-sky-950/40 shadow-[2px_2px_0_#0284c7]",
+    },
+    rose: {
+      accent: "#f43f5e",
+      border: "border-black dark:border-rose-400/80",
+      cardBg:
+        "bg-gradient-to-br from-rose-50/75 via-white to-pink-50/35 dark:from-stone-900 dark:via-rose-950/25 dark:to-stone-900",
+      shadow: "shadow-[4px_4px_0_#f43f5e] dark:shadow-[4px_4px_0_#fb7185]",
+      washi: "bg-rose-200/90 dark:bg-rose-400/30",
+      stampBg: "bg-rose-600 text-white dark:bg-rose-500 dark:text-white",
+      badgeClass:
+        "bg-rose-100 text-rose-900 border-rose-400 dark:bg-rose-950/60 dark:text-rose-200 dark:border-rose-600",
+      metricsBox:
+        "bg-rose-50/90 dark:bg-stone-800/80 border-rose-200 dark:border-rose-800/80 text-rose-950 dark:text-rose-200",
+      metricBullet: "text-rose-600 dark:text-rose-400",
+      techPill:
+        "border-rose-300 dark:border-rose-700 bg-white dark:bg-stone-800 text-rose-800 dark:text-rose-200 shadow-[1px_1px_0_#f43f5e]",
+      btnPrimary:
+        "bg-rose-600 hover:bg-rose-700 text-white dark:bg-rose-500 dark:hover:bg-rose-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]",
+      btnSecondary:
+        "border-2 border-rose-600 dark:border-rose-400 text-rose-800 dark:text-rose-200 bg-white dark:bg-stone-900 hover:bg-rose-50 dark:hover:bg-rose-950/40 shadow-[2px_2px_0_#f43f5e]",
+    },
+    purple: {
+      accent: "#8b5cf6",
+      border: "border-black dark:border-purple-400/80",
+      cardBg:
+        "bg-gradient-to-br from-violet-50/75 via-white to-purple-50/35 dark:from-stone-900 dark:via-purple-950/25 dark:to-stone-900",
+      shadow: "shadow-[4px_4px_0_#8b5cf6] dark:shadow-[4px_4px_0_#a855f7]",
+      washi: "bg-purple-200/90 dark:bg-purple-400/30",
+      stampBg: "bg-purple-600 text-white dark:bg-purple-500 dark:text-white",
+      badgeClass:
+        "bg-purple-100 text-purple-900 border-purple-400 dark:bg-purple-950/60 dark:text-purple-200 dark:border-purple-600",
+      metricsBox:
+        "bg-purple-50/90 dark:bg-stone-800/80 border-purple-200 dark:border-purple-800/80 text-purple-950 dark:text-purple-200",
+      metricBullet: "text-purple-600 dark:text-purple-400",
+      techPill:
+        "border-purple-300 dark:border-purple-700 bg-white dark:bg-stone-800 text-purple-800 dark:text-purple-200 shadow-[1px_1px_0_#8b5cf6]",
+      btnPrimary:
+        "bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-500 dark:hover:bg-purple-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]",
+      btnSecondary:
+        "border-2 border-purple-600 dark:border-purple-400 text-purple-800 dark:text-purple-200 bg-white dark:bg-stone-900 hover:bg-purple-50 dark:hover:bg-purple-950/40 shadow-[2px_2px_0_#8b5cf6]",
+    },
+    indigo: {
+      accent: "#6366f1",
+      border: "border-black dark:border-indigo-400/80",
+      cardBg:
+        "bg-gradient-to-br from-indigo-50/75 via-white to-blue-50/35 dark:from-stone-900 dark:via-indigo-950/25 dark:to-stone-900",
+      shadow: "shadow-[4px_4px_0_#6366f1] dark:shadow-[4px_4px_0_#818cf8]",
+      washi: "bg-indigo-200/90 dark:bg-indigo-400/30",
+      stampBg: "bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white",
+      badgeClass:
+        "bg-indigo-100 text-indigo-900 border-indigo-400 dark:bg-indigo-950/60 dark:text-indigo-200 dark:border-indigo-600",
+      metricsBox:
+        "bg-indigo-50/90 dark:bg-stone-800/80 border-indigo-200 dark:border-indigo-800/80 text-indigo-950 dark:text-indigo-200",
+      metricBullet: "text-indigo-600 dark:text-indigo-400",
+      techPill:
+        "border-indigo-300 dark:border-indigo-700 bg-white dark:bg-stone-800 text-indigo-800 dark:text-indigo-200 shadow-[1px_1px_0_#6366f1]",
+      btnPrimary:
+        "bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-500 dark:hover:bg-indigo-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]",
+      btnSecondary:
+        "border-2 border-indigo-600 dark:border-indigo-400 text-indigo-800 dark:text-indigo-200 bg-white dark:bg-stone-900 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 shadow-[2px_2px_0_#6366f1]",
+    },
+    orange: {
+      accent: "#f97316",
+      border: "border-black dark:border-orange-400/80",
+      cardBg:
+        "bg-gradient-to-br from-orange-50/75 via-white to-amber-50/35 dark:from-stone-900 dark:via-orange-950/25 dark:to-stone-900",
+      shadow: "shadow-[4px_4px_0_#f97316] dark:shadow-[4px_4px_0_#fb923c]",
+      washi: "bg-orange-200/90 dark:bg-orange-400/30",
+      stampBg: "bg-orange-600 text-white dark:bg-orange-500 dark:text-white",
+      badgeClass:
+        "bg-orange-100 text-orange-900 border-orange-400 dark:bg-orange-950/60 dark:text-orange-200 dark:border-orange-600",
+      metricsBox:
+        "bg-orange-50/90 dark:bg-stone-800/80 border-orange-200 dark:border-orange-800/80 text-orange-950 dark:text-orange-200",
+      metricBullet: "text-orange-600 dark:text-orange-400",
+      techPill:
+        "border-orange-300 dark:border-orange-700 bg-white dark:bg-stone-800 text-orange-800 dark:text-orange-200 shadow-[1px_1px_0_#f97316]",
+      btnPrimary:
+        "bg-orange-600 hover:bg-orange-700 text-white dark:bg-orange-500 dark:hover:bg-orange-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]",
+      btnSecondary:
+        "border-2 border-orange-600 dark:border-orange-400 text-orange-800 dark:text-orange-200 bg-white dark:bg-stone-900 hover:bg-orange-50 dark:hover:bg-orange-950/40 shadow-[2px_2px_0_#f97316]",
+    },
+    teal: {
+      accent: "#14b8a6",
+      border: "border-black dark:border-teal-400/80",
+      cardBg:
+        "bg-gradient-to-br from-teal-50/75 via-white to-cyan-50/35 dark:from-stone-900 dark:via-teal-950/25 dark:to-stone-900",
+      shadow: "shadow-[4px_4px_0_#14b8a6] dark:shadow-[4px_4px_0_#2dd4bf]",
+      washi: "bg-teal-200/90 dark:bg-teal-400/30",
+      stampBg: "bg-teal-600 text-white dark:bg-teal-500 dark:text-white",
+      badgeClass:
+        "bg-teal-100 text-teal-900 border-teal-400 dark:bg-teal-950/60 dark:text-teal-200 dark:border-teal-600",
+      metricsBox:
+        "bg-teal-50/90 dark:bg-stone-800/80 border-teal-200 dark:border-teal-800/80 text-teal-950 dark:text-teal-200",
+      metricBullet: "text-teal-600 dark:text-teal-400",
+      techPill:
+        "border-teal-300 dark:border-teal-700 bg-white dark:bg-stone-800 text-teal-800 dark:text-teal-200 shadow-[1px_1px_0_#14b8a6]",
+      btnPrimary:
+        "bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-500 dark:hover:bg-teal-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]",
+      btnSecondary:
+        "border-2 border-teal-600 dark:border-teal-400 text-teal-800 dark:text-teal-200 bg-white dark:bg-stone-900 hover:bg-teal-50 dark:hover:bg-teal-950/40 shadow-[2px_2px_0_#14b8a6]",
+    },
   }
 
   const defaultTheme = themeMap["Machine Learning"]
@@ -467,7 +627,8 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
           {filtered.map((proj, idx) => {
-            const t = themeMap[proj.category] || defaultTheme
+            const projectColorKey = (proj.color || "").toLowerCase().trim();
+            const t = themeMap[projectColorKey] || themeMap[proj.category] || defaultTheme
 
             return (
               <article

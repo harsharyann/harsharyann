@@ -214,20 +214,34 @@ export function CircularProjectsCarousel({
     }
   }
 
-  // 5 Distinct, Vibrant Color Themes for Project Cards (Amber, Emerald, Indigo, Cyan, Rose)
-  const getProjectTheme = (cat: string, idx: number) => {
-    const c = (cat || "").toLowerCase()
-    let palette = idx % 5
-    if (c.includes("machine learning") || c.includes("ai")) {
-      palette = 0 // Amber Gold
-    } else if (c.includes("data") || c.includes("analytics")) {
-      palette = 1 // Fresh Emerald
-    } else if (c.includes("web") || c.includes("tool")) {
-      palette = 2 // Royal Indigo
-    } else if (c.includes("python") || c.includes("basic") || c.includes("calc")) {
-      palette = 3 // Ocean Cyan
-    } else if (c.includes("algorithm") || c.includes("math")) {
-      palette = 4 // Coral Rose
+  // 8 Distinct, Vibrant Color Themes for Project Cards (Amber, Emerald, Indigo, Cyan, Rose, Purple, Orange, Teal)
+  const getProjectTheme = (proj: { category?: string; color?: string } | string, idx: number) => {
+    const color = typeof proj === "object" ? (proj.color || "").toLowerCase().trim() : "";
+    const cat = typeof proj === "object" ? (proj.category || "").toLowerCase() : (proj || "").toLowerCase();
+
+    let palette = idx % 8;
+
+    if (color) {
+      if (color.includes("amber") || color === "#f59e0b") palette = 0;
+      else if (color.includes("emerald") || color === "#10b981") palette = 1;
+      else if (color.includes("indigo") || color === "#6366f1") palette = 2;
+      else if (color.includes("cyan") || color === "#06b6d4") palette = 3;
+      else if (color.includes("rose") || color === "#f43f5e") palette = 4;
+      else if (color.includes("purple") || color === "#8b5cf6") palette = 5;
+      else if (color.includes("orange") || color === "#f97316") palette = 6;
+      else if (color.includes("teal") || color === "#14b8a6") palette = 7;
+    } else {
+      if (cat.includes("machine learning") || cat.includes("ai")) {
+        palette = 0; // Amber Gold
+      } else if (cat.includes("data") || cat.includes("analytics")) {
+        palette = 1; // Fresh Emerald
+      } else if (cat.includes("web") || cat.includes("tool")) {
+        palette = 2; // Royal Indigo
+      } else if (cat.includes("python") || cat.includes("basic") || cat.includes("calc")) {
+        palette = 3; // Ocean Cyan
+      } else if (cat.includes("algorithm") || cat.includes("math")) {
+        palette = 4; // Coral Rose
+      }
     }
 
     const PALETTES = [
@@ -296,6 +310,45 @@ export function CircularProjectsCarousel({
         schematicStroke: "stroke-rose-600/20 dark:stroke-rose-400/20",
         schematicFill: "fill-rose-600/15 dark:fill-rose-400/15",
       },
+      // 5: Violet Purple (Deep, mysterious)
+      {
+        accent: "#8b5cf6",
+        accentDark: "#7c3aed",
+        cardBg: "bg-gradient-to-br from-[#faf5ff] via-[#f3e8ff] to-[#e9d5ff] dark:from-[#171224] dark:via-[#1e1530] dark:to-[#120d1c]",
+        borderColor: "border-purple-400/80 dark:border-purple-500/50",
+        shadowColor: "#7c3aed",
+        tagBg: "bg-purple-100/90 text-purple-950 border-purple-300 dark:bg-purple-950/80 dark:text-purple-200 dark:border-purple-700/60",
+        iconBoxBg: "bg-purple-100 dark:bg-purple-950/80 border-purple-300 dark:border-purple-700/70 text-purple-800 dark:text-purple-300",
+        pillDot: "bg-purple-500",
+        schematicStroke: "stroke-purple-600/20 dark:stroke-purple-400/20",
+        schematicFill: "fill-purple-600/15 dark:fill-purple-400/15",
+      },
+      // 6: Sun Orange (Warm, punchy)
+      {
+        accent: "#f97316",
+        accentDark: "#ea580c",
+        cardBg: "bg-gradient-to-br from-[#fffaf5] via-[#ffedd5] to-[#fed7aa] dark:from-[#1a140f] dark:via-[#241a13] dark:to-[#130d09]",
+        borderColor: "border-orange-400/80 dark:border-orange-500/50",
+        shadowColor: "#ea580c",
+        tagBg: "bg-orange-100/90 text-orange-950 border-orange-300 dark:bg-orange-950/80 dark:text-orange-200 dark:border-orange-700/60",
+        iconBoxBg: "bg-orange-100 dark:bg-orange-950/80 border-orange-300 dark:border-orange-700/70 text-orange-800 dark:text-orange-300",
+        pillDot: "bg-orange-500",
+        schematicStroke: "stroke-orange-600/20 dark:stroke-orange-400/20",
+        schematicFill: "fill-orange-600/15 dark:fill-orange-400/15",
+      },
+      // 7: Sea Teal (Calm, scientific)
+      {
+        accent: "#14b8a6",
+        accentDark: "#0d9488",
+        cardBg: "bg-gradient-to-br from-[#f4fdfc] via-[#ccfbf1] to-[#99f6e4] dark:from-[#0f1918] dark:via-[#142322] dark:to-[#0a1211]",
+        borderColor: "border-teal-400/80 dark:border-teal-500/50",
+        shadowColor: "#0d9488",
+        tagBg: "bg-teal-100/90 text-teal-950 border-teal-300 dark:bg-teal-950/80 dark:text-teal-200 dark:border-teal-700/60",
+        iconBoxBg: "bg-teal-100 dark:bg-teal-950/80 border-teal-300 dark:border-teal-700/70 text-teal-800 dark:text-teal-300",
+        pillDot: "bg-teal-500",
+        schematicStroke: "stroke-teal-600/20 dark:stroke-teal-400/20",
+        schematicFill: "fill-teal-600/15 dark:fill-teal-400/15",
+      },
     ]
 
     return PALETTES[palette]
@@ -340,7 +393,7 @@ export function CircularProjectsCarousel({
               {projects.map((proj, idx) => {
                 const isActive = idx === activeIndex
                 const style = getCard3DStyle(idx)
-                const theme = getProjectTheme(proj.category, idx)
+                const theme = getProjectTheme(proj, idx)
 
                 return (
                   <div

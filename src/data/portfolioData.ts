@@ -10,6 +10,7 @@ export interface Project {
   githubUrl: string;
   liveUrl?: string;
   imageGradient: string;
+  color?: string;
 }
 
 export interface Certificate {
@@ -24,6 +25,7 @@ export interface Certificate {
   skillsLearned: string[];
   description: string;
   verificationSource?: string;
+  color?: string;
 }
 
 export interface LaurelItem {
@@ -38,6 +40,7 @@ export interface LaurelItem {
   badge?: string;
   imageUrl?: string;
   isVisible?: boolean;
+  color?: string;
 }
 
 export interface Experience {
@@ -217,6 +220,8 @@ export interface PortfolioData {
   skills: {
     category: string;
     items: string[];
+    icon?: string;
+    color?: string;
   }[];
   experiences?: Experience[];
   milestones?: TimelineMilestone[];
@@ -337,22 +342,32 @@ export const portfolioData: PortfolioData = {
     {
       category: "Programming & Core Tools",
       items: ["Python (Primary)", "C / C++ (Data Structures)", "SQL (Basic Queries)", "Git & GitHub", "Linux / Bash (Basics)", "VS Code"],
+      icon: "code",
+      color: "amber",
     },
     {
       category: "Data Science & Analysis",
       items: ["NumPy", "Pandas", "Matplotlib", "Seaborn", "Plotly", "Data Cleaning & EDA"],
+      icon: "laptop",
+      color: "emerald",
     },
     {
       category: "Machine Learning (Foundations)",
       items: ["Scikit-Learn", "Linear & Logistic Regression", "Decision Trees & Random Forests", "PyTorch (Basic Tensors & CNNs)", "Transfer Learning"],
+      icon: "brain",
+      color: "indigo",
     },
     {
       category: "Web & Deployment Basics",
       items: ["Streamlit (Interactive Apps)", "FastAPI (Basic Endpoints)", "HTML5 & Tailwind CSS", "Kaggle Notebooks", "Google Colab"],
+      icon: "git",
+      color: "cyan",
     },
     {
       category: "Mathematics for ML",
       items: ["Linear Algebra (Matrices & Vectors)", "Calculus (Derivatives & Gradients)", "Probability & Descriptive Statistics", "Discrete Math"],
+      icon: "math",
+      color: "rose",
     },
   ],
 

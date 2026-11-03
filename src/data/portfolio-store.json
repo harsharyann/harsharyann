@@ -129,6 +129,8 @@
   "skills": [
     {
       "category": "Programming & Core Tools",
+      "icon": "code",
+      "color": "amber",
       "items": [
         "Python (Primary)",
         "C / C++ (Data Structures)",
@@ -140,6 +142,8 @@
     },
     {
       "category": "Data Science & Analysis",
+      "icon": "laptop",
+      "color": "emerald",
       "items": [
         "NumPy",
         "Pandas",
@@ -151,6 +155,8 @@
     },
     {
       "category": "Machine Learning (Foundations)",
+      "icon": "brain",
+      "color": "indigo",
       "items": [
         "Scikit-Learn",
         "Linear & Logistic Regression",
@@ -161,6 +167,8 @@
     },
     {
       "category": "Web & Deployment Basics",
+      "icon": "git",
+      "color": "cyan",
       "items": [
         "Streamlit (Interactive Apps)",
         "FastAPI (Basic Endpoints)",
@@ -172,6 +180,8 @@
     },
     {
       "category": "Mathematics for ML",
+      "icon": "math",
+      "color": "rose",
       "items": [
         "Linear Algebra (Matrices & Vectors)",
         "Calculus (Derivatives & Gradients)",

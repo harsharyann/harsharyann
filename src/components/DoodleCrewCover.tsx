@@ -1324,8 +1324,8 @@ export function DoodleCrewCover({
 
               {/* Lower Plaque inside Frame */}
               <div className="pt-2 border-t-2 border-dashed border-stone-300 dark:border-stone-700/80 flex items-center justify-between font-mono text-xs font-bold">
-                <span className="text-black dark:text-white uppercase tracking-wider font-black">
-                  {portfolio?.personal?.name || "HARSH ARYAN"}
+                <span className="font-signature text-2xl sm:text-3xl font-bold tracking-wide italic text-black dark:text-white leading-none rotate-[-1deg]">
+                  {portfolio?.personal?.name || "Harsh Aryan"}
                 </span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 font-black uppercase text-[10.5px]">
                   {portfolio?.personal?.desktopPhotoTag || "AI & DS"}

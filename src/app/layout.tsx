@@ -259,7 +259,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Bungee&family=Caveat:wght@600;700&family=Dela+Gothic+One&family=Patrick+Hand&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;900&family=Syne:wght@700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Bungee&family=Caveat:wght@600;700&family=Dela+Gothic+One&family=Patrick+Hand&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Reenie+Beanie&family=Space+Grotesk:wght@500;600;700;900&family=Syne:wght@700;800;900&display=swap"
           rel="stylesheet"
         />
         <script

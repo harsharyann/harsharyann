@@ -36,6 +36,9 @@ import {
   Brain,
   Laptop,
   FolderGit2,
+  Database,
+  Cpu,
+  Globe,
   MapPin,
   ShieldCheck,
   KeyRound,
@@ -65,6 +68,8 @@ import {
   FormattedHighlightedText,
   getBenchmarkStickerTheme,
   BENCHMARK_STICKER_COLOR_MAP,
+  SKILL_CARD_COLOR_MAP,
+  renderSkillIcon,
 } from "@/components/sections/AboutSection";
 import {
   extractGoogleDriveId,
@@ -89,6 +94,30 @@ interface ContactMessage {
 const DEFAULT_PROJECT_CATS: string[] = [];
 
 const DEFAULT_CERT_CATS: string[] = [];
+
+const ADMIN_PALETTE_COLORS = [
+  { id: "amber", name: "Amber", hex: "#f59e0b", bg: "bg-amber-400" },
+  { id: "emerald", name: "Emerald", hex: "#10b981", bg: "bg-emerald-400" },
+  { id: "indigo", name: "Indigo", hex: "#6366f1", bg: "bg-indigo-400" },
+  { id: "cyan", name: "Cyan", hex: "#06b6d4", bg: "bg-cyan-400" },
+  { id: "rose", name: "Rose", hex: "#f43f5e", bg: "bg-rose-400" },
+  { id: "purple", name: "Purple", hex: "#8b5cf6", bg: "bg-purple-400" },
+  { id: "orange", name: "Orange", hex: "#f97316", bg: "bg-orange-400" },
+  { id: "teal", name: "Teal", hex: "#14b8a6", bg: "bg-teal-400" },
+];
+
+const SKILL_ICON_PRESETS = [
+  { id: "code", label: "Code", emoji: "💻" },
+  { id: "brain", label: "AI / Brain", emoji: "🧠" },
+  { id: "laptop", label: "Laptop", emoji: "💻" },
+  { id: "terminal", label: "Terminal", emoji: "⌨️" },
+  { id: "git", label: "Git", emoji: "🔀" },
+  { id: "database", label: "Database", emoji: "🗄️" },
+  { id: "cpu", label: "CPU / Chip", emoji: "⚡" },
+  { id: "sparkles", label: "Sparkles", emoji: "✨" },
+  { id: "book", label: "Theory / Book", emoji: "📚" },
+  { id: "globe", label: "Web / Globe", emoji: "🌐" },
+];
 
 export default function AdminPage() {
   const router = useRouter();
@@ -543,17 +572,42 @@ export default function AdminPage() {
   const handleAddSkillCategory = () => {
     if (!newSkillCatName.trim()) return;
     const base = portfolioRef.current || portfolio;
+    const colors = ["amber", "emerald", "indigo", "cyan", "rose", "purple", "orange", "teal"];
+    const icons = ["code", "brain", "laptop", "terminal", "git", "database", "cpu", "sparkles"];
+    const idx = (base.skills || []).length;
     const newPort = {
       ...base,
       skills: [
         ...(base.skills || []),
-        { category: newSkillCatName.trim(), items: [] },
+        {
+          category: newSkillCatName.trim(),
+          items: [],
+          color: colors[idx % colors.length],
+          icon: icons[idx % icons.length],
+        },
       ],
     };
     setPortfolio(newPort);
     portfolioRef.current = newPort;
     setNewSkillCatName("");
     saveInstantly(newPort, `Added category "${newSkillCatName.trim()}"`);
+  };
+
+  const handleMoveSkillCategory = (catIdx: number, direction: "up" | "down") => {
+    const base = portfolioRef.current || portfolio;
+    const list = [...(base.skills || [])];
+    const targetIdx = direction === "up" ? catIdx - 1 : catIdx + 1;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const temp = list[catIdx];
+    list[catIdx] = list[targetIdx];
+    list[targetIdx] = temp;
+    const newPort = {
+      ...base,
+      skills: list,
+    };
+    setPortfolio(newPort);
+    portfolioRef.current = newPort;
+    saveInstantly(newPort, `Reordered skills`);
   };
 
   const handleRemoveSkillCategory = (catIdx: number) => {
@@ -657,6 +711,7 @@ export default function AdminPage() {
     githubUrl: "",
     liveUrl: "",
     imageGradient: "from-amber-400 to-orange-500",
+    color: "amber",
   });
   const [customProjectCat, setCustomProjectCat] = useState("");
   const [techInput, setTechInput] = useState("");
@@ -677,6 +732,7 @@ export default function AdminPage() {
     skillsLearned: [],
     description: "",
     verificationSource: "",
+    color: "amber",
   });
   const [customCertCat, setCustomCertCat] = useState("");
   const [isCustomCat, setIsCustomCat] = useState(false);
@@ -700,6 +756,7 @@ export default function AdminPage() {
     badge: "",
     imageUrl: "",
     isVisible: true,
+    color: "amber",
   });
 
   // Sync state when initialData arrives from server/context
@@ -1065,6 +1122,7 @@ export default function AdminPage() {
       githubUrl: "https://github.com/harsharyann",
       liveUrl: "",
       imageGradient: "from-amber-400 to-orange-500",
+      color: "amber",
     });
     setCustomProjectCat(cats.length === 0 ? "General" : "");
     setTechInput("");
@@ -1074,7 +1132,7 @@ export default function AdminPage() {
 
   const openEditProjectModal = (p: Project) => {
     setEditingProject(p);
-    setProjectForm({ ...p });
+    setProjectForm({ ...p, color: p.color || "amber" });
     setCustomProjectCat("");
     setTechInput(p.technologies?.join(", ") || "");
     setMetricInput(p.metrics?.join(", ") || "");
@@ -1150,6 +1208,7 @@ export default function AdminPage() {
       skillsLearned: ["Python"],
       description: "",
       verificationSource: "",
+      color: "amber",
     });
     setIsCustomCat(false);
     setCustomCertCat("");
@@ -1164,6 +1223,7 @@ export default function AdminPage() {
     setCertForm({
       ...c,
       verificationSource: c.verificationSource || "",
+      color: c.color || "amber",
     });
     setIsCustomCat(false);
     setCustomCertCat("");
@@ -1308,13 +1368,14 @@ export default function AdminPage() {
       badge: defaultType === "award" ? "Hackathon Laurel" : defaultType === "paper" ? "Peer-Reviewed" : "Published Edition",
       imageUrl: "",
       isVisible: true,
+      color: "amber",
     });
     setIsLaurelModalOpen(true);
   };
 
   const openEditLaurelModal = (item: LaurelItem) => {
     setEditingLaurel(item);
-    setLaurelForm({ ...item });
+    setLaurelForm({ ...item, color: item.color || "amber" });
     setIsLaurelModalOpen(true);
   };
 
@@ -2760,7 +2821,7 @@ export default function AdminPage() {
                           </div>
                           {/* Lower Plaque */}
                           <div className="flex items-center justify-between text-[8px] font-mono font-bold pt-0.5 border-t border-dashed border-stone-300">
-                            <span className="truncate font-black text-black">{portfolio.personal.name || "HARSH ARYAN"}</span>
+                            <span className="truncate font-signature text-sm font-bold italic text-black leading-tight rotate-[-1deg]">{portfolio.personal.name || "Harsh Aryan"}</span>
                             <span className="text-amber-600 font-extrabold text-[7.5px]">{portfolio.personal.desktopPhotoTag || "AI & DS"}</span>
                           </div>
                         </div>
@@ -3276,8 +3337,8 @@ export default function AdminPage() {
 
                         {/* Integrated Lower Chin */}
                         <div className="pt-2.5 border-t-2 border-dashed border-stone-300 space-y-2">
-                          <div className="font-['Space_Grotesk'] text-lg font-black uppercase text-black leading-none truncate">
-                            {portfolio.personal.name || "HARSH ARYAN"}
+                          <div className="font-signature text-2xl font-bold italic tracking-wide text-black leading-tight truncate rotate-[-1deg]">
+                            {portfolio.personal.name || "Harsh Aryan"}
                           </div>
 
                           <div className="flex flex-col items-start gap-1">
@@ -4721,14 +4782,18 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {(portfolio.skills || []).map((cat, cIdx) => (
                   <div
                     key={cIdx}
-                    className="p-4 rounded-2xl bg-stone-50 border border-stone-300 space-y-3"
+                    className="p-5 rounded-2xl bg-stone-50 border-2 border-stone-200 hover:border-black transition-all space-y-4"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1 max-w-sm">
+                    {/* Category Title & Order Controls */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-200">
+                      <div className="flex items-center gap-2 flex-1 min-w-[220px]">
+                        <span className="px-2 py-0.5 rounded-md bg-black text-amber-300 font-mono text-[10px] font-black shrink-0">
+                          #{String(cIdx + 1).padStart(2, "0")}
+                        </span>
                         <input
                           type="text"
                           value={cat.category}
@@ -4743,38 +4808,193 @@ export default function AdminPage() {
                           onBlur={() => {
                             saveInstantly(portfolioRef.current, `Saved category "${cat.category}"`);
                           }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black text-stone-900 focus:border-black focus:outline-none uppercase"
+                          className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black text-stone-900 focus:border-black focus:outline-none uppercase"
+                          placeholder="Category Name"
                         />
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSkillCategory(cIdx)}
-                        className="p-1.5 rounded-lg border border-stone-300 text-stone-500 hover:text-red-600 hover:border-red-400 bg-white cursor-pointer ml-2"
-                        title="Delete Category"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleMoveSkillCategory(cIdx, "up")}
+                          disabled={cIdx === 0}
+                          className={`p-1.5 rounded-lg border bg-white cursor-pointer ${
+                            cIdx === 0
+                              ? "border-stone-200 text-stone-300 cursor-not-allowed"
+                              : "border-stone-300 text-stone-600 hover:text-black hover:border-black"
+                          }`}
+                          title="Move Category Up"
+                        >
+                          <ArrowUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleMoveSkillCategory(cIdx, "down")}
+                          disabled={cIdx === (portfolio.skills?.length || 1) - 1}
+                          className={`p-1.5 rounded-lg border bg-white cursor-pointer ${
+                            cIdx === (portfolio.skills?.length || 1) - 1
+                              ? "border-stone-200 text-stone-300 cursor-not-allowed"
+                              : "border-stone-300 text-stone-600 hover:text-black hover:border-black"
+                          }`}
+                          title="Move Category Down"
+                        >
+                          <ArrowDown className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSkillCategory(cIdx)}
+                          className="p-1.5 rounded-lg border border-stone-300 text-stone-500 hover:text-red-600 hover:border-red-400 bg-white cursor-pointer ml-1"
+                          title="Delete Category"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Card Color Theme & Icon / Emoji Customizers */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 rounded-xl bg-white border border-stone-200">
+                      {/* Card Color Theme Picker */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[10px] font-mono font-bold text-stone-600 uppercase flex items-center gap-1">
+                            <Palette className="w-3 h-3 text-amber-500" />
+                            <span>Card Color Theme:</span>
+                          </label>
+                          <span className="text-[9px] font-mono font-bold uppercase text-stone-500">
+                            {cat.color || "amber"}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {ADMIN_PALETTE_COLORS.map((col) => {
+                            const isSelected = (cat.color || "amber").toLowerCase() === col.id;
+                            return (
+                              <button
+                                key={col.id}
+                                type="button"
+                                onClick={() => {
+                                  setPortfolio((prev) => {
+                                    const updated = [...(prev.skills || [])];
+                                    updated[cIdx] = { ...updated[cIdx], color: col.id };
+                                    return { ...prev, skills: updated };
+                                  });
+                                  saveInstantly(portfolioRef.current, `Set color "${col.name}" for "${cat.category}"`);
+                                }}
+                                className={`w-6 h-6 rounded-full border-2 transition-transform cursor-pointer flex items-center justify-center ${
+                                  isSelected ? "border-black scale-110 shadow-xs" : "border-stone-200 hover:scale-105"
+                                }`}
+                                style={{ backgroundColor: col.hex }}
+                                title={col.name}
+                              >
+                                {isSelected && <span className="text-white text-[9px] font-black drop-shadow-xs">✓</span>}
+                              </button>
+                            );
+                          })}
+                          {/* Custom Color Input */}
+                          <div className="relative inline-flex items-center ml-1">
+                            <input
+                              type="color"
+                              value={
+                                cat.color && cat.color.startsWith("#")
+                                  ? cat.color
+                                  : (ADMIN_PALETTE_COLORS.find((c) => c.id === cat.color)?.hex || "#f59e0b")
+                              }
+                              onChange={(e) => {
+                                const hex = e.target.value;
+                                setPortfolio((prev) => {
+                                  const updated = [...(prev.skills || [])];
+                                  updated[cIdx] = { ...updated[cIdx], color: hex };
+                                  return { ...prev, skills: updated };
+                                });
+                              }}
+                              onBlur={() => {
+                                saveInstantly(portfolioRef.current, `Saved custom color for "${cat.category}"`);
+                              }}
+                              className="w-6 h-6 rounded-full border border-stone-300 p-0 cursor-pointer overflow-hidden"
+                              title="Pick custom hex color"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Icon Picker */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-mono font-bold text-stone-600 uppercase flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 text-indigo-500" />
+                          <span>Category Icon / Emoji:</span>
+                        </label>
+                        <div className="flex flex-wrap items-center gap-1">
+                          {SKILL_ICON_PRESETS.map((ic) => {
+                            const isSelected = (cat.icon || "code").toLowerCase() === ic.id;
+                            return (
+                              <button
+                                key={ic.id}
+                                type="button"
+                                onClick={() => {
+                                  setPortfolio((prev) => {
+                                    const updated = [...(prev.skills || [])];
+                                    updated[cIdx] = { ...updated[cIdx], icon: ic.id };
+                                    return { ...prev, skills: updated };
+                                  });
+                                  saveInstantly(portfolioRef.current, `Set icon "${ic.label}" for "${cat.category}"`);
+                                }}
+                                className={`px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                                  isSelected
+                                    ? "bg-black text-white border-black shadow-xs"
+                                    : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100"
+                                }`}
+                                title={ic.label}
+                              >
+                                <span>{ic.emoji}</span>
+                                <span className="hidden xl:inline">{ic.label}</span>
+                              </button>
+                            );
+                          })}
+                          {/* Custom Icon/Emoji Input */}
+                          <input
+                            type="text"
+                            placeholder="Custom: e.g. 🤖, 🚀"
+                            value={cat.icon || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => {
+                                const updated = [...(prev.skills || [])];
+                                updated[cIdx] = { ...updated[cIdx], icon: val };
+                                return { ...prev, skills: updated };
+                              });
+                            }}
+                            onBlur={() => {
+                              saveInstantly(portfolioRef.current, `Saved custom icon for "${cat.category}"`);
+                            }}
+                            className="w-28 px-2 py-0.5 rounded-lg bg-stone-50 border border-stone-300 font-mono text-[10px] text-stone-900 focus:border-black focus:outline-none"
+                            title="Type any emoji or icon name (e.g. 🤖, 🚀, brain, laptop, terminal)"
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     {/* Skill Tags */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {cat.items?.map((item, iIdx) => (
-                        <span
-                          key={iIdx}
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-stone-300 text-stone-900 font-mono text-xs font-bold shadow-2xs"
-                        >
-                          <span>✦ {item}</span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveSkillItem(cIdx, iIdx)}
-                            className="text-stone-400 hover:text-red-600 text-[10px] ml-0.5 cursor-pointer font-bold"
-                            title="Remove tag"
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-mono font-bold text-stone-500 uppercase">
+                        Category Skills &amp; Tools ({cat.items?.length || 0}):
+                      </label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {cat.items?.map((item, iIdx) => (
+                          <span
+                            key={iIdx}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-stone-300 text-stone-900 font-mono text-xs font-bold shadow-2xs"
                           >
-                            ✕
-                          </button>
-                        </span>
-                      ))}
+                            <span>✦ {item}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSkillItem(cIdx, iIdx)}
+                              className="text-stone-400 hover:text-red-600 text-[10px] ml-0.5 cursor-pointer font-bold"
+                              title="Remove tag"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        ))}
+                      </div>
                     </div>
 
                     {/* Add Skill to this Category */}
@@ -4797,7 +5017,7 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => handleAddSkillItem(cIdx, skillTagInputs[cIdx] || "")}
-                        className="px-3 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold cursor-pointer shrink-0"
+                        className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold cursor-pointer shrink-0"
                       >
                         + Add Tag
                       </button>
@@ -4843,54 +5063,8 @@ export default function AdminPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 pt-2">
                 {(portfolio.skills || []).map((group, idx) => {
-                  const themes = [
-                    {
-                      bg: "bg-[#fffef7]",
-                      border: "border-2 border-black",
-                      shadow: "shadow-[4px_4px_0_#f59e0b]",
-                      tape: "bg-amber-300",
-                      badgeBg: "bg-amber-100 text-amber-950 border-amber-300",
-                      starColor: "text-amber-500",
-                      icon: <Code2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />,
-                    },
-                    {
-                      bg: "bg-[#fafffa]",
-                      border: "border-2 border-black",
-                      shadow: "shadow-[4px_4px_0_#10b981]",
-                      tape: "bg-emerald-300",
-                      badgeBg: "bg-emerald-100 text-emerald-950 border-emerald-300",
-                      starColor: "text-emerald-500",
-                      icon: <Brain className="w-3.5 h-3.5 text-emerald-600 shrink-0" />,
-                    },
-                    {
-                      bg: "bg-[#fafaff]",
-                      border: "border-2 border-black",
-                      shadow: "shadow-[4px_4px_0_#6366f1]",
-                      tape: "bg-indigo-300",
-                      badgeBg: "bg-indigo-100 text-indigo-950 border-indigo-300",
-                      starColor: "text-indigo-500",
-                      icon: <Laptop className="w-3.5 h-3.5 text-indigo-600 shrink-0" />,
-                    },
-                    {
-                      bg: "bg-[#f7feff]",
-                      border: "border-2 border-black",
-                      shadow: "shadow-[4px_4px_0_#06b6d4]",
-                      tape: "bg-cyan-300",
-                      badgeBg: "bg-cyan-100 text-cyan-950 border-cyan-300",
-                      starColor: "text-cyan-500",
-                      icon: <FolderGit2 className="w-3.5 h-3.5 text-cyan-600 shrink-0" />,
-                    },
-                    {
-                      bg: "bg-[#fff8fa]",
-                      border: "border-2 border-black",
-                      shadow: "shadow-[4px_4px_0_#f43f5e]",
-                      tape: "bg-rose-300",
-                      badgeBg: "bg-rose-100 text-rose-950 border-rose-300",
-                      starColor: "text-rose-500",
-                      icon: <Sparkles className="w-3.5 h-3.5 text-rose-600 shrink-0" />,
-                    },
-                  ];
-                  const t = themes[idx % themes.length];
+                  const colorKey = (group.color || "").toLowerCase().trim();
+                  const theme = SKILL_CARD_COLOR_MAP[colorKey] || Object.values(SKILL_CARD_COLOR_MAP)[idx % 8];
                   const total = portfolio.skills?.length || 1;
                   const colSpan =
                     total === 5
@@ -4906,20 +5080,20 @@ export default function AdminPage() {
                   return (
                     <div
                       key={idx}
-                      className={`relative p-4 rounded-2xl ${colSpan} ${t.bg} ${t.border} ${t.shadow} flex flex-col justify-between space-y-3`}
+                      className={`relative p-4 rounded-2xl ${colSpan} ${theme.bg} ${theme.border} ${theme.shadow} flex flex-col justify-between space-y-3 transition-all`}
                     >
                       {/* Washi tape pin */}
                       <div
-                        className={`absolute -top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 ${t.tape} border border-black/25 shadow-xs rotate-[-1deg] rounded-xs pointer-events-none z-10`}
+                        className={`absolute -top-1.5 left-1/2 -translate-x-1/2 w-12 h-2.5 ${theme.tape} border border-black/25 shadow-xs rotate-[-1deg] rounded-xs pointer-events-none z-10`}
                       />
 
                       <div className="flex items-center justify-between gap-1 pb-2 border-b border-dashed border-black/15">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`inline-flex px-1.5 py-0.5 rounded font-mono text-[9px] font-black border ${t.badgeBg}`}>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className={`inline-flex px-1.5 py-0.5 rounded font-mono text-[9px] font-black border ${theme.badgeBg}`}>
                             0{idx + 1}
                           </span>
-                          <span className="font-mono text-xs font-black uppercase text-black flex items-center gap-1 truncate">
-                            {t.icon}
+                          <span className="font-mono text-xs font-black uppercase text-black flex items-center gap-1.5 truncate">
+                            {renderSkillIcon(group.icon, `w-3.5 h-3.5 ${theme.iconColor} shrink-0`)}
                             <span className="truncate">{group.category || "Untitled Category"}</span>
                           </span>
                         </div>
@@ -4934,7 +5108,7 @@ export default function AdminPage() {
                             key={tIdx}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-black/15 text-stone-900 font-mono text-[11px] font-bold shadow-2xs"
                           >
-                            <span className={t.starColor}>✦</span>
+                            <span className={theme.starColor}>✦</span>
                             <span>{tool}</span>
                           </span>
                         ))}
@@ -5127,9 +5301,27 @@ export default function AdminPage() {
                 >
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 font-mono text-[10px] font-bold uppercase">
-                        {proj.category}
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 font-mono text-[10px] font-bold uppercase">
+                          {proj.category}
+                        </span>
+                        {proj.color && (
+                          <span
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-stone-100 border border-stone-300 font-mono text-[9px] font-bold uppercase text-stone-700"
+                            title={`Color theme: ${proj.color}`}
+                          >
+                            <span
+                              className="w-2 h-2 rounded-full shrink-0"
+                              style={{
+                                backgroundColor:
+                                  ADMIN_PALETTE_COLORS.find((c) => c.id === proj.color)?.hex ||
+                                  (proj.color.startsWith("#") ? proj.color : "#f59e0b"),
+                              }}
+                            />
+                            <span>{proj.color}</span>
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center gap-1">
                         <button
                           type="button"
@@ -5328,9 +5520,27 @@ export default function AdminPage() {
 
                       <div className="space-y-1.5 flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-[10px] font-bold uppercase truncate">
-                            {cert.category}
-                          </span>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-[10px] font-bold uppercase truncate">
+                              {cert.category}
+                            </span>
+                            {cert.color && (
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-stone-100 border border-stone-300 font-mono text-[9px] font-bold uppercase text-stone-700"
+                                title={`Theme: ${cert.color}`}
+                              >
+                                <span
+                                  className="w-2 h-2 rounded-full shrink-0"
+                                  style={{
+                                    backgroundColor:
+                                      ADMIN_PALETTE_COLORS.find((c) => c.id === cert.color)?.hex ||
+                                      (cert.color.startsWith("#") ? cert.color : "#f59e0b"),
+                                  }}
+                                />
+                                <span>{cert.color}</span>
+                              </span>
+                            )}
+                          </div>
                           <div className="flex items-center gap-1 shrink-0">
                             <button
                               type="button"
@@ -5508,17 +5718,35 @@ export default function AdminPage() {
                         >
                           <div className="space-y-3">
                             <div className="flex items-center justify-between gap-2 pb-2 border-b border-stone-200">
-                              <span
-                                className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black uppercase border flex items-center gap-1 ${
-                                  isAward
-                                    ? "bg-amber-100 text-amber-900 border-amber-300"
-                                    : isPaper
-                                    ? "bg-indigo-100 text-indigo-900 border-indigo-300"
-                                    : "bg-rose-100 text-rose-900 border-rose-300"
-                                }`}
-                              >
-                                {isAward ? "🏆 Award" : isPaper ? "📄 Paper" : "📚 Book"}
-                              </span>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black uppercase border flex items-center gap-1 ${
+                                    isAward
+                                      ? "bg-amber-100 text-amber-900 border-amber-300"
+                                      : isPaper
+                                      ? "bg-indigo-100 text-indigo-900 border-indigo-300"
+                                      : "bg-rose-100 text-rose-900 border-rose-300"
+                                  }`}
+                                >
+                                  {isAward ? "🏆 Award" : isPaper ? "📄 Paper" : "📚 Book"}
+                                </span>
+                                {item.color && (
+                                  <span
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-stone-100 border border-stone-300 font-mono text-[9px] font-bold uppercase text-stone-700"
+                                    title={`Color theme: ${item.color}`}
+                                  >
+                                    <span
+                                      className="w-2 h-2 rounded-full shrink-0"
+                                      style={{
+                                        backgroundColor:
+                                          ADMIN_PALETTE_COLORS.find((c) => c.id === item.color)?.hex ||
+                                          (item.color.startsWith("#") ? item.color : "#f59e0b"),
+                                      }}
+                                    />
+                                    <span>{item.color}</span>
+                                  </span>
+                                )}
+                              </div>
 
                               <div className="flex items-center gap-1">
                                 {/* Quick Hide / Show Item Toggle */}
@@ -6377,6 +6605,57 @@ export default function AdminPage() {
                 )}
               </div>
 
+              {/* Project Card Color Theme Selector */}
+              <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-stone-800 font-bold text-xs flex items-center gap-1.5">
+                    <Palette className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Project Card Color Theme:</span>
+                  </label>
+                  <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-white border border-stone-300 text-stone-700">
+                    Selected: {projectForm.color || "amber"}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {ADMIN_PALETTE_COLORS.map((col) => {
+                    const isSelected = (projectForm.color || "amber").toLowerCase() === col.id;
+                    return (
+                      <button
+                        key={col.id}
+                        type="button"
+                        onClick={() => setProjectForm({ ...projectForm, color: col.id })}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-mono font-bold border-2 transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-black text-white border-black shadow-xs scale-105"
+                            : "bg-white text-stone-800 border-stone-200 hover:border-stone-400"
+                        }`}
+                      >
+                        <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: col.hex }} />
+                        <span>{col.name}</span>
+                        {isSelected && <span className="text-amber-300 ml-0.5">✓</span>}
+                      </button>
+                    );
+                  })}
+
+                  {/* Custom Hex Color Picker */}
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white border border-stone-200">
+                    <span className="text-[10px] font-mono text-stone-500">Custom:</span>
+                    <input
+                      type="color"
+                      value={
+                        projectForm.color && projectForm.color.startsWith("#")
+                          ? projectForm.color
+                          : (ADMIN_PALETTE_COLORS.find((c) => c.id === projectForm.color)?.hex || "#f59e0b")
+                      }
+                      onChange={(e) => setProjectForm({ ...projectForm, color: e.target.value })}
+                      className="w-5 h-5 rounded-full border border-stone-300 p-0 cursor-pointer overflow-hidden"
+                      title="Pick custom hex color"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* GitHub Repo URL & Live Demo URL */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
@@ -6615,6 +6894,57 @@ export default function AdminPage() {
                     />
                   </div>
                 )}
+              </div>
+
+              {/* Certificate Polaroid Card Color Theme Selector */}
+              <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-stone-800 font-bold text-xs flex items-center gap-1.5">
+                    <Palette className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Certificate Polaroid Card Color:</span>
+                  </label>
+                  <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-white border border-stone-300 text-stone-700">
+                    Selected: {certForm.color || "amber"}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {ADMIN_PALETTE_COLORS.map((col) => {
+                    const isSelected = (certForm.color || "amber").toLowerCase() === col.id;
+                    return (
+                      <button
+                        key={col.id}
+                        type="button"
+                        onClick={() => setCertForm({ ...certForm, color: col.id })}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-mono font-bold border-2 transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-black text-white border-black shadow-xs scale-105"
+                            : "bg-white text-stone-800 border-stone-200 hover:border-stone-400"
+                        }`}
+                      >
+                        <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: col.hex }} />
+                        <span>{col.name}</span>
+                        {isSelected && <span className="text-amber-300 ml-0.5">✓</span>}
+                      </button>
+                    );
+                  })}
+
+                  {/* Custom Hex Color Picker */}
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white border border-stone-200">
+                    <span className="text-[10px] font-mono text-stone-500">Custom:</span>
+                    <input
+                      type="color"
+                      value={
+                        certForm.color && certForm.color.startsWith("#")
+                          ? certForm.color
+                          : (ADMIN_PALETTE_COLORS.find((c) => c.id === certForm.color)?.hex || "#f59e0b")
+                      }
+                      onChange={(e) => setCertForm({ ...certForm, color: e.target.value })}
+                      className="w-5 h-5 rounded-full border border-stone-300 p-0 cursor-pointer overflow-hidden"
+                      title="Pick custom hex color"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* ── GOOGLE DRIVE HELPER BOX ── */}
@@ -6880,6 +7210,57 @@ export default function AdminPage() {
                       </button>
                     );
                   })}
+                </div>
+              </div>
+
+              {/* Laurel Card Color Theme Selector */}
+              <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-stone-800 font-bold text-xs flex items-center gap-1.5">
+                    <Palette className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Card Color Theme:</span>
+                  </label>
+                  <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-white border border-stone-300 text-stone-700">
+                    Selected: {laurelForm.color || "amber"}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {ADMIN_PALETTE_COLORS.map((col) => {
+                    const isSelected = (laurelForm.color || "amber").toLowerCase() === col.id;
+                    return (
+                      <button
+                        key={col.id}
+                        type="button"
+                        onClick={() => setLaurelForm({ ...laurelForm, color: col.id })}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-mono font-bold border-2 transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-black text-white border-black shadow-xs scale-105"
+                            : "bg-white text-stone-800 border-stone-200 hover:border-stone-400"
+                        }`}
+                      >
+                        <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: col.hex }} />
+                        <span>{col.name}</span>
+                        {isSelected && <span className="text-amber-300 ml-0.5">✓</span>}
+                      </button>
+                    );
+                  })}
+
+                  {/* Custom Hex Color Picker */}
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white border border-stone-200">
+                    <span className="text-[10px] font-mono text-stone-500">Custom:</span>
+                    <input
+                      type="color"
+                      value={
+                        laurelForm.color && laurelForm.color.startsWith("#")
+                          ? laurelForm.color
+                          : (ADMIN_PALETTE_COLORS.find((c) => c.id === laurelForm.color)?.hex || "#f59e0b")
+                      }
+                      onChange={(e) => setLaurelForm({ ...laurelForm, color: e.target.value })}
+                      className="w-5 h-5 rounded-full border border-stone-300 p-0 cursor-pointer overflow-hidden"
+                      title="Pick custom hex color"
+                    />
+                  </div>
                 </div>
               </div>
 

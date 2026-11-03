@@ -391,7 +391,7 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
                   const isAward = item.type === "award"
                   const isPaper = item.type === "paper"
 
-                  const theme = isAward
+                  const defaultTheme = isAward
                     ? {
                         border: "border-black dark:border-amber-400/90",
                         shadow: "shadow-[4px_4px_0_#f59e0b] dark:shadow-[4px_4px_0_#fbbf24,0_0_24px_rgba(251,191,36,0.18)]",
@@ -423,6 +423,71 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
                         label: "Published Book",
                         btn: "bg-rose-600 hover:bg-rose-500 text-white border-2 border-black dark:border-rose-300 dark:shadow-[2px_2px_0_#fb7185]",
                       }
+
+                  const customColorKey = (item.color || "").toLowerCase().trim();
+                  const colorOverrideMap: Record<string, any> = {
+                    amber: {
+                      border: "border-black dark:border-amber-400/90",
+                      shadow: "shadow-[4px_4px_0_#f59e0b] dark:shadow-[4px_4px_0_#fbbf24,0_0_24px_rgba(251,191,36,0.18)]",
+                      badge: "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950/80 dark:text-amber-200 dark:border-amber-500/60",
+                      washi: "bg-amber-200/90 dark:bg-amber-400/40",
+                      btn: "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black dark:border-amber-300 dark:shadow-[2px_2px_0_#fbbf24]",
+                    },
+                    emerald: {
+                      border: "border-black dark:border-emerald-400/90",
+                      shadow: "shadow-[4px_4px_0_#10b981] dark:shadow-[4px_4px_0_#34d399,0_0_24px_rgba(16,185,129,0.18)]",
+                      badge: "bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-200 dark:border-emerald-500/60",
+                      washi: "bg-emerald-200/90 dark:bg-emerald-400/40",
+                      btn: "bg-emerald-600 hover:bg-emerald-500 text-white border-2 border-black dark:border-emerald-300 dark:shadow-[2px_2px_0_#34d399]",
+                    },
+                    indigo: {
+                      border: "border-black dark:border-indigo-400/90",
+                      shadow: "shadow-[4px_4px_0_#6366f1] dark:shadow-[4px_4px_0_#818cf8,0_0_24px_rgba(129,140,248,0.2)]",
+                      badge: "bg-indigo-100 text-indigo-950 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-500/60",
+                      washi: "bg-indigo-200/90 dark:bg-indigo-400/40",
+                      btn: "bg-indigo-600 hover:bg-indigo-500 text-white border-2 border-black dark:border-indigo-300 dark:shadow-[2px_2px_0_#818cf8]",
+                    },
+                    cyan: {
+                      border: "border-black dark:border-cyan-400/90",
+                      shadow: "shadow-[4px_4px_0_#06b6d4] dark:shadow-[4px_4px_0_#38bdf8,0_0_24px_rgba(6,182,212,0.2)]",
+                      badge: "bg-cyan-100 text-cyan-950 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-200 dark:border-cyan-500/60",
+                      washi: "bg-cyan-200/90 dark:bg-cyan-400/40",
+                      btn: "bg-sky-600 hover:bg-sky-500 text-white border-2 border-black dark:border-cyan-300 dark:shadow-[2px_2px_0_#38bdf8]",
+                    },
+                    rose: {
+                      border: "border-black dark:border-rose-400/90",
+                      shadow: "shadow-[4px_4px_0_#f43f5e] dark:shadow-[4px_4px_0_#fb7185,0_0_24px_rgba(251,113,133,0.2)]",
+                      badge: "bg-rose-100 text-rose-950 border-rose-300 dark:bg-rose-950/80 dark:text-rose-200 dark:border-rose-500/60",
+                      washi: "bg-rose-200/90 dark:bg-rose-400/40",
+                      btn: "bg-rose-600 hover:bg-rose-500 text-white border-2 border-black dark:border-rose-300 dark:shadow-[2px_2px_0_#fb7185]",
+                    },
+                    purple: {
+                      border: "border-black dark:border-purple-400/90",
+                      shadow: "shadow-[4px_4px_0_#8b5cf6] dark:shadow-[4px_4px_0_#c084fc,0_0_24px_rgba(139,92,246,0.2)]",
+                      badge: "bg-purple-100 text-purple-950 border-purple-300 dark:bg-purple-950/70 dark:text-purple-200 dark:border-purple-500/60",
+                      washi: "bg-purple-200/90 dark:bg-purple-400/40",
+                      btn: "bg-purple-600 hover:bg-purple-500 text-white border-2 border-black dark:border-purple-300 dark:shadow-[2px_2px_0_#c084fc]",
+                    },
+                    orange: {
+                      border: "border-black dark:border-orange-400/90",
+                      shadow: "shadow-[4px_4px_0_#f97316] dark:shadow-[4px_4px_0_#fb923c,0_0_24px_rgba(249,115,22,0.2)]",
+                      badge: "bg-orange-100 text-orange-950 border-orange-300 dark:bg-orange-950/80 dark:text-orange-200 dark:border-orange-500/60",
+                      washi: "bg-orange-200/90 dark:bg-orange-400/40",
+                      btn: "bg-orange-600 hover:bg-orange-500 text-white border-2 border-black dark:border-orange-300 dark:shadow-[2px_2px_0_#fb923c]",
+                    },
+                    teal: {
+                      border: "border-black dark:border-teal-400/90",
+                      shadow: "shadow-[4px_4px_0_#14b8a6] dark:shadow-[4px_4px_0_#2dd4bf,0_0_24px_rgba(20,184,166,0.2)]",
+                      badge: "bg-teal-100 text-teal-950 border-teal-300 dark:bg-teal-950/80 dark:text-teal-200 dark:border-teal-500/60",
+                      washi: "bg-teal-200/90 dark:bg-teal-400/40",
+                      btn: "bg-teal-600 hover:bg-teal-500 text-white border-2 border-black dark:border-teal-300 dark:shadow-[2px_2px_0_#2dd4bf]",
+                    },
+                  };
+
+                  const theme = {
+                    ...defaultTheme,
+                    ...(colorOverrideMap[customColorKey] || {}),
+                  };
 
                   return (
                     <article

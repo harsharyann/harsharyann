@@ -20,6 +20,11 @@ import {
   Building2,
   Calendar,
   ExternalLink,
+  Terminal,
+  Database,
+  Cpu,
+  BookOpen,
+  Globe,
 } from "lucide-react"
 
 /**
@@ -571,6 +576,188 @@ export function getBenchmarkStickerTheme(
   };
 }
 
+export function renderSkillIcon(iconName?: string, className = "w-4 h-4 shrink-0") {
+  const norm = (iconName || "").toLowerCase().trim();
+  switch (norm) {
+    case "brain":
+    case "ai":
+      return <Brain className={className} />;
+    case "code":
+    case "code2":
+    case "dev":
+      return <Code2 className={className} />;
+    case "laptop":
+    case "pc":
+      return <Laptop className={className} />;
+    case "terminal":
+    case "cli":
+    case "bash":
+      return <Terminal className={className} />;
+    case "git":
+    case "folder":
+    case "github":
+      return <FolderGit2 className={className} />;
+    case "database":
+    case "sql":
+      return <Database className={className} />;
+    case "cpu":
+    case "chip":
+    case "hardware":
+      return <Cpu className={className} />;
+    case "sparkles":
+    case "magic":
+      return <Sparkles className={className} />;
+    case "book":
+    case "math":
+    case "theory":
+      return <BookOpen className={className} />;
+    case "globe":
+    case "web":
+      return <Globe className={className} />;
+    default:
+      if (iconName && iconName.length <= 4) {
+        return <span className="text-sm shrink-0 leading-none">{iconName}</span>;
+      }
+      return <Code2 className={className} />;
+  }
+}
+
+export const SKILL_CARD_COLOR_MAP: Record<string, {
+  name: string;
+  hex: string;
+  bg: string;
+  border: string;
+  shadow: string;
+  hoverShadow: string;
+  tape: string;
+  badgeBg: string;
+  starColor: string;
+  chipHover: string;
+  iconColor: string;
+}> = {
+  amber: {
+    name: "Brand Amber",
+    hex: "#f59e0b",
+    bg: "bg-[#fffef7] dark:bg-[#15161e]",
+    border: "border-2 border-black dark:border-amber-400/80",
+    shadow: "shadow-[5px_5px_0_#f59e0b] dark:shadow-[5px_5px_0_#fbbf24]",
+    hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#f59e0b]",
+    tape: "bg-amber-300 dark:bg-amber-400",
+    badgeBg: "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950/70 dark:text-amber-200 dark:border-amber-700",
+    starColor: "text-amber-500 dark:text-amber-400",
+    chipHover: "hover:border-amber-500 hover:bg-amber-50/70 dark:hover:border-amber-400 dark:hover:bg-amber-950/40",
+    iconColor: "text-amber-600 dark:text-amber-400",
+  },
+  emerald: {
+    name: "Tech Emerald",
+    hex: "#10b981",
+    bg: "bg-[#fafffa] dark:bg-[#121815]",
+    border: "border-2 border-black dark:border-emerald-400/80",
+    shadow: "shadow-[5px_5px_0_#10b981] dark:shadow-[5px_5px_0_#34d399]",
+    hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#10b981]",
+    tape: "bg-emerald-300 dark:bg-emerald-400",
+    badgeBg: "bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-950/70 dark:text-emerald-200 dark:border-emerald-700",
+    starColor: "text-emerald-500 dark:text-emerald-400",
+    chipHover: "hover:border-emerald-500 hover:bg-emerald-50/70 dark:hover:border-emerald-400 dark:hover:bg-emerald-950/40",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+  },
+  indigo: {
+    name: "Deep Indigo",
+    hex: "#6366f1",
+    bg: "bg-[#fafaff] dark:bg-[#151422]",
+    border: "border-2 border-black dark:border-indigo-400/80",
+    shadow: "shadow-[5px_5px_0_#6366f1] dark:shadow-[5px_5px_0_#818cf8]",
+    hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#6366f1]",
+    tape: "bg-indigo-300 dark:bg-indigo-400",
+    badgeBg: "bg-indigo-100 text-indigo-950 border-indigo-300 dark:bg-indigo-950/70 dark:text-indigo-200 dark:border-indigo-700",
+    starColor: "text-indigo-500 dark:text-indigo-400",
+    chipHover: "hover:border-indigo-500 hover:bg-indigo-50/70 dark:hover:border-indigo-400 dark:hover:bg-indigo-950/40",
+    iconColor: "text-indigo-600 dark:text-indigo-400",
+  },
+  cyan: {
+    name: "Sci-Comp Cyan",
+    hex: "#06b6d4",
+    bg: "bg-[#f7feff] dark:bg-[#11181c]",
+    border: "border-2 border-black dark:border-cyan-400/80",
+    shadow: "shadow-[5px_5px_0_#06b6d4] dark:shadow-[5px_5px_0_#38bdf8]",
+    hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#06b6d4]",
+    tape: "bg-cyan-300 dark:bg-cyan-400",
+    badgeBg: "bg-cyan-100 text-cyan-950 border-cyan-300 dark:bg-cyan-950/70 dark:text-cyan-200 dark:border-cyan-700",
+    starColor: "text-cyan-500 dark:text-cyan-400",
+    chipHover: "hover:border-cyan-500 hover:bg-cyan-50/70 dark:hover:border-cyan-400 dark:hover:bg-cyan-950/40",
+    iconColor: "text-cyan-600 dark:text-cyan-400",
+  },
+  rose: {
+    name: "Coral Rose",
+    hex: "#f43f5e",
+    bg: "bg-[#fff8fa] dark:bg-[#1c1216]",
+    border: "border-2 border-black dark:border-rose-400/80",
+    shadow: "shadow-[5px_5px_0_#f43f5e] dark:shadow-[5px_5px_0_#fb7185]",
+    hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#f43f5e]",
+    tape: "bg-rose-300 dark:bg-rose-400",
+    badgeBg: "bg-rose-100 text-rose-950 border-rose-300 dark:bg-rose-950/70 dark:text-rose-200 dark:border-rose-700",
+    starColor: "text-rose-500 dark:text-rose-400",
+    chipHover: "hover:border-rose-500 hover:bg-rose-50/70 dark:hover:border-rose-400 dark:hover:bg-rose-950/40",
+    iconColor: "text-rose-600 dark:text-rose-400",
+  },
+  purple: {
+    name: "AI Violet",
+    hex: "#8b5cf6",
+    bg: "bg-[#faf5ff] dark:bg-[#171224]",
+    border: "border-2 border-black dark:border-purple-400/80",
+    shadow: "shadow-[5px_5px_0_#8b5cf6] dark:shadow-[5px_5px_0_#c084fc]",
+    hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#8b5cf6]",
+    tape: "bg-purple-300 dark:bg-purple-400",
+    badgeBg: "bg-purple-100 text-purple-950 border-purple-300 dark:bg-purple-950/70 dark:text-purple-200 dark:border-purple-700",
+    starColor: "text-purple-500 dark:text-purple-400",
+    chipHover: "hover:border-purple-500 hover:bg-purple-50/70 dark:hover:border-purple-400 dark:hover:bg-purple-950/40",
+    iconColor: "text-purple-600 dark:text-purple-400",
+  },
+  orange: {
+    name: "Sun Orange",
+    hex: "#f97316",
+    bg: "bg-[#fffaf5] dark:bg-[#1a140f]",
+    border: "border-2 border-black dark:border-orange-400/80",
+    shadow: "shadow-[5px_5px_0_#f97316] dark:shadow-[5px_5px_0_#fb923c]",
+    hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#f97316]",
+    tape: "bg-orange-300 dark:bg-orange-400",
+    badgeBg: "bg-orange-100 text-orange-950 border-orange-300 dark:bg-orange-950/70 dark:text-orange-200 dark:border-orange-700",
+    starColor: "text-orange-500 dark:text-orange-400",
+    chipHover: "hover:border-orange-500 hover:bg-orange-50/70 dark:hover:border-orange-400 dark:hover:bg-orange-950/40",
+    iconColor: "text-orange-600 dark:text-orange-400",
+  },
+  teal: {
+    name: "Sea Teal",
+    hex: "#14b8a6",
+    bg: "bg-[#f4fdfc] dark:bg-[#0f1918]",
+    border: "border-2 border-black dark:border-teal-400/80",
+    shadow: "shadow-[5px_5px_0_#14b8a6] dark:shadow-[5px_5px_0_#2dd4bf]",
+    hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#14b8a6]",
+    tape: "bg-teal-300 dark:bg-teal-400",
+    badgeBg: "bg-teal-100 text-teal-950 border-teal-300 dark:bg-teal-950/70 dark:text-teal-200 dark:border-teal-700",
+    starColor: "text-teal-500 dark:text-teal-400",
+    chipHover: "hover:border-teal-500 hover:bg-teal-50/70 dark:hover:border-teal-400 dark:hover:bg-teal-950/40",
+    iconColor: "text-teal-600 dark:text-teal-400",
+  },
+};
+
+const SKILL_COLOR_SEQUENCE = ["amber", "emerald", "indigo", "cyan", "rose", "purple", "orange", "teal"];
+
+export function getSkillGroupTheme(group: { color?: string } | undefined, idx: number) {
+  const chosen = (group?.color || "").toLowerCase().trim();
+  let theme = SKILL_CARD_COLOR_MAP[chosen];
+  if (!theme) {
+    const foundByHex = Object.values(SKILL_CARD_COLOR_MAP).find((t) => t.hex.toLowerCase() === chosen);
+    if (foundByHex) {
+      theme = foundByHex;
+    } else {
+      const fallbackKey = SKILL_COLOR_SEQUENCE[idx % SKILL_COLOR_SEQUENCE.length];
+      theme = SKILL_CARD_COLOR_MAP[fallbackKey];
+    }
+  }
+  return theme;
+}
+
 export function AboutSection({ id = "about" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
   const { personal, skills, quickStats, milestones, experiences } = portfolio
@@ -712,10 +899,10 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
             {/* ── Integrated Lower Chin (Inside the SAME frame) ── */}
             <div className="pt-2.5 border-t-2 border-dashed border-stone-300 dark:border-stone-700/80 space-y-2.5">
-              {/* Name */}
+              {/* Signature Name on Photo Mount */}
               <div>
-                <h3 className="font-['Space_Grotesk'] text-2xl font-black uppercase tracking-tight text-black dark:text-white leading-none">
-                  {personal.name || "HARSH ARYAN"}
+                <h3 className="font-signature text-3xl sm:text-4xl font-bold tracking-wide italic text-black dark:text-white leading-tight select-none rotate-[-1deg]">
+                  {personal.name || "Harsh Aryan"}
                 </h3>
               </div>
 
@@ -862,64 +1049,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-5 sm:gap-6 pt-2">
             {skills.map((group, idx) => {
-            const themes = [
-              {
-                bg: "bg-[#fffef7] dark:bg-[#15161e]",
-                border: "border-2 border-black dark:border-amber-400/80",
-                shadow: "shadow-[5px_5px_0_#f59e0b] dark:shadow-[5px_5px_0_#fbbf24]",
-                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#f59e0b]",
-                tape: "bg-amber-300 dark:bg-amber-400",
-                badgeBg: "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950/70 dark:text-amber-200 dark:border-amber-700",
-                starColor: "text-amber-500 dark:text-amber-400",
-                chipHover: "hover:border-amber-500 hover:bg-amber-50/70 dark:hover:border-amber-400 dark:hover:bg-amber-950/40",
-                icon: <Code2 className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />,
-              },
-              {
-                bg: "bg-[#fafffa] dark:bg-[#121815]",
-                border: "border-2 border-black dark:border-emerald-400/80",
-                shadow: "shadow-[5px_5px_0_#10b981] dark:shadow-[5px_5px_0_#34d399]",
-                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#10b981]",
-                tape: "bg-emerald-300 dark:bg-emerald-400",
-                badgeBg: "bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-950/70 dark:text-emerald-200 dark:border-emerald-700",
-                starColor: "text-emerald-500 dark:text-emerald-400",
-                chipHover: "hover:border-emerald-500 hover:bg-emerald-50/70 dark:hover:border-emerald-400 dark:hover:bg-emerald-950/40",
-                icon: <Brain className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />,
-              },
-              {
-                bg: "bg-[#fafaff] dark:bg-[#151422]",
-                border: "border-2 border-black dark:border-indigo-400/80",
-                shadow: "shadow-[5px_5px_0_#6366f1] dark:shadow-[5px_5px_0_#818cf8]",
-                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#6366f1]",
-                tape: "bg-indigo-300 dark:bg-indigo-400",
-                badgeBg: "bg-indigo-100 text-indigo-950 border-indigo-300 dark:bg-indigo-950/70 dark:text-indigo-200 dark:border-indigo-700",
-                starColor: "text-indigo-500 dark:text-indigo-400",
-                chipHover: "hover:border-indigo-500 hover:bg-indigo-50/70 dark:hover:border-indigo-400 dark:hover:bg-indigo-950/40",
-                icon: <Laptop className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />,
-              },
-              {
-                bg: "bg-[#f7feff] dark:bg-[#11181c]",
-                border: "border-2 border-black dark:border-cyan-400/80",
-                shadow: "shadow-[5px_5px_0_#06b6d4] dark:shadow-[5px_5px_0_#38bdf8]",
-                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#06b6d4]",
-                tape: "bg-cyan-300 dark:bg-cyan-400",
-                badgeBg: "bg-cyan-100 text-cyan-950 border-cyan-300 dark:bg-cyan-950/70 dark:text-cyan-200 dark:border-cyan-700",
-                starColor: "text-cyan-500 dark:text-cyan-400",
-                chipHover: "hover:border-cyan-500 hover:bg-cyan-50/70 dark:hover:border-cyan-400 dark:hover:bg-cyan-950/40",
-                icon: <FolderGit2 className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />,
-              },
-              {
-                bg: "bg-[#fff8fa] dark:bg-[#1c1216]",
-                border: "border-2 border-black dark:border-rose-400/80",
-                shadow: "shadow-[5px_5px_0_#f43f5e] dark:shadow-[5px_5px_0_#fb7185]",
-                hoverShadow: "hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#f43f5e]",
-                tape: "bg-rose-300 dark:bg-rose-400",
-                badgeBg: "bg-rose-100 text-rose-950 border-rose-300 dark:bg-rose-950/70 dark:text-rose-200 dark:border-rose-700",
-                starColor: "text-rose-500 dark:text-rose-400",
-                chipHover: "hover:border-rose-500 hover:bg-rose-50/70 dark:hover:border-rose-400 dark:hover:bg-rose-950/40",
-                icon: <Sparkles className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />,
-              },
-            ];
-            const t = themes[idx % themes.length];
+            const t = getSkillGroupTheme(group, idx);
             const total = skills.length;
             // Balance layout: if 5 items, row 1 = 3 items (2 cols each), row 2 = 2 items (3 cols each)
             const colSpan =
@@ -953,7 +1083,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                       <span>0{idx + 1}</span>
                     </span>
                     <span className="font-mono text-xs font-black uppercase tracking-wide text-black dark:text-white flex items-center gap-1.5">
-                      {t.icon}
+                      {renderSkillIcon(group.icon, `w-4 h-4 shrink-0 ${t.iconColor}`)}
                       <span>{group.category}</span>
                     </span>
                   </div>

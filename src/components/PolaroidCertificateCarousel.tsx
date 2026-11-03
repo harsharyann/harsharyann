@@ -34,11 +34,96 @@ export function pad2(n: number): string {
   return n < 10 ? "0" + n : String(n)
 }
 
-export function getCertTheme(category: string) {
+export function getCertTheme(category: string, color?: string) {
+  const normColor = (color || "").toLowerCase().trim()
   const cat = (category || "").toLowerCase()
 
+  if (normColor.includes("amber") || normColor === "#f59e0b") {
+    return {
+      accent: "#b45309",
+      pegColor: "#c2884a",
+      pegShadow: "#78350f",
+      stamp: "bg-amber-600 text-white dark:bg-amber-500 dark:text-black",
+      categoryBadge:
+        "bg-amber-50 text-amber-950 border-amber-400 dark:bg-amber-950/70 dark:text-amber-200 dark:border-amber-600",
+      crestBorder: "border-amber-600 shadow-[2px_2px_0_#b45309]",
+      crestBg: "bg-amber-50 dark:bg-stone-800 text-amber-800 dark:text-amber-300",
+      shadow: "shadow-[6px_6px_0_#78350f] dark:shadow-[6px_6px_0_#fbbf24]",
+      border: "border-black dark:border-amber-400/80",
+      cardBg:
+        "bg-gradient-to-br from-amber-50/40 via-white to-stone-50 dark:from-stone-900 dark:via-amber-950/20 dark:to-stone-900",
+      accentText: "text-amber-900 dark:text-amber-300",
+      skillsPill:
+        "border-amber-300 dark:border-amber-700 bg-white dark:bg-stone-800 text-amber-950 dark:text-amber-200 shadow-[1.5px_1.5px_0_#b45309]",
+      printShadow: "#78350f",
+    }
+  }
+
+  if (normColor.includes("emerald") || normColor === "#10b981") {
+    return {
+      accent: "#047857",
+      pegColor: "#c2884a",
+      pegShadow: "#78350f",
+      stamp: "bg-emerald-800 text-white dark:bg-emerald-700 dark:text-white",
+      categoryBadge:
+        "bg-emerald-50 text-emerald-950 border-emerald-400 dark:bg-emerald-950/70 dark:text-emerald-200 dark:border-emerald-600",
+      crestBorder: "border-emerald-600 shadow-[2px_2px_0_#047857]",
+      crestBg: "bg-emerald-50 dark:bg-stone-800 text-emerald-700 dark:text-emerald-300",
+      shadow: "shadow-[6px_6px_0_#064e3b] dark:shadow-[6px_6px_0_#34d399]",
+      border: "border-black dark:border-emerald-400/80",
+      cardBg:
+        "bg-gradient-to-br from-emerald-50/40 via-white to-slate-50 dark:from-stone-900 dark:via-emerald-950/20 dark:to-stone-900",
+      accentText: "text-emerald-900 dark:text-emerald-300",
+      skillsPill:
+        "border-emerald-300 dark:border-emerald-700 bg-white dark:bg-stone-800 text-emerald-950 dark:text-emerald-200 shadow-[1.5px_1.5px_0_#047857]",
+      printShadow: "#064e3b",
+    }
+  }
+
+  if (normColor.includes("cyan") || normColor === "#06b6d4") {
+    return {
+      accent: "#0369a1",
+      pegColor: "#c2884a",
+      pegShadow: "#78350f",
+      stamp: "bg-sky-800 text-white dark:bg-sky-700 dark:text-white",
+      categoryBadge:
+        "bg-sky-50 text-sky-950 border-sky-400 dark:bg-sky-950/70 dark:text-sky-200 dark:border-sky-600",
+      crestBorder: "border-sky-600 shadow-[2px_2px_0_#0369a1]",
+      crestBg: "bg-sky-50 dark:bg-stone-800 text-sky-700 dark:text-sky-300",
+      shadow: "shadow-[6px_6px_0_#082f49] dark:shadow-[6px_6px_0_#38bdf8]",
+      border: "border-black dark:border-sky-400/80",
+      cardBg:
+        "bg-gradient-to-br from-sky-50/40 via-white to-slate-50 dark:from-stone-900 dark:via-sky-950/20 dark:to-stone-900",
+      accentText: "text-sky-900 dark:text-sky-300",
+      skillsPill:
+        "border-sky-300 dark:border-sky-700 bg-white dark:bg-stone-800 text-sky-950 dark:text-sky-200 shadow-[1.5px_1.5px_0_#0369a1]",
+      printShadow: "#082f49",
+    }
+  }
+
+  if (normColor.includes("rose") || normColor === "#f43f5e" || normColor.includes("red")) {
+    return {
+      accent: "#991b1b",
+      pegColor: "#c2884a",
+      pegShadow: "#78350f",
+      stamp: "bg-rose-800 text-white dark:bg-rose-700 dark:text-white",
+      categoryBadge:
+        "bg-rose-50 text-rose-950 border-rose-400 dark:bg-rose-950/70 dark:text-rose-200 dark:border-rose-600",
+      crestBorder: "border-rose-600 shadow-[2px_2px_0_#991b1b]",
+      crestBg: "bg-rose-50 dark:bg-stone-800 text-rose-700 dark:text-rose-300",
+      shadow: "shadow-[6px_6px_0_#7f1d1d] dark:shadow-[6px_6px_0_#fb7185]",
+      border: "border-black dark:border-rose-400/80",
+      cardBg:
+        "bg-gradient-to-br from-rose-50/40 via-white to-slate-50 dark:from-stone-900 dark:via-rose-950/20 dark:to-stone-900",
+      accentText: "text-rose-900 dark:text-rose-300",
+      skillsPill:
+        "border-rose-300 dark:border-rose-700 bg-white dark:bg-stone-800 text-rose-950 dark:text-rose-200 shadow-[1.5px_1.5px_0_#991b1b]",
+      printShadow: "#7f1d1d",
+    }
+  }
+
   // 1. Machine Learning / AI / Deep Learning: Royal Sapphire & Indigo
-  if (cat.includes("machine learning") || cat.includes("deep learning") || cat.includes("ai")) {
+  if (cat.includes("machine learning") || cat.includes("deep learning") || cat.includes("ai") || normColor.includes("indigo") || normColor.includes("purple")) {
     return {
       accent: "#4338ca",
       pegColor: "#c2884a",
@@ -440,7 +525,7 @@ export function PolaroidCertificateCarousel({
 
   const safeActive = clamp(active, 0, n - 1)
   const activeCert = certificates[safeActive] || certificates[0]
-  const activeTheme = getCertTheme(activeCert?.category || "")
+  const activeTheme = getCertTheme(activeCert?.category || "", activeCert?.color)
   const zoomCert = certificates[zoomCertIndex] || activeCert
 
   return (
