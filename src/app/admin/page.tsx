@@ -2035,12 +2035,18 @@ export default function AdminPage() {
                             type="text"
                             placeholder="e.g. Teaching Assistant"
                             value={portfolio.personal.aboutCurrentWork ?? portfolio.personal.role ?? ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const val = e.target.value;
                               setPortfolio((prev) => ({
                                 ...prev,
-                                personal: { ...prev.personal, aboutCurrentWork: e.target.value, role: e.target.value },
-                              }))
-                            }
+                                personal: {
+                                  ...prev.personal,
+                                  aboutCurrentWork: val,
+                                  role: val,
+                                  currentWork: val && prev.personal.aboutWorkPlace ? `${val} @ ${prev.personal.aboutWorkPlace}` : val,
+                                },
+                              }));
+                            }}
                             className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
                           />
                         </div>
@@ -2053,12 +2059,18 @@ export default function AdminPage() {
                             type="text"
                             placeholder="e.g. IIT Madras"
                             value={portfolio.personal.aboutWorkPlace ?? ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const val = e.target.value;
                               setPortfolio((prev) => ({
                                 ...prev,
-                                personal: { ...prev.personal, aboutWorkPlace: e.target.value },
-                              }))
-                            }
+                                personal: {
+                                  ...prev.personal,
+                                  aboutWorkPlace: val,
+                                  college: val,
+                                  currentWork: (prev.personal.aboutCurrentWork || prev.personal.role) && val ? `${prev.personal.aboutCurrentWork || prev.personal.role} @ ${val}` : prev.personal.currentWork,
+                                },
+                              }));
+                            }}
                             className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
                           />
                         </div>
@@ -2527,12 +2539,18 @@ export default function AdminPage() {
                               type="text"
                               placeholder="e.g. Teaching Assistant"
                               value={portfolio.personal.role ?? portfolio.personal.aboutCurrentWork ?? ""}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const val = e.target.value;
                                 setPortfolio((prev) => ({
                                   ...prev,
-                                  personal: { ...prev.personal, role: e.target.value, aboutCurrentWork: e.target.value },
-                                }))
-                              }
+                                  personal: {
+                                    ...prev.personal,
+                                    role: val,
+                                    aboutCurrentWork: val,
+                                    currentWork: val && prev.personal.aboutWorkPlace ? `${val} @ ${prev.personal.aboutWorkPlace}` : val,
+                                  },
+                                }));
+                              }}
                               className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
                             />
                           </div>
@@ -2545,12 +2563,18 @@ export default function AdminPage() {
                               type="text"
                               placeholder="e.g. IIT Madras"
                               value={portfolio.personal.aboutWorkPlace ?? ""}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const val = e.target.value;
                                 setPortfolio((prev) => ({
                                   ...prev,
-                                  personal: { ...prev.personal, aboutWorkPlace: e.target.value },
-                                }))
-                              }
+                                  personal: {
+                                    ...prev.personal,
+                                    aboutWorkPlace: val,
+                                    college: val,
+                                    currentWork: (prev.personal.aboutCurrentWork || prev.personal.role) && val ? `${prev.personal.aboutCurrentWork || prev.personal.role} @ ${val}` : prev.personal.currentWork,
+                                  },
+                                }));
+                              }}
                               className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
                             />
                           </div>
@@ -3100,12 +3124,18 @@ export default function AdminPage() {
                             type="text"
                             placeholder="e.g. Teaching Assistant"
                             value={portfolio.personal.aboutCurrentWork ?? portfolio.personal.role ?? ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const val = e.target.value;
                               setPortfolio((prev) => ({
                                 ...prev,
-                                personal: { ...prev.personal, aboutCurrentWork: e.target.value, role: e.target.value },
-                              }))
-                            }
+                                personal: {
+                                  ...prev.personal,
+                                  aboutCurrentWork: val,
+                                  role: val,
+                                  currentWork: val && prev.personal.aboutWorkPlace ? `${val} @ ${prev.personal.aboutWorkPlace}` : val,
+                                },
+                              }));
+                            }}
                             className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
                           />
                         </div>
@@ -3118,12 +3148,18 @@ export default function AdminPage() {
                             type="text"
                             placeholder="e.g. IIT Madras"
                             value={portfolio.personal.aboutWorkPlace ?? ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const val = e.target.value;
                               setPortfolio((prev) => ({
                                 ...prev,
-                                personal: { ...prev.personal, aboutWorkPlace: e.target.value },
-                              }))
-                            }
+                                personal: {
+                                  ...prev.personal,
+                                  aboutWorkPlace: val,
+                                  college: val,
+                                  currentWork: (prev.personal.aboutCurrentWork || prev.personal.role) && val ? `${prev.personal.aboutCurrentWork || prev.personal.role} @ ${val}` : prev.personal.currentWork,
+                                },
+                              }));
+                            }}
                             className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
                           />
                         </div>
@@ -3185,15 +3221,19 @@ export default function AdminPage() {
 
                           <div className="flex flex-col items-start gap-1">
                             {/* Role badge with pulse */}
-                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-stone-900 font-mono text-[10px] font-bold">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                              <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"}</span>
-                            </div>
+                            {Boolean(portfolio.personal.aboutCurrentWork || portfolio.personal.role) && (
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-stone-900 font-mono text-[10px] font-bold">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                                <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role}</span>
+                              </div>
+                            )}
 
                             {/* Workplace badge */}
-                            <div className="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-amber-100 border border-amber-300 text-amber-950 font-mono text-[10px] font-bold">
-                              <span>{portfolio.personal.aboutWorkPlace || "IIT Madras"}</span>
-                            </div>
+                            {Boolean(portfolio.personal.aboutWorkPlace) && (
+                              <div className="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-amber-100 border border-amber-300 text-amber-950 font-mono text-[10px] font-bold">
+                                <span>{portfolio.personal.aboutWorkPlace}</span>
+                              </div>
+                            )}
                           </div>
 
                           {/* Coordinates */}

@@ -1345,18 +1345,26 @@ export function DoodleCrewCover({
             </div>
 
             {/* Active Role Pill */}
-            <div className="inline-flex items-center gap-2 py-1 px-3.5 rounded-xl bg-amber-100 dark:bg-stone-800/90 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-black dark:text-white font-mono">
-                  {portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role || "Teaching Assistant"}
-                </span>
+            {(Boolean(portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role) || Boolean(portfolio?.personal?.aboutWorkPlace)) && (
+              <div className="inline-flex items-center gap-2 py-1 px-3.5 rounded-xl bg-amber-100 dark:bg-stone-800/90 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]">
+                {Boolean(portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role) && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                    <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-black dark:text-white font-mono">
+                      {portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role}
+                    </span>
+                  </div>
+                )}
+                {Boolean(portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role) && Boolean(portfolio?.personal?.aboutWorkPlace) && (
+                  <span className="text-stone-400 dark:text-stone-500 font-bold">•</span>
+                )}
+                {Boolean(portfolio?.personal?.aboutWorkPlace) && (
+                  <span className="font-mono text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                    {portfolio?.personal?.aboutWorkPlace}
+                  </span>
+                )}
               </div>
-              <span className="text-stone-400 dark:text-stone-500 font-bold">•</span>
-              <span className="font-mono text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                {portfolio?.personal?.aboutWorkPlace || "IIT Madras"}
-              </span>
-            </div>
+            )}
 
             {/* Headline / Subtitle */}
             <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 leading-relaxed max-w-xl">
