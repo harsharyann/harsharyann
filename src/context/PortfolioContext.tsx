@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { portfolioData as initialDefaultData, PortfolioData } from "@/data/portfolioData";
+import { supabase } from "@/lib/supabase";
 
 export interface SaveResult {
   success: boolean;
@@ -131,11 +132,52 @@ export function PortfolioProvider({
     if (isSavingRef.current && !force) return;
 
     const now = Date.now();
-    // Throttle background refreshes to at most once every 30 seconds unless forced
-    if (!force && now - lastRefreshTimeRef.current < 30000) return;
+    // Allow refreshing if forced or at least 2 seconds have elapsed
+    if (!force && now - lastRefreshTimeRef.current < 2000) return;
     lastRefreshTimeRef.current = now;
 
-    // 1. Fetch latest synced data from server in the background (authoritative source)
+    // 1. Direct Supabase Cloud Query (Fastest, zero edge-cache stale window)
+    try {
+      const { data: sbRecord, error: sbError } = await supabase
+        .from("portfolio_data")
+        .select("data")
+        .eq("id", "main")
+        .maybeSingle();
+
+      if (!sbError && sbRecord?.data && sbRecord.data.personal && !isSavingRef.current) {
+        const cloudData = sbRecord.data as PortfolioData;
+
+        // Conflict check: if localStorage has newer uncommitted edits, preserve them unless forced
+        if (typeof window !== "undefined") {
+          try {
+            const localRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (localRaw) {
+              const localParsed = JSON.parse(localRaw);
+              const localTime = (localParsed as any)?._lastSavedAt || 0;
+              const cloudTime = (cloudData as any)?._lastSavedAt || 0;
+              if (localTime > cloudTime && !force) {
+                setData(localParsed);
+                setIsLoading(false);
+                return;
+              }
+            }
+          } catch {}
+        }
+
+        setData(cloudData);
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cloudData));
+          } catch {}
+        }
+        setIsLoading(false);
+        return;
+      }
+    } catch (sbErr) {
+      console.warn("Direct Supabase fetch fallback to API route:", sbErr);
+    }
+
+    // 2. Fallback to API route /api/portfolio
     try {
       const res = await fetch(`/api/portfolio?_t=${Date.now()}`, {
         cache: "no-store",
@@ -144,22 +186,6 @@ export function PortfolioProvider({
       if (res.ok) {
         const json = await res.json();
         if (json && json.personal && !isSavingRef.current) {
-          // IMPORTANT: Check if localStorage has newer edits than server!
-          if (typeof window !== "undefined") {
-            try {
-              const localRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
-              if (localRaw) {
-                const localParsed = JSON.parse(localRaw);
-                const localTime = (localParsed as any)?._lastSavedAt || 0;
-                const serverTime = (json as any)?._lastSavedAt || 0;
-                if (localTime > serverTime) {
-                  // LocalStorage has more recent edits! Keep local data, do not overwrite!
-                  setData(localParsed);
-                  return;
-                }
-              }
-            } catch {}
-          }
           setData(json);
           if (typeof window !== "undefined") {
             try {
@@ -177,7 +203,7 @@ export function PortfolioProvider({
       setIsLoading(false);
     }
 
-    // 2. Offline fallback to localStorage only if server is unreachable
+    // 3. Offline fallback to localStorage only if cloud is unreachable
     if (typeof window !== "undefined") {
       try {
         const local = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -207,6 +233,51 @@ export function PortfolioProvider({
     refreshData(true);
   }, [refreshData]);
 
+  // ── Supabase Realtime Subscription (Instantly propagates to open phone / laptop) ──
+  useEffect(() => {
+    let activeChannel: any = null;
+    try {
+      activeChannel = supabase
+        .channel("portfolio_data_realtime")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "portfolio_data",
+            filter: "id=eq.main",
+          },
+          (payload) => {
+            if (isSavingRef.current) return;
+            const newRecord = payload.new as any;
+            if (newRecord?.data?.personal) {
+              const cloudData = newRecord.data as PortfolioData;
+              setData(cloudData);
+              if (typeof window !== "undefined") {
+                try {
+                  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cloudData));
+                  window.dispatchEvent(
+                    new CustomEvent("portfolio-data-synced", { detail: cloudData })
+                  );
+                } catch {}
+              }
+            }
+          }
+        )
+        .subscribe();
+    } catch (subErr) {
+      console.warn("Supabase Realtime subscription notice:", subErr);
+    }
+
+    return () => {
+      if (activeChannel) {
+        try {
+          supabase.removeChannel(activeChannel);
+        } catch {}
+      }
+    };
+  }, []);
+
   // ── Instant Cross-Tab & In-Tab Sync Listener ──
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -231,7 +302,7 @@ export function PortfolioProvider({
       }
     };
 
-    // 3. Tab visibility / focus refetch (safe, throttled, and non-disruptive)
+    // 3. Tab visibility / focus refetch (instant pull from Supabase whenever user opens tab on phone or laptop)
     const handleVisibility = () => {
       if (document.visibilityState === "visible" && !isSavingRef.current) {
         refreshData(false);
@@ -261,7 +332,7 @@ export function PortfolioProvider({
       _lastSavedAt: Date.now(),
     };
 
-    // Optimistically update React state and local storage immediately (zero UI lag)
+    // 1. Optimistically update React state and local storage immediately (zero UI lag)
     setData({ ...dataWithTimestamp });
     if (typeof window !== "undefined") {
       try {
@@ -272,11 +343,37 @@ export function PortfolioProvider({
       }
     }
 
-    // 10s maximum timeout controller so saving has plenty of time for cloud sync
-    const controller = new AbortController();
-    const timeoutTimer = setTimeout(() => controller.abort(), 10000);
-
+    // 2. Direct Supabase Cloud Save (Browser -> Supabase edge database)
+    let directSupabaseSuccess = false;
+    let directSupabaseError: string | null = null;
     try {
+      const { error: sbErr } = await supabase
+        .from("portfolio_data")
+        .upsert(
+          {
+            id: "main",
+            data: dataWithTimestamp,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "id" }
+        );
+
+      if (!sbErr) {
+        directSupabaseSuccess = true;
+      } else {
+        directSupabaseError = sbErr.message || JSON.stringify(sbErr);
+        console.warn("Direct Supabase write notice:", sbErr);
+      }
+    } catch (e: any) {
+      directSupabaseError = e?.message || "Direct Supabase write exception";
+      console.warn("Direct Supabase write exception:", e);
+    }
+
+    // 3. Simultaneously inform server API for filesystem cache & Next.js cache revalidation
+    try {
+      const controller = new AbortController();
+      const timeoutTimer = setTimeout(() => controller.abort(), 8000);
+
       const res = await fetch("/api/portfolio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -303,6 +400,13 @@ export function PortfolioProvider({
         return { success: true, data: savedData };
       }
 
+      // If server returned 401 or failed, but direct Supabase succeeded:
+      if (directSupabaseSuccess) {
+        isSavingRef.current = false;
+        setIsSaving(false);
+        return { success: true, data: dataWithTimestamp };
+      }
+
       if (res.status === 401) {
         const errorMsg = "Admin session expired or unauthorized. Please re-login with Google.";
         setLastSaveError(errorMsg);
@@ -310,21 +414,26 @@ export function PortfolioProvider({
         setIsSaving(false);
         return { success: false, error: errorMsg };
       }
-
-      const errResult = await res.json().catch(() => ({}));
-      console.warn("Server save notice:", res.status, errResult);
-      // Local changes are already safe in browser state & localStorage
-      isSavingRef.current = false;
-      setIsSaving(false);
-      return { success: true, data: dataWithTimestamp };
     } catch (err: any) {
-      clearTimeout(timeoutTimer);
-      console.warn("Network sync deferred, edits safely stored in browser:", err);
-      // Edits are already safe in browser state & localStorage
+      if (directSupabaseSuccess) {
+        isSavingRef.current = false;
+        setIsSaving(false);
+        return { success: true, data: dataWithTimestamp };
+      }
+      console.warn("Network sync exception:", err);
+    }
+
+    if (directSupabaseSuccess) {
       isSavingRef.current = false;
       setIsSaving(false);
       return { success: true, data: dataWithTimestamp };
     }
+
+    const finalError = directSupabaseError || "Cloud sync error: Could not reach Supabase";
+    setLastSaveError(finalError);
+    isSavingRef.current = false;
+    setIsSaving(false);
+    return { success: false, error: finalError, data: dataWithTimestamp };
   };
 
   const resetData = async (): Promise<boolean> => {
@@ -332,14 +441,19 @@ export function PortfolioProvider({
       if (typeof window !== "undefined") {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
       }
-      const res = await fetch("/api/portfolio", { method: "PUT" });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          setData(json.data);
-          return true;
-        }
-      }
+      // Reset Supabase cloud database
+      await supabase
+        .from("portfolio_data")
+        .upsert(
+          {
+            id: "main",
+            data: initialDefaultData,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "id" }
+        );
+
+      await fetch("/api/portfolio", { method: "PUT" });
       setData(initialDefaultData);
       return true;
     } catch (err) {

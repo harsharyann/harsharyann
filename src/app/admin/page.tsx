@@ -214,6 +214,7 @@ export default function AdminPage() {
   const [selectedThoughtDay, setSelectedThoughtDay] = useState<number>(0);
   const [todayWeekday, setTodayWeekday] = useState<number>(0);
   const [thoughtViewMode, setThoughtViewMode] = useState<"tabs" | "grid">("tabs");
+  const [newKeywordInput, setNewKeywordInput] = useState<string>("");
 
   useEffect(() => {
     const day = new Date().getDay();
@@ -223,12 +224,12 @@ export default function AdminPage() {
 
   // ── Curated Portfolio Color Palette & Selection Tracking ──
   const PORTFOLIO_HIGHLIGHT_PALETTE = [
-    { name: "Amber", hex: "#f59e0b", label: "Brand Gold" },
-    { name: "Emerald", hex: "#10b981", label: "Terminal Green" },
-    { name: "Cyan", hex: "#06b6d4", label: "Sci-Comp Blue" },
-    { name: "Indigo", hex: "#6366f1", label: "AI Violet" },
     { name: "Coral", hex: "#f43f5e", label: "Spark Red" },
-    { name: "Yellow", hex: "#facc15", label: "Doodle Marker" },
+    { name: "Amber", hex: "#f59e0b", label: "Brand Gold" },
+    { name: "Cyan", hex: "#06b6d4", label: "Sci-Comp Blue" },
+    { name: "Emerald", hex: "#10b981", label: "Terminal Green" },
+    { name: "Indigo", hex: "#6366f1", label: "AI Violet" },
+    { name: "Orange", hex: "#f97316", label: "Sun Orange" },
   ];
   const HIGHLIGHT_PALETTE = PORTFOLIO_HIGHLIGHT_PALETTE;
 
@@ -1026,7 +1027,11 @@ export default function AdminPage() {
           setPortfolioState(result.data);
           portfolioRef.current = result.data;
         }
-        setToastMessage(successMsg);
+        const displayMsg =
+          successMsg.includes("Supabase") || successMsg.includes("cloud") || successMsg.includes("☁️")
+            ? successMsg
+            : `☁️ ${successMsg} (Synced to Supabase!)`;
+        setToastMessage(displayMsg);
         setTimeout(() => setToastMessage(null), 3500);
       } else {
         const errorMsg = result.error || "Failed to save. Make sure server is reachable.";
@@ -1711,9 +1716,9 @@ export default function AdminPage() {
                 <span className="font-['Space_Grotesk'] text-lg font-black uppercase tracking-tight text-stone-900 group-hover:text-amber-600 transition-colors leading-none">
                   Socius Studio
                 </span>
-                <span className="font-mono text-[9px] text-stone-500 flex items-center gap-1.5 mt-1 font-bold">
+                <span className="font-mono text-[9px] text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 mt-1 font-bold">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>LIVE CLOUD CMS</span>
+                  <span>SUPABASE SYNCED</span>
                 </span>
               </div>
             </Link>
@@ -1919,13 +1924,18 @@ export default function AdminPage() {
               />
             </label>
 
+            <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono text-[11px] font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Supabase Cloud Active</span>
+            </span>
+
             <button
               onClick={handleSaveAll}
               disabled={isSaving}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] active:translate-y-0.5 transition-all cursor-pointer"
             >
               {isSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              <span>{isSaving ? "Saving..." : "Save All Changes"}</span>
+              <span>{isSaving ? "Saving to Cloud..." : "Save All Changes"}</span>
             </button>
           </div>
         </header>
@@ -3222,7 +3232,7 @@ export default function AdminPage() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                            Plaque Name:
+                            Signature Plaque Name:
                           </label>
                           <input
                             type="text"
@@ -3233,14 +3243,19 @@ export default function AdminPage() {
                                 personal: { ...prev.personal, name: e.target.value },
                               }))
                             }
+                            onBlur={() => saveInstantly(portfolioRef.current, "Signature plaque name saved!")}
                             className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
                             placeholder="HARSH ARYAN"
                           />
+                          <p className="font-mono text-[9.5px] text-stone-500 mt-0.5">
+                            Photo mount ke neeche signature style me render hota hai.
+                          </p>
                         </div>
 
                         <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                            Current Role / Work:
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
+                            <span>Role Badge (Top Pill):</span>
+                            <span className="text-emerald-700 font-normal">● Green pulse</span>
                           </label>
                           <input
                             type="text"
@@ -3258,13 +3273,18 @@ export default function AdminPage() {
                                 },
                               }));
                             }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "Role badge updated!")}
                             className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
                           />
+                          <p className="font-mono text-[9.5px] text-stone-500 mt-0.5">
+                            Photo chin ka top badge (e.g. Teaching Assistant).
+                          </p>
                         </div>
 
                         <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                            Workplace / Institution:
+                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
+                            <span>Institution Badge (Lower Pill):</span>
+                            <span className="text-amber-700 font-normal">Amber chip</span>
                           </label>
                           <input
                             type="text"
@@ -3282,8 +3302,12 @@ export default function AdminPage() {
                                 },
                               }));
                             }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "Workplace badge updated!")}
                             className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
                           />
+                          <p className="font-mono text-[9.5px] text-stone-500 mt-0.5">
+                            Role ke theek neeche institution badge (e.g. IIT Madras).
+                          </p>
                         </div>
 
                         <div>
@@ -3299,10 +3323,26 @@ export default function AdminPage() {
                                 personal: { ...prev.personal, location: e.target.value },
                               }))
                             }
+                            onBlur={() => saveInstantly(portfolioRef.current, "Location updated!")}
                             className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
                             placeholder="e.g. Chennai, India"
                           />
+                          <p className="font-mono text-[9.5px] text-stone-500 mt-0.5">
+                            Photo chin ke bottom me pin ke saath show hota hai.
+                          </p>
                         </div>
+                      </div>
+
+                      {/* Save Button for Photo Frame */}
+                      <div className="pt-2 flex items-center justify-end">
+                        <button
+                          type="button"
+                          onClick={() => saveInstantly(portfolioRef.current, "Photo frame & badges saved to Supabase cloud!")}
+                          className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs active:translate-y-0.5"
+                        >
+                          <Save className="w-3.5 h-3.5" />
+                          <span>Save Frame & Badges</span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -3630,109 +3670,283 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* ── 2C. AUTO-HIGHLIGHT KEYWORDS CONTROLLER ── */}
-                <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-300 space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-2">
+                {/* ── 2C. STATEMENT & BIO HIGHLIGHT COLOR & KEYWORDS MANAGER ── */}
+                <div className="p-5 sm:p-6 rounded-3xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-4">
+                  {/* Header & Status */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200 pb-3">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-700" />
-                      <span className="font-mono text-xs font-black uppercase text-amber-950">
-                        Automatic Keywords Highlighting:
+                      <span className="p-1.5 rounded-xl bg-amber-100 text-amber-900 border border-amber-300">
+                        <Sparkles className="w-4 h-4 text-amber-700" />
                       </span>
+                      <div>
+                        <h4 className="font-mono text-xs font-black uppercase text-stone-900">
+                          Highlight Color & Keyword Markers
+                        </h4>
+                        <p className="font-mono text-[10px] text-stone-500">
+                          Persona Statement aur Bio me keywords ko highlight karne ka simple controller.
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Toggle to turn auto-highlight on/off */}
                     <button
                       type="button"
                       onClick={() =>
                         setPortfolio((prev) => {
                           const current = prev.personal.aboutHighlightedWords;
-                          // If active, clear it; if empty, restore default keywords
-                          const nextVal = current ? "" : "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning";
-                          return {
+                          const nextVal = current ? "" : "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning, Scientific Computing";
+                          const nextPort = {
                             ...prev,
                             personal: { ...prev.personal, aboutHighlightedWords: nextVal },
                           };
+                          saveInstantly(nextPort, nextVal ? "Auto-highlighting enabled" : "Auto-highlighting paused");
+                          return nextPort;
                         })
                       }
-                      className={`px-3 py-1 rounded-full font-mono text-[10px] font-black uppercase transition-all cursor-pointer border ${
+                      className={`px-3 py-1.5 rounded-full font-mono text-[10px] font-black uppercase transition-all cursor-pointer border ${
                         portfolio.personal.aboutHighlightedWords
                           ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
                           : "bg-stone-200 text-stone-600 border-stone-300"
                       }`}
                     >
-                      {portfolio.personal.aboutHighlightedWords ? "● AUTO-HIGHLIGHT: ON" : "○ AUTO-HIGHLIGHT: OFF (MANUAL ONLY)"}
+                      {portfolio.personal.aboutHighlightedWords ? "● HIGHLIGHTS: ACTIVE" : "○ HIGHLIGHTS: PAUSED"}
                     </button>
                   </div>
 
-                  {portfolio.personal.aboutHighlightedWords ? (
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Keywords to Automatically Highlight (Comma Separated):
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.aboutHighlightedWords}
-                          onChange={(e) =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, aboutHighlightedWords: e.target.value },
-                            }))
-                          }
-                          className="w-full px-3.5 py-2 rounded-xl bg-white border border-amber-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                          placeholder="e.g. Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"
-                        />
-                      </div>
+                  {/* 1. Dedicated Color Picker Bar */}
+                  <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[11px] font-bold text-stone-800 flex items-center gap-1.5">
+                        <Palette className="w-3.5 h-3.5 text-stone-600" />
+                        <span>Select Portfolio Highlight Color:</span>
+                      </span>
+                      <span className="font-mono text-[10px] font-black uppercase px-2 py-0.5 rounded bg-white border border-stone-200 text-stone-700">
+                        {portfolio.personal.aboutHighlightColor || "#f43f5e"}
+                      </span>
+                    </div>
 
-                      {/* Pick color for auto-highlighting */}
-                      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-                        <span className="font-mono text-[11px] text-stone-700 font-bold">
-                          Auto-Keyword Color:
-                        </span>
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          {PORTFOLIO_HIGHLIGHT_PALETTE.map((c) => (
-                            <button
-                              key={c.hex}
-                              type="button"
-                              onClick={() =>
-                                setPortfolio((prev) => ({
-                                  ...prev,
-                                  personal: { ...prev.personal, aboutHighlightColor: c.hex },
-                                }))
-                              }
-                              className={`w-6 h-6 rounded-full border transition-all cursor-pointer ${
-                                (portfolio.personal.aboutHighlightColor || "#f59e0b").toLowerCase() === c.hex.toLowerCase()
-                                  ? "border-black scale-110 shadow-xs ring-2 ring-black"
-                                  : "border-stone-300 hover:scale-105"
-                              }`}
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      {PORTFOLIO_HIGHLIGHT_PALETTE.map((c) => {
+                        const isCurrent =
+                          (portfolio.personal.aboutHighlightColor || "#f43f5e").toLowerCase() ===
+                          c.hex.toLowerCase();
+                        return (
+                          <button
+                            key={c.hex}
+                            type="button"
+                            onClick={() => {
+                              const nextPort = {
+                                ...portfolio,
+                                personal: { ...portfolio.personal, aboutHighlightColor: c.hex },
+                              };
+                              setPortfolio(nextPort);
+                              setHighlighterColor(c.hex);
+                              saveInstantly(nextPort, `Highlight color changed to ${c.name}!`);
+                            }}
+                            className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold border transition-all cursor-pointer flex items-center gap-2 ${
+                              isCurrent
+                                ? "bg-black text-white border-black shadow-md scale-105"
+                                : "bg-white text-stone-800 border-stone-300 hover:border-black"
+                            }`}
+                          >
+                            <span
+                              className="w-3.5 h-3.5 rounded-full border border-black/20 shrink-0"
                               style={{ backgroundColor: c.hex }}
-                              title={`Set auto-highlight to ${c.name}`}
                             />
-                          ))}
-                          <div className="flex items-center gap-1 pl-2 border-l border-stone-300">
-                            <input
-                              type="color"
-                              value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
-                              onChange={(e) =>
-                                setPortfolio((prev) => ({
-                                  ...prev,
-                                  personal: { ...prev.personal, aboutHighlightColor: e.target.value },
-                                }))
-                              }
-                              className="w-5 h-5 rounded cursor-pointer border-0 p-0 bg-transparent"
-                            />
-                            <span className="font-mono text-[10px] font-bold text-stone-600 uppercase">
-                              {portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                            <span>{c.name}</span>
+                            <span
+                              className={`text-[9px] uppercase px-1 py-0.2 rounded font-mono ${
+                                isCurrent ? "bg-white/20 text-white" : "bg-stone-100 text-stone-500"
+                              }`}
+                            >
+                              {c.label}
                             </span>
-                          </div>
-                        </div>
+                          </button>
+                        );
+                      })}
+
+                      {/* Native HTML Color Wheel */}
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-stone-300 ml-auto shadow-2xs">
+                        <input
+                          type="color"
+                          value={portfolio.personal.aboutHighlightColor || "#f43f5e"}
+                          onChange={(e) => {
+                            const newHex = e.target.value;
+                            const nextPort = {
+                              ...portfolio,
+                              personal: { ...portfolio.personal, aboutHighlightColor: newHex },
+                            };
+                            setPortfolio(nextPort);
+                            setHighlighterColor(newHex);
+                          }}
+                          onBlur={(e) => {
+                            saveInstantly(portfolioRef.current, `Saved highlight color: ${e.target.value}`);
+                          }}
+                          className="w-6 h-6 rounded-lg cursor-pointer border-0 p-0 bg-transparent"
+                          title="Pick custom color"
+                        />
+                        <span className="font-mono text-xs font-black text-stone-800 uppercase">
+                          {portfolio.personal.aboutHighlightColor || "#f43f5e"}
+                        </span>
                       </div>
                     </div>
-                  ) : (
-                    <p className="font-mono text-xs text-stone-600 italic">
-                      Auto-highlight band hai. Ab sirf wahi words highlight honge jinhe aap upar swatches se manually highlight karenge!
-                    </p>
-                  )}
+                  </div>
+
+                  {/* 2. Interactive Word & Phrase Tags Cloud */}
+                  <div className="space-y-2.5">
+                    <label className="block font-mono text-[11px] font-bold text-stone-700">
+                      Highlighted Words in Statement & Bio:
+                    </label>
+
+                    {/* Chips Display */}
+                    <div className="flex flex-wrap gap-1.5 p-3 rounded-2xl bg-stone-50 border border-stone-200 min-h-[44px]">
+                      {(() => {
+                        const activeColor = portfolio.personal.aboutHighlightColor || "#f43f5e";
+                        const words = (portfolio.personal.aboutHighlightedWords || "")
+                          .split(",")
+                          .map((w) => w.trim())
+                          .filter(Boolean);
+
+                        if (words.length === 0) {
+                          return (
+                            <span className="font-mono text-xs text-stone-400 italic">
+                              Koi keyword add nahi hai. Neeche input me type karke &quot;Add Word&quot; karein.
+                            </span>
+                          );
+                        }
+
+                        return words.map((word) => (
+                          <span
+                            key={word}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border transition-all shadow-2xs"
+                            style={{
+                              backgroundColor: `${activeColor}18`,
+                              color: activeColor,
+                              borderColor: `${activeColor}50`,
+                            }}
+                          >
+                            <span>{word}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const remaining = words.filter((w) => w.toLowerCase() !== word.toLowerCase()).join(", ");
+                                const nextPort = {
+                                  ...portfolio,
+                                  personal: { ...portfolio.personal, aboutHighlightedWords: remaining },
+                                };
+                                setPortfolio(nextPort);
+                                saveInstantly(nextPort, `Removed highlight: "${word}"`);
+                              }}
+                              className="w-4 h-4 rounded-full bg-black/10 hover:bg-black/25 flex items-center justify-center text-[10px] cursor-pointer"
+                              title={`Remove "${word}"`}
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        ));
+                      })()}
+                    </div>
+
+                    {/* Add Word Input Row */}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={newKeywordInput}
+                        onChange={(e) => setNewKeywordInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const val = newKeywordInput.trim();
+                            if (!val) return;
+                            const words = (portfolio.personal.aboutHighlightedWords || "")
+                              .split(",")
+                              .map((w) => w.trim())
+                              .filter(Boolean);
+                            if (!words.some((w) => w.toLowerCase() === val.toLowerCase())) {
+                              const updated = [...words, val].join(", ");
+                              const nextPort = {
+                                ...portfolio,
+                                personal: { ...portfolio.personal, aboutHighlightedWords: updated },
+                              };
+                              setPortfolio(nextPort);
+                              setNewKeywordInput("");
+                              saveInstantly(nextPort, `Added highlight keyword: "${val}"`);
+                            }
+                          }
+                        }}
+                        placeholder="Type word to highlight (e.g. Data Science, Machine Learning)..."
+                        className="flex-1 px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const val = newKeywordInput.trim();
+                          if (!val) return;
+                          const words = (portfolio.personal.aboutHighlightedWords || "")
+                            .split(",")
+                            .map((w) => w.trim())
+                            .filter(Boolean);
+                          if (!words.some((w) => w.toLowerCase() === val.toLowerCase())) {
+                            const updated = [...words, val].join(", ");
+                            const nextPort = {
+                              ...portfolio,
+                              personal: { ...portfolio.personal, aboutHighlightedWords: updated },
+                            };
+                            setPortfolio(nextPort);
+                            setNewKeywordInput("");
+                            saveInstantly(nextPort, `Added highlight keyword: "${val}"`);
+                          }
+                        }}
+                        className="px-4 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs shrink-0 active:translate-y-0.5"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Word</span>
+                      </button>
+                    </div>
+
+                    {/* Quick 1-Click Common Suggestions */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="font-mono text-[10px] text-stone-500 font-bold">Quick Suggestions:</span>
+                      {[
+                        "Harsh Aryan",
+                        "Artificial Intelligence",
+                        "Data Science",
+                        "Machine Learning",
+                        "Scientific Computing",
+                        "IIT Madras",
+                        "Python",
+                      ].map((preset) => {
+                        const words = (portfolio.personal.aboutHighlightedWords || "")
+                          .split(",")
+                          .map((w) => w.trim().toLowerCase());
+                        const isAdded = words.includes(preset.toLowerCase());
+                        if (isAdded) return null;
+
+                        return (
+                          <button
+                            key={preset}
+                            type="button"
+                            onClick={() => {
+                              const curr = (portfolio.personal.aboutHighlightedWords || "")
+                                .split(",")
+                                .map((w) => w.trim())
+                                .filter(Boolean);
+                              const updated = [...curr, preset].join(", ");
+                              const nextPort = {
+                                ...portfolio,
+                                personal: { ...portfolio.personal, aboutHighlightedWords: updated },
+                              };
+                              setPortfolio(nextPort);
+                              saveInstantly(nextPort, `Added highlight keyword: "${preset}"`);
+                            }}
+                            className="px-2 py-0.5 rounded-lg bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-700 font-mono text-[10px] font-bold cursor-pointer transition-all"
+                          >
+                            + {preset}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
                 {/* ── 2D. FULL COMBINED LIVE PERSONA PREVIEW (EXACT WEBSITE REPLICA) ── */}
@@ -3795,14 +4009,25 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleAddQuickStat}
-                    className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Stat Capsule</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => saveInstantly(portfolioRef.current, "Key Benchmarks saved to Supabase cloud!")}
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black border-2 border-black font-mono text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0_#000] active:translate-y-0.5"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Benchmarks</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleAddQuickStat}
+                      className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Stat Capsule</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Edit Form Grid */}
@@ -3960,6 +4185,7 @@ export default function AdminPage() {
                             type="text"
                             value={stat.value}
                             onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
+                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} stat value!`)}
                             className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
                             placeholder="e.g. 5+ / 150+ / AI & DS"
                           />
@@ -3974,6 +4200,7 @@ export default function AdminPage() {
                             type="text"
                             value={stat.label}
                             onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
+                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} label!`)}
                             className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
                             placeholder="e.g. CERTIFICATIONS"
                           />
@@ -3988,6 +4215,7 @@ export default function AdminPage() {
                             type="text"
                             value={stat.sublabel}
                             onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
+                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} note!`)}
                             className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-[11px] text-stone-600 focus:border-black focus:outline-none"
                             placeholder="e.g. Courses & Hackathons"
                           />

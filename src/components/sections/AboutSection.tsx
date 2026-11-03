@@ -367,29 +367,35 @@ export function FormattedHighlightedText({
 
       // 5. Keyword Auto-Matching
       if (keywordsList.length > 0) {
-        const escaped = keywordsList
+        const sorted = [...keywordsList].filter(Boolean).sort((a, b) => b.length - a.length);
+        const escaped = sorted
           .map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+          .filter(Boolean)
           .join("|");
-        const kwRegex = new RegExp(`(${escaped})`, "gi");
-        const subParts = part.split(kwRegex);
-        subParts.forEach((sub, sIdx) => {
-          const isMatch = keywordsList.some(
-            (kw) => kw.toLowerCase() === sub.toLowerCase()
-          );
-          if (isMatch) {
-            tokens.push(
-              <span
-                key={`${idx}-${sIdx}`}
-                className="font-bold transition-colors duration-200"
-                style={{ color: highlightColor || "#f59e0b" }}
-              >
-                {sub}
-              </span>
+        if (escaped) {
+          const kwRegex = new RegExp(`(${escaped})`, "gi");
+          const subParts = part.split(kwRegex);
+          subParts.forEach((sub, sIdx) => {
+            const isMatch = sorted.some(
+              (kw) => kw.toLowerCase() === sub.toLowerCase()
             );
-          } else {
-            tokens.push(sub);
-          }
-        });
+            if (isMatch) {
+              tokens.push(
+                <span
+                  key={`${idx}-${sIdx}`}
+                  className="font-bold transition-colors duration-200"
+                  style={{ color: highlightColor || "#f59e0b" }}
+                >
+                  {sub}
+                </span>
+              );
+            } else {
+              tokens.push(sub);
+            }
+          });
+        } else {
+          tokens.push(part);
+        }
       } else {
         tokens.push(part);
       }
