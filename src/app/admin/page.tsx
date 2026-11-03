@@ -102,14 +102,26 @@ export default function AdminPage() {
   const [inactivityNotice, setInactivityNotice] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // CMS Form State - only initialize on mount to protect user inputs from being wiped out
-  const [portfolio, setPortfolio] = useState<PortfolioData>(initialData);
+  // CMS Form State & Smart Initialization
+  const [portfolio, setPortfolioState] = useState<PortfolioData>(initialData);
   const isFormInitializedRef = React.useRef(false);
+  const isDirtyRef = React.useRef(false);
+  const portfolioRef = React.useRef<PortfolioData>(portfolio);
+  portfolioRef.current = portfolio;
 
+  const setPortfolio: React.Dispatch<React.SetStateAction<PortfolioData>> = React.useCallback((action) => {
+    isDirtyRef.current = true;
+    setPortfolioState(action);
+  }, []);
+
+  // Seamlessly populate form with real stored data on mount or when remote data syncs
   useEffect(() => {
-    if (!isFormInitializedRef.current && initialData && initialData.personal) {
-      setPortfolio(initialData);
-      isFormInitializedRef.current = true;
+    if (initialData && initialData.personal) {
+      if (!isFormInitializedRef.current || !isDirtyRef.current) {
+        setPortfolioState(initialData);
+        portfolioRef.current = initialData;
+        isFormInitializedRef.current = true;
+      }
     }
   }, [initialData]);
   type AdminTab = "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
@@ -826,21 +838,28 @@ export default function AdminPage() {
   }, [isAuthenticated]);
 
   // ── Central Instant Save Handler (Reflects Fatak Se Without Bugs) ──
-  const saveInstantly = async (dataToSave: PortfolioData, successMsg: string = "Saved to Socius!") => {
+  const saveInstantly = async (dataToSave?: PortfolioData, successMsg: string = "Saved to Socius!") => {
+    const payload = dataToSave || portfolioRef.current || portfolio;
     setIsSaving(true);
     setSaveError("");
     try {
-      const success = await updateData(dataToSave);
-      if (success) {
+      const result = await updateData(payload);
+      if (result.success) {
+        isDirtyRef.current = false;
+        if (result.data) {
+          setPortfolioState(result.data);
+          portfolioRef.current = result.data;
+        }
         setToastMessage(successMsg);
         setTimeout(() => setToastMessage(null), 3500);
       } else {
-        setSaveError("Failed to save. Make sure server is reachable.");
-        setTimeout(() => setSaveError(""), 4000);
+        const errorMsg = result.error || "Failed to save. Make sure server is reachable.";
+        setSaveError(errorMsg);
+        setTimeout(() => setSaveError(""), 5000);
       }
-    } catch (err) {
-      setSaveError("Error saving data to Socius.");
-      setTimeout(() => setSaveError(""), 4000);
+    } catch (err: any) {
+      setSaveError(err?.message || "Error saving data to Socius.");
+      setTimeout(() => setSaveError(""), 5000);
     } finally {
       setIsSaving(false);
     }
@@ -848,7 +867,7 @@ export default function AdminPage() {
 
   // Handle Save All button
   const handleSaveAll = async () => {
-    await saveInstantly(portfolio, "All changes saved successfully!");
+    await saveInstantly(portfolioRef.current || portfolio, "All changes saved successfully!");
   };
 
   // ── Project Category Actions ──
@@ -1407,6 +1426,13 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-[#f7f3ea] dark:bg-[#0c0d14] text-stone-900 dark:text-stone-100 selection:bg-amber-400 selection:text-black font-sans flex flex-col md:flex-row relative">
       {/* ── Instant Save Toast Notification (Fatak Se Feedback) ── */}
+      {isSaving && !toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-amber-400 text-black font-mono text-xs font-black uppercase tracking-wider shadow-[0_10px_30px_rgba(0,0,0,0.3)] border-2 border-black animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <RefreshCw className="w-4 h-4 animate-spin text-black shrink-0" />
+          <span>Saving changes...</span>
+        </div>
+      )}
+
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-black text-white font-mono text-xs font-bold shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/20 animate-in fade-in slide-in-from-bottom-3 duration-200">
           <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -1415,7 +1441,7 @@ export default function AdminPage() {
       )}
 
       {saveError && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-red-600 text-white font-mono text-xs font-bold shadow-lg">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-rose-600 text-white font-mono text-xs font-bold shadow-lg border-2 border-black">
           <AlertCircle className="w-4 h-4 text-white shrink-0" />
           <span>{saveError}</span>
         </div>
@@ -2683,6 +2709,19 @@ export default function AdminPage() {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Bottom Final Save Button for Cover Hero */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                <span>{isSaving ? "Saving..." : "Save Cover Settings"}</span>
+              </button>
             </div>
           </div>
         )}
@@ -4423,7 +4462,7 @@ export default function AdminPage() {
                             });
                           }}
                           onBlur={() => {
-                            saveInstantly(portfolio, `Saved category "${cat.category}"`);
+                            saveInstantly(portfolioRef.current, `Saved category "${cat.category}"`);
                           }}
                           className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black text-stone-900 focus:border-black focus:outline-none uppercase"
                         />
@@ -5310,11 +5349,11 @@ export default function AdminPage() {
 
               <button
                 type="button"
-                onClick={() => saveInstantly(portfolio, "✓ Contact page & dispatch settings updated successfully!")}
+                onClick={() => saveInstantly(portfolioRef.current, "✓ Contact page & dispatch settings updated successfully!")}
                 disabled={isSaving}
-                className="px-5 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold shadow-[2px_2px_0_#666] active:translate-y-0.5 cursor-pointer flex items-center gap-2 self-start sm:self-auto shrink-0"
+                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] active:translate-y-0.5 cursor-pointer flex items-center gap-2 self-start sm:self-auto shrink-0"
               >
-                <Save className="w-4 h-4" />
+                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>{isSaving ? "Saving..." : "Save Contact Settings"}</span>
               </button>
             </div>
@@ -5971,6 +6010,19 @@ export default function AdminPage() {
                 </div>
               </div>
             )}
+
+            {/* Bottom Final Save Button for Contact */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => saveInstantly(portfolioRef.current, "✓ Contact page & dispatch settings updated successfully!")}
+                disabled={isSaving}
+                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                <span>{isSaving ? "Saving..." : "Save Contact Settings"}</span>
+              </button>
+            </div>
           </div>
         )}
         </main>
@@ -6124,9 +6176,11 @@ export default function AdminPage() {
               <button
                 type="button"
                 onClick={handleSaveProject}
-                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black uppercase border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer"
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black uppercase border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5"
               >
-                Save Project
+                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                <span>{isSaving ? "Saving..." : "Save Project"}</span>
               </button>
             </div>
           </div>
@@ -6489,9 +6543,11 @@ export default function AdminPage() {
               <button
                 type="button"
                 onClick={handleSaveCert}
-                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black uppercase border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer"
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black uppercase border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5"
               >
-                Save Certificate
+                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                <span>{isSaving ? "Saving..." : "Save Certificate"}</span>
               </button>
             </div>
           </div>
@@ -6710,9 +6766,11 @@ export default function AdminPage() {
               <button
                 type="button"
                 onClick={handleSaveLaurel}
-                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black uppercase border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer"
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black uppercase border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5"
               >
-                Save Entry
+                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                <span>{isSaving ? "Saving..." : "Save Entry"}</span>
               </button>
             </div>
           </div>

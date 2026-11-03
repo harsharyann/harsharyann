@@ -1,11 +1,11 @@
 /**
  * Client-Side Image Compressor
  * Automatically resizes and compresses high-res phone camera shots (5-15MB)
- * into high-quality, lightweight web JPEGs (< 250KB).
+ * into high-quality, lightweight web JPEGs (< 120KB).
  * Prevents localStorage QuotaExceededError and Next.js / Vercel 413 Payload Too Large errors.
  */
 
-export function compressImageFile(file: File, maxDim = 1280, quality = 0.82): Promise<string> {
+export function compressImageFile(file: File, maxDim = 960, quality = 0.75): Promise<string> {
   return new Promise((resolve, reject) => {
     // If it's not an image, reject
     if (!file.type.startsWith("image/")) {
@@ -35,11 +35,15 @@ export function compressImageFile(file: File, maxDim = 1280, quality = 0.82): Pr
         const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
         if (!ctx) {
           resolve(e.target?.result as string);
           return;
         }
+
+        // Fill canvas with white background before drawing (for transparent PNG conversion)
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
 
         // Draw image resized
         ctx.drawImage(img, 0, 0, width, height);

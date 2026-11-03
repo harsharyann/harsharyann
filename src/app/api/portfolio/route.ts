@@ -3,9 +3,10 @@ import { revalidatePath } from "next/cache";
 import { getStoredPortfolioData, saveStoredPortfolioData, resetStoredPortfolioData } from "@/lib/portfolioStore";
 import { isAuthenticated } from "@/lib/auth";
 
+
 export async function GET(req: Request) {
-  // Reading url or headers forces dynamic execution
-  const url = new URL(req.url);
+  // Reading url forces dynamic execution
+  new URL(req.url);
   const data = getStoredPortfolioData();
   return NextResponse.json(data, {
     headers: {
@@ -19,7 +20,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const authed = await isAuthenticated();
   if (!authed && process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized access: Admin session expired or invalid" }, { status: 401 });
   }
 
   try {
@@ -30,22 +31,27 @@ export async function POST(req: Request) {
 
     const success = saveStoredPortfolioData(updatedData);
     if (!success) {
-      return NextResponse.json({ error: "Failed to save portfolio data" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to persist portfolio data" }, { status: 500 });
     }
 
-    // Automatically revalidate root layout, pages, and SEO sitemap
+    // Fast, non-blocking path revalidation for main public site
     try {
-      revalidatePath("/", "layout");
-      revalidatePath("/sitemap.xml");
-      revalidatePath("/robots.txt");
+      revalidatePath("/");
     } catch (e) {
       console.warn("Revalidation notice:", e);
     }
 
-    return NextResponse.json({ success: true, data: updatedData });
-  } catch (err) {
+    return NextResponse.json(
+      { success: true, data: updatedData },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        },
+      }
+    );
+  } catch (err: any) {
     console.error("Save portfolio error:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json({ error: err?.message || "Server error while saving" }, { status: 500 });
   }
 }
 
@@ -61,9 +67,7 @@ export async function PUT() {
   }
 
   try {
-    revalidatePath("/", "layout");
-    revalidatePath("/sitemap.xml");
-    revalidatePath("/robots.txt");
+    revalidatePath("/");
   } catch (e) {
     console.warn("Revalidation notice:", e);
   }

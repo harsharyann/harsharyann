@@ -1,12 +1,20 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { portfolioData as initialDefaultData, PortfolioData } from "@/data/portfolioData";
+
+export interface SaveResult {
+  success: boolean;
+  error?: string;
+  data?: PortfolioData;
+}
 
 interface PortfolioContextType {
   data: PortfolioData;
   isLoading: boolean;
-  updateData: (newData: PortfolioData) => Promise<boolean>;
+  isSaving: boolean;
+  lastSaveError: string | null;
+  updateData: (newData: PortfolioData) => Promise<SaveResult>;
   resetData: () => Promise<boolean>;
   refreshData: () => Promise<void>;
   isCoverOpen: boolean;
@@ -17,7 +25,9 @@ interface PortfolioContextType {
 const PortfolioContext = createContext<PortfolioContextType>({
   data: initialDefaultData,
   isLoading: false,
-  updateData: async () => false,
+  isSaving: false,
+  lastSaveError: null,
+  updateData: async () => ({ success: false, error: "Not initialized" }),
   resetData: async () => false,
   refreshData: async () => {},
   isCoverOpen: true,
@@ -38,7 +48,12 @@ export function PortfolioProvider({
 }) {
   const [data, setData] = useState<PortfolioData>(initialData || initialDefaultData);
   const [isLoading, setIsLoading] = useState<boolean>(!initialData);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [lastSaveError, setLastSaveError] = useState<string | null>(null);
   const [isCoverOpen, setIsCoverOpen] = useState<boolean>(true);
+
+  const isSavingRef = useRef(false);
+  const lastRefreshTimeRef = useRef(0);
 
   // Clear legacy poisoned localStorage cache (e.g. from previous dummy projects)
   useEffect(() => {
@@ -111,7 +126,15 @@ export function PortfolioProvider({
     }
   }, []);
 
-  const refreshData = useCallback(async () => {
+  const refreshData = useCallback(async (force = false) => {
+    // Prevent refetching while a save is currently in progress
+    if (isSavingRef.current && !force) return;
+
+    const now = Date.now();
+    // Throttle background refreshes to at most once every 30 seconds unless forced
+    if (!force && now - lastRefreshTimeRef.current < 30000) return;
+    lastRefreshTimeRef.current = now;
+
     // 1. Fetch latest synced data from server in the background (authoritative source)
     try {
       const res = await fetch(`/api/portfolio?_t=${Date.now()}`, {
@@ -120,12 +143,14 @@ export function PortfolioProvider({
       });
       if (res.ok) {
         const json = await res.json();
-        if (json && json.personal) {
+        if (json && json.personal && !isSavingRef.current) {
           setData(json);
           if (typeof window !== "undefined") {
             try {
               localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(json));
-            } catch {}
+            } catch (quotaErr) {
+              console.warn("localStorage quota warning:", quotaErr);
+            }
           }
           return;
         }
@@ -142,7 +167,7 @@ export function PortfolioProvider({
         const local = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (local) {
           const parsed = JSON.parse(local);
-          if (parsed && parsed.personal) {
+          if (parsed && parsed.personal && !isSavingRef.current) {
             setData(parsed);
           }
         }
@@ -150,17 +175,29 @@ export function PortfolioProvider({
     }
   }, []);
 
+  // Hydrate from localStorage immediately on mount for zero-lag initial render
   useEffect(() => {
-    refreshData();
+    if (typeof window !== "undefined") {
+      try {
+        const local = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (parsed && parsed.personal) {
+            setData(parsed);
+          }
+        }
+      } catch {}
+    }
+    refreshData(true);
   }, [refreshData]);
 
-  // ── Instant Cross-Tab & In-Tab Sync Listener (Reflects Fatak Se) ──
+  // ── Instant Cross-Tab & In-Tab Sync Listener ──
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     // 1. Cross-tab storage listener: fires when another tab (e.g. /admin) writes to localStorage
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === LOCAL_STORAGE_KEY && e.newValue) {
+      if (e.key === LOCAL_STORAGE_KEY && e.newValue && !isSavingRef.current) {
         try {
           const parsed = JSON.parse(e.newValue);
           if (parsed && parsed.personal) {
@@ -178,10 +215,10 @@ export function PortfolioProvider({
       }
     };
 
-    // 3. Tab visibility / focus refetch
+    // 3. Tab visibility / focus refetch (safe, throttled, and non-disruptive)
     const handleVisibility = () => {
-      if (document.visibilityState === "visible") {
-        refreshData();
+      if (document.visibilityState === "visible" && !isSavingRef.current) {
+        refreshData(false);
       }
     };
 
@@ -198,7 +235,11 @@ export function PortfolioProvider({
     };
   }, [refreshData]);
 
-  const updateData = async (newData: PortfolioData): Promise<boolean> => {
+  const updateData = async (newData: PortfolioData): Promise<SaveResult> => {
+    isSavingRef.current = true;
+    setIsSaving(true);
+    setLastSaveError(null);
+
     // Optimistically update React state and local storage immediately
     setData({ ...newData });
     if (typeof window !== "undefined") {
@@ -206,7 +247,7 @@ export function PortfolioProvider({
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newData));
         window.dispatchEvent(new CustomEvent("portfolio-data-synced", { detail: newData }));
       } catch (e) {
-        console.warn("localStorage write error:", e);
+        console.warn("localStorage write warning:", e);
       }
     }
 
@@ -226,18 +267,34 @@ export function PortfolioProvider({
           try {
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedData));
           } catch (e) {
-            console.warn("localStorage write error:", e);
+            console.warn("localStorage write warning:", e);
           }
         }
-        return true;
+        isSavingRef.current = false;
+        setIsSaving(false);
+        return { success: true, data: savedData };
       }
 
       const errResult = await res.json().catch(() => ({}));
+      const errorMsg =
+        res.status === 401
+          ? "Admin session expired or unauthorized. Please re-login with Google."
+          : res.status === 413
+          ? "Data payload is too large. If you uploaded an image, please use a Google Drive direct link."
+          : errResult.error || `Server returned error (${res.status})`;
+
       console.error("Save to /api/portfolio failed:", res.status, errResult);
-      return false;
-    } catch (err) {
+      setLastSaveError(errorMsg);
+      isSavingRef.current = false;
+      setIsSaving(false);
+      return { success: false, error: errorMsg };
+    } catch (err: any) {
+      const errorMsg = err?.message ? `Network error: ${err.message}` : "Failed to connect to server.";
       console.error("Failed to update portfolio data:", err);
-      return false;
+      setLastSaveError(errorMsg);
+      isSavingRef.current = false;
+      setIsSaving(false);
+      return { success: false, error: errorMsg };
     }
   };
 
@@ -268,6 +325,8 @@ export function PortfolioProvider({
       value={{
         data,
         isLoading,
+        isSaving,
+        lastSaveError,
         updateData,
         resetData,
         refreshData,
