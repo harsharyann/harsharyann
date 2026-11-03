@@ -2479,16 +2479,33 @@ export default function AdminPage() {
                       <Eye className="w-3 h-3 text-amber-500" />
                       <span>Live Credentials Header Preview</span>
                     </div>
-                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
-                      <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
-                        {portfolio.personal.certificatesHeading || "Certifications and Laurels"}
-                      </h3>
-                      <svg className="w-36 h-2 text-amber-500" viewBox="0 0 240 10" fill="none">
-                        <path d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
-                      </svg>
-                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
-                        {portfolio.personal.certificatesSubtitle || "Verified academic achievements, hackathon laurels, and institutional recognitions..."}
-                      </p>
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-3">
+                      <div>
+                        <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
+                          {portfolio.personal.certificatesHeading || "Certifications and Laurels"}
+                        </h3>
+                        <svg className="w-36 h-2 text-amber-500 my-1" viewBox="0 0 240 10" fill="none">
+                          <path d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+                        </svg>
+                        <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                          {portfolio.personal.certificatesSubtitle || "Verified academic achievements, hackathon laurels, and institutional recognitions..."}
+                        </p>
+                      </div>
+
+                      {/* Laurels Subsection Preview */}
+                      <div className="pt-2.5 border-t border-dashed border-stone-300 dark:border-stone-700 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="sketch-stamp font-black text-[10px]">
+                            {portfolio.personal.laurelsTitle || "LAURELS"}
+                          </span>
+                          <span className="font-mono text-[9px] font-bold text-stone-500">
+                            [HONORS &amp; ACCOLADES]
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-mono text-stone-600 dark:text-stone-400">
+                          {portfolio.personal.laurelsSubtitle || "Academic accolades, hackathon triumphs, research publications..."}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -362,21 +362,21 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
       {/* ── LAURELS SUBSECTION (Strictly managed via Admin Console) ── */}
       {showLaurelsSection && (
         <div className="pt-8 sm:pt-14 border-t-2 border-dashed border-black/30 dark:border-stone-800 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-black/15 dark:border-stone-800">
-            <div className="space-y-1.5 max-w-2xl">
-              <div className="flex items-center gap-3 flex-wrap">
-                <LaurelWreathDoodle />
-                <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading leading-none">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-black/15 dark:border-white/10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="sketch-stamp font-black text-xs sm:text-sm">
                   {portfolio?.personal?.laurelsTitle || "LAURELS"}
-                </h3>
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-black border-2 border-black font-mono text-[10px] font-black uppercase shadow-[1.5px_1.5px_0_#000] rotate-[1deg]">
-                  HONORS
+                </span>
+                <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
+                  [HONORS &amp; ACCOLADES]
                 </span>
               </div>
-              <p className="text-xs sm:text-sm font-mono text-stone-600 dark:text-stone-400">
+              <p className="text-xs font-mono text-stone-600 dark:text-stone-400">
                 {portfolio?.personal?.laurelsSubtitle || "Academic accolades, hackathon triumphs, research publications & technical literature."}
               </p>
             </div>
+            <LaurelWreathDoodle />
           </div>
 
           {visibleLaurels.length === 0 ? (
