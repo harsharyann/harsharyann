@@ -582,7 +582,7 @@ export function CircularProjectsCarousel({
                 </div>
 
                 {/* Project Description */}
-                <p className="text-stone-800 dark:text-stone-200 text-xs sm:text-[13px] leading-relaxed line-clamp-3 font-normal">
+                <p className="text-stone-800 dark:text-stone-200 text-xs sm:text-[13px] leading-relaxed font-normal">
                   {activeProject.description}
                 </p>
 

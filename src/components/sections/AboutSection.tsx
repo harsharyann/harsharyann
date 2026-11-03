@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePortfolio } from "@/context/PortfolioContext"
 import { formatGoogleDriveImageUrl } from "@/lib/googleDrive"
+import { resolveRoleTrack } from "@/lib/roleTrack"
 import {
   Brain,
   Code2,
@@ -33,7 +34,7 @@ import {
 function ThinkerLightbulbDoodle({ className = "", isPhone = false }: { className?: string; isPhone?: boolean }) {
   if (isPhone) {
     return (
-      <div className={`relative inline-flex items-center align-middle ${className}`} aria-hidden="true">
+      <div className={`relative inline-flex items-center align-middle animate-doodle-float ${className}`} aria-hidden="true">
         <svg
           viewBox="0 0 100 120"
           className="w-8 h-10 drop-shadow-[1.5px_1.5px_0_rgba(0,0,0,0.15)] filter"
@@ -43,12 +44,14 @@ function ThinkerLightbulbDoodle({ className = "", isPhone = false }: { className
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          {/* Glow rays */}
-          <path d="M 50 8 L 50 18" stroke="#f59e0b" strokeWidth="2.8" />
-          <path d="M 22 20 L 30 28" stroke="#f59e0b" strokeWidth="2.8" />
-          <path d="M 78 20 L 70 28" stroke="#f59e0b" strokeWidth="2.8" />
-          <path d="M 12 52 L 22 52" stroke="#f59e0b" strokeWidth="2.8" />
-          <path d="M 88 52 L 78 52" stroke="#f59e0b" strokeWidth="2.8" />
+          {/* Glow rays with animated pulse */}
+          <g className="animate-bulb-rays">
+            <path d="M 50 8 L 50 18" stroke="#f59e0b" strokeWidth="2.8" />
+            <path d="M 22 20 L 30 28" stroke="#f59e0b" strokeWidth="2.8" />
+            <path d="M 78 20 L 70 28" stroke="#f59e0b" strokeWidth="2.8" />
+            <path d="M 12 52 L 22 52" stroke="#f59e0b" strokeWidth="2.8" />
+            <path d="M 88 52 L 78 52" stroke="#f59e0b" strokeWidth="2.8" />
+          </g>
 
           {/* Bulb body with warm yellow fill */}
           <path
@@ -87,48 +90,54 @@ function ThinkerLightbulbDoodle({ className = "", isPhone = false }: { className
 
   return (
     <div className={`relative inline-flex items-center ${className}`} aria-hidden="true">
-      <svg
-        viewBox="0 0 100 120"
-        className="w-16 h-20 sm:w-20 sm:h-24 drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)] filter"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M 50 8 L 50 18" stroke="#f59e0b" strokeWidth="2.8" />
-        <path d="M 22 20 L 30 28" stroke="#f59e0b" strokeWidth="2.8" />
-        <path d="M 78 20 L 70 28" stroke="#f59e0b" strokeWidth="2.8" />
-        <path d="M 12 52 L 22 52" stroke="#f59e0b" strokeWidth="2.8" />
-        <path d="M 88 52 L 78 52" stroke="#f59e0b" strokeWidth="2.8" />
+      <div className="animate-doodle-float">
+        <svg
+          viewBox="0 0 100 120"
+          className="w-16 h-20 sm:w-20 sm:h-24 drop-shadow-[2px_2px_0_rgba(0,0,0,0.15)] filter"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* Animated pulsing glow rays */}
+          <g className="animate-bulb-rays">
+            <path d="M 50 8 L 50 18" stroke="#f59e0b" strokeWidth="2.8" />
+            <path d="M 22 20 L 30 28" stroke="#f59e0b" strokeWidth="2.8" />
+            <path d="M 78 20 L 70 28" stroke="#f59e0b" strokeWidth="2.8" />
+            <path d="M 12 52 L 22 52" stroke="#f59e0b" strokeWidth="2.8" />
+            <path d="M 88 52 L 78 52" stroke="#f59e0b" strokeWidth="2.8" />
+          </g>
 
-        <path
-          d="M 32 76 C 22 68 18 55 20 42 C 24 24 38 18 50 18 C 62 18 76 24 80 42 C 82 55 78 68 68 76 L 68 88 L 32 88 Z"
-          fill="#fef08a"
-          stroke="#000000"
-          className="dark:stroke-white dark:fill-amber-300/30"
-          strokeWidth="2.6"
-        />
+          <path
+            d="M 32 76 C 22 68 18 55 20 42 C 24 24 38 18 50 18 C 62 18 76 24 80 42 C 82 55 78 68 68 76 L 68 88 L 32 88 Z"
+            fill="#fef08a"
+            stroke="#000000"
+            className="dark:stroke-white dark:fill-amber-300/30"
+            strokeWidth="2.6"
+          />
 
-        <circle cx="44" cy="46" r="3.5" fill="#000000" className="dark:fill-white" stroke="none" />
-        <circle cx="58" cy="46" r="3.5" fill="#000000" className="dark:fill-white" stroke="none" />
-        <circle cx="45.5" cy="44.5" r="1.2" fill="#ffffff" stroke="none" />
-        <circle cx="59.5" cy="44.5" r="1.2" fill="#ffffff" stroke="none" />
+          <circle cx="44" cy="46" r="3.5" fill="#000000" className="dark:fill-white" stroke="none" />
+          <circle cx="58" cy="46" r="3.5" fill="#000000" className="dark:fill-white" stroke="none" />
+          <circle cx="45.5" cy="44.5" r="1.2" fill="#ffffff" stroke="none" />
+          <circle cx="59.5" cy="44.5" r="1.2" fill="#ffffff" stroke="none" />
 
-        <path d="M 48 54 Q 51 58 54 54" stroke="#000000" className="dark:stroke-white" strokeWidth="2" fill="none" />
-        <path d="M 40 34 Q 45 28 50 34 Q 55 28 60 34" stroke="#f59e0b" strokeWidth="2.2" fill="none" />
+          <path d="M 48 54 Q 51 58 54 54" stroke="#000000" className="dark:stroke-white" strokeWidth="2" fill="none" />
+          <path d="M 40 34 Q 45 28 50 34 Q 55 28 60 34" stroke="#f59e0b" strokeWidth="2.2" fill="none" />
 
-        <path d="M 36 94 L 64 94" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
-        <path d="M 39 100 L 61 100" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
-        <path d="M 44 106 L 56 106" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
-      </svg>
+          <path d="M 36 94 L 64 94" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
+          <path d="M 39 100 L 61 100" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
+          <path d="M 44 106 L 56 106" stroke="#000000" className="dark:stroke-white" strokeWidth="2.4" />
+        </svg>
+      </div>
 
       <div
-        className="hidden sm:block ml-2 px-3 py-1.5 bg-amber-100 dark:bg-stone-800 border-2 border-black dark:border-white rounded-xl shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] text-xs font-bold rotate-[-2deg]"
+        className="hidden sm:block ml-2 px-3 py-1.5 bg-amber-100 dark:bg-stone-800 border-2 border-black dark:border-white rounded-xl shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] text-xs font-bold rotate-[-2deg] animate-doodle-float-reverse transition-all duration-300 hover:rotate-0 hover:scale-105 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff] cursor-default group/sticker"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
-        <span className="text-amber-950 dark:text-amber-200 text-sm">
-          curiosity &gt; complexity 💡
+        <span className="text-amber-950 dark:text-amber-200 text-sm inline-flex items-center gap-1.5">
+          <span>curiosity &gt; complexity</span>
+          <span className="inline-block transition-transform duration-300 group-hover/sticker:scale-125 group-hover/sticker:rotate-12 animate-spark-glow">💡</span>
         </span>
       </div>
     </div>
@@ -168,7 +177,7 @@ function TrajectoryArrowDoodle({ className = "" }: { className?: string }) {
         <path d="M 102 44 L 103 48 L 107 49 L 103 50 L 102 54 L 101 50 L 97 49 L 101 48 Z" fill="#10b981" stroke="none" />
       </svg>
       <span
-        className="text-xs sm:text-sm font-bold text-purple-700 dark:text-purple-300 rotate-[-2deg]"
+        className="text-xs sm:text-sm font-bold text-purple-700 dark:text-purple-300 rotate-[-2deg] animate-doodle-float-reverse inline-block transition-transform duration-200 hover:scale-105 cursor-default"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
         step by step ✍️
@@ -224,7 +233,7 @@ function PaperPlaneFlightDoodle({ className = "" }: { className?: string }) {
         </g>
       </svg>
       <span
-        className="text-xs sm:text-sm font-bold text-cyan-700 dark:text-cyan-300 rotate-[1.5deg]"
+        className="text-xs sm:text-sm font-bold text-cyan-700 dark:text-cyan-300 rotate-[1.5deg] animate-doodle-float inline-block transition-transform duration-200 hover:scale-105 cursor-default"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
         ready for launch ✈️
@@ -240,7 +249,7 @@ function ExperienceBriefcaseDoodle() {
   return (
     <div className="relative inline-flex items-center gap-1.5 select-none" aria-hidden="true">
       <svg
-        className="w-8 sm:w-10 h-6 sm:h-7 text-amber-500 dark:text-amber-400 rotate-[3deg]"
+        className="w-8 sm:w-10 h-6 sm:h-7 text-amber-500 dark:text-amber-400 rotate-[3deg] animate-doodle-float"
         viewBox="0 0 44 32"
         fill="none"
         stroke="currentColor"
@@ -259,7 +268,7 @@ function ExperienceBriefcaseDoodle() {
         <rect x="20" y="15" width="4" height="4" rx="1" fill="#f59e0b" stroke="currentColor" strokeWidth="1.5" />
       </svg>
       <span
-        className="hidden sm:inline font-mono text-[11px] font-bold text-stone-500 dark:text-stone-400 tracking-wider"
+        className="hidden sm:inline font-mono text-[11px] font-bold text-stone-500 dark:text-stone-400 tracking-wider animate-doodle-float-reverse inline-block"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
         work track 💼
@@ -792,6 +801,37 @@ export function AboutSection({ id = "about" }: { id?: string }) {
         },
       ];
 
+  // Year-wise Experience state & chronological extraction
+  const [activeExpYear, setActiveExpYear] = React.useState<string>("all");
+
+  const expYearsList = React.useMemo(() => {
+    const years = new Set<string>();
+    experiencesList.forEach((exp) => {
+      if (exp.isCurrent || (exp.period && /present|current/i.test(exp.period))) {
+        years.add("Current");
+      }
+      const match = exp.period?.match(/\b(20\d{2})\b/g);
+      if (match) {
+        match.forEach((y) => years.add(y));
+      }
+    });
+    return Array.from(years).sort((a, b) => {
+      if (a === "Current") return -1;
+      if (b === "Current") return 1;
+      return Number(b) - Number(a);
+    });
+  }, [experiencesList]);
+
+  const filteredExperiences = React.useMemo(() => {
+    if (activeExpYear === "all") return experiencesList;
+    if (activeExpYear === "Current") {
+      return experiencesList.filter(
+        (exp) => exp.isCurrent || (exp.period && /present|current/i.test(exp.period))
+      );
+    }
+    return experiencesList.filter((exp) => exp.period?.includes(activeExpYear));
+  }, [experiencesList, activeExpYear]);
+
   // Dynamic milestone phases from portfolio state with fallback
   const timelineMilestones = (milestones && milestones.length > 0)
     ? milestones
@@ -912,23 +952,122 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                 </h3>
               </div>
 
-              {/* Current Work: Teaching Assistant & IIT Madras (Directly underneath, dynamic) */}
-              <div className="flex flex-col items-start gap-1 pt-0.5">
-                {/* Current Work / Role */}
-                {Boolean(personal.aboutCurrentWork || personal.role) && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/30 dark:border-emerald-500/40 text-stone-900 dark:text-stone-100 font-mono text-xs font-bold shadow-2xs">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                    <span>{personal.aboutCurrentWork || personal.role}</span>
-                  </div>
-                )}
+              {/* Current Role & Organization: Unified Live Status Module */}
+              {personal.showAboutRole !== false && (Boolean(personal.aboutCurrentWork || personal.role) || Boolean(personal.aboutWorkPlace)) && (() => {
+                const rawRole = (personal.aboutCurrentWork || personal.role || "").trim();
+                const workplace = (personal.aboutWorkPlace || "").trim();
+                
+                // If workplace exists and role already includes "@ workplace", avoid duplication
+                const displayRole = workplace && rawRole.toLowerCase().includes(`@ ${workplace.toLowerCase()}`)
+                  ? rawRole.replace(new RegExp(`\\s*@\\s*${workplace}`, 'i'), '').trim()
+                  : rawRole;
 
-                {/* Workplace directly underneath (Clean, dynamic) */}
-                {Boolean(personal.aboutWorkPlace) && (
-                  <div className="inline-flex items-center px-3 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-900/40 border border-amber-300/80 dark:border-amber-700/80 text-amber-950 dark:text-amber-200 font-mono text-xs font-bold shadow-2xs">
-                    <span>{personal.aboutWorkPlace}</span>
+                const track = resolveRoleTrack(rawRole, workplace, personal.aboutRoleType);
+                const tagText = (personal.aboutRoleTag || "").trim() || track.defaultTag;
+
+                return (
+                  <div className={`group/roleCard relative w-full overflow-hidden rounded-xl bg-gradient-to-br ${track.cardBg} p-2.5 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff]`}>
+                    {/* Technical blueprint grid texture */}
+                    <div 
+                      className="absolute inset-0 opacity-[0.05] dark:opacity-[0.10] pointer-events-none"
+                      style={{
+                        backgroundImage: `radial-gradient(currentColor 1px, transparent 1px)`,
+                        backgroundSize: '8px 8px',
+                      }}
+                    />
+
+                    {/* Subtle hover sheen sweep */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent -translate-x-full group-hover/roleCard:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
+
+                    {/* Top Bar: Live Radar Beacon + Track Icon + Track Pill */}
+                    <div className="relative z-10 flex items-center justify-between gap-2 pb-1.5 border-b border-black/10 dark:border-white/10">
+                      <div className="flex items-center gap-1.5">
+                        <span className="relative flex h-2 w-2">
+                          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.beaconRing} opacity-75`} />
+                          <span className={`relative inline-flex rounded-full h-2 w-2 ${track.beaconCore} ring-2 ring-emerald-500/20`} />
+                        </span>
+                        <span className={`font-mono text-[9.5px] font-black uppercase tracking-wider ${track.labelColor} flex items-center gap-1`}>
+                          {track.icon}
+                          <span>{track.label}</span>
+                        </span>
+                      </div>
+                      {Boolean(tagText) && (
+                        <span className={`font-mono text-[8px] sm:text-[8.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${track.tagBg}`}>
+                          {tagText}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Role Title & Organization Badge */}
+                    <div className="relative z-10 pt-1.5 flex flex-wrap items-center gap-1.5">
+                      {Boolean(displayRole) && (
+                        <span className="font-['Space_Grotesk'] text-xs sm:text-[13px] font-black uppercase tracking-tight text-black dark:text-white leading-tight">
+                          {displayRole}
+                        </span>
+                      )}
+
+                      {Boolean(workplace) && (
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md ${track.workplaceBadgeBg} font-mono text-[10.5px] sm:text-[11px] font-black tracking-wide shadow-2xs`}>
+                          <span className={`${track.workplaceAtColor} font-sans font-bold text-xs`}>@</span>
+                          <span>{workplace}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
+                );
+              })()}
+
+              {/* Current Education & Degree: Unified Academic Module (Hide / Unhideable) */}
+              {personal.showEducationBadge !== false && (Boolean(personal.aboutEducationDegree || personal.degree) || Boolean(personal.aboutEducationCollege || personal.college)) && (() => {
+                const rawDegree = (personal.aboutEducationDegree || personal.degree || "").trim();
+                const college = (personal.aboutEducationCollege || personal.college || "").trim();
+
+                const displayDegree = college && rawDegree.toLowerCase().includes(`@ ${college.toLowerCase()}`)
+                  ? rawDegree.replace(new RegExp(`\\s*@\\s*${college}`, 'i'), '').trim()
+                  : rawDegree;
+
+                return (
+                  <div className="group/eduCard relative w-full overflow-hidden rounded-xl bg-gradient-to-br from-sky-50/90 via-indigo-50/60 to-blue-50/90 dark:from-[#151a2d] dark:via-[#1c223c] dark:to-[#151a2d] p-2.5 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff]">
+                    {/* Subtle hover sheen sweep */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent -translate-x-full group-hover/eduCard:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
+
+                    {/* Top Bar: Academic Radar Beacon + Status Pill */}
+                    <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-black/10 dark:border-white/10">
+                      <div className="flex items-center gap-1.5">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500 ring-2 ring-sky-500/20" />
+                        </span>
+                        <span className="font-mono text-[9.5px] font-black uppercase tracking-wider text-sky-700 dark:text-sky-400 flex items-center gap-1">
+                          <GraduationCap className="w-3 h-3 text-sky-600 dark:text-sky-400" />
+                          <span>Education &middot; Current</span>
+                        </span>
+                      </div>
+                      {Boolean(college) && (
+                        <span className="font-mono text-[8.5px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                          Campus
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Degree Title & College Badge */}
+                    <div className="pt-1.5 flex flex-wrap items-center gap-1.5">
+                      {Boolean(displayDegree) && (
+                        <span className="font-['Space_Grotesk'] text-xs sm:text-[13px] font-black uppercase tracking-tight text-black dark:text-white leading-tight">
+                          {displayDegree}
+                        </span>
+                      )}
+
+                      {Boolean(college) && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-sky-200/90 dark:bg-sky-900/60 border border-sky-950/25 dark:border-sky-400/30 font-mono text-[10.5px] sm:text-[11px] font-black tracking-wide text-sky-950 dark:text-sky-200 shadow-2xs">
+                          <span className="text-sky-700 dark:text-sky-400 font-sans font-bold text-xs">@</span>
+                          <span>{college}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Location — Clean, no college / building clutter */}
               {personal.location && (
@@ -1117,23 +1256,80 @@ export function AboutSection({ id = "about" }: { id?: string }) {
         )}
       </div>
 
-      {/* ── PROFESSIONAL EXPERIENCE (Conditional Show/Hide) ── */}
+      {/* ── PROFESSIONAL EXPERIENCE: Year-Wise Flight Track & Dossier ── */}
       {personal?.showExperienceSection !== false && (
         <div className="space-y-6 pt-4">
-          <div className="flex items-center justify-between pb-3 border-b-2 border-black/15 dark:border-white/10">
-            <div className="flex items-center gap-2">
-              <span className="sketch-stamp bg-amber-400 text-black font-black">
-                WORK &amp; LEADERSHIP
-              </span>
-              <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
-                [EXPERIENCE]
-              </span>
+          {/* Section Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-black/15 dark:border-white/10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="sketch-stamp bg-amber-400 text-black font-black">
+                  {personal?.experienceTitle || "WORK & LEADERSHIP"}
+                </span>
+                <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
+                  [CHRONOLOGICAL TIMELINE]
+                </span>
+              </div>
+              <p className="text-xs font-mono text-stone-600 dark:text-stone-400">
+                {personal?.experienceSubtitle || "A chronological flight track of engineering leadership, academic mentorship, and industry contributions."}
+              </p>
             </div>
             <ExperienceBriefcaseDoodle />
           </div>
 
-          <div className="grid grid-cols-1 gap-6">
-            {experiencesList.map((exp, idx) => {
+          {/* Interactive Year-Wise Segmented Filter Bar */}
+          {expYearsList.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
+              <span className="font-mono text-[10px] font-black uppercase text-stone-400 mr-1">
+                FILTER YEAR:
+              </span>
+              <button
+                type="button"
+                onClick={() => setActiveExpYear("all")}
+                className={`px-3 py-1 rounded-full border-2 font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                  activeExpYear === "all"
+                    ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-[2px_2px_0_#f59e0b]"
+                    : "bg-white text-stone-700 dark:bg-stone-900 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:border-black shadow-xs"
+                }`}
+              >
+                ✦ ALL ({experiencesList.length})
+              </button>
+
+              {expYearsList.map((yr) => {
+                const count = experiencesList.filter((exp) => {
+                  if (yr === "Current") {
+                    return exp.isCurrent || (exp.period && /present|current/i.test(exp.period));
+                  }
+                  return exp.period?.includes(yr);
+                }).length;
+                const isSelected = activeExpYear === yr;
+
+                return (
+                  <button
+                    key={yr}
+                    type="button"
+                    onClick={() => setActiveExpYear(yr)}
+                    className={`px-3 py-1 rounded-full border-2 font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                      isSelected
+                        ? "bg-amber-400 text-black border-black shadow-[2px_2px_0_#000] scale-105"
+                        : "bg-white text-stone-700 dark:bg-stone-900 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:border-amber-400 shadow-xs"
+                    }`}
+                  >
+                    {yr === "Current" ? (
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    ) : (
+                      <Calendar className="w-3 h-3 text-stone-400" />
+                    )}
+                    <span>{yr === "Current" ? "PRESENT" : yr} ({count})</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Chronological Spine Rail */}
+          <div className="relative pl-5 sm:pl-8 ml-2 sm:ml-4 border-l-2 sm:border-l-3 border-dashed border-stone-300 dark:border-stone-700/80 space-y-8">
+            {filteredExperiences.map((exp, idx) => {
               const cardThemes = [
                 {
                   border: "border-black dark:border-white",
@@ -1142,128 +1338,182 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                   accent: "text-amber-700 dark:text-amber-400",
                 },
                 {
-                  border: "border-black dark:border-white",
+                  border: "border-black dark:border-emerald-400/80",
                   shadow: "shadow-[6px_6px_0_#10b981] dark:shadow-[6px_6px_0_#34d399]",
                   badgeBg: "bg-emerald-500 text-white",
                   accent: "text-emerald-700 dark:text-emerald-400",
                 },
                 {
-                  border: "border-black dark:border-white",
+                  border: "border-black dark:border-indigo-400/80",
                   shadow: "shadow-[6px_6px_0_#6366f1] dark:shadow-[6px_6px_0_#818cf8]",
                   badgeBg: "bg-indigo-600 text-white",
                   accent: "text-indigo-700 dark:text-indigo-400",
                 },
               ];
               const t = cardThemes[idx % cardThemes.length];
+              const yearMatch = exp.period?.match(/\b(20\d{2})\b/);
+              const watermarkYear = yearMatch ? yearMatch[1] : (exp.isCurrent ? "NOW" : "EXP");
 
               return (
-                <div
-                  key={exp.id || idx}
-                  className={`p-6 sm:p-7 rounded-[26px] bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 ${t.border} ${t.shadow} space-y-4 transition-all duration-300 hover:-translate-y-1`}
-                >
-                  {/* Top Bar: Role Title & Status Pills */}
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b border-stone-200 dark:border-stone-800">
-                    <div className="space-y-1.5">
-                      <div className="flex flex-wrap items-center gap-2">
+                <div key={exp.id || idx} className="relative space-y-2">
+                  {/* Timeline Radar Node */}
+                  <div className="absolute -left-[30px] sm:-left-[43px] top-4 sm:top-5 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] z-10">
+                    {exp.isCurrent ? (
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                      </span>
+                    ) : (
+                      <span className="text-amber-500 dark:text-amber-400 font-black text-xs">✦</span>
+                    )}
+                  </div>
+
+                  {/* Year Tag Banner Above Card */}
+                  <div className="flex flex-wrap items-center gap-2 pb-0.5">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md font-mono text-[11px] font-black uppercase tracking-wider border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] ${
+                        exp.isCurrent
+                          ? "bg-emerald-400 text-black dark:bg-emerald-400 dark:text-black"
+                          : "bg-amber-300 text-black dark:bg-amber-300 dark:text-black"
+                      }`}
+                    >
+                      {exp.isCurrent ? (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
+                          <span>ACTIVE STATION &middot; {exp.period}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Calendar className="w-3 h-3 text-black" />
+                          <span>MILESTONE &middot; {exp.period}</span>
+                        </>
+                      )}
+                    </span>
+
+                    {exp.type && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-[10px] font-bold text-stone-700 dark:text-stone-300 uppercase">
+                        ✦ {exp.type}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Executive Dossier Card */}
+                  <div
+                    className={`group/expCard relative overflow-hidden rounded-[26px] bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 ${t.border} ${t.shadow} p-5 sm:p-7 space-y-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[9px_9px_0_#000] dark:hover:shadow-[9px_9px_0_#fff]`}
+                  >
+                    {/* Background Typographic Year Watermark */}
+                    <div
+                      className="absolute right-3 -bottom-4 text-7xl sm:text-8xl font-black font-mono tracking-tighter text-black/5 dark:text-white/5 select-none pointer-events-none uppercase"
+                      aria-hidden="true"
+                    >
+                      {watermarkYear}
+                    </div>
+
+                    {/* Realistic Washi Tape pinned to top right */}
+                    <div
+                      className="absolute -top-1.5 right-8 sm:right-12 w-16 sm:w-20 h-3 bg-amber-300/80 dark:bg-amber-400/40 border border-black/25 dark:border-white/20 shadow-xs rotate-[2deg] rounded-xs pointer-events-none z-10"
+                      aria-hidden="true"
+                    />
+
+                    {/* Top Bar: Role Title, Company & Location, Period */}
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b-2 border-dashed border-stone-200 dark:border-stone-800 relative z-10">
+                      <div className="space-y-1">
                         <h3 className="font-['Space_Grotesk'] text-xl sm:text-2xl font-black uppercase text-black dark:text-white tracking-tight leading-tight">
                           {exp.role}
                         </h3>
-                        {exp.type && (
-                          <span className="px-2.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-[10px] font-bold text-stone-700 dark:text-stone-300 uppercase">
-                            ✦ {exp.type}
-                          </span>
-                        )}
-                      </div>
 
-                      <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-stone-600 dark:text-stone-400">
-                        {/* Company */}
-                        <div className="flex items-center gap-1.5 font-bold text-stone-900 dark:text-stone-200">
-                          <Building2 className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                          {exp.companyUrl ? (
-                            <Link
-                              href={exp.companyUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:underline hover:text-amber-600 dark:hover:text-amber-400 inline-flex items-center gap-1"
-                            >
-                              <span>{exp.company}</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </Link>
-                          ) : (
-                            <span>{exp.company}</span>
-                          )}
+                        <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs text-stone-600 dark:text-stone-400">
+                            {/* Company Name with Live Link */}
+                            <div className="flex items-center gap-1.5 font-black text-amber-600 dark:text-amber-400">
+                              <Building2 className="w-3.5 h-3.5 shrink-0" />
+                              {exp.companyUrl ? (
+                                <Link
+                                  href={exp.companyUrl.startsWith("http") ? exp.companyUrl : `https://${exp.companyUrl}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hover:underline inline-flex items-center gap-1 font-bold"
+                                >
+                                  <span>{exp.company}</span>
+                                  <ExternalLink className="w-3 h-3" />
+                                </Link>
+                              ) : (
+                                <span>{exp.company}</span>
+                              )}
+                            </div>
+
+                            {/* Location */}
+                            {exp.location && (
+                              <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400">
+                                <span>•</span>
+                                <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
+                                <span>{exp.location}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
 
-                        {/* Location */}
-                        {exp.location && (
-                          <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400">
-                            <span>•</span>
-                            <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
-                            <span>{exp.location}</span>
-                          </div>
+                      {/* Period Pill in top right */}
+                      <div className="self-start sm:self-center shrink-0">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-xs font-black text-black dark:text-white shadow-2xs">
+                          <Calendar className="w-3.5 h-3.5 text-stone-500" />
+                          <span>{exp.period}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Two-Column Bento Split: Left Narrative + Right Impact Box */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 pt-1 relative z-10">
+                      {/* Left: Role Scope & Description */}
+                      <div className="lg:col-span-7 space-y-2.5">
+                        <div className="font-mono text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                          [ROLE SCOPE &amp; MANDATE]
+                        </div>
+                        <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
+                          {exp.description}
+                        </p>
+                      </div>
+
+                      {/* Right: Key Deliverables & Impact Box */}
+                      <div className="lg:col-span-5 rounded-2xl bg-stone-100/90 dark:bg-stone-900/70 p-3.5 sm:p-4 border border-black/10 dark:border-white/10 space-y-2">
+                        <div className="font-mono text-[10.5px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                          <span>KEY DELIVERABLES &amp; IMPACT</span>
+                        </div>
+                        {exp.highlights && exp.highlights.length > 0 ? (
+                          <ul className="space-y-1.5">
+                            {exp.highlights.map((h, hIdx) => (
+                              <li
+                                key={hIdx}
+                                className="flex items-start gap-2 text-xs text-stone-800 dark:text-stone-200 leading-relaxed"
+                              >
+                                <span className="text-amber-500 font-black shrink-0 mt-0.5">✦</span>
+                                <span>{h}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-xs text-stone-500 italic">Core operational impact & milestones delivered.</p>
                         )}
                       </div>
                     </div>
 
-                    {/* Period & Active Status Badge */}
-                    <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
-                      {exp.isCurrent ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 dark:bg-emerald-950/40 border border-emerald-500/40 text-emerald-900 dark:text-emerald-300 font-mono text-xs font-black shadow-2xs">
-                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                          <span>{exp.period || "Current"}</span>
+                    {/* Bottom Skills / Domain Tag Strip */}
+                    {exp.skillsUsed && exp.skillsUsed.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-dashed border-stone-200 dark:border-stone-800 relative z-10">
+                        <span className="font-mono text-[10px] font-bold text-stone-400 uppercase mr-1">
+                          Domain:
                         </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-200 font-mono text-xs font-bold">
-                          <Calendar className="w-3 h-3 text-stone-500" />
-                          <span>{exp.period}</span>
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Description Paragraph */}
-                  {exp.description && (
-                    <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
-                      {exp.description}
-                    </p>
-                  )}
-
-                  {/* Highlights Bullet List */}
-                  {exp.highlights && exp.highlights.length > 0 && (
-                    <div className="space-y-2 pt-1">
-                      <div className="font-mono text-[10px] font-bold text-stone-400 uppercase tracking-wider">
-                        [KEY CONTRIBUTIONS &amp; IMPACT]
-                      </div>
-                      <ul className="space-y-1.5">
-                        {exp.highlights.map((h, hIdx) => (
-                          <li
-                            key={hIdx}
-                            className="flex items-start gap-2 text-xs sm:text-sm text-stone-800 dark:text-stone-200 leading-relaxed"
+                        {exp.skillsUsed.map((skill) => (
+                          <span
+                            key={skill}
+                            className="px-2.5 py-0.5 rounded-full border border-black/15 dark:border-white/15 bg-stone-100 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100 font-mono text-[11px] font-bold transition-transform hover:-translate-y-0.5 hover:scale-105 cursor-default"
                           >
-                            <span className="text-amber-500 font-black shrink-0 mt-0.5">✦</span>
-                            <span>{h}</span>
-                          </li>
+                            ✦ {skill}
+                          </span>
                         ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Skills / Stack Chips */}
-                  {exp.skillsUsed && exp.skillsUsed.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-dashed border-stone-200 dark:border-stone-800">
-                      <span className="font-mono text-[10px] font-bold text-stone-400 uppercase mr-1">
-                        Domain:
-                      </span>
-                      {exp.skillsUsed.map((skill) => (
-                        <span
-                          key={skill}
-                          className="px-2.5 py-0.5 rounded-full border border-black/15 dark:border-white/15 bg-stone-100 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100 font-mono text-[11px] font-bold"
-                        >
-                          ✦ {skill}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}

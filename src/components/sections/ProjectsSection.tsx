@@ -120,11 +120,12 @@ function LabFlaskDoodle({ className = "", isPhone = false }: { className?: strin
       </svg>
 
       <div
-        className="hidden sm:block ml-2 px-3 py-1.5 bg-purple-100 dark:bg-stone-800 border-2 border-black dark:border-white rounded-xl shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] text-xs font-bold rotate-[2deg]"
+        className="hidden sm:block ml-2 px-3 py-1.5 bg-purple-100 dark:bg-stone-800 border-2 border-black dark:border-white rounded-xl shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] text-xs font-bold rotate-[2deg] animate-doodle-float-reverse transition-all duration-300 hover:rotate-0 hover:scale-105 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff] cursor-default group/sticker"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
-        <span className="text-purple-950 dark:text-purple-200 text-sm">
-          algorithms in the lab 🧪
+        <span className="text-purple-950 dark:text-purple-200 text-sm inline-flex items-center gap-1.5">
+          <span>algorithms in the lab</span>
+          <span className="inline-block transition-transform duration-300 group-hover/sticker:scale-125 group-hover/sticker:rotate-12 animate-spark-glow">🧪</span>
         </span>
       </div>
     </div>
@@ -139,7 +140,7 @@ function TerminalDoodle({ className = "" }: { className?: string }) {
     <div className={`relative inline-flex items-center gap-2 ${className}`} aria-hidden="true">
       <svg
         viewBox="0 0 120 70"
-        className="w-24 sm:w-28 h-14 overflow-visible drop-shadow-[2px_2px_0_rgba(0,0,0,0.1)]"
+        className="w-24 sm:w-28 h-14 overflow-visible drop-shadow-[2px_2px_0_rgba(0,0,0,0.1)] animate-doodle-float"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.2"
@@ -166,7 +167,7 @@ function TerminalDoodle({ className = "" }: { className?: string }) {
         <line x1="16" y1="54" x2="55" y2="54" stroke="#a1a1aa" strokeWidth="2" strokeDasharray="3 2" />
       </svg>
       <span
-        className="text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300 rotate-[-1deg]"
+        className="text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300 rotate-[-1deg] animate-doodle-float-reverse inline-block transition-transform duration-200 hover:scale-105 cursor-default"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
         clean terminal logic 💻
@@ -485,7 +486,7 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading inline-flex items-center gap-2 sm:gap-3 flex-wrap">
-              <span>Projects and Builds</span>
+              <span>{portfolio.personal.projectsHeading || "Projects and Builds"}</span>
               {/* On phone: Cute lab flask doodle placed directly next to 'BUILDS' */}
               <span className="inline-flex lg:hidden shrink-0 -mt-1 sm:-mt-2">
                 <LabFlaskDoodle isPhone />
@@ -507,7 +508,7 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
             </svg>
 
             <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
-              End-to-end exploratory data analysis, foundational machine learning algorithms, and scientific Python tools engineered with clean code and mathematical rigor.
+              {portfolio.personal.projectsSubtitle || "End-to-end exploratory data analysis, foundational machine learning algorithms, and scientific Python tools engineered with clean code and mathematical rigor."}
             </p>
           </div>
 
@@ -666,7 +667,7 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
                     </p>
                   </div>
 
-                  <p className="text-xs text-stone-800 dark:text-stone-200 leading-relaxed line-clamp-3">
+                  <p className="text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
                     {proj.description}
                   </p>
 

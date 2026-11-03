@@ -21,6 +21,7 @@ import {
   Folder,
   Terminal,
   Award,
+  GraduationCap,
   Send,
   User,
   Eye,
@@ -57,6 +58,10 @@ import {
   Trophy,
   BookOpen,
   FileText,
+  Lightbulb,
+  Mic,
+  Rocket,
+  Newspaper,
   Bookmark,
   Download,
   Upload,
@@ -78,6 +83,7 @@ import {
   formatGoogleDriveThumbnailUrl,
   formatGoogleDriveViewUrl,
 } from "@/lib/googleDrive";
+import { resolveRoleTrack } from "@/lib/roleTrack";
 import { extractVibrantColor } from "@/lib/colorExtractor";
 import { compressImageFile } from "@/lib/imageCompressor";
 import { supabase } from "@/lib/supabase";
@@ -167,8 +173,10 @@ export default function AdminPage() {
       }
     }
   }, [initialData]);
-  type AdminTab = "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
-  const [activeTab, setActiveTab] = useState<AdminTab>("cover");
+  type AdminTab = "sublines" | "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
+  const [activeTab, setActiveTab] = useState<AdminTab>("sublines");
+  const [sublinesSectionFilter, setSublinesSectionFilter] = useState<"all" | "cover" | "about" | "projects" | "certificates" | "experience" | "contact">("all");
+  const [expSkillsInputMap, setExpSkillsInputMap] = useState<Record<string, string>>({});
   const [coverSubView, setCoverSubView] = useState<"desktop" | "mobile">("desktop");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -1688,6 +1696,7 @@ export default function AdminPage() {
   };
 
   const navTabs = [
+    { id: "sublines", label: "Section Sublines", title: "Master Section Sublines & Headings", desc: "Hero tagline, about subline, projects & certificates subtitles with live preview", icon: Type },
     { id: "cover", label: "Cover Hero", title: "Cover Page Manager", desc: "Hero portrait, wordmark, roles & cover buttons", icon: Sliders },
     { id: "about", label: "Profile & Bio", title: "Profile, Bio & Dossier", desc: "All-in-one: Photo mount, statement, bio highlighter, benchmarks & roadmap", icon: User },
     { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderCode, count: portfolio.projects?.length || 0 },
@@ -2010,6 +2019,670 @@ export default function AdminPage() {
         {/* Content Container */}
         <main className="flex-1 p-4 sm:p-7 max-w-6xl w-full mx-auto space-y-8">
 
+        {/* ── TAB: MASTER SECTION SUBLINES & HEADINGS MANAGER ── */}
+        {activeTab === "sublines" && (
+          <div className="space-y-6">
+            {/* Header Control Bar */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h2 className="font-['Space_Grotesk'] text-xl sm:text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <Type className="w-6 h-6 text-amber-500" />
+                  <span>Master Section Sublines &amp; Taglines</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-0.5">
+                  Har section ki primary heading, description subline aur narrative taglines yahan se live edit karein.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => saveInstantly(portfolioRef.current, "All section sublines & headings saved!")}
+                  className="px-4 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs active:translate-y-0.5"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Save All Sublines</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Sub-nav quick filter bar */}
+            <div className="flex flex-wrap items-center gap-2 p-2 bg-stone-100 rounded-2xl border border-stone-200">
+              {[
+                { id: "all", label: "All Sections", icon: Sparkles },
+                { id: "cover", label: "Hero & Cover", icon: Sliders },
+                { id: "about", label: "About Subline", icon: User },
+                { id: "projects", label: "Projects Lab", icon: FolderCode },
+                { id: "certificates", label: "Certificates & Laurels", icon: Award },
+                { id: "experience", label: "Experience", icon: Briefcase },
+                { id: "contact", label: "Contact Dispatch", icon: Send },
+              ].map((f) => {
+                const isSelected = sublinesSectionFilter === f.id;
+                const IconComp = f.icon;
+                return (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setSublinesSectionFilter(f.id as any)}
+                    className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all ${
+                      isSelected
+                        ? "bg-black text-white shadow-xs"
+                        : "bg-white text-stone-700 hover:bg-stone-50 border border-stone-200"
+                    }`}
+                  >
+                    <IconComp className="w-3.5 h-3.5" />
+                    <span>{f.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* 1. HERO & COVER PAGE SUBLINES */}
+            {(sublinesSectionFilter === "all" || sublinesSectionFilter === "cover") && (
+              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+                <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-amber-400 border border-black" />
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      1. Hero &amp; Cover Page Sublines &amp; Taglines
+                    </h3>
+                  </div>
+                  <span className="font-mono text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+                    Hero Screen
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left: Inputs (7 cols) */}
+                  <div className="lg:col-span-7 space-y-4">
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Desktop Headline / Hero Subtitle:
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={portfolio.personal.desktopHeadline ?? portfolio.personal.headline ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, desktopHeadline: val, headline: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "Hero headline updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="e.g. Exploring Data Science, Machine Learning Foundations & Scientific Computing."
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Desktop Upper Tagline:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.desktopTagline ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, desktopTagline: val },
+                            }));
+                          }}
+                          onBlur={() => saveInstantly(portfolioRef.current, "Desktop tagline updated!")}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          placeholder="DESIGN · CODE · MACHINE LEARNING"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Mobile Narrative Tagline:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.mobileTagline ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, mobileTagline: val },
+                            }));
+                          }}
+                          onBlur={() => saveInstantly(portfolioRef.current, "Mobile tagline updated!")}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          placeholder="Teaching Machines To Learn • Building Scientific Software"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Live Preview Card (5 cols) */}
+                  <div className="lg:col-span-5 flex flex-col justify-center">
+                    <div className="font-mono text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                      <Eye className="w-3 h-3 text-amber-500" />
+                      <span>Live Hero Preview</span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-stone-900 text-white border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
+                      <div className="font-mono text-[10px] tracking-widest text-amber-400 font-bold uppercase">
+                        {portfolio.personal.desktopTagline || "DESIGN · CODE · MACHINE LEARNING"}
+                      </div>
+                      <h4 className="font-['Space_Grotesk'] text-lg font-black tracking-tight text-white uppercase">
+                        {portfolio.personal.desktopWordmark || portfolio.personal.name || "HARSH ARYAN"}
+                      </h4>
+                      <p className="font-mono text-xs text-stone-300 leading-relaxed">
+                        {portfolio.personal.desktopHeadline || portfolio.personal.headline}
+                      </p>
+                      <div className="pt-2 border-t border-stone-800 text-[11px] font-bold italic text-amber-300" style={{ fontFamily: "'Patrick Hand', cursive" }}>
+                        &ldquo;{portfolio.personal.mobileTagline}&rdquo;
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 2. ABOUT SECTION ("BEHIND THE TERMINAL") */}
+            {(sublinesSectionFilter === "all" || sublinesSectionFilter === "about") && (
+              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+                <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-emerald-400 border border-black" />
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      2. Behind the Terminal (About Section) Heading &amp; Subline
+                    </h3>
+                  </div>
+                  <span className="font-mono text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+                    About Section
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left: Inputs (7 cols) */}
+                  <div className="lg:col-span-7 space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Section Eyebrow / Zone Badge:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.aboutZoneBadge ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, aboutZoneBadge: val },
+                            }));
+                          }}
+                          onBlur={() => saveInstantly(portfolioRef.current, "Zone badge updated!")}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          placeholder="✦ THE ARCHITECT & MIND"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Section Main Heading:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.aboutHeading ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, aboutHeading: val },
+                            }));
+                          }}
+                          onBlur={() => saveInstantly(portfolioRef.current, "About heading updated!")}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          placeholder="Behind the Terminal"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1 flex items-center justify-between">
+                        <span>Section Description Subline (Sub-heading):</span>
+                        <span className="text-amber-700 font-normal text-[10px]">Displayed right under heading</span>
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={portfolio.personal.aboutSubtitle ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, aboutSubtitle: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "About subtitle updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="Curious mind blending machine learning fundamentals with expressive software architecture..."
+                      />
+                      <p className="font-mono text-[9.5px] text-stone-500 mt-1">
+                        Ye exact subline website par Behind the Terminal ke neeche render hoti hai.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right: Live Preview Card (5 cols) */}
+                  <div className="lg:col-span-5 flex flex-col justify-center">
+                    <div className="font-mono text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                      <Eye className="w-3 h-3 text-emerald-500" />
+                      <span>Live Website Header Preview</span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
+                      <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
+                        {portfolio.personal.aboutHeading || "Behind the Terminal"}
+                      </h3>
+                      <svg className="w-36 h-2 text-amber-500" viewBox="0 0 240 10" fill="none">
+                        <path d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+                      </svg>
+                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                        {portfolio.personal.aboutSubtitle || "Curious mind blending machine learning fundamentals with expressive software architecture..."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 3. PROJECTS & BUILDS SECTION */}
+            {(sublinesSectionFilter === "all" || sublinesSectionFilter === "projects") && (
+              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+                <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-purple-500 border border-black" />
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      3. Projects Lab Heading &amp; Subline
+                    </h3>
+                  </div>
+                  <span className="font-mono text-[10px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded border border-purple-300">
+                    Projects Section
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left: Inputs (7 cols) */}
+                  <div className="lg:col-span-7 space-y-4">
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Projects Section Heading:
+                      </label>
+                      <input
+                        type="text"
+                        value={portfolio.personal.projectsHeading ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, projectsHeading: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "Projects heading updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="Projects and Builds"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Projects Section Subline (Description Subtitle):
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={portfolio.personal.projectsSubtitle ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, projectsSubtitle: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "Projects subtitle updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="End-to-end exploratory data analysis, foundational machine learning algorithms..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right: Live Preview Card (5 cols) */}
+                  <div className="lg:col-span-5 flex flex-col justify-center">
+                    <div className="font-mono text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                      <Eye className="w-3 h-3 text-purple-500" />
+                      <span>Live Projects Header Preview</span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
+                      <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
+                        {portfolio.personal.projectsHeading || "Projects and Builds"}
+                      </h3>
+                      <svg className="w-36 h-2 text-purple-500" viewBox="0 0 240 10" fill="none">
+                        <path d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+                      </svg>
+                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                        {portfolio.personal.projectsSubtitle || "End-to-end exploratory data analysis, foundational machine learning algorithms..."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 4. CERTIFICATIONS & LAURELS SECTION */}
+            {(sublinesSectionFilter === "all" || sublinesSectionFilter === "certificates") && (
+              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+                <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-amber-500 border border-black" />
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      4. Certifications &amp; Laurels Headings &amp; Sublines
+                    </h3>
+                  </div>
+                  <span className="font-mono text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+                    Certificates Section
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left: Inputs (7 cols) */}
+                  <div className="lg:col-span-7 space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Certifications Main Heading:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.certificatesHeading ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, certificatesHeading: val },
+                            }));
+                          }}
+                          onBlur={() => saveInstantly(portfolioRef.current, "Certificates heading updated!")}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          placeholder="Certifications and Laurels"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Laurels Stamp Title:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.laurelsTitle ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, laurelsTitle: val },
+                            }));
+                          }}
+                          onBlur={() => saveInstantly(portfolioRef.current, "Laurels title updated!")}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          placeholder="LAURELS"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Certificates Section Subline:
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={portfolio.personal.certificatesSubtitle ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, certificatesSubtitle: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "Certificates subtitle updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="Verified academic achievements, hackathon laurels, and institutional recognitions..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Laurels Section Subline:
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={portfolio.personal.laurelsSubtitle ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, laurelsSubtitle: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "Laurels subtitle updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="Academic accolades, hackathon triumphs, research publications..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right: Live Preview Card (5 cols) */}
+                  <div className="lg:col-span-5 flex flex-col justify-center">
+                    <div className="font-mono text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                      <Eye className="w-3 h-3 text-amber-500" />
+                      <span>Live Credentials Header Preview</span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
+                      <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
+                        {portfolio.personal.certificatesHeading || "Certifications and Laurels"}
+                      </h3>
+                      <svg className="w-36 h-2 text-amber-500" viewBox="0 0 240 10" fill="none">
+                        <path d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+                      </svg>
+                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                        {portfolio.personal.certificatesSubtitle || "Verified academic achievements, hackathon laurels, and institutional recognitions..."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 5. WORK & LEADERSHIP (EXPERIENCE) SECTION */}
+            {(sublinesSectionFilter === "all" || sublinesSectionFilter === "experience") && (
+              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+                <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-cyan-500 border border-black" />
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      5. Work &amp; Leadership (Experience) Heading &amp; Subline
+                    </h3>
+                  </div>
+                  <span className="font-mono text-[10px] font-bold text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded border border-cyan-300">
+                    Experience Section
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left: Inputs (7 cols) */}
+                  <div className="lg:col-span-7 space-y-4">
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Experience Stamp Title:
+                      </label>
+                      <input
+                        type="text"
+                        value={portfolio.personal.experienceTitle ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, experienceTitle: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "Experience title updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="WORK & LEADERSHIP"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Experience Subline (Timeline Subtitle):
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={portfolio.personal.experienceSubtitle ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, experienceSubtitle: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "Experience subtitle updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="A chronological flight track of engineering leadership, academic mentorship, and industry contributions."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right: Live Preview Card (5 cols) */}
+                  <div className="lg:col-span-5 flex flex-col justify-center">
+                    <div className="font-mono text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                      <Eye className="w-3 h-3 text-cyan-500" />
+                      <span>Live Experience Header Preview</span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="sketch-stamp bg-amber-400 text-black font-black text-xs">
+                          {portfolio.personal.experienceTitle || "WORK & LEADERSHIP"}
+                        </span>
+                        <span className="font-mono text-[10px] font-bold text-stone-500">
+                          [CHRONOLOGICAL TIMELINE]
+                        </span>
+                      </div>
+                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                        {portfolio.personal.experienceSubtitle || "A chronological flight track of engineering leadership, academic mentorship, and industry contributions."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 6. CONTACT & DISPATCH SECTION */}
+            {(sublinesSectionFilter === "all" || sublinesSectionFilter === "contact") && (
+              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+                <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-rose-500 border border-black" />
+                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                      6. Inquiries &amp; Contact Section Heading &amp; Subline
+                    </h3>
+                  </div>
+                  <span className="font-mono text-[10px] font-bold text-rose-800 bg-rose-100 px-2 py-0.5 rounded border border-rose-300">
+                    Contact Section
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left: Inputs (7 cols) */}
+                  <div className="lg:col-span-7 space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Contact Main Heading:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.contactTitle ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, contactTitle: val },
+                            }));
+                          }}
+                          onBlur={() => saveInstantly(portfolioRef.current, "Contact heading updated!")}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          placeholder="Send a Dispatch"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                          Doodle Post-it Note:
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.contactDoodleNote ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, contactDoodleNote: val },
+                            }));
+                          }}
+                          onBlur={() => saveInstantly(portfolioRef.current, "Doodle note updated!")}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                          placeholder="drop a note anytime 💌"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Contact Dispatch Subline (Prompt Subtitle):
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={portfolio.personal.contactSubtitle ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, contactSubtitle: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "Contact subtitle updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="Have an interesting machine learning challenge, internship opportunity, or algorithmic project in mind? Drop your inquiry directly into my terminal."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right: Live Preview Card (5 cols) */}
+                  <div className="lg:col-span-5 flex flex-col justify-center">
+                    <div className="font-mono text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                      <Eye className="w-3 h-3 text-rose-500" />
+                      <span>Live Contact Header Preview</span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
+                      <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
+                        {portfolio.personal.contactTitle || "Send a Dispatch"}
+                      </h3>
+                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                        {portfolio.personal.contactSubtitle}
+                      </p>
+                      <div className="inline-block px-2 py-0.5 rounded bg-yellow-200 text-stone-900 font-mono text-[10px] font-bold">
+                        {portfolio.personal.contactDoodleNote || "drop a note anytime 💌"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ── TAB: COVER HERO MANAGER (DYNAMIC DESKTOP & MOBILE VIEWS WITH REAL-TIME PREVIEW) ── */}
         {activeTab === "cover" && (
           <div className="space-y-6">
@@ -2232,7 +2905,7 @@ export default function AdminPage() {
                           </label>
                           <input
                             type="text"
-                            placeholder="e.g. Teaching Assistant"
+                            placeholder="e.g. Data Science Intern or Research Fellow"
                             value={portfolio.personal.aboutCurrentWork ?? portfolio.personal.role ?? ""}
                             onChange={(e) => {
                               const val = e.target.value;
@@ -2256,7 +2929,7 @@ export default function AdminPage() {
                           </label>
                           <input
                             type="text"
-                            placeholder="e.g. IIT Madras"
+                            placeholder="e.g. Microsoft or IIT Bombay or IIT Madras"
                             value={portfolio.personal.aboutWorkPlace ?? ""}
                             onChange={(e) => {
                               const val = e.target.value;
@@ -3329,62 +4002,249 @@ export default function AdminPage() {
                           </p>
                         </div>
 
-                        <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
-                            <span>Role Badge (Top Pill):</span>
-                            <span className="text-emerald-700 font-normal">● Green pulse</span>
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. Teaching Assistant"
-                            value={portfolio.personal.aboutCurrentWork ?? portfolio.personal.role ?? ""}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: {
-                                  ...prev.personal,
-                                  aboutCurrentWork: val,
-                                  role: val,
-                                  currentWork: val && prev.personal.aboutWorkPlace ? `${val} @ ${prev.personal.aboutWorkPlace}` : val,
-                                },
-                              }));
-                            }}
-                            onBlur={() => saveInstantly(portfolioRef.current, "Role badge updated!")}
-                            className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                          />
-                          <p className="font-mono text-[9.5px] text-stone-500 mt-0.5">
-                            Photo chin ka top badge (e.g. Teaching Assistant).
-                          </p>
+                        {/* ── Active Role / Job Module ── */}
+                        <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+                          <div className="flex items-center justify-between gap-2 pb-2 border-b border-stone-200/80">
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="font-mono text-xs font-bold text-stone-800">
+                                Active Engagement (Job / Internship / Research)
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const nextVal = portfolio.personal.showAboutRole === false;
+                                const nextPort = {
+                                  ...portfolio,
+                                  personal: { ...portfolio.personal, showAboutRole: nextVal },
+                                };
+                                setPortfolio(nextPort);
+                                portfolioRef.current = nextPort;
+                                saveInstantly(nextPort, nextVal ? "Active role unhidden on photo card!" : "Active role hidden from photo card!");
+                              }}
+                              className={`px-2.5 py-1 rounded-full font-mono text-[10px] font-bold border cursor-pointer transition-all ${
+                                portfolio.personal.showAboutRole !== false
+                                  ? "bg-emerald-100 text-emerald-800 border-emerald-400 hover:bg-emerald-200"
+                                  : "bg-stone-200 text-stone-600 border-stone-300 hover:bg-stone-300"
+                              }`}
+                            >
+                              <span>{portfolio.personal.showAboutRole !== false ? "● UNHIDDEN (SHOWN)" : "○ HIDDEN"}</span>
+                            </button>
+                          </div>
+
+                          {/* Track / Nature Selector Pills */}
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1.5 flex items-center justify-between">
+                              <span>Role Nature / Track:</span>
+                              <span className="text-stone-500 font-normal text-[10px]">Changes style &amp; icons</span>
+                            </label>
+                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                              {[
+                                { id: "auto", label: "Auto", icon: "🤖" },
+                                { id: "research", label: "Research", icon: "🔬" },
+                                { id: "internship", label: "Intern", icon: "💼" },
+                                { id: "job", label: "Tech Job", icon: "⚡" },
+                                { id: "academic", label: "TA / Acad", icon: "🎓" },
+                                { id: "fellowship", label: "Fellow", icon: "🏆" },
+                              ].map((track) => {
+                                const isSelected = (portfolio.personal.aboutRoleType || "auto") === track.id;
+                                return (
+                                  <button
+                                    key={track.id}
+                                    type="button"
+                                    onClick={() => {
+                                      const nextPort = {
+                                        ...portfolio,
+                                        personal: {
+                                          ...portfolio.personal,
+                                          aboutRoleType: track.id,
+                                        },
+                                      };
+                                      setPortfolio(nextPort);
+                                      portfolioRef.current = nextPort;
+                                      saveInstantly(nextPort, `Role track set to ${track.label}!`);
+                                    }}
+                                    className={`px-2 py-1.5 rounded-lg border font-mono text-[10px] font-bold flex flex-col items-center gap-0.5 cursor-pointer transition-all ${
+                                      isSelected
+                                        ? "bg-black text-white border-black shadow-[2px_2px_0_rgba(0,0,0,0.2)] scale-[1.02]"
+                                        : "bg-white text-stone-700 border-stone-300 hover:bg-stone-100"
+                                    }`}
+                                  >
+                                    <span className="text-xs">{track.icon}</span>
+                                    <span>{track.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
+                              <span>Role / Title:</span>
+                              <span className="text-stone-500 font-normal">e.g. Data Science Intern</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Data Science Intern or Research Fellow"
+                              value={portfolio.personal.aboutCurrentWork ?? portfolio.personal.role ?? ""}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    aboutCurrentWork: val,
+                                    role: val,
+                                    currentWork: val && prev.personal.aboutWorkPlace ? `${val} @ ${prev.personal.aboutWorkPlace}` : val,
+                                  },
+                                }));
+                              }}
+                              onBlur={() => saveInstantly(portfolioRef.current, "Role badge updated!")}
+                              className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                            />
+                            <p className="font-mono text-[9.5px] text-stone-500 mt-0.5">
+                              Photo chin ka role title (e.g. Research Fellow, Data Science Intern).
+                            </p>
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
+                              <span>Institution / Company Badge:</span>
+                              <span className="text-amber-700 font-normal">Amber chip</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Microsoft or IIT Bombay or IIT Madras"
+                              value={portfolio.personal.aboutWorkPlace ?? ""}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    aboutWorkPlace: val,
+                                    currentWork: (prev.personal.aboutCurrentWork || prev.personal.role) && val ? `${prev.personal.aboutCurrentWork || prev.personal.role} @ ${val}` : prev.personal.currentWork,
+                                  },
+                                }));
+                              }}
+                              onBlur={() => saveInstantly(portfolioRef.current, "Workplace badge updated!")}
+                              className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                            />
+                            <p className="font-mono text-[9.5px] text-stone-500 mt-0.5">
+                              Role ke theek saath organization badge (e.g. IIT Bombay, Microsoft).
+                            </p>
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
+                              <span>Right-hand Tag / Focus Area (Optional):</span>
+                              <span className="text-stone-400 font-normal text-[10px]">Leave blank for auto tag</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. AI Research Lab or Industry Tech or Summer 2026"
+                              value={portfolio.personal.aboutRoleTag ?? ""}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    aboutRoleTag: val,
+                                  },
+                                }));
+                              }}
+                              onBlur={() => saveInstantly(portfolioRef.current, "Role tag updated!")}
+                              className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
+                            />
+                          </div>
                         </div>
 
-                        <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
-                            <span>Institution Badge (Lower Pill):</span>
-                            <span className="text-amber-700 font-normal">Amber chip</span>
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. IIT Madras"
-                            value={portfolio.personal.aboutWorkPlace ?? ""}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: {
-                                  ...prev.personal,
-                                  aboutWorkPlace: val,
-                                  college: val,
-                                  currentWork: (prev.personal.aboutCurrentWork || prev.personal.role) && val ? `${prev.personal.aboutCurrentWork || prev.personal.role} @ ${val}` : prev.personal.currentWork,
-                                },
-                              }));
-                            }}
-                            onBlur={() => saveInstantly(portfolioRef.current, "Workplace badge updated!")}
-                            className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                          />
-                          <p className="font-mono text-[9.5px] text-stone-500 mt-0.5">
-                            Role ke theek neeche institution badge (e.g. IIT Madras).
+                        {/* ── Education Module (Hide / Unhideable) ── */}
+                        <div className="p-3.5 rounded-2xl bg-sky-50/70 border border-sky-200 space-y-3">
+                          <div className="flex items-center justify-between gap-2 pb-2 border-b border-sky-200/80">
+                            <div className="flex items-center gap-1.5">
+                              <GraduationCap className="w-4 h-4 text-sky-700" />
+                              <span className="font-mono text-xs font-bold text-stone-800">
+                                Current Education & Degree Pill
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const nextVal = portfolio.personal.showEducationBadge === false;
+                                const nextPort = {
+                                  ...portfolio,
+                                  personal: { ...portfolio.personal, showEducationBadge: nextVal },
+                                };
+                                setPortfolio(nextPort);
+                                portfolioRef.current = nextPort;
+                                saveInstantly(nextPort, nextVal ? "Education badge unhidden on photo card!" : "Education badge hidden from photo card!");
+                              }}
+                              className={`px-2.5 py-1 rounded-full font-mono text-[10px] font-bold border cursor-pointer transition-all ${
+                                portfolio.personal.showEducationBadge !== false
+                                  ? "bg-sky-100 text-sky-800 border-sky-400 hover:bg-sky-200"
+                                  : "bg-stone-200 text-stone-600 border-stone-300 hover:bg-stone-300"
+                              }`}
+                            >
+                              <span>{portfolio.personal.showEducationBadge !== false ? "● UNHIDDEN (SHOWN)" : "○ HIDDEN"}</span>
+                            </button>
+                          </div>
+
+                          <p className="font-mono text-[9.5px] text-stone-600">
+                            Agar aap abhi student hain ya degree display karni hai to ise UNHIDE rakhein. Jab education hide karni ho to switch press karein.
                           </p>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
+                              <span>Degree / Academic Program:</span>
+                              <span className="text-sky-700 font-normal">Sky card</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Data Science and Applications or B.S. in Data Science"
+                              value={portfolio.personal.aboutEducationDegree ?? portfolio.personal.degree ?? ""}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    aboutEducationDegree: val,
+                                    degree: val,
+                                  },
+                                }));
+                              }}
+                              onBlur={() => saveInstantly(portfolioRef.current, "Education degree updated!")}
+                              className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
+                              <span>College / University Campus:</span>
+                              <span className="text-indigo-700 font-normal">Campus chip</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. IIT Madras or IIT Bombay"
+                              value={portfolio.personal.aboutEducationCollege ?? portfolio.personal.college ?? ""}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    aboutEducationCollege: val,
+                                    college: val,
+                                  },
+                                }));
+                              }}
+                              onBlur={() => saveInstantly(portfolioRef.current, "Education college updated!")}
+                              className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                            />
+                          </div>
                         </div>
 
                         <div>
@@ -3458,22 +4318,85 @@ export default function AdminPage() {
                             {portfolio.personal.name || "Harsh Aryan"}
                           </div>
 
-                          <div className="flex flex-col items-start gap-1">
-                            {/* Role badge with pulse */}
-                            {Boolean(portfolio.personal.aboutCurrentWork || portfolio.personal.role) && (
-                              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-stone-900 font-mono text-[10px] font-bold">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                                <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role}</span>
-                              </div>
-                            )}
+                          {/* Live Status Module Preview */}
+                          {portfolio.personal.showAboutRole !== false && (Boolean(portfolio.personal.aboutCurrentWork || portfolio.personal.role) || Boolean(portfolio.personal.aboutWorkPlace)) && (() => {
+                            const rawRole = (portfolio.personal.aboutCurrentWork || portfolio.personal.role || "").trim();
+                            const workplace = (portfolio.personal.aboutWorkPlace || "").trim();
+                            const displayRole = workplace && rawRole.toLowerCase().includes(`@ ${workplace.toLowerCase()}`)
+                              ? rawRole.replace(new RegExp(`\\s*@\\s*${workplace}`, 'i'), '').trim()
+                              : rawRole;
+                            const track = resolveRoleTrack(rawRole, workplace, portfolio.personal.aboutRoleType);
+                            const tagText = (portfolio.personal.aboutRoleTag || "").trim() || track.defaultTag;
 
-                            {/* Workplace badge */}
-                            {Boolean(portfolio.personal.aboutWorkPlace) && (
-                              <div className="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-amber-100 border border-amber-300 text-amber-950 font-mono text-[10px] font-bold">
-                                <span>{portfolio.personal.aboutWorkPlace}</span>
+                            return (
+                              <div className={`w-full rounded-lg bg-gradient-to-br ${track.cardBg} p-2 border border-black/20 shadow-xs relative overflow-hidden`}>
+                                <div className="flex items-center justify-between gap-1 pb-1 border-b border-black/10">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="relative flex h-1.5 w-1.5">
+                                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.beaconRing} opacity-75`} />
+                                      <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${track.beaconCore}`} />
+                                    </span>
+                                    <span className={`font-mono text-[8px] font-black uppercase tracking-wider ${track.labelColor} flex items-center gap-0.5`}>
+                                      {track.icon}
+                                      <span>{track.label}</span>
+                                    </span>
+                                  </div>
+                                  {Boolean(tagText) && (
+                                    <span className={`font-mono text-[7px] font-bold uppercase tracking-wider px-1 py-0.2 rounded border ${track.tagBg}`}>
+                                      {tagText}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="pt-1 flex flex-wrap items-center gap-1">
+                                  {Boolean(displayRole) && (
+                                    <span className="font-['Space_Grotesk'] text-[11px] font-black uppercase text-black leading-tight">
+                                      {displayRole}
+                                    </span>
+                                  )}
+                                  {Boolean(workplace) && (
+                                    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded ${track.workplaceBadgeBg} font-mono text-[9.5px] font-black`}>
+                                      <span className={`${track.workplaceAtColor} font-sans font-bold text-[9px]`}>@</span>
+                                      <span>{workplace}</span>
+                                    </span>
+                                  )}
+                                </div>
                               </div>
-                            )}
-                          </div>
+                            );
+                          })()}
+
+                          {/* Live Education Module Preview (Hide / Unhideable) */}
+                          {portfolio.personal.showEducationBadge !== false && (Boolean(portfolio.personal.aboutEducationDegree || portfolio.personal.degree) || Boolean(portfolio.personal.aboutEducationCollege || portfolio.personal.college)) && (
+                            <div className="w-full rounded-lg bg-gradient-to-br from-sky-50 via-indigo-50 to-blue-50 p-2 border border-sky-300/60 shadow-xs">
+                              <div className="flex items-center justify-between gap-1 pb-1 border-b border-black/10">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-sky-500" />
+                                  </span>
+                                  <span className="font-mono text-[8px] font-black uppercase tracking-wider text-sky-700 flex items-center gap-0.5">
+                                    <GraduationCap className="w-2.5 h-2.5 text-sky-600" />
+                                    <span>Education &middot; Current</span>
+                                  </span>
+                                </div>
+                                <span className="font-mono text-[7.5px] font-bold uppercase tracking-wider text-stone-500">
+                                  Campus
+                                </span>
+                              </div>
+                              <div className="pt-1 flex flex-wrap items-center gap-1">
+                                {Boolean(portfolio.personal.aboutEducationDegree || portfolio.personal.degree) && (
+                                  <span className="font-['Space_Grotesk'] text-[11px] font-black uppercase text-black leading-tight">
+                                    {portfolio.personal.aboutEducationDegree || portfolio.personal.degree}
+                                  </span>
+                                )}
+                                {Boolean(portfolio.personal.aboutEducationCollege || portfolio.personal.college) && (
+                                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-sky-200 border border-sky-950/20 font-mono text-[9.5px] font-black text-sky-950">
+                                    <span className="text-sky-700 font-sans font-bold text-[9px]">@</span>
+                                    <span>{portfolio.personal.aboutEducationCollege || portfolio.personal.college}</span>
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
 
                           {/* Coordinates */}
                           {portfolio.personal.location && (
@@ -4703,18 +5626,29 @@ export default function AdminPage() {
 
                         {/* Tech Stack / Skills Used */}
                         <div>
-                          <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
-                            Skills & Technologies Used (Comma-separated)
+                          <label className="block text-xs font-mono font-bold text-stone-700 mb-1 flex items-center justify-between">
+                            <span>Skills &amp; Technologies Used (Comma-separated)</span>
+                            <span className="text-stone-400 font-normal text-[10px]">Type freely with commas</span>
                           </label>
                           <input
                             type="text"
-                            value={(exp.skillsUsed || []).join(", ")}
+                            value={
+                              expSkillsInputMap[exp.id || `exp-${idx}`] !== undefined
+                                ? expSkillsInputMap[exp.id || `exp-${idx}`]
+                                : (exp.skillsUsed || []).join(", ")
+                            }
                             onChange={(e) => {
-                              const items = e.target.value
+                              const val = e.target.value;
+                              const key = exp.id || `exp-${idx}`;
+                              setExpSkillsInputMap((prev) => ({ ...prev, [key]: val }));
+                              const items = val
                                 .split(",")
                                 .map((s) => s.trim())
                                 .filter(Boolean);
                               handleUpdateExperience(idx, "skillsUsed", items);
+                            }}
+                            onBlur={() => {
+                              saveInstantly(portfolioRef.current, "Experience skills updated!");
                             }}
                             placeholder="e.g. Python, Machine Learning, Data Science, Git"
                             className="w-full px-3 py-2 border-2 border-black rounded-xl font-mono text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-yellow-400"
@@ -7551,32 +8485,70 @@ export default function AdminPage() {
             </div>
 
             <div className="space-y-4 font-mono text-xs">
-              {/* Type Selector (3 Visual Cards) */}
+              {/* Type Selector (Presets + Custom Type) */}
               <div>
-                <label className="block text-stone-800 font-bold mb-1.5">Entry Type:</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-stone-800 font-bold">Entry Type:</label>
+                  <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-stone-100 border border-stone-300 text-stone-700">
+                    Active: {laurelForm.type || "award"}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
                     { type: "award", icon: Trophy, label: "🏆 Award & Laurel", color: "hover:border-amber-400" },
                     { type: "paper", icon: FileText, label: "📄 Research Paper", color: "hover:border-indigo-400" },
                     { type: "book", icon: BookOpen, label: "📚 Published Book", color: "hover:border-rose-400" },
+                    { type: "patent", icon: Lightbulb, label: "💡 Patent & IP", color: "hover:border-yellow-400" },
+                    { type: "fellowship", icon: Award, label: "🎖️ Fellowship / Grant", color: "hover:border-emerald-400" },
+                    { type: "talk", icon: Mic, label: "🎙️ Keynote / Talk", color: "hover:border-purple-400" },
+                    { type: "hackathon", icon: Rocket, label: "🚀 Hackathon / Win", color: "hover:border-cyan-400" },
+                    { type: "article", icon: Newspaper, label: "📰 Article & Press", color: "hover:border-teal-400" },
                   ].map((btn) => {
                     const isSelected = laurelForm.type === btn.type;
                     return (
                       <button
                         key={btn.type}
                         type="button"
-                        onClick={() => setLaurelForm({ ...laurelForm, type: btn.type as any })}
-                        className={`p-3 rounded-xl border-2 font-bold text-center transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
+                        onClick={() => setLaurelForm({ ...laurelForm, type: btn.type })}
+                        className={`p-2.5 rounded-xl border-2 font-bold text-center transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
                           isSelected
                             ? "bg-black text-white border-black shadow-[2.5px_2.5px_0_#f59e0b]"
                             : `bg-stone-50 text-stone-700 border-stone-200 ${btn.color}`
                         }`}
                       >
                         <btn.icon className={`w-4 h-4 ${isSelected ? "text-amber-400" : "text-stone-500"}`} />
-                        <span className="text-[11px] leading-tight">{btn.label}</span>
+                        <span className="text-[10.5px] leading-tight font-black">{btn.label}</span>
                       </button>
                     );
                   })}
+                </div>
+
+                {/* Custom Type Input Field */}
+                <div className="mt-2.5 p-2.5 rounded-xl bg-stone-50 border border-stone-200">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-bold text-stone-700 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-amber-500" />
+                      <span>Custom Entry Type (or type your own):</span>
+                    </span>
+                    {!["award", "paper", "book", "patent", "fellowship", "talk", "hackathon", "article"].includes(laurelForm.type) && (
+                      <span className="text-[9.5px] font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">
+                        Custom Active
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="e.g. Open Source, Workshop, Exhibition, Fellowship, Grant..."
+                      value={!["award", "paper", "book", "patent", "fellowship", "talk", "hackathon", "article"].includes(laurelForm.type) ? laurelForm.type : ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setLaurelForm({ ...laurelForm, type: val || "award" });
+                      }}
+                      className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 text-xs font-mono font-bold focus:border-black focus:outline-none"
+                    />
+                  </div>
                 </div>
               </div>
 

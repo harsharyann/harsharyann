@@ -32,7 +32,7 @@ export interface Certificate {
 
 export interface LaurelItem {
   id: string;
-  type: "award" | "paper" | "book";
+  type: "award" | "paper" | "book" | "patent" | "fellowship" | "talk" | "hackathon" | "article" | string;
   title: string;
   issuerOrPublisher: string;
   date: string;
@@ -146,6 +146,10 @@ export interface PortfolioData {
     mobileBadge2?: string;
     mobileTagline?: string;
     showMobileCurrentRole?: boolean;
+    showAboutRole?: boolean;
+    showEducationBadge?: boolean;
+    aboutEducationDegree?: string;
+    aboutEducationCollege?: string;
     showDevelopmentTrajectory?: boolean;
     showExperienceSection?: boolean;
     showLaurelsSection?: boolean;
@@ -154,11 +158,19 @@ export interface PortfolioData {
     aboutPhotoTag?: string;
     aboutCurrentWork?: string;
     aboutWorkPlace?: string;
+    aboutRoleType?: string;
+    aboutRoleTag?: string;
     aboutHighlightedWords?: string;
     aboutHighlightColor?: string;
     aboutZoneBadge?: string;
     aboutHeading?: string;
     aboutSubtitle?: string;
+    projectsHeading?: string;
+    projectsSubtitle?: string;
+    certificatesHeading?: string;
+    certificatesSubtitle?: string;
+    experienceTitle?: string;
+    experienceSubtitle?: string;
     currentCountry?: string;
     currentCity?: string;
     currentWork?: string;
@@ -257,6 +269,10 @@ export const portfolioData: PortfolioData = {
     mobileBadge2: "AI & Data Science",
     mobileTagline: "Teaching Machines To Learn • Building Scientific Software",
     showMobileCurrentRole: true,
+    showAboutRole: true,
+    showEducationBadge: true,
+    aboutEducationDegree: "Data Science and Applications",
+    aboutEducationCollege: "IIT Madras",
     showDevelopmentTrajectory: true,
     showExperienceSection: true,
     showLaurelsSection: true,
@@ -265,11 +281,19 @@ export const portfolioData: PortfolioData = {
     aboutPhotoTag: "✦ TA @ IIT MADRAS",
     aboutCurrentWork: "Teaching Assistant",
     aboutWorkPlace: "IIT Madras",
+    aboutRoleType: "auto",
+    aboutRoleTag: "",
     aboutHighlightedWords: "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning",
     aboutHighlightColor: "#f59e0b",
     aboutZoneBadge: "✦ THE ARCHITECT & MIND",
     aboutHeading: "Behind the Terminal",
     aboutSubtitle: "Curious mind blending machine learning fundamentals with expressive software architecture. Here is who I am, how I build, and where I am headed.",
+    projectsHeading: "Projects and Builds",
+    projectsSubtitle: "End-to-end exploratory data analysis, foundational machine learning algorithms, and scientific Python tools engineered with clean code and mathematical rigor.",
+    certificatesHeading: "Certifications and Laurels",
+    certificatesSubtitle: "Verified academic achievements, hackathon laurels, and institutional recognitions presented in compact widescreen landscape prints.",
+    experienceTitle: "WORK & LEADERSHIP",
+    experienceSubtitle: "A chronological flight track of engineering leadership, academic mentorship, and industry contributions.",
     currentCountry: "India",
     currentCity: "Chennai, India",
     currentWork: "Teaching Assistant @ IIT Madras",

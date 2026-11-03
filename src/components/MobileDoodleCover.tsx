@@ -7,6 +7,7 @@ import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { formatGoogleDriveImageUrl } from "@/lib/googleDrive";
+import { resolveRoleTrack } from "@/lib/roleTrack";
 
 export function MobileDoodleCover() {
   const { data: portfolio, closeCover } = usePortfolio();
@@ -215,26 +216,47 @@ export function MobileDoodleCover() {
             className="relative rounded-2xl p-3.5 sm:p-4 bg-[#fffef5]/98 dark:bg-[#181922]/98 backdrop-blur-xl border-2 border-black dark:border-white shadow-[5px_5px_0_#000] dark:shadow-[5px_5px_0_#fff] text-stone-900 dark:text-stone-100 flex flex-col items-center gap-2 rotate-[0.5deg]"
           >
             {/* 1. CURRENT ROLE: Role & Workplace dynamically rendered */}
-            {portfolio?.personal?.showMobileCurrentRole !== false && (Boolean(portfolio?.personal?.role || portfolio?.personal?.aboutCurrentWork) || Boolean(portfolio?.personal?.aboutWorkPlace)) && (
-              <div className="w-full flex flex-col items-center justify-center text-center py-1.5 px-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/30 dark:border-emerald-500/40 shadow-2xs">
-                {Boolean(portfolio?.personal?.role || portfolio?.personal?.aboutCurrentWork) && (
-                  <div className="flex items-center gap-1.5 text-stone-900 dark:text-stone-100">
-                    <span className="flex h-2 w-2 relative shrink-0">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            {portfolio?.personal?.showMobileCurrentRole !== false && (Boolean(portfolio?.personal?.role || portfolio?.personal?.aboutCurrentWork) || Boolean(portfolio?.personal?.aboutWorkPlace)) && (() => {
+              const rawRole = (portfolio?.personal?.role || portfolio?.personal?.aboutCurrentWork || "").trim();
+              const workplace = (portfolio?.personal?.aboutWorkPlace || "").trim();
+
+              const displayRole = workplace && rawRole.toLowerCase().includes(`@ ${workplace.toLowerCase()}`)
+                ? rawRole.replace(new RegExp(`\\s*@\\s*${workplace}`, 'i'), '').trim()
+                : rawRole;
+
+              const track = resolveRoleTrack(rawRole, workplace, portfolio?.personal?.aboutRoleType);
+
+              return (
+                <div className={`w-full flex flex-col items-center justify-center text-center py-2 px-3 rounded-xl bg-gradient-to-r ${track.cardBg} border border-black/15 dark:border-white/15 shadow-2xs`}>
+                  {/* Top status indicator with Track Icon & Pulsing Dot */}
+                  <div className={`flex items-center gap-1.5 pb-1 ${track.labelColor}`}>
+                    <span className="relative flex h-2 w-2">
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.beaconRing} opacity-75`} />
+                      <span className={`relative inline-flex rounded-full h-2 w-2 ${track.beaconCore}`} />
                     </span>
-                    <span className="font-['Space_Grotesk'] text-xs sm:text-sm font-black uppercase tracking-tight text-emerald-700 dark:text-emerald-300">
-                      {portfolio?.personal?.role || portfolio?.personal?.aboutCurrentWork}
+                    <span className="font-mono text-[9px] font-black uppercase tracking-wider flex items-center gap-1">
+                      {track.icon}
+                      <span>{track.label}</span>
                     </span>
                   </div>
-                )}
-                {Boolean(portfolio?.personal?.aboutWorkPlace) && (
-                  <div className="mt-0.5 font-mono text-[11px] sm:text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-300">
-                    {portfolio?.personal?.aboutWorkPlace}
+
+                  {/* Role & Organization display */}
+                  <div className="flex flex-wrap items-center justify-center gap-1.5">
+                    {Boolean(displayRole) && (
+                      <span className="font-['Space_Grotesk'] text-xs sm:text-sm font-black uppercase tracking-tight text-stone-900 dark:text-stone-100">
+                        {displayRole}
+                      </span>
+                    )}
+                    {Boolean(workplace) && (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md ${track.workplaceBadgeBg} font-mono text-[10px] font-black uppercase tracking-wide`}>
+                        <span className={`${track.workplaceAtColor} font-sans font-bold`}>@</span>
+                        <span>{workplace}</span>
+                      </span>
+                    )}
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              );
+            })()}
 
             {/* 2. PUNCHY QUOTE / NARRATIVE TAGLINE */}
             {portfolio?.personal?.mobileTagline !== "" && (

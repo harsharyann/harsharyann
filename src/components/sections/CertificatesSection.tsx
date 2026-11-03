@@ -3,8 +3,80 @@
 import React, { useState } from "react"
 import { portfolioData, Certificate, LaurelItem } from "@/data/portfolioData"
 import { usePortfolio } from "@/context/PortfolioContext"
-import { Sparkles, Award, ShieldCheck, Trophy, BookOpen, FileText, ExternalLink, Bookmark, ArrowUpRight } from "lucide-react"
+import { Sparkles, Award, ShieldCheck, Trophy, BookOpen, FileText, ExternalLink, Bookmark, ArrowUpRight, Lightbulb, Mic, Rocket, Newspaper } from "lucide-react"
 import { PolaroidCertificateCarousel } from "@/components/PolaroidCertificateCarousel"
+
+/**
+ * Metadata helper for Laurel / Publication entry types
+ */
+function getLaurelTypeMeta(type: string) {
+  const norm = (type || "").toLowerCase().trim();
+  switch (norm) {
+    case "award":
+      return {
+        label: "Award & Laurel",
+        tabLabel: "AWARDS",
+        icon: <Trophy className="w-3.5 h-3.5 text-amber-500 shrink-0" />,
+        defaultColor: "amber",
+      };
+    case "paper":
+      return {
+        label: "Research Paper",
+        tabLabel: "RESEARCH PAPERS",
+        icon: <FileText className="w-3.5 h-3.5 text-indigo-500 shrink-0" />,
+        defaultColor: "indigo",
+      };
+    case "book":
+      return {
+        label: "Published Book",
+        tabLabel: "BOOKS & CHAPTERS",
+        icon: <BookOpen className="w-3.5 h-3.5 text-rose-500 shrink-0" />,
+        defaultColor: "rose",
+      };
+    case "patent":
+      return {
+        label: "Patent & IP",
+        tabLabel: "PATENTS",
+        icon: <Lightbulb className="w-3.5 h-3.5 text-yellow-500 shrink-0" />,
+        defaultColor: "amber",
+      };
+    case "fellowship":
+      return {
+        label: "Fellowship / Grant",
+        tabLabel: "FELLOWSHIPS",
+        icon: <Award className="w-3.5 h-3.5 text-emerald-500 shrink-0" />,
+        defaultColor: "emerald",
+      };
+    case "talk":
+      return {
+        label: "Keynote / Talk",
+        tabLabel: "TALKS",
+        icon: <Mic className="w-3.5 h-3.5 text-purple-500 shrink-0" />,
+        defaultColor: "purple",
+      };
+    case "hackathon":
+      return {
+        label: "Hackathon / Win",
+        tabLabel: "HACKATHONS",
+        icon: <Rocket className="w-3.5 h-3.5 text-cyan-500 shrink-0" />,
+        defaultColor: "cyan",
+      };
+    case "article":
+      return {
+        label: "Article & Press",
+        tabLabel: "ARTICLES",
+        icon: <Newspaper className="w-3.5 h-3.5 text-teal-500 shrink-0" />,
+        defaultColor: "teal",
+      };
+    default:
+      return {
+        label: type ? type.charAt(0).toUpperCase() + type.slice(1) : "Recognition",
+        tabLabel: (type || "ENTRY").toUpperCase(),
+        icon: <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />,
+        defaultColor: "amber",
+      };
+  }
+}
 
 /**
  * Handcrafted Doodle #1 — The Laurel Medal 🏅
@@ -63,11 +135,12 @@ function MedalRibbonDoodle({ className = "", isPhone = false }: { className?: st
       </svg>
 
       <div
-        className="hidden sm:block ml-2 px-3 py-1.5 bg-amber-100 dark:bg-stone-800 border-2 border-black dark:border-white rounded-xl shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] text-xs font-bold rotate-[2deg]"
+        className="hidden sm:block ml-2 px-3 py-1.5 bg-amber-100 dark:bg-stone-800 border-2 border-black dark:border-white rounded-xl shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] text-xs font-bold rotate-[2deg] animate-doodle-float-reverse transition-all duration-300 hover:rotate-0 hover:scale-105 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff] cursor-default group/sticker"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
-        <span className="text-amber-950 dark:text-amber-200 text-sm">
-          proof of craft 🏅
+        <span className="text-amber-950 dark:text-amber-200 text-sm inline-flex items-center gap-1.5">
+          <span>proof of craft</span>
+          <span className="inline-block transition-transform duration-300 group-hover/sticker:scale-125 group-hover/sticker:rotate-12 animate-spark-glow">🏅</span>
         </span>
       </div>
     </div>
@@ -82,7 +155,7 @@ function ClothespinGuideDoodle({ className = "" }: { className?: string }) {
     <div className={`relative inline-flex items-center gap-2 ${className}`} aria-hidden="true">
       <svg
         viewBox="0 0 110 50"
-        className="w-24 sm:w-28 h-12 overflow-visible"
+        className="w-24 sm:w-28 h-12 overflow-visible animate-doodle-float"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.2"
@@ -97,7 +170,7 @@ function ClothespinGuideDoodle({ className = "" }: { className?: string }) {
         <path d="M 72 32 Q 85 28 95 36" stroke="#06b6d4" strokeWidth="1.8" />
       </svg>
       <span
-        className="text-xs sm:text-sm font-bold text-purple-700 dark:text-purple-300 rotate-[-2deg]"
+        className="text-xs sm:text-sm font-bold text-purple-700 dark:text-purple-300 rotate-[-2deg] animate-doodle-float-reverse inline-block transition-transform duration-200 hover:scale-105 cursor-default"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
         polaroid credential bento ✦
@@ -135,21 +208,22 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
     ? portfolio.certificates
     : []).filter((c) => c.isVisible !== false)
   const [activeCategory, setActiveCategory] = useState("All")
-  const [activeLaurelType, setActiveLaurelType] = useState<"all" | "award" | "paper" | "book">("all")
+  const [activeLaurelType, setActiveLaurelType] = useState<string>("all")
 
   const showLaurelsSection = portfolio?.personal?.showLaurelsSection !== false
   const rawLaurelItems: LaurelItem[] = Array.isArray(portfolio?.laurelItems) ? portfolio.laurelItems : []
   // Surface only items that are not explicitly hidden
   const visibleLaurels = rawLaurelItems.filter((item) => item.isVisible !== false)
 
-  const awardsList = visibleLaurels.filter((item) => item.type === "award")
-  const papersList = visibleLaurels.filter((item) => item.type === "paper")
-  const booksList = visibleLaurels.filter((item) => item.type === "book")
+  // Dynamically extract all unique entry types present in the user's laurels
+  const uniqueLaurelTypes = React.useMemo(() => {
+    return Array.from(new Set(visibleLaurels.map((item) => (item.type || "award").toLowerCase().trim()))).filter(Boolean);
+  }, [visibleLaurels]);
 
   const filteredLaurels =
     activeLaurelType === "all"
       ? visibleLaurels
-      : visibleLaurels.filter((item) => item.type === activeLaurelType)
+      : visibleLaurels.filter((item) => (item.type || "award").toLowerCase().trim() === activeLaurelType.toLowerCase().trim())
 
   const dynamicCategoryNames = React.useMemo(() => {
     // Surface only categories that actually contain at least one certificate to avoid empty (0) pills
@@ -192,7 +266,7 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white font-hero-heading inline-flex items-center gap-2 sm:gap-3 flex-wrap">
-              <span>Certifications and Laurels</span>
+              <span>{portfolio?.personal?.certificatesHeading || "Certifications and Laurels"}</span>
               {/* On phone: Cute laurel medal doodle placed directly next to 'LAURELS' */}
               <span className="inline-flex lg:hidden shrink-0 -mt-1 sm:-mt-2">
                 <MedalRibbonDoodle isPhone />
@@ -214,7 +288,7 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
             </svg>
 
             <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
-              Verified academic achievements, hackathon laurels, and institutional recognitions presented in compact widescreen landscape prints.
+              {portfolio?.personal?.certificatesSubtitle || "Verified academic achievements, hackathon laurels, and institutional recognitions presented in compact widescreen landscape prints."}
             </p>
           </div>
 
@@ -335,50 +409,27 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
                 <span>ALL ({visibleLaurels.length})</span>
               </button>
 
-              {awardsList.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setActiveLaurelType("award")}
-                  className={`px-3 py-1 rounded-full border-2 border-black dark:border-amber-400/80 font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                    activeLaurelType === "award"
-                      ? "bg-amber-500 text-black shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fbbf24,0_0_12px_rgba(251,191,36,0.3)]"
-                      : "bg-white text-black dark:bg-[#141522] dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c1e30] shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_rgba(251,191,36,0.2)]"
-                  }`}
-                >
-                  <Trophy className="w-3 h-3 text-amber-700 dark:text-amber-300" />
-                  <span>AWARDS ({awardsList.length})</span>
-                </button>
-              )}
+              {uniqueLaurelTypes.map((t) => {
+                const count = visibleLaurels.filter((item) => (item.type || "award").toLowerCase().trim() === t).length;
+                const meta = getLaurelTypeMeta(t);
+                const isSelected = activeLaurelType.toLowerCase().trim() === t;
 
-              {papersList.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setActiveLaurelType("paper")}
-                  className={`px-3 py-1 rounded-full border-2 border-black dark:border-indigo-400/80 font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                    activeLaurelType === "paper"
-                      ? "bg-indigo-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#818cf8,0_0_12px_rgba(129,140,248,0.3)]"
-                      : "bg-white text-black dark:bg-[#141522] dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c1e30] shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_rgba(129,140,248,0.2)]"
-                  }`}
-                >
-                  <FileText className="w-3 h-3 text-indigo-300" />
-                  <span>RESEARCH PAPERS ({papersList.length})</span>
-                </button>
-              )}
-
-              {booksList.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setActiveLaurelType("book")}
-                  className={`px-3 py-1 rounded-full border-2 border-black dark:border-rose-400/80 font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                    activeLaurelType === "book"
-                      ? "bg-rose-600 text-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fb7185,0_0_12px_rgba(251,113,133,0.3)]"
-                      : "bg-white text-black dark:bg-[#141522] dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c1e30] shadow-[1.5px_1.5px_0_#000] dark:shadow-[1.5px_1.5px_0_rgba(251,113,133,0.2)]"
-                  }`}
-                >
-                  <BookOpen className="w-3 h-3 text-rose-300" />
-                  <span>BOOKS &amp; CHAPTERS ({booksList.length})</span>
-                </button>
-              )}
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setActiveLaurelType(t)}
+                    className={`px-3 py-1 rounded-full border-2 border-black dark:border-stone-400 font-black tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                      isSelected
+                        ? "bg-black text-white dark:bg-amber-400 dark:text-black dark:border-amber-400 shadow-[2px_2px_0_#f59e0b] dark:shadow-[2px_2px_0_#fbbf24]"
+                        : "bg-white text-black dark:bg-[#141522] dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-[#1c1e30] dark:hover:border-stone-500 shadow-[1.5px_1.5px_0_#000]"
+                    }`}
+                  >
+                    {meta.icon}
+                    <span>{meta.tabLabel} ({count})</span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Items Bento Grid */}
@@ -390,41 +441,18 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
                 {filteredLaurels.map((item) => {
-                  const isAward = item.type === "award"
-                  const isPaper = item.type === "paper"
+                  const meta = getLaurelTypeMeta(item.type || "award");
 
-                  const defaultTheme = isAward
-                    ? {
-                        border: "border-black dark:border-amber-400/90",
-                        shadow: "shadow-[4px_4px_0_#f59e0b] dark:shadow-[4px_4px_0_#fbbf24,0_0_24px_rgba(251,191,36,0.18)]",
-                        cardBg: "bg-white dark:bg-gradient-to-br dark:from-[#1d170a]/90 dark:via-[#13141f]/90 dark:to-[#080911]/95",
-                        badge: "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950/80 dark:text-amber-200 dark:border-amber-500/60 dark:shadow-[0_0_12px_rgba(245,158,11,0.25)]",
-                        washi: "bg-amber-200/90 dark:bg-amber-400/40 dark:shadow-[0_0_10px_rgba(251,191,36,0.5)] dark:border-amber-300/40",
-                        icon: <Trophy className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />,
-                        label: "Award & Laurel",
-                        btn: "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black dark:border-amber-300 dark:shadow-[2px_2px_0_#fbbf24]",
-                      }
-                    : isPaper
-                    ? {
-                        border: "border-black dark:border-indigo-400/90",
-                        shadow: "shadow-[4px_4px_0_#6366f1] dark:shadow-[4px_4px_0_#818cf8,0_0_24px_rgba(129,140,248,0.2)]",
-                        cardBg: "bg-white dark:bg-gradient-to-br dark:from-[#10142e]/90 dark:via-[#13141f]/90 dark:to-[#080911]/95",
-                        badge: "bg-indigo-100 text-indigo-950 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-500/60 dark:shadow-[0_0_12px_rgba(99,102,241,0.25)]",
-                        washi: "bg-indigo-200/90 dark:bg-indigo-400/40 dark:shadow-[0_0_10px_rgba(129,140,248,0.5)] dark:border-indigo-300/40",
-                        icon: <FileText className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />,
-                        label: "Research Paper",
-                        btn: "bg-indigo-600 hover:bg-indigo-500 text-white border-2 border-black dark:border-indigo-300 dark:shadow-[2px_2px_0_#818cf8]",
-                      }
-                    : {
-                        border: "border-black dark:border-rose-400/90",
-                        shadow: "shadow-[4px_4px_0_#f43f5e] dark:shadow-[4px_4px_0_#fb7185,0_0_24px_rgba(251,113,133,0.2)]",
-                        cardBg: "bg-white dark:bg-gradient-to-br dark:from-[#261019]/90 dark:via-[#13141f]/90 dark:to-[#080911]/95",
-                        badge: "bg-rose-100 text-rose-950 border-rose-300 dark:bg-rose-950/80 dark:text-rose-200 dark:border-rose-500/60 dark:shadow-[0_0_12px_rgba(244,63,94,0.25)]",
-                        washi: "bg-rose-200/90 dark:bg-rose-400/40 dark:shadow-[0_0_10px_rgba(251,113,133,0.5)] dark:border-rose-300/40",
-                        icon: <BookOpen className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />,
-                        label: "Published Book",
-                        btn: "bg-rose-600 hover:bg-rose-500 text-white border-2 border-black dark:border-rose-300 dark:shadow-[2px_2px_0_#fb7185]",
-                      }
+                  const defaultTheme = {
+                    border: "border-black dark:border-amber-400/90",
+                    shadow: "shadow-[4px_4px_0_#f59e0b] dark:shadow-[4px_4px_0_#fbbf24,0_0_24px_rgba(251,191,36,0.18)]",
+                    cardBg: "bg-white dark:bg-gradient-to-br dark:from-[#1d170a]/90 dark:via-[#13141f]/90 dark:to-[#080911]/95",
+                    badge: "bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950/80 dark:text-amber-200 dark:border-amber-500/60 dark:shadow-[0_0_12px_rgba(245,158,11,0.25)]",
+                    washi: "bg-amber-200/90 dark:bg-amber-400/40 dark:shadow-[0_0_10px_rgba(251,191,36,0.5)] dark:border-amber-300/40",
+                    icon: meta.icon,
+                    label: meta.label,
+                    btn: "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black dark:border-amber-300 dark:shadow-[2px_2px_0_#fbbf24]",
+                  };
 
                   const customColorKey = (item.color || "").toLowerCase().trim();
                   const colorOverrideMap: Record<string, any> = {
@@ -555,7 +583,7 @@ export function CertificatesSection({ id = "certificates" }: { id?: string }) {
                             rel="noreferrer"
                             className={`w-full py-2 px-3 rounded-xl font-mono text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-[2px_2px_0_#000] transition-all cursor-pointer ${theme.btn}`}
                           >
-                            <span>{isAward ? "View Award Credential" : isPaper ? "Read Research Paper" : "View Publication"}</span>
+                            <span>{item.type === "award" ? "View Award Credential" : item.type === "paper" ? "Read Research Paper" : item.type === "book" ? "View Publication / Book" : `Explore ${meta.label}`}</span>
                             <ArrowUpRight className="w-3.5 h-3.5" />
                           </a>
                         </div>

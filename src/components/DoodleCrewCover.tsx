@@ -12,6 +12,7 @@ import { GithubIcon, LinkedinIcon } from "./SocialIcons"
 import { DailySpark } from "./DailySpark"
 import { formatGoogleDriveImageUrl } from "@/lib/googleDrive"
 import { extractPhotoPalette, PhotoPalette, DEFAULT_PHOTO_PALETTE } from "@/lib/colorExtractor"
+import { resolveRoleTrack } from "@/lib/roleTrack"
 
 /**
  * DoodleCrewCover — A high-energy sketchbook cover page for Harsh Aryan.
@@ -1327,7 +1328,7 @@ export function DoodleCrewCover({
                 <span className="font-signature text-2xl sm:text-3xl font-bold tracking-wide italic text-black dark:text-white leading-none rotate-[-1deg]">
                   {portfolio?.personal?.name || "Harsh Aryan"}
                 </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 font-black uppercase text-[10.5px]">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 font-black uppercase text-[10.5px] animate-doodle-float-reverse transition-transform hover:scale-105">
                   {portfolio?.personal?.desktopPhotoTag || "AI & DS"}
                 </span>
               </div>
@@ -1344,27 +1345,48 @@ export function DoodleCrewCover({
               </h1>
             </div>
 
-            {/* Active Role Pill */}
-            {(Boolean(portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role) || Boolean(portfolio?.personal?.aboutWorkPlace)) && (
-              <div className="inline-flex items-center gap-2 py-1 px-3.5 rounded-xl bg-amber-100 dark:bg-stone-800/90 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]">
-                {Boolean(portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role) && (
+            {/* Active Role Pill with Live Radar Beacon & Distinct Organization Tag */}
+            {(Boolean(portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role) || Boolean(portfolio?.personal?.aboutWorkPlace)) && (() => {
+              const rawRole = (portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role || "").trim();
+              const workplace = (portfolio?.personal?.aboutWorkPlace || "").trim();
+              
+              const displayRole = workplace && rawRole.toLowerCase().includes(`@ ${workplace.toLowerCase()}`)
+                ? rawRole.replace(new RegExp(`\\s*@\\s*${workplace}`, 'i'), '').trim()
+                : rawRole;
+
+              const track = resolveRoleTrack(rawRole, workplace, portfolio?.personal?.aboutRoleType);
+
+              return (
+                <div className="group/pill inline-flex items-center flex-wrap gap-2.5 py-1.5 px-3.5 rounded-xl bg-[#fffdf6] dark:bg-stone-900/90 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff]">
+                  {/* Track Beacon + Icon + Track Label */}
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                    <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-black dark:text-white font-mono">
-                      {portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role}
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.beaconRing} opacity-75`} />
+                      <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${track.beaconCore} ring-2 ring-emerald-500/20`} />
+                    </span>
+                    <span className={`font-mono text-[10px] font-black uppercase tracking-wider ${track.labelColor} flex items-center gap-1`}>
+                      {track.icon}
+                      <span>{track.label}</span>
                     </span>
                   </div>
-                )}
-                {Boolean(portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role) && Boolean(portfolio?.personal?.aboutWorkPlace) && (
-                  <span className="text-stone-400 dark:text-stone-500 font-bold">•</span>
-                )}
-                {Boolean(portfolio?.personal?.aboutWorkPlace) && (
-                  <span className="font-mono text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                    {portfolio?.personal?.aboutWorkPlace}
-                  </span>
-                )}
-              </div>
-            )}
+
+                  {/* Role Title */}
+                  {Boolean(displayRole) && (
+                    <span className="text-xs sm:text-sm font-black uppercase tracking-tight text-black dark:text-white font-['Space_Grotesk'] pl-2 border-l border-stone-300 dark:border-stone-700 leading-none">
+                      {displayRole}
+                    </span>
+                  )}
+
+                  {/* Organization Badge with @ connector */}
+                  {Boolean(workplace) && (
+                    <div className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg ${track.workplaceBadgeBg} font-mono text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-2xs`}>
+                      <span className={`${track.workplaceAtColor} font-sans font-bold text-xs`}>@</span>
+                      <span>{workplace}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Headline / Subtitle */}
             <p className="text-xs sm:text-sm font-mono text-stone-700 dark:text-stone-300 leading-relaxed max-w-xl">

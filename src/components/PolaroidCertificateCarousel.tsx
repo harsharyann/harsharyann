@@ -832,7 +832,7 @@ export function PolaroidCertificateCarousel({
                 </div>
 
                 {/* Description Paragraph */}
-                <p className="text-stone-800 dark:text-stone-200 text-xs sm:text-[13px] leading-relaxed line-clamp-3">
+                <p className="text-stone-800 dark:text-stone-200 text-xs sm:text-[13px] leading-relaxed">
                   {activeCert.description}
                 </p>
 

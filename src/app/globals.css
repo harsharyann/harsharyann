@@ -533,3 +533,90 @@ html.dark ::-webkit-scrollbar-thumb {
   border-radius: 4px;
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
 }
+
+/* ── Interactive Doodle, Sticker & Section Tag Animations ── */
+@keyframes doodle-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(-1.5deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(0.5deg);
+  }
+}
+
+@keyframes doodle-float-reverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(1.5deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(-0.5deg);
+  }
+}
+
+@keyframes spark-glow {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes bulb-rays-pulse {
+  0%, 100% {
+    stroke-opacity: 0.6;
+    stroke-width: 2.6;
+  }
+  50% {
+    stroke-opacity: 1;
+    stroke-width: 3.4;
+  }
+}
+
+@keyframes badge-radar {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.animate-doodle-float {
+  animation: doodle-float 3.8s ease-in-out infinite;
+}
+
+.animate-doodle-float-reverse {
+  animation: doodle-float-reverse 4.2s ease-in-out infinite;
+}
+
+.animate-spark-glow {
+  animation: spark-glow 2.2s ease-in-out infinite;
+}
+
+.animate-bulb-rays {
+  animation: bulb-rays-pulse 2s ease-in-out infinite;
+}
+
+.animate-badge-radar {
+  animation: badge-radar 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-doodle-float,
+  .animate-doodle-float-reverse,
+  .animate-spark-glow,
+  .animate-bulb-rays,
+  .animate-badge-radar {
+    animation: none !important;
+    transform: none !important;
+  }
+}

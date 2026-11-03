@@ -98,11 +98,12 @@ function AirmailLetterDoodle({ className = "", isPhone = false, noteText }: { cl
       </svg>
 
       <div
-        className="hidden sm:block ml-2 px-3 py-1.5 bg-rose-100 dark:bg-stone-800 border-2 border-black dark:border-white rounded-xl shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] text-xs font-bold rotate-[1.5deg]"
+        className="hidden sm:block ml-2 px-3 py-1.5 bg-rose-100 dark:bg-stone-800 border-2 border-black dark:border-white rounded-xl shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] text-xs font-bold rotate-[1.5deg] animate-doodle-float-reverse transition-all duration-300 hover:rotate-0 hover:scale-105 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff] cursor-default group/sticker"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
-        <span className="text-rose-950 dark:text-rose-200 text-sm">
-          {noteText || "drop a note anytime 💌"}
+        <span className="text-rose-950 dark:text-rose-200 text-sm inline-flex items-center gap-1.5">
+          <span>{noteText || "drop a note anytime"}</span>
+          <span className="inline-block transition-transform duration-300 group-hover/sticker:scale-125 group-hover/sticker:rotate-12 animate-spark-glow">💌</span>
         </span>
       </div>
     </div>
@@ -117,7 +118,7 @@ function PostalMailboxDoodle({ className = "", noteText }: { className?: string;
     <div className={`relative inline-flex items-center gap-2 ${className}`} aria-hidden="true">
       <svg
         viewBox="0 0 100 80"
-        className="w-16 sm:w-20 h-14 overflow-visible"
+        className="w-16 sm:w-20 h-14 overflow-visible animate-doodle-float"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.2"
@@ -137,7 +138,7 @@ function PostalMailboxDoodle({ className = "", noteText }: { className?: string;
         <rect x="46" y="62" width="8" height="16" fill="#18181b" stroke="#000000" className="dark:stroke-white" strokeWidth="2" />
       </svg>
       <span
-        className="text-xs sm:text-sm font-bold text-sky-700 dark:text-sky-300 rotate-[-1deg]"
+        className="text-xs sm:text-sm font-bold text-sky-700 dark:text-sky-300 rotate-[-1deg] animate-doodle-float-reverse inline-block transition-transform duration-200 hover:scale-105 cursor-default"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
         {noteText || "direct dispatch 📬"}
@@ -543,13 +544,24 @@ export function ContactSection({ id = "contact" }: { id?: string }) {
                 </span>
               </div>
 
-              {/* Current Role / Workplace ("kha job kr rha hu") */}
+              {/* Current Role / Workplace */}
               <div className="flex items-start gap-2">
                 <span className="text-[10px] font-black uppercase tracking-wider text-stone-400 dark:text-stone-500 shrink-0 w-24">
                   STATION / JOB:
                 </span>
-                <span className="font-black text-amber-700 dark:text-amber-400">
-                  {personal?.currentWork || "Teaching Assistant @ IIT Madras"}
+                <span className="font-black text-amber-700 dark:text-amber-400 inline-flex items-center gap-1.5 flex-wrap">
+                  {personal?.aboutCurrentWork || personal?.role ? (
+                    <>
+                      <span>{personal?.aboutCurrentWork || personal?.role}</span>
+                      {personal?.aboutWorkPlace && (
+                        <span className="px-1.5 py-0.5 rounded-md bg-amber-200/80 dark:bg-amber-900/60 border border-amber-950/20 dark:border-amber-400/30 text-amber-950 dark:text-amber-200 text-[10.5px] font-mono font-bold">
+                          @{personal.aboutWorkPlace}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span>{personal?.currentWork || "Teaching Assistant @ IIT Madras"}</span>
+                  )}
                 </span>
               </div>
 
