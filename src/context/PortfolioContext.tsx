@@ -272,9 +272,9 @@ export function PortfolioProvider({
       }
     }
 
-    // Fast 4s maximum timeout controller so saving NEVER hangs indefinitely
+    // 10s maximum timeout controller so saving has plenty of time for cloud sync
     const controller = new AbortController();
-    const timeoutTimer = setTimeout(() => controller.abort(), 4000);
+    const timeoutTimer = setTimeout(() => controller.abort(), 10000);
 
     try {
       const res = await fetch("/api/portfolio", {

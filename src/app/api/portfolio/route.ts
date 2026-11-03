@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getStoredPortfolioData, saveStoredPortfolioData, resetStoredPortfolioData } from "@/lib/portfolioStore";
 import { isAuthenticated } from "@/lib/auth";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
@@ -124,6 +125,12 @@ export async function POST(req: Request) {
       })();
     }
 
+    // Revalidate all pages so visitors immediately see new content
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/admin");
+    } catch {}
+
     return NextResponse.json(
       { success: true, data: dataToSave },
       {
@@ -167,6 +174,11 @@ export async function PUT() {
       console.error("Supabase reset exception:", sbErr);
     }
   }
+
+  try {
+    revalidatePath("/", "layout");
+    revalidatePath("/admin");
+  } catch {}
 
   return NextResponse.json({ success: true, data });
 }

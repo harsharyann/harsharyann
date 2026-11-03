@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { portfolioData, PortfolioData } from "@/data/portfolioData";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export interface ContactMessage {
   id: string;
@@ -22,6 +23,27 @@ const TMP_MESSAGES_PATH = path.join(os.tmpdir(), "messages-store.json");
 
 let memoryPortfolioCache: PortfolioData | null = null;
 let memoryMessagesCache: ContactMessage[] | null = null;
+
+export async function getFreshPortfolioData(): Promise<PortfolioData> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("portfolio_data")
+        .select("data")
+        .eq("id", "main")
+        .maybeSingle();
+
+      if (!error && data?.data && data.data.personal) {
+        memoryPortfolioCache = data.data;
+        return data.data;
+      }
+    } catch (sbErr) {
+      console.warn("Supabase SSR fetch notice, falling back:", sbErr);
+    }
+  }
+
+  return getStoredPortfolioData();
+}
 
 export function getStoredPortfolioData(): PortfolioData {
   let tmpData: PortfolioData | null = null;

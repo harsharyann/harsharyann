@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { PortfolioProvider } from "@/context/PortfolioContext";
 import { FluidBackground } from "@/components/FluidBackground";
 import { getStoredPortfolioData } from "@/lib/portfolioStore";
+import { PortfolioData, Project } from "@/data/portfolioData";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://harsharyann.me";
 
@@ -24,7 +25,7 @@ export const viewport: Viewport = {
  * Automatically updates whenever user modifies personal info, projects, skills or headline in Admin!
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const data = getStoredPortfolioData();
+  const data: PortfolioData = getStoredPortfolioData();
   const personal = data.personal || {};
   const name = personal.name?.trim() || "Harsh Aryan";
   const role = (personal.role || personal.currentWork || "AI & Data Science Developer").trim();
@@ -34,8 +35,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Dynamic SEO keywords extracted from user's current projects, skills & technologies
   const skillNames = (data.skills || []).flatMap((g) => g.items || []);
-  const projectTitles = (data.projects || []).map((p) => p.title);
-  const projectTechs = (data.projects || []).flatMap((p) => p.technologies || []);
+  const projectTitles = (data.projects || []).map((p: Project) => p.title);
+  const projectTechs = (data.projects || []).flatMap((p: Project) => p.technologies || []);
   const customKeywords = Array.from(
     new Set([
       name,
@@ -134,7 +135,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const initialPortfolioData = getStoredPortfolioData();
+  const initialPortfolioData: PortfolioData = getStoredPortfolioData();
   const personal = initialPortfolioData.personal || {};
   const name = personal.name?.trim() || "Harsh Aryan";
   const role = (personal.role || personal.currentWork || "Teaching Assistant & AI Developer").trim();
