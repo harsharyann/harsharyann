@@ -8,9 +8,8 @@ import {
 
 // Allowed Google Accounts for Harsh Aryan
 const ALLOWED_EMAILS = [
-  (process.env.ADMIN_ALLOWED_GOOGLE_EMAIL || "imharsharyan@gmail.com").toLowerCase().trim(),
-  "harsharyan@outlook.com",
-  "imharsharyan@gmail.com",
+  (process.env.ADMIN_ALLOWED_GOOGLE_EMAIL || "harsharyan.work@gmail.com").toLowerCase().trim(),
+  "harsharyan.work@gmail.com",
 ];
 
 function isSecureCookie(req: Request): boolean {

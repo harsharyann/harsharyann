@@ -1449,7 +1449,7 @@ export default function AdminPage() {
                   type="button"
                   onClick={() => {
                     alert(
-                      "To enable 1-Click Google Sign-In for your account:\n\n1. Go to Google Cloud Console -> APIs & Services -> Credentials\n2. Create an OAuth 2.0 Web Client ID\n3. Add 'http://localhost:3000' to Authorized JavaScript origins\n4. Add NEXT_PUBLIC_GOOGLE_CLIENT_ID=<your-client-id> in .env.local\n\nOnly imharsharyan@gmail.com will be granted access!"
+                      "To enable 1-Click Google Sign-In for your account:\n\n1. Go to Google Cloud Console -> APIs & Services -> Credentials\n2. Create an OAuth 2.0 Web Client ID\n3. Add 'http://localhost:3000' to Authorized JavaScript origins\n4. Add NEXT_PUBLIC_GOOGLE_CLIENT_ID=<your-client-id> in .env.local\n\nOnly harsharyan.work@gmail.com will be granted access!"
                     );
                   }}
                   className="w-full py-2.5 px-4 rounded-xl border-2 border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 font-mono text-xs font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
@@ -1476,7 +1476,7 @@ export default function AdminPage() {
                 </button>
               )}
               <p className="text-[9.5px] font-mono text-center text-stone-400">
-                Protected: Only authorized account (imharsharyan@gmail.com) can enter
+                Protected: Only authorized account (harsharyan.work@gmail.com) can enter
               </p>
             </div>
 
