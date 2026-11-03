@@ -61,7 +61,11 @@ import {
 import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { Project, Certificate, LaurelItem, PortfolioData, TimelineMilestone, Experience, DailyThought, DEFAULT_DAILY_THOUGHTS } from "@/data/portfolioData";
-import { FormattedHighlightedText } from "@/components/sections/AboutSection";
+import {
+  FormattedHighlightedText,
+  getBenchmarkStickerTheme,
+  BENCHMARK_STICKER_COLOR_MAP,
+} from "@/components/sections/AboutSection";
 import {
   extractGoogleDriveId,
   isGoogleDriveUrl,
@@ -367,13 +371,31 @@ export default function AdminPage() {
 
   // Quick Stats Capsule Handlers
   const handleAddQuickStat = () => {
-    setPortfolio((prev) => ({
-      ...prev,
-      quickStats: [
-        ...(prev.quickStats || []),
-        { value: "10+", label: "NEW BENCHMARK", sublabel: "Metric details" },
-      ],
-    }));
+    setPortfolio((prev) => {
+      const currentList = prev.quickStats || [];
+      const nextIndex = currentList.length;
+      const paletteKeys = ["amber", "emerald", "cyan", "rose", "purple", "indigo", "orange", "teal"];
+      const nextColor = paletteKeys[nextIndex % paletteKeys.length];
+      const defaultIcons = ["✨", "⚡", "🏆", "🔥", "🚀", "💡", "🎯", "🔬"];
+      const nextIcon = defaultIcons[nextIndex % defaultIcons.length];
+      const defaultTags = ["SPECIALTY", "PROJECTS", "HONORS", "SOLVED", "METRICS", "INSIGHTS", "GOALS", "RESEARCH"];
+      const nextTag = defaultTags[nextIndex % defaultTags.length];
+
+      return {
+        ...prev,
+        quickStats: [
+          ...currentList,
+          {
+            value: "10+",
+            label: "New Benchmark",
+            sublabel: "Metric details & highlights",
+            tag: nextTag,
+            icon: nextIcon,
+            color: nextColor,
+          },
+        ],
+      };
+    });
   };
 
   const handleRemoveQuickStat = (index: number) => {
@@ -383,7 +405,11 @@ export default function AdminPage() {
     }));
   };
 
-  const handleUpdateQuickStat = (index: number, field: "value" | "label" | "sublabel", val: string) => {
+  const handleUpdateQuickStat = (
+    index: number,
+    field: "value" | "label" | "sublabel" | "tag" | "icon" | "color",
+    val: string
+  ) => {
     setPortfolio((prev) => {
       const updated = [...(prev.quickStats || [])];
       updated[index] = { ...updated[index], [field]: val };
@@ -3719,86 +3745,195 @@ export default function AdminPage() {
                 </div>
 
                 {/* Edit Form Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {(portfolio.quickStats || []).map((stat, idx) => (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3"
-                    >
-                      <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                        <span className="font-mono text-xs font-black uppercase text-stone-600">
-                          Card #{idx + 1}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => handleMoveQuickStat(idx, "up")}
-                            disabled={idx === 0}
-                            className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
-                            title="Move Left/Up"
-                          >
-                            <ArrowUp className="w-3 h-3" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleMoveQuickStat(idx, "down")}
-                            disabled={idx === (portfolio.quickStats || []).length - 1}
-                            className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
-                            title="Move Right/Down"
-                          >
-                            <ArrowDown className="w-3 h-3" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveQuickStat(idx)}
-                            className="p-1 rounded bg-white border border-stone-300 text-red-500 hover:bg-red-50 cursor-pointer ml-1"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                  {(portfolio.quickStats || []).map((stat, idx) => {
+                    const theme = getBenchmarkStickerTheme(stat, idx);
+                    const currentColor = (stat.color || "").toLowerCase().trim();
+
+                    return (
+                      <div
+                        key={idx}
+                        className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3.5 shadow-2xs"
+                      >
+                        {/* Header & Ordering */}
+                        <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: theme.hex }} />
+                            <span className="font-mono text-xs font-black uppercase text-stone-900">
+                              Card #{idx + 1}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleMoveQuickStat(idx, "up")}
+                              disabled={idx === 0}
+                              className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                              title="Move Left/Up"
+                            >
+                              <ArrowUp className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveQuickStat(idx, "down")}
+                              disabled={idx === (portfolio.quickStats || []).length - 1}
+                              className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                              title="Move Right/Down"
+                            >
+                              <ArrowDown className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveQuickStat(idx)}
+                              className="p-1 rounded bg-white border border-stone-300 text-red-500 hover:bg-red-50 cursor-pointer ml-1"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* 1. Color Picker & Palette */}
+                        <div className="space-y-1.5 bg-white p-2.5 rounded-xl border border-stone-200">
+                          <div className="flex items-center justify-between">
+                            <label className="font-mono text-[10px] font-black uppercase text-stone-700 flex items-center gap-1">
+                              <Palette className="w-3 h-3 text-stone-500" />
+                              <span>Card Color:</span>
+                            </label>
+                            <span className="font-mono text-[9.5px] font-bold text-stone-500 uppercase">
+                              {theme.name}
+                            </span>
+                          </div>
+
+                          {/* 8 Preset Swatches */}
+                          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                            {Object.entries(BENCHMARK_STICKER_COLOR_MAP).map(([key, val]) => {
+                              const isSelected =
+                                currentColor === key ||
+                                currentColor === val.hex.toLowerCase() ||
+                                (!stat.color && theme.hex.toLowerCase() === val.hex.toLowerCase());
+
+                              return (
+                                <button
+                                  key={key}
+                                  type="button"
+                                  onClick={() => handleUpdateQuickStat(idx, "color", key)}
+                                  className={`w-5 h-5 rounded-full border transition-all cursor-pointer ${
+                                    isSelected
+                                      ? "scale-120 ring-2 ring-black shadow-xs"
+                                      : "border-stone-300 hover:scale-110 opacity-75 hover:opacity-100"
+                                  }`}
+                                  style={{ backgroundColor: val.hex }}
+                                  title={`${val.name} (${val.hex})`}
+                                />
+                              );
+                            })}
+
+                            {/* Native Custom Hex Color Input */}
+                            <div className="flex items-center gap-1 pl-1 ml-auto border-l border-stone-200">
+                              <input
+                                type="color"
+                                value={theme.hex}
+                                onChange={(e) => handleUpdateQuickStat(idx, "color", e.target.value)}
+                                className="w-4.5 h-4.5 rounded cursor-pointer border-0 p-0 bg-transparent"
+                                title="Pick custom color"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 2. Tag & Icon (HONORS, PROJECTS, SOLVED, etc.) */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="col-span-2 space-y-1">
+                            <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
+                              Top Tag (e.g. HONORS):
+                            </label>
+                            <input
+                              type="text"
+                              value={stat.tag !== undefined ? stat.tag : theme.defaultTag}
+                              onChange={(e) => handleUpdateQuickStat(idx, "tag", e.target.value)}
+                              className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black uppercase text-stone-900 focus:border-black focus:outline-none"
+                              placeholder="e.g. HONORS"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
+                              Icon:
+                            </label>
+                            <input
+                              type="text"
+                              value={stat.icon !== undefined ? stat.icon : theme.defaultIcon}
+                              onChange={(e) => handleUpdateQuickStat(idx, "icon", e.target.value)}
+                              className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs text-center text-stone-900 focus:border-black focus:outline-none"
+                              placeholder="🏆"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Quick Tag Suggestions */}
+                        <div className="flex flex-wrap items-center gap-1">
+                          {["HONORS", "PROJECTS", "SOLVED", "SPECIALTY", "AWARDS", "CODING"].map((presetTag) => (
+                            <button
+                              key={presetTag}
+                              type="button"
+                              onClick={() => handleUpdateQuickStat(idx, "tag", presetTag)}
+                              className={`px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase transition-all cursor-pointer border ${
+                                (stat.tag || theme.defaultTag).toUpperCase() === presetTag
+                                  ? "bg-black text-white border-black"
+                                  : "bg-white text-stone-600 border-stone-300 hover:border-black"
+                              }`}
+                            >
+                              {presetTag}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* 3. Big Metric Value */}
+                        <div>
+                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                            Value (Big Stat):
+                          </label>
+                          <input
+                            type="text"
+                            value={stat.value}
+                            onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
+                            placeholder="e.g. 5+ / 150+ / AI & DS"
+                          />
+                        </div>
+
+                        {/* 4. Title / Label */}
+                        <div>
+                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                            Label / Heading:
+                          </label>
+                          <input
+                            type="text"
+                            value={stat.label}
+                            onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                            placeholder="e.g. CERTIFICATIONS"
+                          />
+                        </div>
+
+                        {/* 5. Sublabel / Description */}
+                        <div>
+                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                            Sublabel / Note:
+                          </label>
+                          <input
+                            type="text"
+                            value={stat.sublabel}
+                            onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-[11px] text-stone-600 focus:border-black focus:outline-none"
+                            placeholder="e.g. Courses & Hackathons"
+                          />
                         </div>
                       </div>
-
-                      <div>
-                        <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
-                          Value (Big Stat):
-                        </label>
-                        <input
-                          type="text"
-                          value={stat.value}
-                          onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
-                          placeholder="e.g. 6+"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
-                          Label:
-                        </label>
-                        <input
-                          type="text"
-                          value={stat.label}
-                          onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                          placeholder="e.g. Specialization"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
-                          Sublabel:
-                        </label>
-                        <input
-                          type="text"
-                          value={stat.sublabel}
-                          onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-[11px] text-stone-600 focus:border-black focus:outline-none"
-                          placeholder="e.g. Machine Learning & AI"
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Live Colourful Sticker Preview */}
@@ -3815,61 +3950,7 @@ export default function AdminPage() {
 
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 pt-1">
                     {(portfolio.quickStats || []).map((st, i) => {
-                      const themes = [
-                        {
-                          bg: "bg-amber-100",
-                          border: "border-black",
-                          shadow: "shadow-[3px_3px_0_#000]",
-                          tape: "bg-amber-300",
-                          text: "text-amber-950",
-                          label: "text-amber-900",
-                          sub: "text-amber-800/80",
-                          badge: "bg-amber-200 text-amber-950 border-amber-950/20",
-                          icon: "✨",
-                          tag: "SPECIALTY",
-                          tilt: "-rotate-1 sm:-rotate-2",
-                        },
-                        {
-                          bg: "bg-emerald-100",
-                          border: "border-black",
-                          shadow: "shadow-[3px_3px_0_#000]",
-                          tape: "bg-emerald-300",
-                          text: "text-emerald-950",
-                          label: "text-emerald-900",
-                          sub: "text-emerald-800/80",
-                          badge: "bg-emerald-200 text-emerald-950 border-emerald-950/20",
-                          icon: "⚡",
-                          tag: "PROJECTS",
-                          tilt: "rotate-1 sm:rotate-2",
-                        },
-                        {
-                          bg: "bg-cyan-100",
-                          border: "border-black",
-                          shadow: "shadow-[3px_3px_0_#000]",
-                          tape: "bg-cyan-300",
-                          text: "text-cyan-950",
-                          label: "text-cyan-900",
-                          sub: "text-cyan-800/80",
-                          badge: "bg-cyan-200 text-cyan-950 border-cyan-950/20",
-                          icon: "🏆",
-                          tag: "HONORS",
-                          tilt: "-rotate-1 sm:-rotate-1.5",
-                        },
-                        {
-                          bg: "bg-rose-100",
-                          border: "border-black",
-                          shadow: "shadow-[3px_3px_0_#000]",
-                          tape: "bg-rose-300",
-                          text: "text-rose-950",
-                          label: "text-rose-900",
-                          sub: "text-rose-800/80",
-                          badge: "bg-rose-200 text-rose-950 border-rose-950/20",
-                          icon: "🔥",
-                          tag: "SOLVED",
-                          tilt: "rotate-1 sm:rotate-2",
-                        },
-                      ];
-                      const theme = themes[i % themes.length];
+                      const theme = getBenchmarkStickerTheme(st, i);
                       return (
                         <div
                           key={i}
@@ -3883,24 +3964,24 @@ export default function AdminPage() {
                           {/* Top row */}
                           <div className="flex items-center justify-between gap-1 mb-1.5">
                             <span
-                              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8.5px] font-mono font-black uppercase tracking-wider border ${theme.badge}`}
+                              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8.5px] font-mono font-black uppercase tracking-wider border ${theme.badgeBg}`}
                             >
-                              <span>{theme.icon}</span>
-                              <span>{theme.tag}</span>
+                              {theme.icon && <span>{theme.icon}</span>}
+                              <span>{st.tag || theme.tag}</span>
                             </span>
                             <span className="text-[9.5px] font-mono font-bold text-black/35">
                               #{String(i + 1).padStart(2, "0")}
                             </span>
                           </div>
 
-                          <div className={`text-xl sm:text-2xl font-black font-mono tracking-tight leading-none ${theme.text}`}>
+                          <div className={`text-xl sm:text-2xl font-black font-mono tracking-tight leading-none ${theme.valueText}`}>
                             {st.value || "0"}
                           </div>
-                          <div className={`text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-wider mt-1.5 leading-tight ${theme.label}`}>
+                          <div className={`text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-wider mt-1.5 leading-tight ${theme.labelText}`}>
                             {st.label || "METRIC"}
                           </div>
                           {st.sublabel && (
-                            <div className={`text-[9px] font-mono truncate mt-0.5 leading-tight font-medium ${theme.sub}`}>
+                            <div className={`text-[9px] font-mono truncate mt-0.5 leading-tight font-medium ${theme.sublabel}`}>
                               {st.sublabel}
                             </div>
                           )}

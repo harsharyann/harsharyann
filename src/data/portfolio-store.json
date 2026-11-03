@@ -73,22 +73,34 @@
     {
       "value": "AI & DS",
       "label": "Specialization",
-      "sublabel": "Machine Learning & Analytics"
+      "sublabel": "Machine Learning & Analytics",
+      "tag": "SPECIALTY",
+      "icon": "✨",
+      "color": "amber"
     },
     {
       "value": "6+",
       "label": "Python & ML Projects",
-      "sublabel": "Hands-on implementations"
+      "sublabel": "Hands-on implementations",
+      "tag": "PROJECTS",
+      "icon": "⚡",
+      "color": "emerald"
     },
     {
-      "value": "6",
+      "value": "5+",
       "label": "Certifications",
-      "sublabel": "Courses & Hackathons"
+      "sublabel": "Courses & Hackathons",
+      "tag": "HONORS",
+      "icon": "🏆",
+      "color": "cyan"
     },
     {
       "value": "150+",
       "label": "Coding Problems",
-      "sublabel": "Python, C & Logic building"
+      "sublabel": "Python, DSA & Logic building",
+      "tag": "SOLVED",
+      "icon": "🔥",
+      "color": "rose"
     }
   ],
   "education": {

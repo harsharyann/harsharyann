@@ -193,6 +193,9 @@ export interface PortfolioData {
     value: string;
     label: string;
     sublabel: string;
+    tag?: string;
+    icon?: string;
+    color?: string;
   }[];
   education: {
     institution: string;
@@ -296,10 +299,10 @@ export const portfolioData: PortfolioData = {
   },
 
   quickStats: [
-    { value: "AI & DS", label: "Specialization", sublabel: "Machine Learning & Analytics" },
-    { value: "6+", label: "Python & ML Projects", sublabel: "Hands-on implementations" },
-    { value: "6", label: "Certifications", sublabel: "Courses & Hackathons" },
-    { value: "150+", label: "Coding Problems", sublabel: "Python, C & Logic building" },
+    { value: "AI & DS", label: "Specialization", sublabel: "Machine Learning & Analytics", tag: "SPECIALTY", icon: "✨", color: "amber" },
+    { value: "6+", label: "Python & ML Projects", sublabel: "Hands-on implementations", tag: "PROJECTS", icon: "⚡", color: "emerald" },
+    { value: "5+", label: "Certifications", sublabel: "Courses & Hackathons", tag: "HONORS", icon: "🏆", color: "cyan" },
+    { value: "150+", label: "Coding Problems", sublabel: "Python, DSA & Logic building", tag: "SOLVED", icon: "🔥", color: "rose" },
   ],
 
   education: {

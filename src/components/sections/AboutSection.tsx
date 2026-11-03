@@ -404,8 +404,24 @@ export function FormattedHighlightedText({
   );
 }
 
-const BENCHMARK_STICKER_THEMES = [
-  {
+export const BENCHMARK_STICKER_COLOR_MAP: Record<string, {
+  name: string;
+  hex: string;
+  bg: string;
+  border: string;
+  shadow: string;
+  hoverShadow: string;
+  tape: string;
+  valueText: string;
+  labelText: string;
+  sublabel: string;
+  badgeBg: string;
+  defaultIcon: string;
+  defaultTag: string;
+}> = {
+  amber: {
+    name: "Brand Amber",
+    hex: "#f59e0b",
     bg: "bg-amber-100/90 dark:bg-amber-950/40",
     border: "border-black dark:border-amber-400",
     shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#f59e0b]",
@@ -415,11 +431,12 @@ const BENCHMARK_STICKER_THEMES = [
     labelText: "text-amber-900 dark:text-amber-300",
     sublabel: "text-amber-800/80 dark:text-amber-400/80",
     badgeBg: "bg-amber-200/90 text-amber-950 dark:bg-amber-900/80 dark:text-amber-200 border-amber-950/20 dark:border-amber-400/30",
-    icon: "✨",
-    tag: "SPECIALTY",
-    tilt: "-rotate-1 sm:-rotate-2",
+    defaultIcon: "✨",
+    defaultTag: "SPECIALTY",
   },
-  {
+  emerald: {
+    name: "Tech Emerald",
+    hex: "#10b981",
     bg: "bg-emerald-100/90 dark:bg-emerald-950/40",
     border: "border-black dark:border-emerald-400",
     shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#10b981]",
@@ -429,11 +446,12 @@ const BENCHMARK_STICKER_THEMES = [
     labelText: "text-emerald-900 dark:text-emerald-300",
     sublabel: "text-emerald-800/80 dark:text-emerald-400/80",
     badgeBg: "bg-emerald-200/90 text-emerald-950 dark:bg-emerald-900/80 dark:text-emerald-200 border-emerald-950/20 dark:border-emerald-400/30",
-    icon: "⚡",
-    tag: "PROJECTS",
-    tilt: "rotate-1 sm:rotate-2",
+    defaultIcon: "⚡",
+    defaultTag: "PROJECTS",
   },
-  {
+  cyan: {
+    name: "Sci-Comp Cyan",
+    hex: "#06b6d4",
     bg: "bg-cyan-100/90 dark:bg-cyan-950/40",
     border: "border-black dark:border-cyan-400",
     shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#06b6d4]",
@@ -443,11 +461,12 @@ const BENCHMARK_STICKER_THEMES = [
     labelText: "text-cyan-900 dark:text-cyan-300",
     sublabel: "text-cyan-800/80 dark:text-cyan-400/80",
     badgeBg: "bg-cyan-200/90 text-cyan-950 dark:bg-cyan-900/80 dark:text-cyan-200 border-cyan-950/20 dark:border-cyan-400/30",
-    icon: "🏆",
-    tag: "HONORS",
-    tilt: "-rotate-1 sm:-rotate-1.5",
+    defaultIcon: "🏆",
+    defaultTag: "HONORS",
   },
-  {
+  rose: {
+    name: "Coral Rose",
+    hex: "#f43f5e",
     bg: "bg-rose-100/90 dark:bg-rose-950/40",
     border: "border-black dark:border-rose-400",
     shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#f43f5e]",
@@ -457,25 +476,100 @@ const BENCHMARK_STICKER_THEMES = [
     labelText: "text-rose-900 dark:text-rose-300",
     sublabel: "text-rose-800/80 dark:text-rose-400/80",
     badgeBg: "bg-rose-200/90 text-rose-950 dark:bg-rose-900/80 dark:text-rose-200 border-rose-950/20 dark:border-rose-400/30",
-    icon: "🔥",
-    tag: "SOLVED",
-    tilt: "rotate-1 sm:rotate-2",
+    defaultIcon: "🔥",
+    defaultTag: "SOLVED",
   },
-  {
-    bg: "bg-violet-100/90 dark:bg-violet-950/40",
-    border: "border-black dark:border-violet-400",
+  purple: {
+    name: "AI Violet",
+    hex: "#8b5cf6",
+    bg: "bg-purple-100/90 dark:bg-purple-950/40",
+    border: "border-black dark:border-purple-400",
     shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#8b5cf6]",
-    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#a78bfa]",
-    tape: "bg-violet-300/90 dark:bg-violet-500/60",
-    valueText: "text-violet-950 dark:text-violet-200",
-    labelText: "text-violet-900 dark:text-violet-300",
-    sublabel: "text-violet-800/80 dark:text-violet-400/80",
-    badgeBg: "bg-violet-200/90 text-violet-950 dark:bg-violet-900/80 dark:text-violet-200 border-violet-950/20 dark:border-violet-400/30",
-    icon: "🚀",
-    tag: "METRICS",
-    tilt: "-rotate-1",
+    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#c084fc]",
+    tape: "bg-purple-300/90 dark:bg-purple-500/60",
+    valueText: "text-purple-950 dark:text-purple-200",
+    labelText: "text-purple-900 dark:text-purple-300",
+    sublabel: "text-purple-800/80 dark:text-purple-400/80",
+    badgeBg: "bg-purple-200/90 text-purple-950 dark:bg-purple-900/80 dark:text-purple-200 border-purple-950/20 dark:border-purple-400/30",
+    defaultIcon: "🚀",
+    defaultTag: "ACHIEVEMENTS",
   },
-];
+  indigo: {
+    name: "Deep Indigo",
+    hex: "#6366f1",
+    bg: "bg-indigo-100/90 dark:bg-indigo-950/40",
+    border: "border-black dark:border-indigo-400",
+    shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#6366f1]",
+    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#818cf8]",
+    tape: "bg-indigo-300/90 dark:bg-indigo-500/60",
+    valueText: "text-indigo-950 dark:text-indigo-200",
+    labelText: "text-indigo-900 dark:text-indigo-300",
+    sublabel: "text-indigo-800/80 dark:text-indigo-400/80",
+    badgeBg: "bg-indigo-200/90 text-indigo-950 dark:bg-indigo-900/80 dark:text-indigo-200 border-indigo-950/20 dark:border-indigo-400/30",
+    defaultIcon: "💡",
+    defaultTag: "INSIGHTS",
+  },
+  orange: {
+    name: "Sun Orange",
+    hex: "#f97316",
+    bg: "bg-orange-100/90 dark:bg-orange-950/40",
+    border: "border-black dark:border-orange-400",
+    shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#f97316]",
+    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#fb923c]",
+    tape: "bg-orange-300/90 dark:bg-orange-500/60",
+    valueText: "text-orange-950 dark:text-orange-200",
+    labelText: "text-orange-900 dark:text-orange-300",
+    sublabel: "text-orange-800/80 dark:text-orange-400/80",
+    badgeBg: "bg-orange-200/90 text-orange-950 dark:bg-orange-900/80 dark:text-orange-200 border-orange-950/20 dark:border-orange-400/30",
+    defaultIcon: "🎯",
+    defaultTag: "GOALS",
+  },
+  teal: {
+    name: "Sea Teal",
+    hex: "#14b8a6",
+    bg: "bg-teal-100/90 dark:bg-teal-950/40",
+    border: "border-black dark:border-teal-400",
+    shadow: "shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#14b8a6]",
+    hoverShadow: "hover:shadow-[5px_5px_0_#000] dark:hover:shadow-[5px_5px_0_#2dd4bf]",
+    tape: "bg-teal-300/90 dark:bg-teal-500/60",
+    valueText: "text-teal-950 dark:text-teal-200",
+    labelText: "text-teal-900 dark:text-teal-300",
+    sublabel: "text-teal-800/80 dark:text-teal-400/80",
+    badgeBg: "bg-teal-200/90 text-teal-950 dark:bg-teal-900/80 dark:text-teal-200 border-teal-950/20 dark:border-teal-400/30",
+    defaultIcon: "🔬",
+    defaultTag: "RESEARCH",
+  },
+};
+
+const COLOR_SEQUENCE = ["amber", "emerald", "cyan", "rose", "purple", "indigo", "orange", "teal"];
+const BENCHMARK_TILTS = ["-rotate-1 sm:-rotate-2", "rotate-1 sm:rotate-2", "-rotate-1 sm:-rotate-1.5", "rotate-1 sm:rotate-2"];
+
+export function getBenchmarkStickerTheme(
+  st: { tag?: string; icon?: string; color?: string } | undefined,
+  index: number
+) {
+  const chosenColor = (st?.color || "").toLowerCase().trim();
+  let baseTheme = BENCHMARK_STICKER_COLOR_MAP[chosenColor];
+
+  if (!baseTheme) {
+    const foundByHex = Object.values(BENCHMARK_STICKER_COLOR_MAP).find(
+      (t) => t.hex.toLowerCase() === chosenColor
+    );
+    if (foundByHex) {
+      baseTheme = foundByHex;
+    } else {
+      const fallbackKey = COLOR_SEQUENCE[index % COLOR_SEQUENCE.length];
+      baseTheme = BENCHMARK_STICKER_COLOR_MAP[fallbackKey];
+    }
+  }
+
+  return {
+    ...baseTheme,
+    tilt: BENCHMARK_TILTS[index % BENCHMARK_TILTS.length],
+    tag: st?.tag || baseTheme.defaultTag,
+    icon: st?.icon !== undefined && st.icon !== "" ? st.icon : baseTheme.defaultIcon,
+  };
+}
 
 export function AboutSection({ id = "about" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
@@ -692,7 +786,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 pt-1.5">
               {quickStats?.map((st, i) => {
-                const theme = BENCHMARK_STICKER_THEMES[i % BENCHMARK_STICKER_THEMES.length];
+                const theme = getBenchmarkStickerTheme(st, i);
                 return (
                   <div
                     key={i}
@@ -709,8 +803,8 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                       <span
                         className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8.5px] sm:text-[9px] font-mono font-black uppercase tracking-wider border ${theme.badgeBg}`}
                       >
-                        <span>{theme.icon}</span>
-                        <span>{theme.tag}</span>
+                        {theme.icon && <span>{theme.icon}</span>}
+                        <span>{st.tag || theme.tag}</span>
                       </span>
                       <span className="text-[9.5px] font-mono font-bold text-black/35 dark:text-white/40">
                         #{String(i + 1).padStart(2, "0")}
