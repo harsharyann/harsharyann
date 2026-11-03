@@ -188,18 +188,37 @@ export default function AdminPage() {
     setSelectedThoughtDay(day);
   }, []);
 
-  const HIGHLIGHT_PALETTE = [
-    { name: "Warm Amber", hex: "#f59e0b" },
-    { name: "Fresh Emerald", hex: "#10b981" },
-    { name: "Ocean Cyan", hex: "#06b6d4" },
-    { name: "Electric Indigo", hex: "#6366f1" },
-    { name: "Coral Rose", hex: "#f43f5e" },
-    { name: "Vibrant Purple", hex: "#a855f7" },
-    { name: "Sunset Orange", hex: "#f97316" },
-    { name: "Golden Yellow", hex: "#eab308" },
-    { name: "Bright Lime", hex: "#84cc16" },
-    { name: "Crimson Red", hex: "#dc2626" },
+  // ── Curated Portfolio Color Palette & Selection Tracking ──
+  const PORTFOLIO_HIGHLIGHT_PALETTE = [
+    { name: "Amber", hex: "#f59e0b", label: "Brand Gold" },
+    { name: "Emerald", hex: "#10b981", label: "Terminal Green" },
+    { name: "Cyan", hex: "#06b6d4", label: "Sci-Comp Blue" },
+    { name: "Indigo", hex: "#6366f1", label: "AI Violet" },
+    { name: "Coral", hex: "#f43f5e", label: "Spark Red" },
+    { name: "Yellow", hex: "#facc15", label: "Doodle Marker" },
   ];
+  const HIGHLIGHT_PALETTE = PORTFOLIO_HIGHLIGHT_PALETTE;
+
+  const lastSelectionRef = React.useRef<{
+    field: "headline" | "bio";
+    start: number;
+    end: number;
+    text: string;
+  } | null>(null);
+
+  const handleSelectionCapture = (
+    field: "headline" | "bio",
+    el: HTMLInputElement | HTMLTextAreaElement | null
+  ) => {
+    if (!el) return;
+    const start = el.selectionStart ?? 0;
+    const end = el.selectionEnd ?? 0;
+    if (start < end) {
+      const text = el.value.substring(start, end);
+      lastSelectionRef.current = { field, start, end, text };
+      setSelectedTarget({ field, start, end, text });
+    }
+  };
 
   const applyColorHighlight = (
     field: "headline" | "bio",
@@ -211,14 +230,18 @@ export default function AdminPage() {
     let start = el && el.selectionStart !== null ? el.selectionStart : 0;
     let end = el && el.selectionEnd !== null ? el.selectionEnd : 0;
 
-    // Fallback to selectedTarget if element lost focus
-    if (start === end && selectedTarget && selectedTarget.field === field && selectedTarget.start < selectedTarget.end) {
+    // Retrieve from persistent selection ref if input lost focus
+    if (start === end && lastSelectionRef.current && lastSelectionRef.current.field === field) {
+      start = lastSelectionRef.current.start;
+      end = lastSelectionRef.current.end;
+    } else if (start === end && selectedTarget && selectedTarget.field === field && selectedTarget.start < selectedTarget.end) {
       start = selectedTarget.start;
       end = selectedTarget.end;
     }
 
     if (start === end) {
-      alert("Please select the text in the box above first, then click the color to highlight it!");
+      setToastMessage("👉 Pehle koi text select karein, fir color click karein!");
+      setTimeout(() => setToastMessage(null), 3000);
       if (el) el.focus();
       return;
     }
@@ -234,24 +257,26 @@ export default function AdminPage() {
     const replacement = `{{${color}|${clean}}}`;
     const nextVal = currentVal.substring(0, start) + replacement + currentVal.substring(end);
 
-    setPortfolio((prev) => ({
-      ...prev,
-      personal: { ...prev.personal, [field]: nextVal },
-    }));
+    const updatedPersonal = { ...portfolio.personal, [field]: nextVal };
+    const updated = { ...portfolio, personal: updatedPersonal };
+    setPortfolio(updated);
+    portfolioRef.current = updated;
 
+    const newEnd = start + replacement.length;
+    lastSelectionRef.current = { field, text: clean, start, end: newEnd };
     setSelectedTarget({
       field,
       text: clean,
       start,
-      end: start + replacement.length,
+      end: newEnd,
     });
 
     setTimeout(() => {
       if (el) {
         el.focus();
-        el.setSelectionRange(start, start + replacement.length);
+        el.setSelectionRange(start, newEnd);
       }
-    }, 0);
+    }, 10);
   };
 
   const applyFormatToSelection = (
@@ -264,45 +289,55 @@ export default function AdminPage() {
     let start = el && el.selectionStart !== null ? el.selectionStart : 0;
     let end = el && el.selectionEnd !== null ? el.selectionEnd : 0;
 
-    if (start === end && selectedTarget && selectedTarget.field === field && selectedTarget.start < selectedTarget.end) {
+    if (start === end && lastSelectionRef.current && lastSelectionRef.current.field === field) {
+      start = lastSelectionRef.current.start;
+      end = lastSelectionRef.current.end;
+    } else if (start === end && selectedTarget && selectedTarget.field === field && selectedTarget.start < selectedTarget.end) {
       start = selectedTarget.start;
       end = selectedTarget.end;
     }
 
     if (start === end) {
-      alert("Please select the text in the box first!");
+      setToastMessage(mode === "bold" ? "👉 Pehle text select karein jise bold karna hai!" : "👉 Pehle text select karein jise clear karna hai!");
+      setTimeout(() => setToastMessage(null), 3000);
       if (el) el.focus();
       return;
     }
 
     const rawSelected = currentVal.substring(start, end);
     const clean = rawSelected
-      .replace(/^\{\{#[0-9a-fA-F]{3,8}\|(.+?)\}\}$/, "$1")
-      .replace(/^==(.+?)==$/, "$1")
-      .replace(/^\^\^(.+?)\^\^$/, "$1")
-      .replace(/^\*\*(.+?)\*\*$/, "$1");
+      .replace(/\{\{#[0-9a-fA-F]{3,8}\|(.+?)\}\}/g, "$1")
+      .replace(/==(.+?)==/g, "$1")
+      .replace(/\^\^(.+?)\^\^/g, "$1")
+      .replace(/\*\*(.+?)\*\*/g, "$1");
 
     const replacement = mode === "bold" ? `**${clean}**` : clean;
     const nextVal = currentVal.substring(0, start) + replacement + currentVal.substring(end);
 
-    setPortfolio((prev) => ({
-      ...prev,
-      personal: { ...prev.personal, [field]: nextVal },
-    }));
+    const updatedPersonal = { ...portfolio.personal, [field]: nextVal };
+    const updated = { ...portfolio, personal: updatedPersonal };
+    setPortfolio(updated);
+    portfolioRef.current = updated;
 
-    setSelectedTarget({
-      field,
-      text: clean,
-      start,
-      end: start + replacement.length,
-    });
+    const newEnd = start + replacement.length;
+    lastSelectionRef.current = { field, text: clean, start, end: newEnd };
+    if (mode === "clear") {
+      setSelectedTarget(null);
+    } else {
+      setSelectedTarget({
+        field,
+        text: clean,
+        start,
+        end: newEnd,
+      });
+    }
 
     setTimeout(() => {
       if (el) {
         el.focus();
-        el.setSelectionRange(start, start + replacement.length);
+        el.setSelectionRange(start, newEnd);
       }
-    }, 0);
+    }, 10);
   };
 
   const wrapTextSelection = (
@@ -3251,9 +3286,10 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* ── 2. PERSONAL STATEMENT, BIO & MULTI-COLOR HIGHLIGHTER ── */}
+            {/* ── 2. PERSONAL STATEMENT, BIO & CLEAN COLOR PICKER ── */}
             {(aboutSubView === "all" || aboutSubView === "bio") && (
-              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-7">
+                {/* Section Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
                   <div className="flex items-center gap-2.5">
                     <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
@@ -3261,116 +3297,124 @@ export default function AdminPage() {
                     </span>
                     <div>
                       <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                        2. Personal Statement, Narrative Bio &amp; Multi-Color Highlighter
+                        2. Persona Statement, Narrative Bio &amp; Color Highlighter
                       </h3>
                       <p className="font-mono text-xs text-stone-500">
-                        Text select karke koi vi custom color se highlight karein. Arbitrary color picker, palette swatches aur live formatted preview right below!
+                        Text select karke niche kisi bhi color swatch par click karein to highlight ho jayega.
                       </p>
                     </div>
                   </div>
-                  <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-1 rounded-full">
-                    Any Color Highlight
+                  <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-full">
+                    Portfolio Accent Studio
                   </span>
                 </div>
 
-                {/* ── UNIFIED COLOR PICKER TOOLBAR ── */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-stone-50 border-2 border-stone-300 space-y-3.5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200 pb-3">
-                    <div className="flex items-center gap-2">
-                      <Palette className="w-4 h-4 text-amber-500" />
-                      <span className="font-mono text-xs font-black uppercase text-stone-900">
-                        Highlighter Color Studio
-                      </span>
+                {/* ── MASTER PORTFOLIO COLOR PICKER BAR ── */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-[#faf7ee] border-2 border-black shadow-[2px_2px_0_#000] space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200 pb-2.5">
+                    <div className="flex items-center gap-2 font-mono text-xs font-black uppercase text-stone-900">
+                      <Palette className="w-4 h-4 text-amber-600" />
+                      <span>Portfolio Color Palette:</span>
                     </div>
+
                     {/* Active Selected Text Indicator */}
                     {selectedTarget && selectedTarget.start < selectedTarget.end ? (
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-200/90 border border-amber-400 font-mono text-[11px] font-bold text-stone-900">
-                        <span>✦ Target:</span>
-                        <span className="underline decoration-wavy">
-                          &quot;{selectedTarget.text.slice(0, 30)}{selectedTarget.text.length > 30 ? "..." : ""}&quot;
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-400 font-mono text-[11px] font-bold text-emerald-950 animate-pulse">
+                        <span>✦ Selected:</span>
+                        <span className="font-black underline decoration-wavy">
+                          &quot;{selectedTarget.text.slice(0, 25)}{selectedTarget.text.length > 25 ? "..." : ""}&quot;
                         </span>
                         <span className="text-[9px] uppercase px-1.5 py-0.2 bg-black text-white rounded">
-                          {selectedTarget.field}
+                          in {selectedTarget.field}
                         </span>
                       </div>
                     ) : (
                       <span className="font-mono text-[11px] text-stone-500">
-                        👉 Select any text in Headline ya Bio, then click a color below
+                        💡 Tip: Headline ya Bio me koi word select karein, fir swatch par click karein.
                       </span>
                     )}
                   </div>
 
-                  {/* Color Picker & Preset Swatches */}
-                  <div className="flex flex-wrap items-center gap-3">
-                    {/* Native Color Picker + Hex Input */}
-                    <div className="flex items-center gap-2 p-1.5 rounded-xl bg-white border border-stone-300 shadow-2xs">
+                  {/* Curated Swatches Row */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    {PORTFOLIO_HIGHLIGHT_PALETTE.map((color) => {
+                      const isSelected = highlighterColor.toLowerCase() === color.hex.toLowerCase();
+                      return (
+                        <button
+                          key={color.hex}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            setHighlighterColor(color.hex);
+                            if (selectedTarget && selectedTarget.start < selectedTarget.end) {
+                              const ref = selectedTarget.field === "headline" ? headlineInputRef : bioTextareaRef;
+                              applyColorHighlight(selectedTarget.field, ref, color.hex);
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold border transition-all cursor-pointer flex items-center gap-2 ${
+                            isSelected
+                              ? "bg-black text-white border-black shadow-md scale-105"
+                              : "bg-white text-stone-800 border-stone-300 hover:border-black hover:bg-stone-50"
+                          }`}
+                        >
+                          <span
+                            className="w-3.5 h-3.5 rounded-full border border-black/20 shrink-0"
+                            style={{ backgroundColor: color.hex }}
+                          />
+                          <span>{color.name}</span>
+                          <span className={`text-[9px] uppercase px-1 py-0.2 rounded font-mono ${isSelected ? "bg-white/20 text-white" : "bg-stone-100 text-stone-500"}`}>
+                            {color.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+
+                    {/* Custom Color Input */}
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white border border-stone-300 ml-auto shadow-2xs">
                       <input
                         type="color"
                         value={highlighterColor}
-                        onChange={(e) => setHighlighterColor(e.target.value)}
-                        className="w-8 h-8 rounded-lg cursor-pointer border-0 p-0 bg-transparent"
-                        title="Pick any custom color"
+                        onChange={(e) => {
+                          setHighlighterColor(e.target.value);
+                          if (selectedTarget && selectedTarget.start < selectedTarget.end) {
+                            const ref = selectedTarget.field === "headline" ? headlineInputRef : bioTextareaRef;
+                            applyColorHighlight(selectedTarget.field, ref, e.target.value);
+                          }
+                        }}
+                        className="w-6 h-6 rounded-lg cursor-pointer border-0 p-0 bg-transparent"
+                        title="Pick custom hex color"
                       />
                       <input
                         type="text"
                         value={highlighterColor}
                         onChange={(e) => setHighlighterColor(e.target.value)}
+                        className="w-18 font-mono text-xs font-bold text-stone-900 focus:outline-none uppercase"
                         placeholder="#f59e0b"
-                        className="w-20 px-2 py-1 font-mono text-xs font-bold text-stone-900 focus:outline-none uppercase"
                       />
-                    </div>
-
-                    {/* Quick Palette Chips */}
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {HIGHLIGHT_PALETTE.map((c) => (
-                        <button
-                          key={c.hex}
-                          type="button"
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => {
-                            setHighlighterColor(c.hex);
-                            if (selectedTarget && selectedTarget.start < selectedTarget.end) {
-                              const ref = selectedTarget.field === "headline" ? headlineInputRef : bioTextareaRef;
-                              applyColorHighlight(selectedTarget.field, ref, c.hex);
-                            }
-                          }}
-                          className={`px-2.5 py-1.5 rounded-xl font-mono text-[10px] font-bold border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5 ${
-                            highlighterColor.toLowerCase() === c.hex.toLowerCase()
-                              ? "border-black bg-stone-900 text-white shadow-xs font-black"
-                              : "border-stone-300 bg-white text-stone-700 hover:border-black"
-                          }`}
-                        >
-                          <span
-                            className="w-2.5 h-2.5 rounded-full"
-                            style={{ backgroundColor: c.hex }}
-                          />
-                          <span>{c.name}</span>
-                        </button>
-                      ))}
                     </div>
                   </div>
                 </div>
 
                 {/* ── 2A. HEADLINE (STATEMENT) EDITOR ── */}
-                <div className="space-y-2">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <label className="font-mono text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-amber-500" />
-                      <span>Personal Statement (Headline):</span>
+                <div className="space-y-2.5 p-5 rounded-2xl bg-white border border-stone-200 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-stone-100">
+                    <label className="font-mono text-xs font-black uppercase text-stone-900 flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                      <span>Headline Statement:</span>
                     </label>
 
-                    {/* Toolbar for Headline */}
+                    {/* Dedicated Formatting Toolbar for Headline */}
                     <div className="flex flex-wrap items-center gap-1.5">
                       <button
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => applyColorHighlight("headline", headlineInputRef, highlighterColor)}
-                        className="px-3 py-1 rounded-lg text-black font-mono text-[11px] font-bold border-2 border-black shadow-[1.5px_1.5px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5 hover:brightness-105"
+                        className="px-3 py-1 rounded-lg text-black font-mono text-[11px] font-black border-2 border-black shadow-[1.5px_1.5px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5 hover:brightness-105"
                         style={{ backgroundColor: highlighterColor }}
-                        title="Highlight selected text in Headline with active color"
+                        title="Highlight selected text in Headline"
                       >
-                        <span className="w-2 h-2 rounded-full bg-black/80" />
-                        <span>Highlight Selection</span>
+                        <Sparkles className="w-3 h-3 text-black" />
+                        <span>Highlight Selected</span>
                       </button>
 
                       <button
@@ -3388,7 +3432,7 @@ export default function AdminPage() {
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => applyFormatToSelection("headline", headlineInputRef, "clear")}
-                        className="px-2 py-1 rounded-lg bg-white hover:bg-red-50 text-stone-600 hover:text-red-600 font-mono text-[11px] border border-stone-300 cursor-pointer flex items-center gap-1 active:translate-y-0.5"
+                        className="px-2 py-1 rounded-lg bg-white hover:bg-rose-50 text-stone-600 hover:text-rose-600 font-mono text-[11px] border border-stone-300 cursor-pointer flex items-center gap-1 active:translate-y-0.5"
                         title="Remove highlight/bold from selected text"
                       >
                         <Eraser className="w-3 h-3" />
@@ -3407,67 +3451,44 @@ export default function AdminPage() {
                         personal: { ...prev.personal, headline: e.target.value },
                       }))
                     }
-                    onSelect={(e) => {
-                      const el = e.currentTarget;
-                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
-                        setSelectedTarget({
-                          field: "headline",
-                          text: el.value.substring(el.selectionStart, el.selectionEnd),
-                          start: el.selectionStart,
-                          end: el.selectionEnd,
-                        });
-                      }
-                    }}
-                    onMouseUp={(e) => {
-                      const el = e.currentTarget;
-                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
-                        setSelectedTarget({
-                          field: "headline",
-                          text: el.value.substring(el.selectionStart, el.selectionEnd),
-                          start: el.selectionStart,
-                          end: el.selectionEnd,
-                        });
-                      }
-                    }}
-                    onKeyUp={(e) => {
-                      const el = e.currentTarget;
-                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
-                        setSelectedTarget({
-                          field: "headline",
-                          text: el.value.substring(el.selectionStart, el.selectionEnd),
-                          start: el.selectionStart,
-                          end: el.selectionEnd,
-                        });
-                      }
-                    }}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none font-bold"
+                    onSelect={(e) => handleSelectionCapture("headline", e.currentTarget)}
+                    onMouseUp={(e) => handleSelectionCapture("headline", e.currentTarget)}
+                    onKeyUp={(e) => handleSelectionCapture("headline", e.currentTarget)}
+                    className="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none font-bold"
                     placeholder="e.g. Exploring Data Science, Machine Learning Foundations & Scientific Computing."
                   />
-                  <div className="font-mono text-[10px] text-stone-400">
-                    Syntax: <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-700 font-bold">&#123;&#123;#hex|text&#125;&#125;</code> for custom color, <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-700 font-bold">==text==</code> for default highlight, <code className="bg-stone-100 px-1 py-0.5 rounded text-stone-700 font-bold">**text**</code> for bold.
+
+                  {/* Headline Live Formatted Line */}
+                  <div className="p-3 rounded-xl bg-[#fafafa] dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-xs font-semibold leading-relaxed">
+                    <span className="font-mono text-[10px] uppercase text-stone-400 block mb-1">Live Result Preview:</span>
+                    <FormattedHighlightedText
+                      text={portfolio.personal.headline}
+                      highlightKeywords={portfolio.personal.aboutHighlightedWords}
+                      highlightColor={portfolio.personal.aboutHighlightColor || highlighterColor}
+                    />
                   </div>
                 </div>
 
                 {/* ── 2B. NARRATIVE BIO EDITOR ── */}
-                <div className="space-y-2 pt-2">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <label className="font-mono text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <div className="space-y-2.5 p-5 rounded-2xl bg-white border border-stone-200 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-stone-100">
+                    <label className="font-mono text-xs font-black uppercase text-stone-900 flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                       <span>About Me Narrative Bio:</span>
                     </label>
 
-                    {/* Toolbar for Bio */}
+                    {/* Dedicated Formatting Toolbar for Bio */}
                     <div className="flex flex-wrap items-center gap-1.5">
                       <button
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => applyColorHighlight("bio", bioTextareaRef, highlighterColor)}
-                        className="px-3 py-1 rounded-lg text-black font-mono text-[11px] font-bold border-2 border-black shadow-[1.5px_1.5px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5 hover:brightness-105"
+                        className="px-3 py-1 rounded-lg text-black font-mono text-[11px] font-black border-2 border-black shadow-[1.5px_1.5px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5 hover:brightness-105"
                         style={{ backgroundColor: highlighterColor }}
-                        title="Highlight selected text in Bio with active color"
+                        title="Highlight selected text in Bio"
                       >
-                        <span className="w-2 h-2 rounded-full bg-black/80" />
-                        <span>Highlight Selection</span>
+                        <Sparkles className="w-3 h-3 text-black" />
+                        <span>Highlight Selected</span>
                       </button>
 
                       <button
@@ -3485,7 +3506,7 @@ export default function AdminPage() {
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => applyFormatToSelection("bio", bioTextareaRef, "clear")}
-                        className="px-2 py-1 rounded-lg bg-white hover:bg-red-50 text-stone-600 hover:text-red-600 font-mono text-[11px] border border-stone-300 cursor-pointer flex items-center gap-1 active:translate-y-0.5"
+                        className="px-2 py-1 rounded-lg bg-white hover:bg-rose-50 text-stone-600 hover:text-rose-600 font-mono text-[11px] border border-stone-300 cursor-pointer flex items-center gap-1 active:translate-y-0.5"
                         title="Remove highlight/bold from selected text"
                       >
                         <Eraser className="w-3 h-3" />
@@ -3496,7 +3517,7 @@ export default function AdminPage() {
 
                   <textarea
                     ref={bioTextareaRef}
-                    rows={6}
+                    rows={7}
                     value={portfolio.personal.bio || ""}
                     onChange={(e) =>
                       setPortfolio((prev) => ({
@@ -3504,138 +3525,166 @@ export default function AdminPage() {
                         personal: { ...prev.personal, bio: e.target.value },
                       }))
                     }
-                    onSelect={(e) => {
-                      const el = e.currentTarget;
-                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
-                        setSelectedTarget({
-                          field: "bio",
-                          text: el.value.substring(el.selectionStart, el.selectionEnd),
-                          start: el.selectionStart,
-                          end: el.selectionEnd,
-                        });
-                      }
-                    }}
-                    onMouseUp={(e) => {
-                      const el = e.currentTarget;
-                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
-                        setSelectedTarget({
-                          field: "bio",
-                          text: el.value.substring(el.selectionStart, el.selectionEnd),
-                          start: el.selectionStart,
-                          end: el.selectionEnd,
-                        });
-                      }
-                    }}
-                    onKeyUp={(e) => {
-                      const el = e.currentTarget;
-                      if (el.selectionStart !== null && el.selectionEnd !== null && el.selectionStart < el.selectionEnd) {
-                        setSelectedTarget({
-                          field: "bio",
-                          text: el.value.substring(el.selectionStart, el.selectionEnd),
-                          start: el.selectionStart,
-                          end: el.selectionEnd,
-                        });
-                      }
-                    }}
-                    className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none leading-relaxed transition-all"
+                    onSelect={(e) => handleSelectionCapture("bio", e.currentTarget)}
+                    onMouseUp={(e) => handleSelectionCapture("bio", e.currentTarget)}
+                    onKeyUp={(e) => handleSelectionCapture("bio", e.currentTarget)}
+                    className="w-full p-4 rounded-xl bg-stone-50 border border-stone-300 text-stone-900 font-mono text-xs focus:border-black focus:bg-white focus:outline-none leading-relaxed"
                     placeholder="Enter your detailed bio narrative..."
                   />
+
+                  {/* Bio Live Formatted Preview */}
+                  <div className="p-3.5 rounded-xl bg-[#fafafa] dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+                    <span className="font-mono text-[10px] uppercase text-stone-400 block mb-1">Bio Live Result:</span>
+                    <FormattedHighlightedText
+                      text={portfolio.personal.bio}
+                      highlightKeywords={portfolio.personal.aboutHighlightedWords}
+                      highlightColor={portfolio.personal.aboutHighlightColor || highlighterColor}
+                    />
+                  </div>
                 </div>
 
-                {/* ── 2C. AUTO-HIGHLIGHT KEYWORDS (GLOBAL) ── */}
-                <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/90 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="font-mono text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                      <span>Auto-Highlight Keywords (Comma Separated):</span>
-                    </label>
-                    <span className="text-[10px] font-mono text-stone-500">
-                      Applied automatically without typing markup
-                    </span>
-                  </div>
-
-                  <input
-                    type="text"
-                    placeholder="e.g. Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"
-                    value={portfolio.personal.aboutHighlightedWords ?? "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"}
-                    onChange={(e) =>
-                      setPortfolio((prev) => ({
-                        ...prev,
-                        personal: { ...prev.personal, aboutHighlightedWords: e.target.value },
-                      }))
-                    }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                  />
-
-                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                    <span className="font-mono text-[11px] text-stone-600 font-bold">
-                      Default Keyword Auto-Color:
-                    </span>
+                {/* ── 2C. AUTO-HIGHLIGHT KEYWORDS CONTROLLER ── */}
+                <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-300 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-2">
                     <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
-                        onChange={(e) =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, aboutHighlightColor: e.target.value },
-                          }))
-                        }
-                        className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent"
-                      />
-                      <input
-                        type="text"
-                        value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
-                        onChange={(e) =>
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, aboutHighlightColor: e.target.value },
-                          }))
-                        }
-                        className="w-20 px-2 py-0.5 rounded border border-stone-300 font-mono text-[11px] font-bold uppercase text-stone-900"
-                      />
+                      <Sparkles className="w-4 h-4 text-amber-700" />
+                      <span className="font-mono text-xs font-black uppercase text-amber-950">
+                        Automatic Keywords Highlighting:
+                      </span>
                     </div>
+
+                    {/* Toggle to turn auto-highlight on/off */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPortfolio((prev) => {
+                          const current = prev.personal.aboutHighlightedWords;
+                          // If active, clear it; if empty, restore default keywords
+                          const nextVal = current ? "" : "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning";
+                          return {
+                            ...prev,
+                            personal: { ...prev.personal, aboutHighlightedWords: nextVal },
+                          };
+                        })
+                      }
+                      className={`px-3 py-1 rounded-full font-mono text-[10px] font-black uppercase transition-all cursor-pointer border ${
+                        portfolio.personal.aboutHighlightedWords
+                          ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
+                          : "bg-stone-200 text-stone-600 border-stone-300"
+                      }`}
+                    >
+                      {portfolio.personal.aboutHighlightedWords ? "● AUTO-HIGHLIGHT: ON" : "○ AUTO-HIGHLIGHT: OFF (MANUAL ONLY)"}
+                    </button>
                   </div>
+
+                  {portfolio.personal.aboutHighlightedWords ? (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                          Keywords to Automatically Highlight (Comma Separated):
+                        </label>
+                        <input
+                          type="text"
+                          value={portfolio.personal.aboutHighlightedWords}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, aboutHighlightedWords: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3.5 py-2 rounded-xl bg-white border border-amber-300 text-stone-900 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                          placeholder="e.g. Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning"
+                        />
+                      </div>
+
+                      {/* Pick color for auto-highlighting */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                        <span className="font-mono text-[11px] text-stone-700 font-bold">
+                          Auto-Keyword Color:
+                        </span>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {PORTFOLIO_HIGHLIGHT_PALETTE.map((c) => (
+                            <button
+                              key={c.hex}
+                              type="button"
+                              onClick={() =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, aboutHighlightColor: c.hex },
+                                }))
+                              }
+                              className={`w-6 h-6 rounded-full border transition-all cursor-pointer ${
+                                (portfolio.personal.aboutHighlightColor || "#f59e0b").toLowerCase() === c.hex.toLowerCase()
+                                  ? "border-black scale-110 shadow-xs ring-2 ring-black"
+                                  : "border-stone-300 hover:scale-105"
+                              }`}
+                              style={{ backgroundColor: c.hex }}
+                              title={`Set auto-highlight to ${c.name}`}
+                            />
+                          ))}
+                          <div className="flex items-center gap-1 pl-2 border-l border-stone-300">
+                            <input
+                              type="color"
+                              value={portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                              onChange={(e) =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, aboutHighlightColor: e.target.value },
+                                }))
+                              }
+                              className="w-5 h-5 rounded cursor-pointer border-0 p-0 bg-transparent"
+                            />
+                            <span className="font-mono text-[10px] font-bold text-stone-600 uppercase">
+                              {portfolio.personal.aboutHighlightColor || "#f59e0b"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="font-mono text-xs text-stone-600 italic">
+                      Auto-highlight band hai. Ab sirf wahi words highlight honge jinhe aap upar swatches se manually highlight karenge!
+                    </p>
+                  )}
                 </div>
 
-                {/* ── 2D. LIVE FORMATTED PREVIEW ── */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-stone-900 text-white space-y-3.5 border-2 border-black shadow-[3px_3px_0_#f59e0b]">
-                  <div className="flex items-center justify-between border-b border-stone-800 pb-2.5">
-                    <span className="font-mono text-xs font-black uppercase text-amber-400 flex items-center gap-1.5">
-                      <Eye className="w-4 h-4" />
-                      <span>Live Formatted Preview (Real-Time Rendering):</span>
+                {/* ── 2D. FULL COMBINED LIVE PERSONA PREVIEW (EXACT WEBSITE REPLICA) ── */}
+                <div className="p-5 sm:p-6 rounded-3xl bg-[#faf8f3] dark:bg-[#13141b] border-2 border-black dark:border-white shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff] space-y-4">
+                  <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-2">
+                    <span className="font-mono text-xs font-black uppercase text-stone-900 dark:text-white flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-amber-500" />
+                      <span>Live Website Preview (About Section Persona Card):</span>
                     </span>
-                    <span className="font-mono text-[10px] text-stone-400 bg-stone-800 px-2 py-0.5 rounded border border-stone-700">
-                      Matches Live About Page
+                    <span className="font-mono text-[10px] font-bold text-stone-500">
+                      Exact Public Look
                     </span>
                   </div>
 
-                  {/* Statement Live */}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 pb-0.5">
-                      <span className="font-['Space_Grotesk'] text-base font-black uppercase text-amber-400">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 pb-0.5">
+                      <span className="font-hero-heading text-2xl font-black uppercase tracking-tight text-amber-600 dark:text-amber-400">
                         Persona
                       </span>
-                      <span className="px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300 border border-amber-400/40 font-mono text-[9px] font-black uppercase">
+                      <span className="px-2.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/70 border-2 border-black dark:border-amber-400/80 text-black dark:text-amber-200 font-mono text-[10px] font-black uppercase shadow-[1.5px_1.5px_0_#000]">
                         STATEMENT
                       </span>
                     </div>
-                    <div className="font-semibold text-base sm:text-lg text-white leading-snug">
+
+                    <div className="font-semibold text-base sm:text-lg text-black dark:text-white leading-snug">
                       <FormattedHighlightedText
                         text={portfolio.personal.headline}
                         highlightKeywords={portfolio.personal.aboutHighlightedWords}
                         highlightColor={portfolio.personal.aboutHighlightColor || highlighterColor}
                       />
                     </div>
-                  </div>
 
-                  {/* Bio Live */}
-                  <div className="space-y-1 pt-2 border-t border-stone-800 text-xs sm:text-sm text-stone-300 leading-relaxed">
-                    <FormattedHighlightedText
-                      text={portfolio.personal.bio}
-                      highlightKeywords={portfolio.personal.aboutHighlightedWords}
-                      highlightColor={portfolio.personal.aboutHighlightColor || highlighterColor}
-                    />
+                    <div className="space-y-2 pt-1 text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
+                      <FormattedHighlightedText
+                        text={portfolio.personal.bio}
+                        highlightKeywords={portfolio.personal.aboutHighlightedWords}
+                        highlightColor={portfolio.personal.aboutHighlightColor || highlighterColor}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
