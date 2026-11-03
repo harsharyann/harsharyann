@@ -55,7 +55,7 @@ export default function Home() {
           <motion.div
             key="cover-portal-screen"
             id="cover"
-            initial={{ y: "-100%", opacity: 0 }}
+            initial={false}
             animate={{
               y: 0,
               opacity: 1,
