@@ -757,8 +757,13 @@ export function AboutSection({ id = "about" }: { id?: string }) {
           <PaperPlaneFlightDoodle />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-5 sm:gap-6 pt-2">
-          {skills?.map((group, idx) => {
+        {(!skills || skills.length === 0) ? (
+          <div className="p-8 text-center rounded-2xl bg-white/50 dark:bg-stone-900/40 border border-dashed border-stone-300 dark:border-stone-700 font-mono text-xs text-stone-500">
+            No technical skills configured yet. Add them in the Admin Panel.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-5 sm:gap-6 pt-2">
+            {skills.map((group, idx) => {
             const themes = [
               {
                 bg: "bg-[#fffef7] dark:bg-[#15161e]",
@@ -875,6 +880,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             );
           })}
         </div>
+        )}
       </div>
 
       {/* ── PROFESSIONAL EXPERIENCE (Conditional Show/Hide) ── */}

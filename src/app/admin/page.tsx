@@ -433,46 +433,53 @@ export default function AdminPage() {
   // Skills Handlers
   const handleAddSkillItem = (catIdx: number, item: string) => {
     if (!item.trim()) return;
-    setPortfolio((prev) => {
-      const updated = [...(prev.skills || [])];
-      updated[catIdx] = {
-        ...updated[catIdx],
-        items: [...(updated[catIdx].items || []), item.trim()],
-      };
-      return { ...prev, skills: updated };
-    });
+    const currentSkills = [...(portfolio.skills || [])];
+    if (!currentSkills[catIdx]) return;
+    currentSkills[catIdx] = {
+      ...currentSkills[catIdx],
+      items: [...(currentSkills[catIdx].items || []), item.trim()],
+    };
+    const newPort = { ...portfolio, skills: currentSkills };
+    setPortfolio(newPort);
     setSkillTagInputs((prev) => ({ ...prev, [catIdx]: "" }));
+    saveInstantly(newPort, `Added "${item.trim()}"`);
   };
 
   const handleRemoveSkillItem = (catIdx: number, itemIdx: number) => {
-    setPortfolio((prev) => {
-      const updated = [...(prev.skills || [])];
-      updated[catIdx] = {
-        ...updated[catIdx],
-        items: updated[catIdx].items.filter((_, i) => i !== itemIdx),
-      };
-      return { ...prev, skills: updated };
-    });
+    const currentSkills = [...(portfolio.skills || [])];
+    if (!currentSkills[catIdx]) return;
+    currentSkills[catIdx] = {
+      ...currentSkills[catIdx],
+      items: (currentSkills[catIdx].items || []).filter((_, i) => i !== itemIdx),
+    };
+    const newPort = { ...portfolio, skills: currentSkills };
+    setPortfolio(newPort);
+    saveInstantly(newPort, "Skill removed");
   };
 
   const handleAddSkillCategory = () => {
     if (!newSkillCatName.trim()) return;
-    setPortfolio((prev) => ({
-      ...prev,
+    const newPort = {
+      ...portfolio,
       skills: [
-        ...(prev.skills || []),
+        ...(portfolio.skills || []),
         { category: newSkillCatName.trim(), items: [] },
       ],
-    }));
+    };
+    setPortfolio(newPort);
     setNewSkillCatName("");
+    saveInstantly(newPort, `Added category "${newSkillCatName.trim()}"`);
   };
 
   const handleRemoveSkillCategory = (catIdx: number) => {
     if (!confirm("Are you sure you want to delete this skills category?")) return;
-    setPortfolio((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((_, i) => i !== catIdx),
-    }));
+    const catName = portfolio.skills?.[catIdx]?.category || "";
+    const newPort = {
+      ...portfolio,
+      skills: (portfolio.skills || []).filter((_, i) => i !== catIdx),
+    };
+    setPortfolio(newPort);
+    saveInstantly(newPort, `Deleted category "${catName}"`);
   };
 
   // Milestones Handlers
@@ -776,6 +783,65 @@ export default function AdminPage() {
     setAuthError("");
   };
 
+  // ── Google OAuth Sign-In (Restricted to Harsh Aryan's Google Account) ──
+  const googleBtnRef = React.useRef<HTMLDivElement>(null);
+  const [hasGoogleClientId, setHasGoogleClientId] = useState(false);
+
+  const handleGoogleCredentialResponse = async (response: any) => {
+    if (!response?.credential) return;
+    setIsLoggingIn(true);
+    setAuthError("");
+    try {
+      const res = await fetch("/api/admin/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential: response.credential }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsAuthenticated(true);
+        await refreshData();
+      } else {
+        setAuthError(data.error || "Google authentication failed.");
+      }
+    } catch {
+      setAuthError("Failed to authenticate with Google. Please check network connection.");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) return;
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (clientId) {
+      setHasGoogleClientId(true);
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        if ((window as any).google?.accounts?.id && googleBtnRef.current) {
+          (window as any).google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleGoogleCredentialResponse,
+          });
+          (window as any).google.accounts.id.renderButton(googleBtnRef.current, {
+            theme: "outline",
+            size: "large",
+            width: "100%",
+            text: "continue_with",
+            shape: "pill",
+          });
+        }
+      };
+      document.body.appendChild(script);
+      return () => {
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+    }
+  }, [isAuthenticated]);
+
   // Handle Logout
   const handleLogout = async () => {
     try {
@@ -1066,11 +1132,12 @@ export default function AdminPage() {
       category: effectiveCategory,
     };
 
+    const currentCerts = portfolio.certificates || [];
     let updatedCerts: Certificate[];
     if (editingCert) {
-      updatedCerts = portfolio.certificates.map((c) => (c.id === editingCert.id ? finalCert : c));
+      updatedCerts = currentCerts.map((c) => (c.id === editingCert.id ? finalCert : c));
     } else {
-      updatedCerts = [finalCert, ...portfolio.certificates];
+      updatedCerts = [finalCert, ...currentCerts];
     }
 
     // Auto-register category ONLY if user typed a new custom category
@@ -1092,7 +1159,8 @@ export default function AdminPage() {
 
   const handleDeleteCert = async (id: string) => {
     if (!confirm("Are you sure you want to delete this certificate?")) return;
-    const updatedCerts = portfolio.certificates.filter((c) => c.id !== id);
+    const currentCerts = portfolio.certificates || [];
+    const updatedCerts = currentCerts.filter((c) => c.id !== id);
     const newPortfolio: PortfolioData = {
       ...portfolio,
       certificates: updatedCerts,
@@ -1361,6 +1429,54 @@ export default function AdminPage() {
                 )}
               </button>
             </form>
+
+            {/* Divider: OR Google Sign-In */}
+            <div className="relative flex items-center justify-center my-1">
+              <div className="border-t border-stone-200 dark:border-stone-800 w-full" />
+              <span className="bg-[#fffef9] dark:bg-[#151620] px-3 font-mono text-[10px] font-bold text-stone-400 uppercase tracking-widest shrink-0">
+                OR GOOGLE ACCOUNT
+              </span>
+              <div className="border-t border-stone-200 dark:border-stone-800 w-full" />
+            </div>
+
+            {/* Google Sign-In Container (Exclusively for Harsh Aryan) */}
+            <div className="space-y-1.5">
+              <div ref={googleBtnRef} className="w-full flex justify-center" />
+              {!hasGoogleClientId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    alert(
+                      "To enable 1-Click Google Sign-In for your account:\n\n1. Go to Google Cloud Console -> APIs & Services -> Credentials\n2. Create an OAuth 2.0 Web Client ID\n3. Add 'http://localhost:3000' to Authorized JavaScript origins\n4. Add NEXT_PUBLIC_GOOGLE_CLIENT_ID=<your-client-id> in .env.local\n\nOnly imharsharyan@gmail.com will be granted access!"
+                    );
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl border-2 border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 font-mono text-xs font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
+                >
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                    <path
+                      fill="#4285F4"
+                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.28-2.1 3.66-5.2 3.66-9.12z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.13C3.27 21.37 7.35 24 12 24z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.57H1.26C.46 8.16 0 9.98 0 12s.46 3.84 1.26 5.43l4.02-3.14z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.63 1.26 6.57l4.02 3.14c.95-2.83 3.6-4.96 6.72-4.96z"
+                    />
+                  </svg>
+                  <span>Sign in with Google (Harsh Aryan Only)</span>
+                </button>
+              )}
+              <p className="text-[9.5px] font-mono text-center text-stone-400">
+                Protected: Only authorized account (imharsharyan@gmail.com) can enter
+              </p>
+            </div>
 
             {/* Return link */}
             <div className="pt-4 border-t border-black/10 dark:border-white/10 text-center">
@@ -4479,6 +4595,9 @@ export default function AdminPage() {
                               updated[cIdx] = { ...updated[cIdx], category: val };
                               return { ...prev, skills: updated };
                             });
+                          }}
+                          onBlur={() => {
+                            saveInstantly(portfolio, `Saved category "${cat.category}"`);
                           }}
                           className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black text-stone-900 focus:border-black focus:outline-none uppercase"
                         />

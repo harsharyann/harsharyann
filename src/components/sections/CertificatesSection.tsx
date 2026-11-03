@@ -131,12 +131,12 @@ function LaurelWreathDoodle({ className = "" }: { className?: string }) {
 
 export function CertificatesSection({ id = "certificates" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
-  const certsList: Certificate[] = portfolio?.certificates || portfolioData.certificates
+  const certsList: Certificate[] = Array.isArray(portfolio?.certificates) ? portfolio.certificates : []
   const [activeCategory, setActiveCategory] = useState("All")
   const [activeLaurelType, setActiveLaurelType] = useState<"all" | "award" | "paper" | "book">("all")
 
   const showLaurelsSection = portfolio?.personal?.showLaurelsSection !== false
-  const rawLaurelItems: LaurelItem[] = portfolio?.laurelItems || portfolioData.laurelItems || []
+  const rawLaurelItems: LaurelItem[] = Array.isArray(portfolio?.laurelItems) ? portfolio.laurelItems : []
   // Surface only items that are not explicitly hidden
   const visibleLaurels = rawLaurelItems.filter((item) => item.isVisible !== false)
 
