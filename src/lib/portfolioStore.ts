@@ -24,7 +24,28 @@ let memoryPortfolioCache: PortfolioData | null = null;
 let memoryMessagesCache: ContactMessage[] | null = null;
 
 export function getStoredPortfolioData(): PortfolioData {
-  // 1. Always attempt reading fresh from local src/data/portfolio-store.json on disk
+  // 1. Check serverless /tmp first (where runtime edits are written)
+  try {
+    if (fs.existsSync(TMP_STORE_PATH)) {
+      const raw = fs.readFileSync(TMP_STORE_PATH, "utf8");
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.personal) {
+        if (fs.existsSync(STORE_PATH)) {
+          const tmpMtime = fs.statSync(TMP_STORE_PATH).mtimeMs;
+          const storeMtime = fs.statSync(STORE_PATH).mtimeMs;
+          if (tmpMtime >= storeMtime) {
+            memoryPortfolioCache = parsed;
+            return parsed;
+          }
+        } else {
+          memoryPortfolioCache = parsed;
+          return parsed;
+        }
+      }
+    }
+  } catch {}
+
+  // 2. Read from local src/data/portfolio-store.json on disk
   try {
     if (fs.existsSync(STORE_PATH)) {
       const raw = fs.readFileSync(STORE_PATH, "utf8");
@@ -38,18 +59,6 @@ export function getStoredPortfolioData(): PortfolioData {
     console.error("Error reading portfolio-store.json:", err);
   }
 
-  // 2. Try serverless /tmp
-  try {
-    if (fs.existsSync(TMP_STORE_PATH)) {
-      const raw = fs.readFileSync(TMP_STORE_PATH, "utf8");
-      const parsed = JSON.parse(raw);
-      if (parsed && parsed.personal) {
-        memoryPortfolioCache = parsed;
-        return parsed;
-      }
-    }
-  } catch {}
-
   // 3. Fallback to in-memory cache if available
   if (memoryPortfolioCache) {
     return memoryPortfolioCache;
@@ -62,27 +71,22 @@ export function getStoredPortfolioData(): PortfolioData {
 
 export function saveStoredPortfolioData(newData: PortfolioData): boolean {
   memoryPortfolioCache = newData;
-  let written = false;
 
-  // 1. Try writing to project folder (local dev)
+  // 1. Always write to serverless /tmp (guaranteed writable on Vercel / Lambda)
+  try {
+    fs.writeFileSync(TMP_STORE_PATH, JSON.stringify(newData, null, 2), "utf8");
+  } catch (tmpErr) {
+    console.warn("Could not write to tmp:", tmpErr);
+  }
+
+  // 2. Also write to project data folder if filesystem is writable (local dev)
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     fs.writeFileSync(STORE_PATH, JSON.stringify(newData, null, 2), "utf8");
-    written = true;
-  } catch (err) {
-    console.warn("Could not write to STORE_PATH, writing to tmp:", err);
-  }
-
-  // 2. Also write to serverless /tmp
-  try {
-    fs.writeFileSync(TMP_STORE_PATH, JSON.stringify(newData, null, 2), "utf8");
-    written = true;
-  } catch (tmpErr) {
-    if (!written) {
-      console.warn("Could not write to tmp, relying on in-memory cache:", tmpErr);
-    }
+  } catch {
+    // Normal on serverless (read-only filesystem)
   }
 
   return true;
@@ -91,16 +95,12 @@ export function saveStoredPortfolioData(newData: PortfolioData): boolean {
 export function resetStoredPortfolioData(): boolean {
   memoryPortfolioCache = portfolioData;
   try {
+    fs.writeFileSync(TMP_STORE_PATH, JSON.stringify(portfolioData, null, 2), "utf8");
+  } catch {}
+  try {
     fs.writeFileSync(STORE_PATH, JSON.stringify(portfolioData, null, 2), "utf8");
-    return true;
-  } catch {
-    try {
-      fs.writeFileSync(TMP_STORE_PATH, JSON.stringify(portfolioData, null, 2), "utf8");
-      return true;
-    } catch {
-      return true;
-    }
-  }
+  } catch {}
+  return true;
 }
 
 export function getStoredMessages(): ContactMessage[] {
@@ -108,21 +108,27 @@ export function getStoredMessages(): ContactMessage[] {
     return memoryMessagesCache;
   }
 
-  try {
-    if (fs.existsSync(MESSAGES_PATH)) {
-      const raw = fs.readFileSync(MESSAGES_PATH, "utf8");
-      const parsed = JSON.parse(raw);
-      memoryMessagesCache = parsed;
-      return parsed;
-    }
-  } catch {}
-
+  // 1. Try /tmp
   try {
     if (fs.existsSync(TMP_MESSAGES_PATH)) {
       const raw = fs.readFileSync(TMP_MESSAGES_PATH, "utf8");
       const parsed = JSON.parse(raw);
-      memoryMessagesCache = parsed;
-      return parsed;
+      if (Array.isArray(parsed)) {
+        memoryMessagesCache = parsed;
+        return parsed;
+      }
+    }
+  } catch {}
+
+  // 2. Try disk
+  try {
+    if (fs.existsSync(MESSAGES_PATH)) {
+      const raw = fs.readFileSync(MESSAGES_PATH, "utf8");
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        memoryMessagesCache = parsed;
+        return parsed;
+      }
     }
   } catch {}
 
@@ -143,15 +149,14 @@ export function saveStoredMessage(msg: Omit<ContactMessage, "id" | "timestamp" |
   memoryMessagesCache = updated;
 
   try {
+    fs.writeFileSync(TMP_MESSAGES_PATH, JSON.stringify(updated, null, 2), "utf8");
+  } catch {}
+  try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     fs.writeFileSync(MESSAGES_PATH, JSON.stringify(updated, null, 2), "utf8");
-  } catch {
-    try {
-      fs.writeFileSync(TMP_MESSAGES_PATH, JSON.stringify(updated, null, 2), "utf8");
-    } catch {}
-  }
+  } catch {}
 
   return newMsg;
 }
@@ -162,30 +167,24 @@ export function deleteStoredMessage(id: string): boolean {
   memoryMessagesCache = updated;
 
   try {
+    fs.writeFileSync(TMP_MESSAGES_PATH, JSON.stringify(updated, null, 2), "utf8");
+  } catch {}
+  try {
     fs.writeFileSync(MESSAGES_PATH, JSON.stringify(updated, null, 2), "utf8");
-    return true;
-  } catch {
-    try {
-      fs.writeFileSync(TMP_MESSAGES_PATH, JSON.stringify(updated, null, 2), "utf8");
-      return true;
-    } catch {
-      return false;
-    }
-  }
+  } catch {}
+
+  return true;
 }
 
 export function clearAllStoredMessages(): boolean {
   memoryMessagesCache = [];
 
   try {
+    fs.writeFileSync(TMP_MESSAGES_PATH, JSON.stringify([], null, 2), "utf8");
+  } catch {}
+  try {
     fs.writeFileSync(MESSAGES_PATH, JSON.stringify([], null, 2), "utf8");
-    return true;
-  } catch {
-    try {
-      fs.writeFileSync(TMP_MESSAGES_PATH, JSON.stringify([], null, 2), "utf8");
-      return true;
-    } catch {
-      return false;
-    }
-  }
+  } catch {}
+
+  return true;
 }

@@ -144,6 +144,22 @@ export function PortfolioProvider({
       if (res.ok) {
         const json = await res.json();
         if (json && json.personal && !isSavingRef.current) {
+          // IMPORTANT: Check if localStorage has newer edits than server!
+          if (typeof window !== "undefined") {
+            try {
+              const localRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
+              if (localRaw) {
+                const localParsed = JSON.parse(localRaw);
+                const localTime = (localParsed as any)?._lastSavedAt || 0;
+                const serverTime = (json as any)?._lastSavedAt || 0;
+                if (localTime > serverTime) {
+                  // LocalStorage has more recent edits! Keep local data, do not overwrite!
+                  setData(localParsed);
+                  return;
+                }
+              }
+            } catch {}
+          }
           setData(json);
           if (typeof window !== "undefined") {
             try {
@@ -240,28 +256,40 @@ export function PortfolioProvider({
     setIsSaving(true);
     setLastSaveError(null);
 
+    const dataWithTimestamp = {
+      ...newData,
+      _lastSavedAt: Date.now(),
+    };
+
     // Optimistically update React state and local storage immediately
-    setData({ ...newData });
+    setData({ ...dataWithTimestamp });
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newData));
-        window.dispatchEvent(new CustomEvent("portfolio-data-synced", { detail: newData }));
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataWithTimestamp));
+        window.dispatchEvent(new CustomEvent("portfolio-data-synced", { detail: dataWithTimestamp }));
       } catch (e) {
         console.warn("localStorage write warning:", e);
       }
     }
+
+    // Abort controller with 10s maximum timeout so saving NEVER gets stuck indefinitely
+    const controller = new AbortController();
+    const timeoutTimer = setTimeout(() => controller.abort(), 10000);
 
     try {
       const res = await fetch("/api/portfolio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(newData),
+        body: JSON.stringify(dataWithTimestamp),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutTimer);
 
       if (res.ok) {
         const result = await res.json();
-        const savedData = result.data || newData;
+        const savedData = result.data || dataWithTimestamp;
         setData({ ...savedData });
         if (typeof window !== "undefined") {
           try {
@@ -289,7 +317,14 @@ export function PortfolioProvider({
       setIsSaving(false);
       return { success: false, error: errorMsg };
     } catch (err: any) {
-      const errorMsg = err?.message ? `Network error: ${err.message}` : "Failed to connect to server.";
+      clearTimeout(timeoutTimer);
+      const isTimeout = err?.name === "AbortError";
+      const errorMsg = isTimeout
+        ? "Network timed out. Changes saved locally in browser, but server took too long to reply."
+        : err?.message
+        ? `Network error: ${err.message}`
+        : "Failed to connect to server.";
+
       console.error("Failed to update portfolio data:", err);
       setLastSaveError(errorMsg);
       isSavingRef.current = false;

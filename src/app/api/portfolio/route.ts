@@ -29,7 +29,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid portfolio data payload" }, { status: 400 });
     }
 
-    const success = saveStoredPortfolioData(updatedData);
+    const dataToSave = {
+      ...updatedData,
+      _lastSavedAt: updatedData._lastSavedAt || Date.now(),
+    };
+
+    const success = saveStoredPortfolioData(dataToSave);
     if (!success) {
       return NextResponse.json({ error: "Failed to persist portfolio data" }, { status: 500 });
     }
@@ -42,7 +47,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-      { success: true, data: updatedData },
+      { success: true, data: dataToSave },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
