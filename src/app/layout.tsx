@@ -7,7 +7,7 @@ import { PortfolioProvider } from "@/context/PortfolioContext";
 import { FluidBackground } from "@/components/FluidBackground";
 import { getStoredPortfolioData } from "@/lib/portfolioStore";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://harsharyan.dev";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://harsharyann.me";
 
 export const viewport: Viewport = {
   width: "device-width",

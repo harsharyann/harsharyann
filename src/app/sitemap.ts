@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getStoredPortfolioData } from "@/lib/portfolioStore";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://harsharyan.dev";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://harsharyann.me";
   const data = getStoredPortfolioData();
   const currentDate = new Date().toISOString();
 
