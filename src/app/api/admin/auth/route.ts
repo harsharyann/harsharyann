@@ -83,70 +83,14 @@ export async function POST(req: Request) {
       return res;
     }
 
-    // ── ACTION: 3-FACTOR ADMIN LOGIN ──
-    const { username, password, pin } = body;
-
-    if (!username || !password) {
-      return NextResponse.json(
-        { error: "Username and Password are required." },
-        { status: 400 }
-      );
-    }
-
-    if (!checkCredentials(username, password, pin)) {
-      // Artificial delay (450ms) to prevent high-speed dictionary brute force
-      await new Promise((r) => setTimeout(r, 450));
-
-      const prevCount = attemptRecord && attemptRecord.lockedUntil <= now ? 0 : (attemptRecord?.count || 0);
-      const newCount = prevCount + 1;
-
-      if (newCount >= MAX_ATTEMPTS) {
-        failedAttempts.set(ip, { count: newCount, lockedUntil: now + LOCKOUT_MS });
-        return NextResponse.json(
-          { error: "Security lockout: Maximum failed attempts exceeded. Access locked for 15 minutes." },
-          { status: 429 }
-        );
-      } else {
-        failedAttempts.set(ip, { count: newCount, lockedUntil: 0 });
-        const remaining = MAX_ATTEMPTS - newCount;
-        return NextResponse.json(
-          { error: `Invalid credentials or Security PIN. (${remaining} attempt${remaining === 1 ? "" : "s"} remaining before lockout)` },
-          { status: 401 }
-        );
-      }
-    }
-
-    // Success: Reset rate limiter for this IP
-    failedAttempts.delete(ip);
-
-    const sessionToken = createSessionToken(username);
-    const gatePass = createGatePass();
-
-    const res = NextResponse.json({ success: true, message: "Authenticated successfully" });
-
-    // Set signed HMAC session cookie (7 days)
-    res.cookies.set({
-      name: AUTH_COOKIE,
-      value: sessionToken,
-      httpOnly: true,
-      secure: isSecureCookie(req),
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    });
-
-    // Set gate cookie (7 days)
-    res.cookies.set({
-      name: GATE_COOKIE,
-      value: gatePass,
-      httpOnly: true,
-      secure: isSecureCookie(req),
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    });
-
-    return res;
+    // ── ACTION: 3-FACTOR ADMIN LOGIN (PERMANENTLY DISABLED FOR ENHANCED GOOGLE-ONLY SECURITY) ──
+    return NextResponse.json(
+      {
+        error:
+          "Password login has been permanently disabled for maximum security. Please log in using Google OAuth with harsharyan.work@gmail.com.",
+      },
+      { status: 403 }
+    );
   } catch (err) {
     console.error("Auth error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

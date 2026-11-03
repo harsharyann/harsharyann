@@ -96,13 +96,8 @@ export default function AdminPage() {
     refreshData();
   }, []);
 
-  // Auth State
+  // Auth State (Exclusively Google OAuth 2.0)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [securityPin, setSecurityPin] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showSecurityPin, setShowSecurityPin] = useState(false);
   const [authError, setAuthError] = useState("");
   const [inactivityNotice, setInactivityNotice] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -738,54 +733,7 @@ export default function AdminPage() {
     };
   }, [isAuthenticated]);
 
-  // Handle Login
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthError("");
-    setInactivityNotice(null);
-
-    if (!username.trim() || !password.trim()) {
-      setAuthError("Username and Password are required.");
-      return;
-    }
-
-    const effectivePin = securityPin.trim() || "050107";
-
-    setIsLoggingIn(true);
-
-    try {
-      const res = await fetch("/api/admin/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: username.trim(),
-          password: password.trim(),
-          pin: effectivePin,
-        }),
-      });
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        setIsAuthenticated(true);
-        await refreshData();
-      } else {
-        setAuthError(data.error || "Invalid username, password, or security PIN.");
-      }
-    } catch (err) {
-      setAuthError("Failed to authenticate. Please check network connection.");
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
-  const handleQuickFill = () => {
-    setUsername("Harsharyann_");
-    setPassword("Socius2529");
-    setSecurityPin("050107");
-    setAuthError("");
-  };
-
-  // ── Google OAuth Sign-In (Restricted to Harsh Aryan's Google Account) ──
+  // ── Google OAuth Sign-In (Exclusively Restricted to Harsh Aryan's Google Account) ──
   const googleBtnRef = React.useRef<HTMLDivElement>(null);
   const [hasGoogleClientId, setHasGoogleClientId] = useState(false);
 
@@ -849,9 +797,6 @@ export default function AdminPage() {
     try {
       await fetch("/api/admin/auth", { method: "DELETE" });
       setIsAuthenticated(false);
-      setUsername("");
-      setPassword("");
-      setSecurityPin("");
     } catch (err) {
       console.error(err);
     }
@@ -1314,142 +1259,48 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* Login Form */}
-            <form onSubmit={handleLogin} className="space-y-4">
-              {/* Header security badge & quick fill */}
-              <div className="flex items-center justify-between pb-1">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-[10px] font-bold text-stone-700 dark:text-stone-300">
-                  <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Portfolio Admin Access</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={handleQuickFill}
-                  className="font-mono text-[10px] font-bold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-700"
-                  title="Auto-fill default admin credentials"
-                >
-                  ⚡ Auto-Fill
-                </button>
+            {/* Header / Security Badge */}
+            <div className="flex flex-col items-center text-center space-y-2 pt-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/70 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 font-mono text-[10px] font-bold text-amber-800 dark:text-amber-300 shadow-xs">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
+                <span>RESTRICTED ADMIN VAULT</span>
               </div>
-
-              {/* Username Field */}
-              <div>
-                <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
-                  Admin Username:
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter Admin Username (Harsharyann_)"
-                    autoComplete="username"
-                    autoFocus
-                    required
-                    className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-xs font-bold focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
-                  />
-                  <User className="absolute right-3.5 top-3 w-4 h-4 text-stone-400" />
-                </div>
-              </div>
-
-              {/* Password Field */}
-              <div>
-                <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
-                  Password:
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter Password (Socius2529)"
-                    autoComplete="current-password"
-                    required
-                    className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-xs font-bold focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 p-1 text-stone-400 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
-                    title={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* 6-Digit Master Security PIN Field */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300">
-                    Security PIN (Optional):
-                  </label>
-                  <span className="font-mono text-[9.5px] font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 bg-amber-100/70 dark:bg-amber-950/50 px-2 py-0.5 rounded-full border border-amber-400/40">
-                    <KeyRound className="w-3 h-3 text-amber-600" />
-                    <span>Default: 050107</span>
-                  </span>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showSecurityPin ? "text" : "password"}
-                    value={securityPin}
-                    onChange={(e) => setSecurityPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    placeholder="050107"
-                    maxLength={6}
-                    autoComplete="off"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-sm font-black tracking-[0.35em] text-center focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowSecurityPin(!showSecurityPin)}
-                    className="absolute right-3 top-2.5 p-1 text-stone-400 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
-                    title={showSecurityPin ? "Hide PIN" : "Show PIN"}
-                  >
-                    {showSecurityPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Enter Admin Action Button */}
-              <button
-                type="submit"
-                disabled={isLoggingIn}
-                className="w-full mt-2 py-3.5 px-6 rounded-xl bg-[#fde047] hover:bg-[#facc15] text-black font-mono text-xs font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0_#000] hover:shadow-[5px_5px_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-[1.5px_1.5px_0_#000] transition-all cursor-pointer flex items-center justify-center gap-2 select-none"
-              >
-                {isLoggingIn ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Verifying Credentials...</span>
-                  </>
-                ) : (
-                  <>
-                    <Unlock className="w-4 h-4 stroke-[2.5]" />
-                    <span>Enter Admin Console</span>
-                  </>
-                )}
-              </button>
-            </form>
-
-            {/* Divider: OR Google Sign-In */}
-            <div className="relative flex items-center justify-center my-1">
-              <div className="border-t border-stone-200 dark:border-stone-800 w-full" />
-              <span className="bg-[#fffef9] dark:bg-[#151620] px-3 font-mono text-[10px] font-bold text-stone-400 uppercase tracking-widest shrink-0">
-                OR GOOGLE ACCOUNT
-              </span>
-              <div className="border-t border-stone-200 dark:border-stone-800 w-full" />
+              <h2 className="font-mono text-base font-black uppercase tracking-wider text-stone-900 dark:text-stone-100">
+                Single Sign-On Authentication
+              </h2>
+              <p className="font-mono text-xs text-stone-500 dark:text-stone-400 max-w-xs leading-relaxed">
+                Protected exclusively for Harsh Aryan. Authenticate using your verified Google account.
+              </p>
             </div>
 
-            {/* Google Sign-In Container (Exclusively for Harsh Aryan) */}
-            <div className="space-y-1.5">
-              <div ref={googleBtnRef} className="w-full flex justify-center" />
+            {/* Authorized Email Pill */}
+            <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-stone-200 dark:border-stone-800 flex items-center justify-between font-mono text-xs">
+              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-bold text-[11px]">harsharyan.work@gmail.com</span>
+              </div>
+              <span className="text-[9.5px] uppercase font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-700">
+                Authorized
+              </span>
+            </div>
+
+            {/* Google Sign-In Container */}
+            <div className="space-y-3 pt-1">
+              {isLoggingIn ? (
+                <div className="py-3.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-400 text-amber-900 dark:text-amber-200 font-mono text-xs flex items-center justify-center gap-2 shadow-xs">
+                  <RefreshCw className="w-4 h-4 animate-spin text-amber-600" />
+                  <span className="font-bold">Verifying Google Credentials...</span>
+                </div>
+              ) : (
+                <div ref={googleBtnRef} className="w-full flex justify-center min-h-[44px]" />
+              )}
+
               {!hasGoogleClientId && (
                 <button
                   type="button"
                   onClick={() => {
                     alert(
-                      "To enable 1-Click Google Sign-In for your account:\n\n1. Go to Google Cloud Console -> APIs & Services -> Credentials\n2. Create an OAuth 2.0 Web Client ID\n3. Add 'http://localhost:3000' to Authorized JavaScript origins\n4. Add NEXT_PUBLIC_GOOGLE_CLIENT_ID=<your-client-id> in .env.local\n\nOnly harsharyan.work@gmail.com will be granted access!"
+                      "To enable 1-Click Google Sign-In for your account:\n\n1. Ensure NEXT_PUBLIC_GOOGLE_CLIENT_ID is set in .env.local\n\nOnly harsharyan.work@gmail.com will be granted access!"
                     );
                   }}
                   className="w-full py-2.5 px-4 rounded-xl border-2 border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 font-mono text-xs font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
@@ -1475,8 +1326,9 @@ export default function AdminPage() {
                   <span>Sign in with Google (Harsh Aryan Only)</span>
                 </button>
               )}
-              <p className="text-[9.5px] font-mono text-center text-stone-400">
-                Protected: Only authorized account (harsharyan.work@gmail.com) can enter
+
+              <p className="text-[10px] font-mono text-center text-stone-400">
+                🔒 256-Bit OAuth 2.0 Encrypted • Single Authorized Identity
               </p>
             </div>
 
