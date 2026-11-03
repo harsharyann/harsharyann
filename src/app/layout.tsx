@@ -83,10 +83,10 @@ export async function generateMetadata(): Promise<Metadata> {
       canonical: "/",
     },
     openGraph: {
-      title: `${name} | ${role} • ${college}`,
+      title: name,
       description: headline,
       url: "/",
-      siteName: `${name} Portfolio`,
+      siteName: name,
       locale: "en_US",
       type: "website",
       images: [
@@ -94,13 +94,13 @@ export async function generateMetadata(): Promise<Metadata> {
           url: photoUrl,
           width: 1200,
           height: 630,
-          alt: `${name} — ${role}`,
+          alt: name,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${name} | ${role} • ${college}`,
+      title: name,
       description: headline,
       creator: "@harsharyann",
       images: [photoUrl],
@@ -186,7 +186,7 @@ export default function RootLayout({
       {
         "@type": "WebSite",
         "@id": `${siteUrl}/#website`,
-        name: `${name} Portfolio`,
+        name,
         url: siteUrl,
         description: headline,
         publisher: {
@@ -198,7 +198,7 @@ export default function RootLayout({
         "@type": "ProfilePage",
         "@id": `${siteUrl}/#profilepage`,
         url: siteUrl,
-        name: `${name} | Official Sketchbook Portfolio`,
+        name,
         mainEntity: {
           "@id": `${siteUrl}/#person`,
         },
