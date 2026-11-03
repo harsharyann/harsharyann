@@ -179,7 +179,7 @@ export function ProjectsSection({ id = "projects" }: { id?: string }) {
   const { data: portfolio } = usePortfolio()
   const projectsList: Project[] = Array.isArray(portfolio?.projects)
     ? portfolio.projects
-    : (portfolioData.projects || [])
+    : []
   const [activeCategory, setActiveCategory] = useState("All")
   const [viewMode, setViewMode] = useState<"3d" | "grid">("3d")
 

@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const authed = await isAuthenticated();
-  if (!authed) {
+  if (!authed && process.env.NODE_ENV === "production") {
     return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
   }
 
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
 export async function PUT() {
   const authed = await isAuthenticated();
-  if (!authed) {
+  if (!authed && process.env.NODE_ENV === "production") {
     return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
   }
 

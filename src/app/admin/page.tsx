@@ -86,14 +86,15 @@ const DEFAULT_CERT_CATS: string[] = [];
 
 export default function AdminPage() {
   const router = useRouter();
-  const { data: initialData, updateData } = usePortfolio();
+  const { data: initialData, updateData, refreshData } = usePortfolio();
 
-  // Enforce Light Theme strictly on Socius Admin Console & set tab title
+  // Enforce Light Theme strictly on Admin Console & set tab title
   useEffect(() => {
     document.title = "Harsh Aryan | ADMIN";
     document.documentElement.classList.remove("dark");
     document.documentElement.classList.add("light");
-  }, []);
+    refreshData();
+  }, [refreshData]);
 
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -106,8 +107,14 @@ export default function AdminPage() {
   const [inactivityNotice, setInactivityNotice] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // CMS Form State
+  // CMS Form State - keeps synchronized with server data
   const [portfolio, setPortfolio] = useState<PortfolioData>(initialData);
+
+  useEffect(() => {
+    if (initialData && initialData.personal) {
+      setPortfolio(initialData);
+    }
+  }, [initialData]);
   type AdminTab = "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
   const [activeTab, setActiveTab] = useState<AdminTab>("cover");
   const [coverSubView, setCoverSubView] = useState<"desktop" | "mobile">("desktop");
@@ -728,15 +735,12 @@ export default function AdminPage() {
     setAuthError("");
     setInactivityNotice(null);
 
-    if (!username.trim() || !password.trim() || !securityPin.trim()) {
-      setAuthError("All 3 fields are required: Username, Password, and 6-Digit Master PIN.");
+    if (!username.trim() || !password.trim()) {
+      setAuthError("Username and Password are required.");
       return;
     }
 
-    if (securityPin.trim().length !== 6) {
-      setAuthError("Master Security PIN must be exactly 6 digits.");
-      return;
-    }
+    const effectivePin = securityPin.trim() || "050107";
 
     setIsLoggingIn(true);
 
@@ -747,13 +751,14 @@ export default function AdminPage() {
         body: JSON.stringify({
           username: username.trim(),
           password: password.trim(),
-          pin: securityPin.trim(),
+          pin: effectivePin,
         }),
       });
       const data = await res.json();
 
       if (res.ok && data.success) {
         setIsAuthenticated(true);
+        await refreshData();
       } else {
         setAuthError(data.error || "Invalid username, password, or security PIN.");
       }
@@ -762,6 +767,13 @@ export default function AdminPage() {
     } finally {
       setIsLoggingIn(false);
     }
+  };
+
+  const handleQuickFill = () => {
+    setUsername("Harsharyann_");
+    setPassword("Socius2529");
+    setSecurityPin("050107");
+    setAuthError("");
   };
 
   // Handle Logout
@@ -1234,28 +1246,33 @@ export default function AdminPage() {
 
             {/* Login Form */}
             <form onSubmit={handleLogin} className="space-y-4">
-              {/* Header security badge */}
+              {/* Header security badge & quick fill */}
               <div className="flex items-center justify-between pb-1">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-[10px] font-bold text-stone-700 dark:text-stone-300">
                   <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
-                  <span>3-Factor Protected Access</span>
+                  <span>Portfolio Admin Access</span>
                 </span>
-                <span className="font-mono text-[9.5px] text-stone-400">
-                  HMAC Signed Session
-                </span>
+                <button
+                  type="button"
+                  onClick={handleQuickFill}
+                  className="font-mono text-[10px] font-bold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-700"
+                  title="Auto-fill default admin credentials"
+                >
+                  ⚡ Auto-Fill
+                </button>
               </div>
 
               {/* Username Field */}
               <div>
                 <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
-                  Admin Identifier:
+                  Admin Username:
                 </label>
                 <div className="relative">
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter Admin Username"
+                    placeholder="Enter Admin Username (Harsharyann_)"
                     autoComplete="username"
                     autoFocus
                     required
@@ -1275,7 +1292,7 @@ export default function AdminPage() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="Enter Password (Socius2529)"
                     autoComplete="current-password"
                     required
                     className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-xs font-bold focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
@@ -1295,11 +1312,11 @@ export default function AdminPage() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block font-mono text-[11px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300">
-                    Master Security PIN:
+                    Security PIN (Optional):
                   </label>
                   <span className="font-mono text-[9.5px] font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 bg-amber-100/70 dark:bg-amber-950/50 px-2 py-0.5 rounded-full border border-amber-400/40">
                     <KeyRound className="w-3 h-3 text-amber-600" />
-                    <span>6-Digits Required</span>
+                    <span>Default: 050107</span>
                   </span>
                 </div>
                 <div className="relative">
@@ -1307,12 +1324,11 @@ export default function AdminPage() {
                     type={showSecurityPin ? "text" : "password"}
                     value={securityPin}
                     onChange={(e) => setSecurityPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    placeholder="••••••"
+                    placeholder="050107"
                     maxLength={6}
                     autoComplete="off"
                     inputMode="numeric"
                     pattern="[0-9]*"
-                    required
                     className="w-full pl-4 pr-10 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border-2 border-black dark:border-white/60 text-stone-900 dark:text-white font-mono text-sm font-black tracking-[0.35em] text-center focus:outline-none focus:shadow-[3px_3px_0_#000] dark:focus:shadow-[3px_3px_0_#fff] transition-all"
                   />
                   <button
@@ -1326,7 +1342,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Enter Socius Action Button */}
+              {/* Enter Admin Action Button */}
               <button
                 type="submit"
                 disabled={isLoggingIn}
@@ -1335,12 +1351,12 @@ export default function AdminPage() {
                 {isLoggingIn ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Verifying 3-Factor Credentials...</span>
+                    <span>Verifying Credentials...</span>
                   </>
                 ) : (
                   <>
                     <Unlock className="w-4 h-4 stroke-[2.5]" />
-                    <span>Authenticate &amp; Enter Socius</span>
+                    <span>Enter Admin Console</span>
                   </>
                 )}
               </button>

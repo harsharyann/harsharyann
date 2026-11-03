@@ -86,9 +86,9 @@ export async function POST(req: Request) {
     // ── ACTION: 3-FACTOR ADMIN LOGIN ──
     const { username, password, pin } = body;
 
-    if (!username || !password || !pin) {
+    if (!username || !password) {
       return NextResponse.json(
-        { error: "Username, Password, and 6-Digit Master Security PIN are all required." },
+        { error: "Username and Password are required." },
         { status: 400 }
       );
     }

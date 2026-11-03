@@ -25,7 +25,7 @@ const PortfolioContext = createContext<PortfolioContextType>({
   closeCover: () => {},
 });
 
-const LOCAL_STORAGE_KEY = "socius_portfolio_data";
+const LOCAL_STORAGE_KEY = "harsh_portfolio_data_v3";
 const COVER_SESSION_KEY = "socius_cover_dismissed";
 const LAST_SECTION_KEY = "socius_last_section";
 
@@ -39,6 +39,14 @@ export function PortfolioProvider({
   const [data, setData] = useState<PortfolioData>(initialData || initialDefaultData);
   const [isLoading, setIsLoading] = useState<boolean>(!initialData);
   const [isCoverOpen, setIsCoverOpen] = useState<boolean>(true);
+
+  // Clear legacy poisoned localStorage cache (e.g. from previous dummy projects)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.removeItem("socius_portfolio_data");
+    } catch {}
+  }, []);
 
   // Sync Cover State on initial load / refresh so user STAYS on the page they were on
   useEffect(() => {
@@ -104,7 +112,7 @@ export function PortfolioProvider({
   }, []);
 
   const refreshData = async () => {
-    // 1. Fetch latest synced data from server in the background
+    // 1. Fetch latest synced data from server in the background (authoritative source)
     try {
       const res = await fetch(`/api/portfolio?_t=${Date.now()}`, {
         cache: "no-store",
@@ -113,20 +121,6 @@ export function PortfolioProvider({
       if (res.ok) {
         const json = await res.json();
         if (json && json.personal) {
-          // If server has data, check if localStorage has newer client updates (e.g. on read-only serverless host)
-          if (typeof window !== "undefined") {
-            try {
-              const local = localStorage.getItem(LOCAL_STORAGE_KEY);
-              if (local) {
-                const parsed = JSON.parse(local);
-                if (parsed && Array.isArray(parsed.projects) && parsed.projects.length > (json.projects?.length || 0)) {
-                  setData(parsed);
-                  return;
-                }
-              }
-            } catch {}
-          }
-
           setData(json);
           if (typeof window !== "undefined") {
             try {
@@ -142,7 +136,7 @@ export function PortfolioProvider({
       setIsLoading(false);
     }
 
-    // 2. Offline fallback to localStorage
+    // 2. Offline fallback to localStorage only if server is unreachable
     if (typeof window !== "undefined") {
       try {
         const local = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -161,6 +155,16 @@ export function PortfolioProvider({
   }, []);
 
   const updateData = async (newData: PortfolioData): Promise<boolean> => {
+    // Optimistically update React state and local storage immediately
+    setData({ ...newData });
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newData));
+      } catch (e) {
+        console.warn("localStorage write error:", e);
+      }
+    }
+
     try {
       const res = await fetch("/api/portfolio", {
         method: "POST",
