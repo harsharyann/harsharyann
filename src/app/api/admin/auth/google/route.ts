@@ -23,9 +23,24 @@ function isSecureCookie(req: Request): boolean {
 
 export async function POST(req: Request) {
   try {
-    const { credential } = await req.json();
+    const contentType = req.headers.get("content-type") || "";
+    let credential = "";
+    const isFormPost =
+      contentType.includes("application/x-www-form-urlencoded") ||
+      contentType.includes("multipart/form-data");
+
+    if (isFormPost) {
+      const formData = await req.formData();
+      credential = (formData.get("credential") as string) || "";
+    } else {
+      const body = await req.json().catch(() => ({}));
+      credential = body.credential || "";
+    }
 
     if (!credential) {
+      if (isFormPost) {
+        return NextResponse.redirect(new URL("/admin?error=missing_token", req.url));
+      }
       return NextResponse.json({ error: "Missing Google ID token" }, { status: 400 });
     }
 
@@ -36,6 +51,9 @@ export async function POST(req: Request) {
     );
 
     if (!googleRes.ok) {
+      if (isFormPost) {
+        return NextResponse.redirect(new URL("/admin?error=invalid_token", req.url));
+      }
       return NextResponse.json(
         { error: "Invalid or expired Google authentication token" },
         { status: 401 }
@@ -47,6 +65,9 @@ export async function POST(req: Request) {
     const emailVerified = payload.email_verified === "true" || payload.email_verified === true;
 
     if (!emailVerified) {
+      if (isFormPost) {
+        return NextResponse.redirect(new URL("/admin?error=unverified_email", req.url));
+      }
       return NextResponse.json(
         { error: "Unverified Google account. Please verify your email with Google first." },
         { status: 403 }
@@ -58,6 +79,9 @@ export async function POST(req: Request) {
 
     if (!isAuthorized) {
       console.warn(`Unauthorized login attempt from Google account: ${email}`);
+      if (isFormPost) {
+        return NextResponse.redirect(new URL(`/admin?error=unauthorized_${encodeURIComponent(email)}`, req.url));
+      }
       return NextResponse.json(
         {
           error: `Access Denied: '${email}' is not authorized. Only Harsh Aryan's verified Google account has access to this Admin Console.`,
@@ -71,15 +95,17 @@ export async function POST(req: Request) {
     const sessionToken = createSessionToken(username);
     const gatePass = createGatePass();
 
-    const response = NextResponse.json({
-      success: true,
-      message: `Welcome, ${payload.name || "Harsh"}!`,
-      user: {
-        name: payload.name,
-        email: payload.email,
-        picture: payload.picture,
-      },
-    });
+    const response = isFormPost
+      ? NextResponse.redirect(new URL("/admin", req.url))
+      : NextResponse.json({
+          success: true,
+          message: `Welcome, ${payload.name || "Harsh"}!`,
+          user: {
+            name: payload.name,
+            email: payload.email,
+            picture: payload.picture,
+          },
+        });
 
     // Set signed HMAC session cookie (7 days)
     response.cookies.set({
