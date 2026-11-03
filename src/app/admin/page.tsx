@@ -55,6 +55,8 @@ import {
   BookOpen,
   FileText,
   Bookmark,
+  Download,
+  Upload,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
@@ -117,10 +119,17 @@ export default function AdminPage() {
   // Seamlessly populate form with real stored data on mount or when remote data syncs
   useEffect(() => {
     if (initialData && initialData.personal) {
-      if (!isFormInitializedRef.current || !isDirtyRef.current) {
+      if (!isFormInitializedRef.current) {
         setPortfolioState(initialData);
         portfolioRef.current = initialData;
         isFormInitializedRef.current = true;
+      } else if (!isDirtyRef.current) {
+        const currentSavedTime = (portfolioRef.current as any)?._lastSavedAt || 0;
+        const incomingSavedTime = (initialData as any)?._lastSavedAt || 0;
+        if (incomingSavedTime > currentSavedTime) {
+          setPortfolioState(initialData);
+          portfolioRef.current = initialData;
+        }
       }
     }
   }, [initialData]);
@@ -442,52 +451,60 @@ export default function AdminPage() {
   // Skills Handlers
   const handleAddSkillItem = (catIdx: number, item: string) => {
     if (!item.trim()) return;
-    const currentSkills = [...(portfolio.skills || [])];
+    const base = portfolioRef.current || portfolio;
+    const currentSkills = [...(base.skills || [])];
     if (!currentSkills[catIdx]) return;
     currentSkills[catIdx] = {
       ...currentSkills[catIdx],
       items: [...(currentSkills[catIdx].items || []), item.trim()],
     };
-    const newPort = { ...portfolio, skills: currentSkills };
+    const newPort = { ...base, skills: currentSkills };
     setPortfolio(newPort);
+    portfolioRef.current = newPort;
     setSkillTagInputs((prev) => ({ ...prev, [catIdx]: "" }));
     saveInstantly(newPort, `Added "${item.trim()}"`);
   };
 
   const handleRemoveSkillItem = (catIdx: number, itemIdx: number) => {
-    const currentSkills = [...(portfolio.skills || [])];
+    const base = portfolioRef.current || portfolio;
+    const currentSkills = [...(base.skills || [])];
     if (!currentSkills[catIdx]) return;
     currentSkills[catIdx] = {
       ...currentSkills[catIdx],
       items: (currentSkills[catIdx].items || []).filter((_, i) => i !== itemIdx),
     };
-    const newPort = { ...portfolio, skills: currentSkills };
+    const newPort = { ...base, skills: currentSkills };
     setPortfolio(newPort);
+    portfolioRef.current = newPort;
     saveInstantly(newPort, "Skill removed");
   };
 
   const handleAddSkillCategory = () => {
     if (!newSkillCatName.trim()) return;
+    const base = portfolioRef.current || portfolio;
     const newPort = {
-      ...portfolio,
+      ...base,
       skills: [
-        ...(portfolio.skills || []),
+        ...(base.skills || []),
         { category: newSkillCatName.trim(), items: [] },
       ],
     };
     setPortfolio(newPort);
+    portfolioRef.current = newPort;
     setNewSkillCatName("");
     saveInstantly(newPort, `Added category "${newSkillCatName.trim()}"`);
   };
 
   const handleRemoveSkillCategory = (catIdx: number) => {
     if (!confirm("Are you sure you want to delete this skills category?")) return;
-    const catName = portfolio.skills?.[catIdx]?.category || "";
+    const base = portfolioRef.current || portfolio;
+    const catName = base.skills?.[catIdx]?.category || "";
     const newPort = {
-      ...portfolio,
-      skills: (portfolio.skills || []).filter((_, i) => i !== catIdx),
+      ...base,
+      skills: (base.skills || []).filter((_, i) => i !== catIdx),
     };
     setPortfolio(newPort);
+    portfolioRef.current = newPort;
     saveInstantly(newPort, `Deleted category "${catName}"`);
   };
 
@@ -837,6 +854,47 @@ export default function AdminPage() {
     };
   }, [isAuthenticated]);
 
+  // ── Export Store Backup JSON ──
+  const handleExportStore = () => {
+    try {
+      const current = portfolioRef.current || portfolio;
+      const jsonStr = JSON.stringify(current, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `portfolio-store.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      setToastMessage("✓ Portfolio store JSON exported!");
+      setTimeout(() => setToastMessage(null), 3000);
+    } catch {
+      alert("Failed to export JSON store");
+    }
+  };
+
+  // ── Import Store Backup JSON ──
+  const handleImportStore = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const parsed = JSON.parse(e.target?.result as string);
+        if (!parsed || !parsed.personal) {
+          alert("Invalid portfolio store JSON: missing personal data.");
+          return;
+        }
+        setPortfolio(parsed);
+        portfolioRef.current = parsed;
+        await saveInstantly(parsed, "✓ Backup store imported & saved!");
+      } catch {
+        alert("Failed to parse JSON file.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
   // ── Central Instant Save Handler (Reflects Fatak Se Without Bugs) ──
   const saveInstantly = async (dataToSave?: PortfolioData, successMsg: string = "Saved to Socius!") => {
     const payload = dataToSave || portfolioRef.current || portfolio;
@@ -874,24 +932,28 @@ export default function AdminPage() {
   const handleAddProjectCategory = () => {
     const trimmed = newProjectCatInput.trim();
     if (!trimmed) return;
-    const current = portfolio.projectCategories || DEFAULT_PROJECT_CATS;
+    const base = portfolioRef.current || portfolio;
+    const current = base.projectCategories || DEFAULT_PROJECT_CATS;
     if (current.includes(trimmed)) {
       alert("This category already exists!");
       return;
     }
     const updatedCats = [...current, trimmed];
-    const newPort = { ...portfolio, projectCategories: updatedCats };
+    const newPort = { ...base, projectCategories: updatedCats };
     setPortfolio(newPort);
+    portfolioRef.current = newPort;
     setNewProjectCatInput("");
     saveInstantly(newPort, `Added category: "${trimmed}"`);
   };
 
   const handleRemoveProjectCategory = (cat: string) => {
     if (!confirm(`Remove category "${cat}"? Projects with this category will keep it until edited.`)) return;
-    const current = portfolio.projectCategories || DEFAULT_PROJECT_CATS;
+    const base = portfolioRef.current || portfolio;
+    const current = base.projectCategories || DEFAULT_PROJECT_CATS;
     const updatedCats = current.filter((c) => c !== cat);
-    const newPort = { ...portfolio, projectCategories: updatedCats };
+    const newPort = { ...base, projectCategories: updatedCats };
     setPortfolio(newPort);
+    portfolioRef.current = newPort;
     saveInstantly(newPort, `Removed category: "${cat}"`);
   };
 
@@ -899,24 +961,28 @@ export default function AdminPage() {
   const handleAddCertCategory = () => {
     const trimmed = newCertCatInput.trim();
     if (!trimmed) return;
-    const current = portfolio.certificateCategories || DEFAULT_CERT_CATS;
+    const base = portfolioRef.current || portfolio;
+    const current = base.certificateCategories || DEFAULT_CERT_CATS;
     if (current.includes(trimmed)) {
       alert("This category already exists!");
       return;
     }
     const updatedCats = [...current, trimmed];
-    const newPort = { ...portfolio, certificateCategories: updatedCats };
+    const newPort = { ...base, certificateCategories: updatedCats };
     setPortfolio(newPort);
+    portfolioRef.current = newPort;
     setNewCertCatInput("");
     saveInstantly(newPort, `Added certificate category: "${trimmed}"`);
   };
 
   const handleRemoveCertCategory = (cat: string) => {
     if (!confirm(`Remove category "${cat}"? Certificates with this category will keep it until edited.`)) return;
-    const current = portfolio.certificateCategories || DEFAULT_CERT_CATS;
+    const base = portfolioRef.current || portfolio;
+    const current = base.certificateCategories || DEFAULT_CERT_CATS;
     const updatedCats = current.filter((c) => c !== cat);
-    const newPort = { ...portfolio, certificateCategories: updatedCats };
+    const newPort = { ...base, certificateCategories: updatedCats };
     setPortfolio(newPort);
+    portfolioRef.current = newPort;
     saveInstantly(newPort, `Removed certificate category: "${cat}"`);
   };
 
@@ -966,36 +1032,40 @@ export default function AdminPage() {
       category: effectiveCategory,
     };
 
+    const basePortfolio = portfolioRef.current || portfolio;
     let updatedProjects: Project[];
     if (editingProject) {
-      updatedProjects = (portfolio.projects || []).map((p) => (p.id === editingProject.id ? finalProject : p));
+      updatedProjects = (basePortfolio.projects || []).map((p) => (p.id === editingProject.id ? finalProject : p));
     } else {
-      updatedProjects = [finalProject, ...(portfolio.projects || [])];
+      updatedProjects = [finalProject, ...(basePortfolio.projects || [])];
     }
 
     // Auto-register category if new
-    const currentCats = portfolio.projectCategories || [];
+    const currentCats = basePortfolio.projectCategories || [];
     const updatedCats = currentCats.includes(effectiveCategory) ? currentCats : [...currentCats, effectiveCategory];
 
     const newPortfolio: PortfolioData = {
-      ...portfolio,
+      ...basePortfolio,
       projectCategories: updatedCats,
       projects: updatedProjects,
     };
 
     setPortfolio(newPortfolio);
+    portfolioRef.current = newPortfolio;
     setIsProjectModalOpen(false);
     await saveInstantly(newPortfolio, editingProject ? "Project updated successfully!" : "New project published!");
   };
 
   const handleDeleteProject = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
-    const updatedProjects = (portfolio.projects || []).filter((p) => p.id !== id);
+    const basePortfolio = portfolioRef.current || portfolio;
+    const updatedProjects = (basePortfolio.projects || []).filter((p) => p.id !== id);
     const newPortfolio: PortfolioData = {
-      ...portfolio,
+      ...basePortfolio,
       projects: updatedProjects,
     };
     setPortfolio(newPortfolio);
+    portfolioRef.current = newPortfolio;
     await saveInstantly(newPortfolio, "Project deleted.");
   };
 
@@ -1121,7 +1191,8 @@ export default function AdminPage() {
       category: effectiveCategory,
     };
 
-    const currentCerts = portfolio.certificates || [];
+    const basePortfolio = portfolioRef.current || portfolio;
+    const currentCerts = basePortfolio.certificates || [];
     let updatedCerts: Certificate[];
     if (editingCert) {
       updatedCerts = currentCerts.map((c) => (c.id === editingCert.id ? finalCert : c));
@@ -1130,31 +1201,34 @@ export default function AdminPage() {
     }
 
     // Auto-register category ONLY if user typed a new custom category
-    let updatedCats = portfolio.certificateCategories || [];
+    let updatedCats = basePortfolio.certificateCategories || [];
     if (isCustomCat && customCertCat.trim() && !updatedCats.includes(customCertCat.trim())) {
       updatedCats = [...updatedCats, customCertCat.trim()];
     }
 
     const newPortfolio: PortfolioData = {
-      ...portfolio,
+      ...basePortfolio,
       certificateCategories: updatedCats,
       certificates: updatedCerts,
     };
 
     setPortfolio(newPortfolio);
+    portfolioRef.current = newPortfolio;
     setIsCertModalOpen(false);
     await saveInstantly(newPortfolio, editingCert ? "Certificate updated!" : "Certificate added!");
   };
 
   const handleDeleteCert = async (id: string) => {
     if (!confirm("Are you sure you want to delete this certificate?")) return;
-    const currentCerts = portfolio.certificates || [];
+    const basePortfolio = portfolioRef.current || portfolio;
+    const currentCerts = basePortfolio.certificates || [];
     const updatedCerts = currentCerts.filter((c) => c.id !== id);
     const newPortfolio: PortfolioData = {
-      ...portfolio,
+      ...basePortfolio,
       certificates: updatedCerts,
     };
     setPortfolio(newPortfolio);
+    portfolioRef.current = newPortfolio;
     await saveInstantly(newPortfolio, "Certificate deleted.");
   };
 
@@ -1189,7 +1263,8 @@ export default function AdminPage() {
       return;
     }
 
-    const currentList = portfolio.laurelItems || [];
+    const basePortfolio = portfolioRef.current || portfolio;
+    const currentList = basePortfolio.laurelItems || [];
     let updatedList: LaurelItem[];
     if (editingLaurel) {
       updatedList = currentList.map((item) => (item.id === editingLaurel.id ? laurelForm : item));
@@ -1198,29 +1273,33 @@ export default function AdminPage() {
     }
 
     const newPortfolio: PortfolioData = {
-      ...portfolio,
+      ...basePortfolio,
       laurelItems: updatedList,
     };
 
     setPortfolio(newPortfolio);
+    portfolioRef.current = newPortfolio;
     setIsLaurelModalOpen(false);
     await saveInstantly(newPortfolio, editingLaurel ? "Item updated successfully!" : "Item added to Laurels!");
   };
 
   const handleDeleteLaurel = async (id: string) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
-    const currentList = portfolio.laurelItems || [];
+    const basePortfolio = portfolioRef.current || portfolio;
+    const currentList = basePortfolio.laurelItems || [];
     const updatedList = currentList.filter((item) => item.id !== id);
     const newPortfolio: PortfolioData = {
-      ...portfolio,
+      ...basePortfolio,
       laurelItems: updatedList,
     };
     setPortfolio(newPortfolio);
+    portfolioRef.current = newPortfolio;
     await saveInstantly(newPortfolio, "Item removed.");
   };
 
   const handleToggleLaurelVisibility = async (id: string) => {
-    const currentList = portfolio.laurelItems || [];
+    const basePortfolio = portfolioRef.current || portfolio;
+    const currentList = basePortfolio.laurelItems || [];
     const updatedList = currentList.map((item) => {
       if (item.id === id) {
         const nextState = item.isVisible === false ? true : false;
@@ -1230,24 +1309,27 @@ export default function AdminPage() {
     });
 
     const newPortfolio: PortfolioData = {
-      ...portfolio,
+      ...basePortfolio,
       laurelItems: updatedList,
     };
     setPortfolio(newPortfolio);
+    portfolioRef.current = newPortfolio;
     await saveInstantly(newPortfolio, "Item visibility updated!");
   };
 
   const handleToggleLaurelsSection = async () => {
-    const currentState = portfolio.personal.showLaurelsSection !== false;
+    const basePortfolio = portfolioRef.current || portfolio;
+    const currentState = basePortfolio.personal.showLaurelsSection !== false;
     const newPersonal = {
-      ...portfolio.personal,
+      ...basePortfolio.personal,
       showLaurelsSection: !currentState,
     };
     const newPortfolio: PortfolioData = {
-      ...portfolio,
+      ...basePortfolio,
       personal: newPersonal,
     };
     setPortfolio(newPortfolio);
+    portfolioRef.current = newPortfolio;
     await saveInstantly(newPortfolio, !currentState ? "Laurels & Research section visible on main site" : "Laurels & Research section hidden from main site");
   };
 
@@ -1678,7 +1760,7 @@ export default function AdminPage() {
           </div>
 
           {/* Actions Right */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <Link
               href="/"
               target="_blank"
@@ -1687,6 +1769,33 @@ export default function AdminPage() {
               <span>Preview</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
+
+            <button
+              type="button"
+              onClick={handleExportStore}
+              title="Download portfolio-store.json backup"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white hover:bg-stone-50 font-mono text-xs font-bold text-stone-700 hover:text-black transition-all cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export</span>
+            </button>
+
+            <label
+              title="Import portfolio-store.json backup"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white hover:bg-stone-50 font-mono text-xs font-bold text-stone-700 hover:text-black transition-all cursor-pointer"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>Import</span>
+              <input
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleImportStore(f);
+                }}
+              />
+            </label>
 
             <button
               onClick={handleSaveAll}

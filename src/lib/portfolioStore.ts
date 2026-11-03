@@ -24,47 +24,55 @@ let memoryPortfolioCache: PortfolioData | null = null;
 let memoryMessagesCache: ContactMessage[] | null = null;
 
 export function getStoredPortfolioData(): PortfolioData {
-  // 1. Check serverless /tmp first (where runtime edits are written)
+  let tmpData: PortfolioData | null = null;
   try {
     if (fs.existsSync(TMP_STORE_PATH)) {
       const raw = fs.readFileSync(TMP_STORE_PATH, "utf8");
       const parsed = JSON.parse(raw);
       if (parsed && parsed.personal) {
-        if (fs.existsSync(STORE_PATH)) {
-          const tmpMtime = fs.statSync(TMP_STORE_PATH).mtimeMs;
-          const storeMtime = fs.statSync(STORE_PATH).mtimeMs;
-          if (tmpMtime >= storeMtime) {
-            memoryPortfolioCache = parsed;
-            return parsed;
-          }
-        } else {
-          memoryPortfolioCache = parsed;
-          return parsed;
-        }
+        tmpData = parsed;
       }
     }
   } catch {}
 
-  // 2. Read from local src/data/portfolio-store.json on disk
+  let diskData: PortfolioData | null = null;
   try {
     if (fs.existsSync(STORE_PATH)) {
       const raw = fs.readFileSync(STORE_PATH, "utf8");
       const parsed = JSON.parse(raw);
       if (parsed && parsed.personal) {
-        memoryPortfolioCache = parsed;
-        return parsed;
+        diskData = parsed;
       }
     }
   } catch (err) {
     console.error("Error reading portfolio-store.json:", err);
   }
 
-  // 3. Fallback to in-memory cache if available
+  const tmpTime = (tmpData as any)?._lastSavedAt || 0;
+  const diskTime = (diskData as any)?._lastSavedAt || 0;
+
+  if (tmpData && diskData) {
+    const chosen = tmpTime >= diskTime ? tmpData : diskData;
+    memoryPortfolioCache = chosen;
+    return chosen;
+  }
+
+  if (tmpData) {
+    memoryPortfolioCache = tmpData;
+    return tmpData;
+  }
+
+  if (diskData) {
+    memoryPortfolioCache = diskData;
+    return diskData;
+  }
+
+  // Fallback to in-memory cache if available
   if (memoryPortfolioCache) {
     return memoryPortfolioCache;
   }
 
-  // 4. Fallback to default portfolioData
+  // Fallback to default portfolioData
   memoryPortfolioCache = portfolioData;
   return portfolioData;
 }
