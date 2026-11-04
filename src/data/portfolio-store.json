@@ -281,43 +281,50 @@
       "dayIndex": 0,
       "dayName": "Sunday",
       "persona": "The Philosopher",
-      "quote": "Teach machines to learn. Never stop learning yourself."
+      "quote": "Teach machines to learn. Never stop learning yourself.",
+      "personaColor": "#8b5cf6"
     },
     {
       "dayIndex": 1,
       "dayName": "Monday",
       "persona": "The Dreamer",
-      "quote": "Every great invention begins with an unreasonable idea."
+      "quote": "Every great invention begins with an unreasonable idea.",
+      "personaColor": "#a855f7"
     },
     {
       "dayIndex": 2,
       "dayName": "Tuesday",
       "persona": "The Builder",
-      "quote": "Dreams don't compile themselves. Start building."
+      "quote": "Dreams don't compile themselves. Start building.",
+      "personaColor": "#f97316"
     },
     {
       "dayIndex": 3,
       "dayName": "Wednesday",
       "persona": "The Thinker",
-      "quote": "Somewhere between logic and imagination, I build."
+      "quote": "Somewhere between logic and imagination, I build.",
+      "personaColor": "#06b6d4"
     },
     {
       "dayIndex": 4,
       "dayName": "Thursday",
       "persona": "The Explorer",
-      "quote": "Stay curious. The universe has more bugs than features."
+      "quote": "Stay curious. The universe has more bugs than features.",
+      "personaColor": "#10b981"
     },
     {
       "dayIndex": 5,
       "dayName": "Friday",
       "persona": "The Creator",
-      "quote": "Code is how I turn 'what if' into 'what's next'."
+      "quote": "Code is how I turn 'what if' into 'what's next'.",
+      "personaColor": "#ec4899"
     },
     {
       "dayIndex": 6,
       "dayName": "Saturday",
       "persona": "The Rebel",
-      "quote": "Why follow the blueprint when you can invent one?"
+      "quote": "Why follow the blueprint when you can invent one?",
+      "personaColor": "#eab308"
     }
   ],
   "laurelItems": [],

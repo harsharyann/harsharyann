@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useSyncExternalStore } from "react"
 import { usePortfolio } from "@/context/PortfolioContext"
+import { resolveDailyThoughtColor } from "@/data/portfolioData"
 
 export interface SparkQuote {
   dayIndex: number // 0 = Sun, 1 = Mon, ..., 6 = Sat
@@ -240,6 +241,12 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
   const activeHeader = personal?.coverDailyThoughtHeader?.trim() || "A LITTLE THOUGHT FOR TODAY"
   const activeSignature = personal?.coverDailyThoughtSignature?.trim() || "— Harsh’s Daily Thoughts"
 
+  // Unified active color: Follows the exact color of the active persona (The Thinker / The Creator / etc.)
+  const activeColor = resolveDailyThoughtColor(
+    currentWeekday,
+    todayCustom?.personaColor || personal?.coverPersonaColor
+  )
+
   const displayText = !mounted
     ? activeQuote
     : reducedMotion
@@ -288,7 +295,7 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
             particleCount: 22,
             spread: 46,
             origin: { y: 0.82 },
-            colors: [todaySpark.accentColor, "#facc15", "#38bdf8", "#f472b6", "#a855f7"],
+            colors: [activeColor, "#facc15", "#38bdf8", "#f472b6", "#a855f7"],
             disableForReducedMotion: true,
           })
         } catch {
@@ -298,7 +305,7 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
     } catch {
       // clipboard access error fallback
     }
-  }, [activeQuote, activeSignature, activePersona, todaySpark.dayName, todaySpark.accentColor, reducedMotion])
+  }, [activeQuote, activeSignature, activePersona, todaySpark.dayName, activeColor, reducedMotion])
 
   return (
     <section
@@ -312,9 +319,9 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
         suppressHydrationWarning
         style={
           {
-            "--spark-accent": todayCustom?.personaColor || personal?.coverPersonaColor || todaySpark.accentColor,
-            "--spark-border": isDark ? todaySpark.borderDark : todaySpark.borderLight,
-            "--spark-shadow": isDark ? todaySpark.shadowDark : todaySpark.shadowLight,
+            "--spark-accent": activeColor,
+            "--spark-border": isDark ? `${activeColor}80` : activeColor,
+            "--spark-shadow": isDark ? `${activeColor}50` : `${activeColor}80`,
           } as React.CSSProperties
         }
       >
@@ -348,27 +355,22 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
         {/* Heading & Persona Header Row */}
         <div className="daily-spark-heading-row">
           <div className="daily-spark-heading-group">
-            <span className="daily-spark-twinkle-icon" aria-hidden="true">
+            <span className="daily-spark-twinkle-icon" style={{ color: activeColor }} aria-hidden="true">
               ✦
             </span>
             <h3 className="daily-spark-heading">
               {activeHeader}
             </h3>
             <span className="daily-spark-sparkle-mini" aria-hidden="true">
-              <SparkleIcon className="w-3.5 h-3.5" color={todaySpark.accentColor} />
+              <SparkleIcon className="w-3.5 h-3.5" color={activeColor} />
             </span>
           </div>
 
-          {/* Persona Tag (Supports Custom Persona Pill Color from Admin Panel) */}
+          {/* Persona Tag (Follows exact active persona color) */}
           {(() => {
-            const customPersonaColor = todayCustom?.personaColor || personal?.coverPersonaColor;
-            const personaBg = customPersonaColor
-              ? (isDark ? `${customPersonaColor}28` : `${customPersonaColor}15`)
-              : (isDark ? todaySpark.bgDark : todaySpark.bgLight);
-            const personaTextColor = customPersonaColor
-              ? (isDark ? (customPersonaColor === "#000000" ? "#ffffff" : customPersonaColor) : customPersonaColor)
-              : (isDark ? todaySpark.borderDark : todaySpark.borderLight);
-            const personaBorderColor = customPersonaColor || (isDark ? todaySpark.borderDark : "#000000");
+            const personaBg = isDark ? `${activeColor}28` : `${activeColor}15`
+            const personaTextColor = isDark ? (activeColor === "#000000" ? "#ffffff" : activeColor) : activeColor
+            const personaBorderColor = activeColor
 
             return (
               <div
@@ -377,10 +379,10 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
                   backgroundColor: personaBg,
                   color: personaTextColor,
                   borderColor: personaBorderColor,
-                  boxShadow: customPersonaColor ? (isDark ? `2px 2px 0 ${customPersonaColor}60` : `2px 2px 0 #000`) : undefined,
+                  boxShadow: isDark ? `2px 2px 0 ${activeColor}60` : `2px 2px 0 #000`,
                 }}
               >
-                <span className="daily-spark-persona-spark" style={{ color: personaTextColor }} aria-hidden="true">✦</span>
+                <span className="daily-spark-persona-spark" style={{ color: activeColor }} aria-hidden="true">✦</span>
                 <span className="daily-spark-persona-text">{activePersona}</span>
               </div>
             );
@@ -389,31 +391,35 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
 
         {/* Main Quote Typography */}
         <div className="daily-spark-quote-box" aria-live="polite">
-          <span className="daily-spark-quote-mark" aria-hidden="true">
+          <span className="daily-spark-quote-mark" style={{ color: activeColor }} aria-hidden="true">
             “
           </span>
           <p className="daily-spark-quote-text">
             {displayText}
             {isTyping && (
-              <span className="daily-spark-cursor" aria-hidden="true">
+              <span className="daily-spark-cursor" style={{ color: activeColor }} aria-hidden="true">
                 |
               </span>
             )}
-            {!isTyping && <span className="daily-spark-quote-endmark" aria-hidden="true">”</span>}
+            {!isTyping && (
+              <span className="daily-spark-quote-endmark" style={{ color: activeColor }} aria-hidden="true">
+                ”
+              </span>
+            )}
           </p>
         </div>
 
         {/* Handwritten Subtle Signature */}
         <div className="daily-spark-footer-row">
           <div className="daily-spark-accent-doodle" aria-hidden="true">
-            {todaySpark.doodleKind === "bolt" && <BoltIcon className="w-4 h-4" color={todaySpark.accentColor} />}
-            {todaySpark.doodleKind === "star" && <StarIcon className="w-4 h-4" color={todaySpark.accentColor} />}
-            {todaySpark.doodleKind === "sparkle" && <SparkleIcon className="w-4 h-4" color={todaySpark.accentColor} />}
+            {todaySpark.doodleKind === "bolt" && <BoltIcon className="w-4 h-4" color={activeColor} />}
+            {todaySpark.doodleKind === "star" && <StarIcon className="w-4 h-4" color={activeColor} />}
+            {todaySpark.doodleKind === "sparkle" && <SparkleIcon className="w-4 h-4" color={activeColor} />}
           </div>
 
           <div className="daily-spark-signature">
             <span>{activeSignature}</span>
-            <span className="daily-spark-sig-star" aria-hidden="true">✦</span>
+            <span className="daily-spark-sig-star" style={{ color: activeColor }} aria-hidden="true">✦</span>
           </div>
         </div>
       </div>

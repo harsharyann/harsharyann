@@ -1900,10 +1900,18 @@ export default function AdminPage() {
       }
       return item;
     });
-    setPortfolio((prev) => ({
-      ...prev,
-      dailyThoughts: updated,
-    }));
+    setPortfolio((prev) => {
+      const nextPort = {
+        ...prev,
+        dailyThoughts: updated,
+        personal: {
+          ...prev.personal,
+          ...(field === "personaColor" ? { coverPersonaColor: value } : {}),
+        },
+      };
+      portfolioRef.current = nextPort;
+      return nextPort;
+    });
   };
 
   const resetDailyThought = (dayIndex: number) => {
@@ -1915,10 +1923,18 @@ export default function AdminPage() {
       }
       return item;
     });
-    setPortfolio((prev) => ({
-      ...prev,
-      dailyThoughts: updated,
-    }));
+    setPortfolio((prev) => {
+      const nextPort = {
+        ...prev,
+        dailyThoughts: updated,
+        personal: {
+          ...prev.personal,
+          ...(defaultItem.personaColor ? { coverPersonaColor: defaultItem.personaColor } : {}),
+        },
+      };
+      portfolioRef.current = nextPort;
+      return nextPort;
+    });
   };
 
   const sidebarNavGroups = [
@@ -4362,10 +4378,13 @@ export default function AdminPage() {
                                             key={pColor.color}
                                             type="button"
                                             onClick={() => {
-                                              updateDailyThought(selectedThoughtDay, "personaColor", pColor.color);
+                                              const updated = activeThoughtsList.map((item) =>
+                                                item.dayIndex === selectedThoughtDay ? { ...item, personaColor: pColor.color } : item
+                                              );
                                               const base = portfolioRef.current || portfolio;
                                               const nextPort = {
                                                 ...base,
+                                                dailyThoughts: updated,
                                                 personal: { ...base.personal, coverPersonaColor: pColor.color },
                                               };
                                               setPortfolio(nextPort);
@@ -4393,10 +4412,13 @@ export default function AdminPage() {
                                       <button
                                         type="button"
                                         onClick={() => {
-                                          updateDailyThought(selectedThoughtDay, "personaColor", defaultDayColor);
+                                          const updated = activeThoughtsList.map((item) =>
+                                            item.dayIndex === selectedThoughtDay ? { ...item, personaColor: defaultDayColor } : item
+                                          );
                                           const base = portfolioRef.current || portfolio;
                                           const nextPort = {
                                             ...base,
+                                            dailyThoughts: updated,
                                             personal: { ...base.personal, coverPersonaColor: defaultDayColor },
                                           };
                                           setPortfolio(nextPort);
@@ -4417,10 +4439,13 @@ export default function AdminPage() {
                                           value={activePersonaColor || defaultDayColor}
                                           onChange={(e) => {
                                             const val = e.target.value;
-                                            updateDailyThought(selectedThoughtDay, "personaColor", val);
+                                            const updated = activeThoughtsList.map((item) =>
+                                              item.dayIndex === selectedThoughtDay ? { ...item, personaColor: val } : item
+                                            );
                                             const base = portfolioRef.current || portfolio;
                                             const nextPort = {
                                               ...base,
+                                              dailyThoughts: updated,
                                               personal: { ...base.personal, coverPersonaColor: val },
                                             };
                                             setPortfolio(nextPort);
