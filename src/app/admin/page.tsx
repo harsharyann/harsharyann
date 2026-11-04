@@ -6461,6 +6461,31 @@ export default function AdminPage() {
 
                     <button
                       type="button"
+                      onClick={async () => {
+                        const base = portfolioRef.current || portfolio;
+                        const list = [...(base.experiences || [])];
+                        const isCurr = (e: any) => Boolean(e.isCurrent || (e.period || "").toLowerCase().includes("present") || (e.period || "").toLowerCase().includes("current"));
+                        const parseYear = (p?: string) => {
+                          const m = p?.match(/\b(20\d{2})\b/g);
+                          return m && m.length > 0 ? Math.max(...m.map(Number)) : 0;
+                        };
+                        const currList = list.filter(isCurr).sort((a, b) => parseYear(b.period) - parseYear(a.period));
+                        const pastList = list.filter((e) => !isCurr(e)).sort((a, b) => parseYear(b.period) - parseYear(a.period));
+                        const sorted = [...currList, ...pastList];
+                        const nextPort = { ...base, experiences: sorted };
+                        setPortfolio(nextPort);
+                        portfolioRef.current = nextPort;
+                        await saveInstantly(nextPort, "✅ Experiences reordered: Current roles placed at top, past roles below!");
+                      }}
+                      className="px-3 py-1.5 rounded-xl border border-stone-300 bg-stone-100 hover:bg-stone-200 text-stone-700 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs transition-all active:translate-y-0.5"
+                      title="Current roles ko automatically top par aur past roles ko niche arrange karein"
+                    >
+                      <ArrowUp className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Current on Top</span>
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={handleAddExperience}
                       className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs active:translate-y-0.5"
                     >
