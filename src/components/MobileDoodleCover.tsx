@@ -84,8 +84,9 @@ export function MobileDoodleCover() {
     setHasMoved(false);
   };
 
-  // Resolve photo source
-  const photoSrc = formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl);
+  // Resolve mobile photo source (Dedicated Phone Cover Photo with fallback)
+  const mobilePhotoRaw = portfolio?.personal?.mobilePhotoUrl || portfolio?.personal?.coverPhotoUrl;
+  const photoSrc = formatGoogleDriveImageUrl(mobilePhotoRaw);
   const [displayPhotoSrc, setDisplayPhotoSrc] = useState<string>(photoSrc);
 
   useEffect(() => {
@@ -204,9 +205,9 @@ export function MobileDoodleCover() {
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
-              transform: `scale(${portfolio?.personal?.coverPhotoZoom ?? 1})`,
-              transformOrigin: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
+              objectPosition: `${portfolio?.personal?.mobilePhotoPositionX ?? portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.mobilePhotoPositionY ?? portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
+              transform: `scale(${portfolio?.personal?.mobilePhotoZoom ?? portfolio?.personal?.coverPhotoZoom ?? 1})`,
+              transformOrigin: `${portfolio?.personal?.mobilePhotoPositionX ?? portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.mobilePhotoPositionY ?? portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
             }}
           />
         </motion.div>

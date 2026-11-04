@@ -722,8 +722,9 @@ export function DoodleCrewCover({
   const word = (portfolio?.personal?.name || portfolio?.personal?.desktopWordmark || wordmark).toUpperCase()
   const chars = React.useMemo(() => Array.from(word), [word])
 
-  // Dynamic photo and photo-extracted palette synchronization
-  const photoSrc = formatGoogleDriveImageUrl(portfolio?.personal?.coverPhotoUrl);
+  // Dynamic photo and photo-extracted palette synchronization (PC / Desktop Cover Photo)
+  const desktopPhotoRaw = portfolio?.personal?.desktopPhotoUrl || portfolio?.personal?.coverPhotoUrl;
+  const photoSrc = formatGoogleDriveImageUrl(desktopPhotoRaw);
   const [displayPhotoSrc, setDisplayPhotoSrc] = React.useState<string>(photoSrc);
   const [photoPalette, setPhotoPalette] = React.useState<PhotoPalette>(DEFAULT_PHOTO_PALETTE);
 
@@ -1315,9 +1316,9 @@ export function DoodleCrewCover({
                   sizes="(max-width: 1024px) 300px, 340px"
                   className="object-cover group-hover:scale-105 transition-transform duration-500 select-none"
                   style={{
-                    objectPosition: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
-                    transform: `scale(${portfolio?.personal?.coverPhotoZoom ?? 1})`,
-                    transformOrigin: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
+                    objectPosition: `${portfolio?.personal?.desktopPhotoPositionX ?? portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.desktopPhotoPositionY ?? portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
+                    transform: `scale(${portfolio?.personal?.desktopPhotoZoom ?? portfolio?.personal?.coverPhotoZoom ?? 1})`,
+                    transformOrigin: `${portfolio?.personal?.desktopPhotoPositionX ?? portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.desktopPhotoPositionY ?? portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
                   }}
                 />
 

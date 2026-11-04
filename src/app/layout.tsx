@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const role = (personal.role || personal.currentWork || "AI & Data Science Developer").trim();
   const headline = (personal.headline || personal.bio || "Exploring Data Science, Machine Learning Foundations & Scientific Computing.").slice(0, 160).trim();
   const college = personal.college?.trim() || "IIT Madras";
-  const photoUrl = personal.aboutPhotoUrl || personal.coverPhotoUrl || "/app-logo.png";
+  const photoUrl = personal.desktopPhotoUrl || personal.aboutPhotoUrl || personal.coverPhotoUrl || "/app-logo.png";
 
   // Dynamic SEO keywords extracted from user's current projects, skills & technologies
   const skillNames = (data.skills || []).flatMap((g) => g.items || []);
@@ -142,7 +142,7 @@ export default function RootLayout({
   const college = personal.college?.trim() || "IIT Madras";
   const bio = personal.bio || personal.headline || "Machine Learning & Scientific Computing Developer.";
   const headline = personal.headline || bio;
-  const photoUrl = personal.aboutPhotoUrl || personal.coverPhotoUrl || `${siteUrl}/app-logo.png`;
+  const photoUrl = personal.desktopPhotoUrl || personal.aboutPhotoUrl || personal.coverPhotoUrl || `${siteUrl}/app-logo.png`;
 
   const allSkills = (initialPortfolioData.skills || []).flatMap((g) => g.items || []);
   const sameAsList = Object.values(initialPortfolioData.socialLinks || {}).filter(

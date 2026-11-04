@@ -160,13 +160,21 @@ export interface PortfolioData {
     email: string;
     resumeUrl: string;
     aboutPhotoUrl?: string;
-    coverPhotoUrl?: string;
     aboutPhotoZoom?: number;
     aboutPhotoPositionX?: number;
     aboutPhotoPositionY?: number;
+    coverPhotoUrl?: string;
     coverPhotoZoom?: number;
     coverPhotoPositionX?: number;
     coverPhotoPositionY?: number;
+    desktopPhotoUrl?: string;
+    desktopPhotoZoom?: number;
+    desktopPhotoPositionX?: number;
+    desktopPhotoPositionY?: number;
+    mobilePhotoUrl?: string;
+    mobilePhotoZoom?: number;
+    mobilePhotoPositionX?: number;
+    mobilePhotoPositionY?: number;
     desktopWordmark?: string;
     desktopRole?: string;
     desktopHeadline?: string;
@@ -303,6 +311,14 @@ export const portfolioData: PortfolioData = {
     coverPhotoZoom: 1,
     coverPhotoPositionX: 50,
     coverPhotoPositionY: 20,
+    desktopPhotoUrl: "https://drive.google.com/file/d/1xLUZJagj-wfrrB2I3KAg-OLb95feTxHA/view?usp=sharing",
+    desktopPhotoZoom: 1,
+    desktopPhotoPositionX: 50,
+    desktopPhotoPositionY: 20,
+    mobilePhotoUrl: "https://drive.google.com/file/d/1xLUZJagj-wfrrB2I3KAg-OLb95feTxHA/view?usp=sharing",
+    mobilePhotoZoom: 1,
+    mobilePhotoPositionX: 50,
+    mobilePhotoPositionY: 20,
     desktopWordmark: "HARSH ARYAN",
     desktopRole: "Teaching Assistant • IIT Madras",
     desktopHeadline: "Exploring Data Science, Machine Learning Foundations & Scientific Computing.",

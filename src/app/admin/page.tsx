@@ -3752,40 +3752,53 @@ export default function AdminPage() {
                 ======================================================== */}
                 {coverSubView === "desktop" && (
                   <div className="space-y-6">
-                    {/* 1. Desktop Photo Frame Settings */}
+                    {/* 1. Desktop Photo Frame Settings (Dedicated for PC / Desktop Cover) */}
                     <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
-                      <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
-                        <ImageIcon className="w-4 h-4 text-amber-500" />
-                        <h3 className="font-mono text-xs font-black uppercase text-stone-900">
-                          1. Studio Photo Frame (Left Column)
-                        </h3>
+                      <div className="flex items-center justify-between pb-3 border-b border-stone-100 flex-wrap gap-2">
+                        <div className="flex items-center gap-2">
+                          <ImageIcon className="w-4 h-4 text-amber-500" />
+                          <h3 className="font-mono text-xs font-black uppercase text-stone-900">
+                            1. Desktop Studio Photo Frame (PC Screen)
+                          </h3>
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-mono text-[10px] font-bold">
+                          🖥️ PC / Laptop Only
+                        </span>
                       </div>
 
                       {/* Photo URL */}
                       <div>
                         <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Cover Photo Link (Google Drive / Direct URL):
+                          Desktop Cover Photo Link (Google Drive / Direct URL):
                         </label>
                         <div className="flex flex-col sm:flex-row gap-2">
                           <input
                             type="text"
                             placeholder="e.g. https://drive.google.com/file/d/.../view"
-                            value={portfolio.personal.coverPhotoUrl || ""}
+                            value={portfolio.personal.desktopPhotoUrl || portfolio.personal.coverPhotoUrl || ""}
                             onChange={(e) =>
                               setPortfolio((prev) => ({
                                 ...prev,
-                                personal: { ...prev.personal, coverPhotoUrl: e.target.value },
+                                personal: {
+                                  ...prev.personal,
+                                  desktopPhotoUrl: e.target.value,
+                                  coverPhotoUrl: e.target.value,
+                                },
                               }))
                             }
                             className="flex-1 px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
                           />
-                          {portfolio.personal.coverPhotoUrl && (
+                          {(portfolio.personal.desktopPhotoUrl || portfolio.personal.coverPhotoUrl) && (
                             <button
                               type="button"
                               onClick={() =>
                                 setPortfolio((prev) => ({
                                   ...prev,
-                                  personal: { ...prev.personal, coverPhotoUrl: "" },
+                                  personal: {
+                                    ...prev.personal,
+                                    desktopPhotoUrl: "",
+                                    coverPhotoUrl: "",
+                                  },
                                 }))
                               }
                               className="px-3 py-2 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 font-mono text-xs cursor-pointer"
@@ -3797,11 +3810,11 @@ export default function AdminPage() {
                       </div>
 
                       {/* Google Drive Status */}
-                      {isGoogleDriveUrl(portfolio.personal.coverPhotoUrl) && (
+                      {isGoogleDriveUrl(portfolio.personal.desktopPhotoUrl || portfolio.personal.coverPhotoUrl) && (
                         <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
                           <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                           <div className="text-[11px]">
-                            Google Drive link verified: <span className="font-bold">{extractGoogleDriveId(portfolio.personal.coverPhotoUrl)}</span>
+                            Google Drive link verified: <span className="font-bold">{extractGoogleDriveId(portfolio.personal.desktopPhotoUrl || portfolio.personal.coverPhotoUrl)}</span>
                           </div>
                         </div>
                       )}
@@ -3820,17 +3833,18 @@ export default function AdminPage() {
                               if (file) {
                                 try {
                                   setIsSaving(true);
-                                  setToastMessage("Optimizing image for cover frame...");
+                                  setToastMessage("Optimizing image for PC cover frame...");
                                   const compressed = await compressImageFile(file);
                                   const updated = {
                                     ...portfolio,
                                     personal: {
                                       ...portfolio.personal,
+                                      desktopPhotoUrl: compressed,
                                       coverPhotoUrl: compressed,
                                     },
                                   };
                                   setPortfolio(updated);
-                                  await saveInstantly(updated, "✅ Cover photo uploaded successfully!");
+                                  await saveInstantly(updated, "✅ Desktop cover photo uploaded successfully!");
                                 } catch (err) {
                                   alert("Failed to process image.");
                                 } finally {
@@ -3843,18 +3857,27 @@ export default function AdminPage() {
                       </div>
 
                       <PhotoFramingControls
-                        label="Cover Photo Framing (Zoom & Pan)"
-                        zoom={portfolio.personal.coverPhotoZoom ?? 1}
-                        positionX={portfolio.personal.coverPhotoPositionX ?? 50}
-                        positionY={portfolio.personal.coverPhotoPositionY ?? 20}
+                        label="Desktop Cover Photo Framing (Zoom & Pan)"
+                        zoom={portfolio.personal.desktopPhotoZoom ?? portfolio.personal.coverPhotoZoom ?? 1}
+                        positionX={portfolio.personal.desktopPhotoPositionX ?? portfolio.personal.coverPhotoPositionX ?? 50}
+                        positionY={portfolio.personal.desktopPhotoPositionY ?? portfolio.personal.coverPhotoPositionY ?? 20}
                         onChange={(updates) =>
                           setPortfolio((prev) => ({
                             ...prev,
                             personal: {
                               ...prev.personal,
-                              ...(updates.zoom !== undefined && { coverPhotoZoom: updates.zoom }),
-                              ...(updates.positionX !== undefined && { coverPhotoPositionX: updates.positionX }),
-                              ...(updates.positionY !== undefined && { coverPhotoPositionY: updates.positionY }),
+                              ...(updates.zoom !== undefined && {
+                                desktopPhotoZoom: updates.zoom,
+                                coverPhotoZoom: updates.zoom,
+                              }),
+                              ...(updates.positionX !== undefined && {
+                                desktopPhotoPositionX: updates.positionX,
+                                coverPhotoPositionX: updates.positionX,
+                              }),
+                              ...(updates.positionY !== undefined && {
+                                desktopPhotoPositionY: updates.positionY,
+                                coverPhotoPositionY: updates.positionY,
+                              }),
                             },
                           }))
                         }
@@ -3863,6 +3886,9 @@ export default function AdminPage() {
                             ...prev,
                             personal: {
                               ...prev.personal,
+                              desktopPhotoZoom: 1,
+                              desktopPhotoPositionX: 50,
+                              desktopPhotoPositionY: 20,
                               coverPhotoZoom: 1,
                               coverPhotoPositionX: 50,
                               coverPhotoPositionY: 20,
@@ -4682,39 +4708,49 @@ export default function AdminPage() {
                 ======================================================== */}
                 {coverSubView === "mobile" && (
                   <div className="space-y-6">
-                    {/* 1. Mobile Photo Manager */}
+                    {/* 1. Mobile Photo Manager (Dedicated for Smartphone Cover) */}
                     <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4">
-                      <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
-                        <ImageIcon className="w-4 h-4 text-amber-500" />
-                        <h3 className="font-mono text-xs font-black uppercase text-stone-900">
-                          1. Mobile Portrait Photo
-                        </h3>
+                      <div className="flex items-center justify-between pb-3 border-b border-stone-100 flex-wrap gap-2">
+                        <div className="flex items-center gap-2">
+                          <ImageIcon className="w-4 h-4 text-amber-500" />
+                          <h3 className="font-mono text-xs font-black uppercase text-stone-900">
+                            1. Mobile Portrait Photo (Phone Cover)
+                          </h3>
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[10px] font-bold">
+                          📱 Smartphone Only
+                        </span>
                       </div>
 
                       <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Mobile Photo Link (Google Drive ya Direct Link):
-                        </label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block font-mono text-xs font-bold text-stone-700">
+                            Mobile Photo Link (Google Drive ya Direct Link):
+                          </label>
+                          <span className="text-[10px] font-mono text-stone-400">
+                            (PC aur About page se bilkul alag photo laga sakte hain)
+                          </span>
+                        </div>
                         <div className="flex flex-col sm:flex-row gap-2">
                           <input
                             type="text"
                             placeholder="e.g. https://drive.google.com/file/d/.../view"
-                            value={portfolio.personal.coverPhotoUrl || ""}
+                            value={portfolio.personal.mobilePhotoUrl || portfolio.personal.coverPhotoUrl || ""}
                             onChange={(e) =>
                               setPortfolio((prev) => ({
                                 ...prev,
-                                personal: { ...prev.personal, coverPhotoUrl: e.target.value },
+                                personal: { ...prev.personal, mobilePhotoUrl: e.target.value },
                               }))
                             }
                             className="flex-1 px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
                           />
-                          {portfolio.personal.coverPhotoUrl && (
+                          {(portfolio.personal.mobilePhotoUrl || portfolio.personal.coverPhotoUrl) && (
                             <button
                               type="button"
                               onClick={() =>
                                 setPortfolio((prev) => ({
                                   ...prev,
-                                  personal: { ...prev.personal, coverPhotoUrl: "" },
+                                  personal: { ...prev.personal, mobilePhotoUrl: "" },
                                 }))
                               }
                               className="px-3 py-2 rounded-xl border border-stone-300 text-stone-600 hover:text-red-600 font-mono text-xs cursor-pointer"
@@ -4726,11 +4762,11 @@ export default function AdminPage() {
                       </div>
 
                       {/* Drive verified */}
-                      {isGoogleDriveUrl(portfolio.personal.coverPhotoUrl) && (
+                      {isGoogleDriveUrl(portfolio.personal.mobilePhotoUrl || portfolio.personal.coverPhotoUrl) && (
                         <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-xs flex items-start gap-2">
                           <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                           <div className="text-[11px]">
-                            Google Drive link verified: <span className="font-bold">{extractGoogleDriveId(portfolio.personal.coverPhotoUrl)}</span>
+                            Google Drive link verified: <span className="font-bold">{extractGoogleDriveId(portfolio.personal.mobilePhotoUrl || portfolio.personal.coverPhotoUrl)}</span>
                           </div>
                         </div>
                       )}
@@ -4738,7 +4774,7 @@ export default function AdminPage() {
                       <div className="flex flex-wrap items-center gap-2 pt-1">
                         <label className="px-3.5 py-1.5 rounded-xl border-2 border-dashed border-stone-400 hover:border-black bg-stone-50 hover:bg-white text-stone-700 hover:text-black font-mono text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
                           <ImageIcon className="w-3.5 h-3.5 text-stone-600" />
-                          <span>Select Image from Device</span>
+                          <span>Select Mobile Image from Device</span>
                           <input
                             type="file"
                             accept="image/*"
@@ -4752,7 +4788,7 @@ export default function AdminPage() {
                                   const compressed = await compressImageFile(file);
                                   const updated = {
                                     ...portfolio,
-                                    personal: { ...portfolio.personal, coverPhotoUrl: compressed },
+                                    personal: { ...portfolio.personal, mobilePhotoUrl: compressed },
                                   };
                                   setPortfolio(updated);
                                   await saveInstantly(updated, "✅ Mobile cover photo updated successfully!");
@@ -4768,17 +4804,17 @@ export default function AdminPage() {
                       </div>
                       <PhotoFramingControls
                         label="Mobile Cover Photo Framing (Zoom & Pan)"
-                        zoom={portfolio.personal.coverPhotoZoom ?? 1}
-                        positionX={portfolio.personal.coverPhotoPositionX ?? 50}
-                        positionY={portfolio.personal.coverPhotoPositionY ?? 20}
+                        zoom={portfolio.personal.mobilePhotoZoom ?? portfolio.personal.coverPhotoZoom ?? 1}
+                        positionX={portfolio.personal.mobilePhotoPositionX ?? portfolio.personal.coverPhotoPositionX ?? 50}
+                        positionY={portfolio.personal.mobilePhotoPositionY ?? portfolio.personal.coverPhotoPositionY ?? 20}
                         onChange={(updates) =>
                           setPortfolio((prev) => ({
                             ...prev,
                             personal: {
                               ...prev.personal,
-                              ...(updates.zoom !== undefined && { coverPhotoZoom: updates.zoom }),
-                              ...(updates.positionX !== undefined && { coverPhotoPositionX: updates.positionX }),
-                              ...(updates.positionY !== undefined && { coverPhotoPositionY: updates.positionY }),
+                              ...(updates.zoom !== undefined && { mobilePhotoZoom: updates.zoom }),
+                              ...(updates.positionX !== undefined && { mobilePhotoPositionX: updates.positionX }),
+                              ...(updates.positionY !== undefined && { mobilePhotoPositionY: updates.positionY }),
                             },
                           }))
                         }
@@ -4787,9 +4823,9 @@ export default function AdminPage() {
                             ...prev,
                             personal: {
                               ...prev.personal,
-                              coverPhotoZoom: 1,
-                              coverPhotoPositionX: 50,
-                              coverPhotoPositionY: 20,
+                              mobilePhotoZoom: 1,
+                              mobilePhotoPositionX: 50,
+                              mobilePhotoPositionY: 20,
                             },
                           }))
                         }
@@ -5055,13 +5091,13 @@ export default function AdminPage() {
                         <div className="relative rounded-2xl bg-white dark:bg-stone-900 border-2 border-black p-2 shadow-[3px_3px_0_#000] space-y-1.5">
                           <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden bg-stone-200 border border-black/30">
                             <img
-                              src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl)}
+                              src={formatGoogleDriveImageUrl(portfolio.personal.desktopPhotoUrl || portfolio.personal.coverPhotoUrl)}
                               alt="Cover Preview"
                               className="w-full h-full object-cover"
                               style={{
-                                objectPosition: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
-                                transform: `scale(${portfolio.personal.coverPhotoZoom ?? 1})`,
-                                transformOrigin: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                                objectPosition: `${portfolio.personal.desktopPhotoPositionX ?? portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.desktopPhotoPositionY ?? portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                                transform: `scale(${portfolio.personal.desktopPhotoZoom ?? portfolio.personal.coverPhotoZoom ?? 1})`,
+                                transformOrigin: `${portfolio.personal.desktopPhotoPositionX ?? portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.desktopPhotoPositionY ?? portfolio.personal.coverPhotoPositionY ?? 20}%`,
                               }}
                             />
                           </div>
@@ -5182,13 +5218,13 @@ export default function AdminPage() {
                         {/* 1. Background Portrait Photo with Comic Doodles */}
                         <div className="relative w-full h-[215px] shrink-0 overflow-hidden bg-stone-100">
                           <img
-                            src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl)}
+                            src={formatGoogleDriveImageUrl(portfolio.personal.mobilePhotoUrl || portfolio.personal.coverPhotoUrl)}
                             alt="Cover Mobile Preview"
                             className="absolute inset-0 w-full h-full object-cover"
                             style={{
-                              objectPosition: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
-                              transform: `scale(${portfolio.personal.coverPhotoZoom ?? 1})`,
-                              transformOrigin: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                              objectPosition: `${portfolio.personal.mobilePhotoPositionX ?? portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.mobilePhotoPositionY ?? portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                              transform: `scale(${portfolio.personal.mobilePhotoZoom ?? portfolio.personal.coverPhotoZoom ?? 1})`,
+                              transformOrigin: `${portfolio.personal.mobilePhotoPositionX ?? portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.mobilePhotoPositionY ?? portfolio.personal.coverPhotoPositionY ?? 20}%`,
                             }}
                           />
 
