@@ -385,7 +385,7 @@ export default function AdminPage() {
       }
     }
   }, [initialData]);
-  type AdminTab = "badges" | "sublines" | "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
+  type AdminTab = "sublines" | "cover" | "badges" | "about" | "experience" | "milestones" | "highlights" | "projects" | "certificates" | "skills" | "contact";
   const [activeTab, setActiveTab] = useState<AdminTab>("sublines");
   const [sublinesSectionFilter, setSublinesSectionFilter] = useState<"all" | "cover" | "about" | "projects" | "certificates" | "experience" | "contact">("all");
   const [expSkillsInputMap, setExpSkillsInputMap] = useState<Record<string, string>>({});
@@ -401,16 +401,7 @@ export default function AdminPage() {
     extractVibrantColor(photo, "#facc15").then(setCoverAccentColor);
   }, [portfolio.personal?.coverPhotoUrl]);
 
-  // Gracefully route any legacy highlights/milestones tab selection to the unified Profile & Bio tab
-  useEffect(() => {
-    if ((activeTab as string) === "highlights") {
-      setActiveTab("about");
-      setAboutSubView("benchmarks");
-    } else if ((activeTab as string) === "milestones") {
-      setActiveTab("about");
-      setAboutSubView("milestones");
-    }
-  }, [activeTab]);
+// Highlights & Milestones have their own dedicated top-level tabs now.
 
   // Category Management Inputs
   const [newProjectCatInput, setNewProjectCatInput] = useState("");
@@ -430,7 +421,8 @@ export default function AdminPage() {
     start: number;
     end: number;
   } | null>(null);
-  const [aboutSubView, setAboutSubView] = useState<"all" | "identity" | "bio" | "benchmarks" | "experience" | "milestones">("all");
+  const [aboutSubView, setAboutSubView] = useState<"all" | "identity" | "bio">("all");
+  const [expStationFilter, setExpStationFilter] = useState<"all" | "current" | "past">("all");
   const [contactSubTab, setContactSubTab] = useState<"all" | "copy" | "form" | "coordinates" | "footer" | "inquiries">("all");
   const [selectedThoughtDay, setSelectedThoughtDay] = useState<number>(0);
   const [todayWeekday, setTodayWeekday] = useState<number>(0);
@@ -1908,10 +1900,13 @@ export default function AdminPage() {
   };
 
   const navTabs = [
+    { id: "sublines", label: "Headlines & Sublines", title: "Master Section Sublines & Headings", desc: "Hero tagline, about subline, projects & certificates subtitles with live preview", icon: Type },
+    { id: "cover", label: "Cover Hero", title: "Cover Page Manager", desc: "Hero portrait, framing, wordmark, roles & cover buttons", icon: Sliders },
     { id: "badges", label: "⚡ Badges & Persona", title: "Role Badges & Persona Colors", desc: "Hide/unhide cover role badge & customize Persona and India colors", icon: Sparkles },
-    { id: "sublines", label: "Section Sublines", title: "Master Section Sublines & Headings", desc: "Hero tagline, about subline, projects & certificates subtitles with live preview", icon: Type },
-    { id: "cover", label: "Cover Hero", title: "Cover Page Manager", desc: "Hero portrait, wordmark, roles & cover buttons", icon: Sliders },
-    { id: "about", label: "Profile & Bio", title: "Profile, Bio & Dossier", desc: "All-in-one: Photo mount, statement, bio highlighter, benchmarks & roadmap", icon: User },
+    { id: "about", label: "Profile & Bio", title: "Profile & Bio Identity", desc: "Architectural photo mount, statement, bio highlighter, resume & socials", icon: User },
+    { id: "experience", label: "Work & Leadership", title: "Work & Leadership Station", desc: "Current roles, past milestones, deliverables & impact", icon: Briefcase, count: portfolio.experiences?.length || 0 },
+    { id: "milestones", label: "Development Trajectory", title: "Development Trajectory & Milestones", desc: "Phase 01, Phase 02 & Phase 03 roadmap milestones and strategic timeline", icon: Rocket, count: portfolio.milestones?.length || 0 },
+    { id: "highlights", label: "Benchmarks & Metrics", title: "Key Benchmarks & Impact Stats", desc: "Key numerical achievements, counters, and impact capsules", icon: Trophy, count: portfolio.quickStats?.length || 0 },
     { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderCode, count: portfolio.projects?.length || 0 },
     { id: "certificates", label: "Certificates", title: "Credentials & Laurels", desc: "Verified credentials, verification links & categories", icon: Award, count: portfolio.certificates?.length || 0 },
     { id: "skills", label: "Skills Arsenal", title: "Technical Skills Arsenal", desc: "Category groupings, badges, proficiency & skill tags", icon: Code2, count: portfolio.skills?.length || 0 },
@@ -2232,8 +2227,8 @@ export default function AdminPage() {
         {/* Content Container */}
         <main className="flex-1 p-4 sm:p-7 max-w-6xl w-full mx-auto space-y-8">
 
-        {/* ── UNMISSABLE HERO QUICK CONTROLS: ROLE BADGE (IMAGE 2) & PERSONA COLORS ── */}
-        {(activeTab === "badges" || activeTab === "sublines" || activeTab === "cover") && (
+        {/* ── TAB: ROLE BADGES & PERSONA COLORS ── */}
+        {activeTab === "badges" && (
           <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-amber-50/90 via-white to-purple-50/60 border-3 border-black shadow-[6px_6px_0_#000] space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b-2 border-black/10">
               <div className="flex items-center gap-3">
@@ -4809,20 +4804,9 @@ export default function AdminPage() {
             {/* Quick Sub-Section Switcher Tabs */}
             <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-stone-100 border border-stone-200">
               {[
-                { id: "all", label: "✦ All Sections", count: "5" },
+                { id: "all", label: "✦ All Profile & Bio", count: "2" },
                 { id: "identity", label: "🪪 Photo & Plaque", count: "Mount" },
                 { id: "bio", label: "✍️ Statement, Bio & Highlighter", count: "Colors" },
-                { id: "benchmarks", label: "⚡ Key Benchmarks", count: (portfolio.quickStats || []).length.toString() },
-                {
-                  id: "experience",
-                  label: "💼 Experience",
-                  count: portfolio.personal.showExperienceSection === false ? "Hidden" : ((portfolio.experiences || []).length || 1).toString(),
-                },
-                {
-                  id: "milestones",
-                  label: "🚀 Trajectory Milestones",
-                  count: portfolio.personal.showDevelopmentTrajectory === false ? "Hidden" : ((portfolio.milestones || []).length || 3).toString(),
-                },
               ].map((sub) => (
                 <button
                   key={sub.id}
@@ -6053,299 +6037,73 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* ── 3. KEY BENCHMARKS (QUICK STATS CAPSULES) ── */}
-            {(aboutSubView === "all" || aboutSubView === "benchmarks") && (
-              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <span className="p-2 rounded-xl bg-cyan-100 text-cyan-900 border border-cyan-300 text-sm">
-                      ⚡
+            {/* Bottom Final Save Button for Profile */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save Profile & Bio Changes"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB: WORK & LEADERSHIP (EXPERIENCE STATION) ── */}
+        {activeTab === "experience" && (
+          <div className="space-y-6">
+            {/* Header intro & Save CTA */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-900 border border-sky-300 font-mono text-[10px] font-black uppercase">
+                    Work &amp; Leadership
+                  </span>
+                  {portfolio.personal.showExperienceSection === false ? (
+                    <span className="font-mono text-[10px] text-rose-600 font-bold">● HIDDEN FROM SITE</span>
+                  ) : (
+                    <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      LIVE ON SITE
                     </span>
-                    <div>
-                      <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                        3. Key Benchmarks (Quick Stats Cards)
-                      </h3>
-                      <p className="font-mono text-xs text-stone-500">
-                        About section me Statement aur Bio ke theek neeche render hone wale 4 slim benchmark capsules.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => saveInstantly(portfolioRef.current, "Key Benchmarks saved to Supabase cloud!")}
-                      className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black border-2 border-black font-mono text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0_#000] active:translate-y-0.5"
-                    >
-                      <Save className="w-3.5 h-3.5" />
-                      <span>Save Benchmarks</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleAddQuickStat}
-                      className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Stat Capsule</span>
-                    </button>
-                  </div>
+                  )}
                 </div>
-
-                {/* Edit Form Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                  {(portfolio.quickStats || []).map((stat, idx) => {
-                    const theme = getBenchmarkStickerTheme(stat, idx);
-                    const currentColor = (stat.color || "").toLowerCase().trim();
-
-                    return (
-                      <div
-                        key={idx}
-                        className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3.5 shadow-2xs"
-                      >
-                        {/* Header & Ordering */}
-                        <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: theme.hex }} />
-                            <span className="font-mono text-xs font-black uppercase text-stone-900">
-                              Card #{idx + 1}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-1">
-                            <button
-                              type="button"
-                              onClick={() => handleMoveQuickStat(idx, "up")}
-                              disabled={idx === 0}
-                              className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
-                              title="Move Left/Up"
-                            >
-                              <ArrowUp className="w-3 h-3" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveQuickStat(idx, "down")}
-                              disabled={idx === (portfolio.quickStats || []).length - 1}
-                              className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
-                              title="Move Right/Down"
-                            >
-                              <ArrowDown className="w-3 h-3" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveQuickStat(idx)}
-                              className="p-1 rounded bg-white border border-stone-300 text-red-500 hover:bg-red-50 cursor-pointer ml-1"
-                              title="Delete"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* 1. Color Picker & Palette */}
-                        <div className="space-y-1.5 bg-white p-2.5 rounded-xl border border-stone-200">
-                          <div className="flex items-center justify-between">
-                            <label className="font-mono text-[10px] font-black uppercase text-stone-700 flex items-center gap-1">
-                              <Palette className="w-3 h-3 text-stone-500" />
-                              <span>Card Color:</span>
-                            </label>
-                            <span className="font-mono text-[9.5px] font-bold text-stone-500 uppercase">
-                              {theme.name}
-                            </span>
-                          </div>
-
-                          {/* 8 Preset Swatches */}
-                          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                            {Object.entries(BENCHMARK_STICKER_COLOR_MAP).map(([key, val]) => {
-                              const isSelected =
-                                currentColor === key ||
-                                currentColor === val.hex.toLowerCase() ||
-                                (!stat.color && theme.hex.toLowerCase() === val.hex.toLowerCase());
-
-                              return (
-                                <button
-                                  key={key}
-                                  type="button"
-                                  onClick={() => handleUpdateQuickStat(idx, "color", key)}
-                                  className={`w-5 h-5 rounded-full border transition-all cursor-pointer ${
-                                    isSelected
-                                      ? "scale-120 ring-2 ring-black shadow-xs"
-                                      : "border-stone-300 hover:scale-110 opacity-75 hover:opacity-100"
-                                  }`}
-                                  style={{ backgroundColor: val.hex }}
-                                  title={`${val.name} (${val.hex})`}
-                                />
-                              );
-                            })}
-
-                            {/* Native Custom Hex Color Input */}
-                            <div className="flex items-center gap-1 pl-1 ml-auto border-l border-stone-200">
-                              <input
-                                type="color"
-                                value={theme.hex}
-                                onChange={(e) => handleUpdateQuickStat(idx, "color", e.target.value)}
-                                className="w-4.5 h-4.5 rounded cursor-pointer border-0 p-0 bg-transparent"
-                                title="Pick custom color"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* 2. Tag & Icon (HONORS, PROJECTS, SOLVED, etc.) */}
-                        <div className="grid grid-cols-3 gap-2">
-                          <div className="col-span-2 space-y-1">
-                            <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
-                              Top Tag (e.g. HONORS):
-                            </label>
-                            <input
-                              type="text"
-                              value={stat.tag !== undefined ? stat.tag : theme.defaultTag}
-                              onChange={(e) => handleUpdateQuickStat(idx, "tag", e.target.value)}
-                              className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black uppercase text-stone-900 focus:border-black focus:outline-none"
-                              placeholder="e.g. HONORS"
-                            />
-                          </div>
-
-                          <div className="space-y-1">
-                            <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
-                              Icon:
-                            </label>
-                            <input
-                              type="text"
-                              value={stat.icon !== undefined ? stat.icon : theme.defaultIcon}
-                              onChange={(e) => handleUpdateQuickStat(idx, "icon", e.target.value)}
-                              className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs text-center text-stone-900 focus:border-black focus:outline-none"
-                              placeholder="🏆"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Quick Tag Suggestions */}
-                        <div className="flex flex-wrap items-center gap-1">
-                          {["HONORS", "PROJECTS", "SOLVED", "SPECIALTY", "AWARDS", "CODING"].map((presetTag) => (
-                            <button
-                              key={presetTag}
-                              type="button"
-                              onClick={() => handleUpdateQuickStat(idx, "tag", presetTag)}
-                              className={`px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase transition-all cursor-pointer border ${
-                                (stat.tag || theme.defaultTag).toUpperCase() === presetTag
-                                  ? "bg-black text-white border-black"
-                                  : "bg-white text-stone-600 border-stone-300 hover:border-black"
-                              }`}
-                            >
-                              {presetTag}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* 3. Big Metric Value */}
-                        <div>
-                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
-                            Value (Big Stat):
-                          </label>
-                          <input
-                            type="text"
-                            value={stat.value}
-                            onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
-                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} stat value!`)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
-                            placeholder="e.g. 5+ / 150+ / AI & DS"
-                          />
-                        </div>
-
-                        {/* 4. Title / Label */}
-                        <div>
-                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
-                            Label / Heading:
-                          </label>
-                          <input
-                            type="text"
-                            value={stat.label}
-                            onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
-                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} label!`)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                            placeholder="e.g. CERTIFICATIONS"
-                          />
-                        </div>
-
-                        {/* 5. Sublabel / Description */}
-                        <div>
-                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
-                            Sublabel / Note:
-                          </label>
-                          <input
-                            type="text"
-                            value={stat.sublabel}
-                            onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
-                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} note!`)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-[11px] text-stone-600 focus:border-black focus:outline-none"
-                            placeholder="e.g. Courses & Hackathons"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Live Colourful Sticker Preview */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-stone-100 border border-stone-300 space-y-4">
-                  <div className="flex items-center justify-between border-b border-stone-200 pb-2">
-                    <span className="font-mono text-xs font-black uppercase text-stone-800 flex items-center gap-1.5">
-                      <Eye className="w-3.5 h-3.5 text-stone-600" />
-                      <span>Live Key Benchmarks Preview (Colourful Stickers):</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black text-white font-mono text-[9px] font-black uppercase -rotate-1 shadow-[1.5px_1.5px_0_#f59e0b]">
-                      🏷️ KEY BENCHMARKS
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 pt-1">
-                    {(portfolio.quickStats || []).map((st, i) => {
-                      const theme = getBenchmarkStickerTheme(st, i);
-                      return (
-                        <div
-                          key={i}
-                          className={`relative pt-3.5 pb-2.5 px-3 rounded-2xl border-2 ${theme.border} ${theme.bg} ${theme.shadow} ${theme.tilt} transition-all`}
-                        >
-                          {/* Washi tape strip */}
-                          <div
-                            className={`absolute -top-1.5 left-1/2 -translate-x-1/2 w-10 h-2.5 ${theme.tape} border border-black/25 shadow-xs rotate-[-1deg] rounded-xs`}
-                          />
-
-                          {/* Top row */}
-                          <div className="flex items-center justify-between gap-1 mb-1.5">
-                            <span
-                              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8.5px] font-mono font-black uppercase tracking-wider border ${theme.badgeBg}`}
-                            >
-                              {theme.icon && <span>{theme.icon}</span>}
-                              <span>{st.tag || theme.tag}</span>
-                            </span>
-                            <span className="text-[9.5px] font-mono font-bold text-black/35">
-                              #{String(i + 1).padStart(2, "0")}
-                            </span>
-                          </div>
-
-                          <div className={`text-xl sm:text-2xl font-black font-mono tracking-tight leading-none ${theme.valueText}`}>
-                            {st.value || "0"}
-                          </div>
-                          <div className={`text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-wider mt-1.5 leading-tight ${theme.labelText}`}>
-                            {st.label || "METRIC"}
-                          </div>
-                          {st.sublabel && (
-                            <div className={`text-[9px] font-mono truncate mt-0.5 leading-tight font-medium ${theme.sublabel}`}>
-                              {st.sublabel}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <Briefcase className="w-6 h-6 text-sky-500" />
+                  <span>Work &amp; Leadership Station ({portfolio.experiences?.length || 0})</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
+                  Teaching roles, mentorship, research assistantships &amp; industry contributions ko Current vs Past structure ke sath manage karein.
+                </p>
               </div>
-            )}
+
+              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+                <button
+                  type="button"
+                  onClick={handleAddExperience}
+                  className="px-4 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Role / Mandate</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSaveAll}
+                  disabled={isSaving}
+                  className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{isSaving ? "Saving..." : "Save Work Station"}</span>
+                </button>
+              </div>
+            </div>
 
             {/* ── 4. PROFESSIONAL EXPERIENCE CATALOG ── */}
-            {(aboutSubView === "all" || aboutSubView === "experience") && (
+            
               <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-3">
                   <div className="flex items-center gap-2.5">
@@ -6789,10 +6547,75 @@ export default function AdminPage() {
                   )}
                 </div>
               </div>
-            )}
+
+            {/* Bottom Final Save Button for Experience */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save Work & Leadership Changes"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+
+        {/* ── TAB: DEVELOPMENT TRAJECTORY (ROADMAP MILESTONES) ── */}
+        {activeTab === "milestones" && (
+          <div className="space-y-6">
+            {/* Header intro & Save CTA */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-mono text-[10px] font-black uppercase">
+                    Roadmap &amp; Milestones
+                  </span>
+                  {portfolio.personal.showDevelopmentTrajectory === false ? (
+                    <span className="font-mono text-[10px] text-rose-600 font-bold">● HIDDEN FROM SITE</span>
+                  ) : (
+                    <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      LIVE ON SITE
+                    </span>
+                  )}
+                </div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <Rocket className="w-6 h-6 text-emerald-500" />
+                  <span>Development Trajectory ({portfolio.milestones?.length || 0} Phases)</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
+                  Strategic roadmap tracking Phase 01 completed foundations, Phase 02 active execution, and Phase 03 next horizon milestones.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+                <button
+                  type="button"
+                  onClick={handleAddMilestone}
+                  className="px-4 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Roadmap Phase</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSaveAll}
+                  disabled={isSaving}
+                  className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{isSaving ? "Saving..." : "Save Trajectory"}</span>
+                </button>
+              </div>
+            </div>
 
             {/* ── 5. DEVELOPMENT TRAJECTORY (ROADMAP MILESTONES) ── */}
-            {(aboutSubView === "all" || aboutSubView === "milestones") && (
+            
               <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-3">
                   <div className="flex items-center gap-2.5">
@@ -7053,9 +6876,8 @@ export default function AdminPage() {
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Bottom Final Save Button for Profile */}
+            {/* Bottom Final Save Button for Milestones */}
             <div className="flex justify-end pt-2">
               <button
                 type="button"
@@ -7064,11 +6886,365 @@ export default function AdminPage() {
                 className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
               >
                 <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Profile & Bio Changes"}</span>
+                <span>{isSaving ? "Saving..." : "Save Trajectory Milestones"}</span>
               </button>
             </div>
           </div>
         )}
+
+
+        {/* ── TAB: KEY BENCHMARKS (QUICK STATS CAPSULES) ── */}
+        {activeTab === "highlights" && (
+          <div className="space-y-6">
+            {/* Header intro & Save CTA */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-900 border border-cyan-300 font-mono text-[10px] font-black uppercase">
+                    Impact Metrics
+                  </span>
+                  <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    SYNCED WITH ABOUT SECTION
+                  </span>
+                </div>
+                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                  <Trophy className="w-6 h-6 text-amber-500" />
+                  <span>Key Benchmarks &amp; Impact Stats ({(portfolio.quickStats || []).length} Counters)</span>
+                </h2>
+                <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
+                  About section me Statement aur Bio ke theek neeche render hone wale 4 slim benchmark capsules.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+                <button
+                  type="button"
+                  onClick={handleAddQuickStat}
+                  className="px-4 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Stat Capsule</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSaveAll}
+                  disabled={isSaving}
+                  className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{isSaving ? "Saving..." : "Save Benchmarks"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* ── 3. KEY BENCHMARKS (QUICK STATS CAPSULES) ── */}
+            
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-cyan-100 text-cyan-900 border border-cyan-300 text-sm">
+                      ⚡
+                    </span>
+                    <div>
+                      <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                        3. Key Benchmarks (Quick Stats Cards)
+                      </h3>
+                      <p className="font-mono text-xs text-stone-500">
+                        About section me Statement aur Bio ke theek neeche render hone wale 4 slim benchmark capsules.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => saveInstantly(portfolioRef.current, "Key Benchmarks saved to Supabase cloud!")}
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black border-2 border-black font-mono text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0_#000] active:translate-y-0.5"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Benchmarks</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleAddQuickStat}
+                      className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Stat Capsule</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Edit Form Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                  {(portfolio.quickStats || []).map((stat, idx) => {
+                    const theme = getBenchmarkStickerTheme(stat, idx);
+                    const currentColor = (stat.color || "").toLowerCase().trim();
+
+                    return (
+                      <div
+                        key={idx}
+                        className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3.5 shadow-2xs"
+                      >
+                        {/* Header & Ordering */}
+                        <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: theme.hex }} />
+                            <span className="font-mono text-xs font-black uppercase text-stone-900">
+                              Card #{idx + 1}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleMoveQuickStat(idx, "up")}
+                              disabled={idx === 0}
+                              className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                              title="Move Left/Up"
+                            >
+                              <ArrowUp className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveQuickStat(idx, "down")}
+                              disabled={idx === (portfolio.quickStats || []).length - 1}
+                              className="p-1 rounded bg-white border border-stone-300 text-stone-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                              title="Move Right/Down"
+                            >
+                              <ArrowDown className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveQuickStat(idx)}
+                              className="p-1 rounded bg-white border border-stone-300 text-red-500 hover:bg-red-50 cursor-pointer ml-1"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* 1. Color Picker & Palette */}
+                        <div className="space-y-1.5 bg-white p-2.5 rounded-xl border border-stone-200">
+                          <div className="flex items-center justify-between">
+                            <label className="font-mono text-[10px] font-black uppercase text-stone-700 flex items-center gap-1">
+                              <Palette className="w-3 h-3 text-stone-500" />
+                              <span>Card Color:</span>
+                            </label>
+                            <span className="font-mono text-[9.5px] font-bold text-stone-500 uppercase">
+                              {theme.name}
+                            </span>
+                          </div>
+
+                          {/* 8 Preset Swatches */}
+                          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                            {Object.entries(BENCHMARK_STICKER_COLOR_MAP).map(([key, val]) => {
+                              const isSelected =
+                                currentColor === key ||
+                                currentColor === val.hex.toLowerCase() ||
+                                (!stat.color && theme.hex.toLowerCase() === val.hex.toLowerCase());
+
+                              return (
+                                <button
+                                  key={key}
+                                  type="button"
+                                  onClick={() => handleUpdateQuickStat(idx, "color", key)}
+                                  className={`w-5 h-5 rounded-full border transition-all cursor-pointer ${
+                                    isSelected
+                                      ? "scale-120 ring-2 ring-black shadow-xs"
+                                      : "border-stone-300 hover:scale-110 opacity-75 hover:opacity-100"
+                                  }`}
+                                  style={{ backgroundColor: val.hex }}
+                                  title={`${val.name} (${val.hex})`}
+                                />
+                              );
+                            })}
+
+                            {/* Native Custom Hex Color Input */}
+                            <div className="flex items-center gap-1 pl-1 ml-auto border-l border-stone-200">
+                              <input
+                                type="color"
+                                value={theme.hex}
+                                onChange={(e) => handleUpdateQuickStat(idx, "color", e.target.value)}
+                                className="w-4.5 h-4.5 rounded cursor-pointer border-0 p-0 bg-transparent"
+                                title="Pick custom color"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 2. Tag & Icon (HONORS, PROJECTS, SOLVED, etc.) */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="col-span-2 space-y-1">
+                            <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
+                              Top Tag (e.g. HONORS):
+                            </label>
+                            <input
+                              type="text"
+                              value={stat.tag !== undefined ? stat.tag : theme.defaultTag}
+                              onChange={(e) => handleUpdateQuickStat(idx, "tag", e.target.value)}
+                              className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black uppercase text-stone-900 focus:border-black focus:outline-none"
+                              placeholder="e.g. HONORS"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
+                              Icon:
+                            </label>
+                            <input
+                              type="text"
+                              value={stat.icon !== undefined ? stat.icon : theme.defaultIcon}
+                              onChange={(e) => handleUpdateQuickStat(idx, "icon", e.target.value)}
+                              className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs text-center text-stone-900 focus:border-black focus:outline-none"
+                              placeholder="🏆"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Quick Tag Suggestions */}
+                        <div className="flex flex-wrap items-center gap-1">
+                          {["HONORS", "PROJECTS", "SOLVED", "SPECIALTY", "AWARDS", "CODING"].map((presetTag) => (
+                            <button
+                              key={presetTag}
+                              type="button"
+                              onClick={() => handleUpdateQuickStat(idx, "tag", presetTag)}
+                              className={`px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase transition-all cursor-pointer border ${
+                                (stat.tag || theme.defaultTag).toUpperCase() === presetTag
+                                  ? "bg-black text-white border-black"
+                                  : "bg-white text-stone-600 border-stone-300 hover:border-black"
+                              }`}
+                            >
+                              {presetTag}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* 3. Big Metric Value */}
+                        <div>
+                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                            Value (Big Stat):
+                          </label>
+                          <input
+                            type="text"
+                            value={stat.value}
+                            onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
+                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} stat value!`)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
+                            placeholder="e.g. 5+ / 150+ / AI & DS"
+                          />
+                        </div>
+
+                        {/* 4. Title / Label */}
+                        <div>
+                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                            Label / Heading:
+                          </label>
+                          <input
+                            type="text"
+                            value={stat.label}
+                            onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
+                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} label!`)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                            placeholder="e.g. CERTIFICATIONS"
+                          />
+                        </div>
+
+                        {/* 5. Sublabel / Description */}
+                        <div>
+                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                            Sublabel / Note:
+                          </label>
+                          <input
+                            type="text"
+                            value={stat.sublabel}
+                            onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
+                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} note!`)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-[11px] text-stone-600 focus:border-black focus:outline-none"
+                            placeholder="e.g. Courses & Hackathons"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Live Colourful Sticker Preview */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-stone-100 border border-stone-300 space-y-4">
+                  <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                    <span className="font-mono text-xs font-black uppercase text-stone-800 flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5 text-stone-600" />
+                      <span>Live Key Benchmarks Preview (Colourful Stickers):</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black text-white font-mono text-[9px] font-black uppercase -rotate-1 shadow-[1.5px_1.5px_0_#f59e0b]">
+                      🏷️ KEY BENCHMARKS
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 pt-1">
+                    {(portfolio.quickStats || []).map((st, i) => {
+                      const theme = getBenchmarkStickerTheme(st, i);
+                      return (
+                        <div
+                          key={i}
+                          className={`relative pt-3.5 pb-2.5 px-3 rounded-2xl border-2 ${theme.border} ${theme.bg} ${theme.shadow} ${theme.tilt} transition-all`}
+                        >
+                          {/* Washi tape strip */}
+                          <div
+                            className={`absolute -top-1.5 left-1/2 -translate-x-1/2 w-10 h-2.5 ${theme.tape} border border-black/25 shadow-xs rotate-[-1deg] rounded-xs`}
+                          />
+
+                          {/* Top row */}
+                          <div className="flex items-center justify-between gap-1 mb-1.5">
+                            <span
+                              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8.5px] font-mono font-black uppercase tracking-wider border ${theme.badgeBg}`}
+                            >
+                              {theme.icon && <span>{theme.icon}</span>}
+                              <span>{st.tag || theme.tag}</span>
+                            </span>
+                            <span className="text-[9.5px] font-mono font-bold text-black/35">
+                              #{String(i + 1).padStart(2, "0")}
+                            </span>
+                          </div>
+
+                          <div className={`text-xl sm:text-2xl font-black font-mono tracking-tight leading-none ${theme.valueText}`}>
+                            {st.value || "0"}
+                          </div>
+                          <div className={`text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-wider mt-1.5 leading-tight ${theme.labelText}`}>
+                            {st.label || "METRIC"}
+                          </div>
+                          {st.sublabel && (
+                            <div className={`text-[9px] font-mono truncate mt-0.5 leading-tight font-medium ${theme.sublabel}`}>
+                              {st.sublabel}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+            {/* Bottom Final Save Button for Benchmarks */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save Benchmarks"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+
 
         {/* ── TAB: TECHNICAL ARSENAL & SKILLS ── */}
         {activeTab === "skills" && (
