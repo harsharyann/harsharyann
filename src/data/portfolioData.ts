@@ -220,6 +220,8 @@ export interface PortfolioData {
     aboutRoleStatusText?: string;
     aboutRoleIcon?: string;
     aboutRoleCardStyle?: "paper" | "bordered" | "tinted" | string;
+    mobileCardName?: string;
+    mobileNameColor?: string;
     mobileNowBadgeText?: string;
     mobileNowBadgeBg?: string;
     mobileNowBadgeTextColor?: string;
@@ -369,6 +371,8 @@ export const portfolioData: PortfolioData = {
     mobileBadge1: "TA IIT Madras",
     mobileBadge2: "AI & Data Science",
     mobileTagline: "Teaching Machines To Learn • Building Scientific Software",
+    mobileCardName: "HARSH ARYAN",
+    mobileNameColor: "",
     mobileWashiTapeColor: "#facc15",
     mobileWashiTapeStyle: "striped",
     mobileNowBadgeText: "NOW",

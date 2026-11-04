@@ -244,7 +244,7 @@ export function MobileDoodleCover() {
       ))}
 
       {/* ── 1. PORTRAIT PHOTO SECTION WITH COMIC DOODLE OVERLAYS ── */}
-      <div className="relative w-full h-[43vh] sm:h-[45vh] shrink-0 overflow-hidden z-10">
+      <div className="relative w-full h-[51vh] sm:h-[53vh] shrink-0 overflow-hidden z-10">
         <motion.div
           className="relative w-full h-full"
           initial={{ scale: 1 }}
@@ -397,26 +397,8 @@ export function MobileDoodleCover() {
         </div>
       </div>
 
-      {/* ── 3. HERO NAME & BENTO DOSSIER CARD ── */}
-      <footer className="relative z-30 w-full px-4 pb-4 pt-1 flex-1 flex flex-col items-center justify-between text-center overflow-visible">
-        {/* Hero Name: "HARSH ARYAN" — Theme Adaptive, Razor-Sharp & Legible (Zero Purple) */}
-        <div className="relative z-20 my-auto py-1 px-2 max-w-full">
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-            className="font-hero-heading text-[clamp(1.85rem,7.5vw,2.65rem)] font-black uppercase tracking-tight text-center select-none leading-none whitespace-nowrap text-black dark:text-white"
-            style={{
-              fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
-              textShadow: isDark
-                ? "2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000, 3.5px 3.5px 0 #f59e0b, 0 0 20px rgba(245, 158, 11, 0.45)"
-                : "2px 2px 0 #ffffff, -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 3.5px 3.5px 0 #000000, 0 4px 14px rgba(0, 0, 0, 0.18)",
-            }}
-          >
-            {nameString}
-          </motion.h1>
-        </div>
-
+      {/* ── 3. BENTO DOSSIER CARD WITH EMBEDDED NAME ── */}
+      <footer className="relative z-30 w-full px-4 pb-4 pt-1 flex-1 flex flex-col items-center justify-center text-center overflow-visible gap-2">
         {/* ── BENTO ROLE CARD PINNED WITH JAPANESE WASHI TAPE ── */}
         <div className="relative w-full max-w-[340px] my-auto">
           {/* Signature Washi Tape (Realistic Semi-Transparent Striped / Solid Texture) */}
@@ -448,7 +430,7 @@ export function MobileDoodleCover() {
                 closeCover();
               }, 220);
             }}
-            className="relative w-full rounded-[24px] p-3.5 sm:p-4 border-[2.5px] flex flex-col gap-3 cursor-pointer select-none transition-all hover:scale-[1.01] active:scale-[0.99]"
+            className="relative w-full rounded-[24px] p-3.5 sm:p-4 border-[2.5px] flex flex-col gap-2.5 cursor-pointer select-none transition-all hover:scale-[1.01] active:scale-[0.99]"
             style={{
               backgroundColor: portfolio?.personal?.mobileCardBg || (isDark ? "#11131a" : "#ffffff"),
               borderColor: portfolio?.personal?.mobileCardBorder || (isDark ? "#52525b" : "#000000"),
@@ -489,6 +471,25 @@ export function MobileDoodleCover() {
                   {portfolio?.personal?.mobileCenterTrackText || trackLabel || "INTERNSHIP · ACTIVE"}
                 </span>
               </div>
+            </div>
+
+            {/* Row 2: Profile Name inside Bento Card (Neo-Brutalist & Theme Adaptive) */}
+            <div className="w-full text-center py-0.5 select-none">
+              <motion.h2
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="font-hero-heading text-[clamp(1.35rem,5.8vw,1.75rem)] font-black uppercase tracking-tight leading-none text-stone-900 dark:text-stone-100"
+                style={{
+                  fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
+                  color: portfolio?.personal?.mobileNameColor || (isDark ? "#ffffff" : "#000000"),
+                  textShadow: isDark
+                    ? "1.5px 1.5px 0 #000000, -1.5px -1.5px 0 #000000, 1.5px -1.5px 0 #000000, -1.5px 1.5px 0 #000000, 2px 2px 0 rgba(245, 158, 11, 0.4)"
+                    : "1.5px 1.5px 0 #ffffff, -1.5px -1.5px 0 #ffffff, 1.5px -1.5px 0 #ffffff, -1.5px 1.5px 0 #ffffff, 2px 2px 0 rgba(0, 0, 0, 0.14)",
+                }}
+              >
+                {portfolio?.personal?.mobileCardName || nameString}
+              </motion.h2>
             </div>
 
             {/* Row 2: Role & Workplace Capsule Pills */}

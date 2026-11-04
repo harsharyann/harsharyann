@@ -56,6 +56,8 @@
     "aboutRoleStatusText": "RESEARCH · ACTIVE",
     "aboutRoleIcon": "⚗️",
     "aboutRoleCardStyle": "paper",
+    "mobileCardName": "HARSH ARYAN",
+    "mobileNameColor": "",
     "mobileWashiTapeColor": "#facc15",
     "mobileWashiTapeStyle": "striped",
     "mobileNowBadgeText": "NOW",

@@ -5572,6 +5572,63 @@ export default function AdminPage() {
                           </div>
                         </div>
 
+                        {/* 1. Profile Name Inside Bento Box */}
+                        <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h5 className="font-mono text-[11px] font-black uppercase text-stone-900 flex items-center gap-1.5">
+                              <span>🏷️</span> Card Profile Name (Embedded in Info Box)
+                            </h5>
+                            <span className="text-[9.5px] font-mono text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded font-bold">
+                              ✓ Moved into card
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div className="sm:col-span-2">
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Full Name on Card:
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="HARSH ARYAN"
+                                value={portfolio.personal.mobileCardName ?? portfolio.personal.name ?? ""}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: {
+                                      ...prev.personal,
+                                      mobileCardName: val,
+                                      name: val,
+                                    },
+                                  }));
+                                }}
+                                className="w-full px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs font-bold uppercase focus:border-black focus:outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Name Text Color:
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="color"
+                                  value={portfolio.personal.mobileNameColor || "#000000"}
+                                  onChange={(e) =>
+                                    setPortfolio((prev) => ({
+                                      ...prev,
+                                      personal: { ...prev.personal, mobileNameColor: e.target.value },
+                                    }))
+                                  }
+                                  className="w-8 h-8 rounded cursor-pointer border border-black p-0.5"
+                                />
+                                <span className="font-mono text-[10px] text-stone-600 font-bold">
+                                  {portfolio.personal.mobileNameColor || "Auto Theme"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                         {/* Tape & Frame Section */}
                         <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-3">
                           <h5 className="font-mono text-[11px] font-black uppercase text-stone-900 flex items-center gap-1.5">
@@ -6232,7 +6289,7 @@ export default function AdminPage() {
                         }}
                       >
                         {/* 1. Background Portrait Photo with Comic Doodles */}
-                        <div className="relative w-full h-[215px] shrink-0 overflow-hidden bg-stone-100">
+                        <div className="relative w-full h-[250px] shrink-0 overflow-hidden bg-stone-100">
                           <img
                             src={formatGoogleDriveImageUrl(portfolio.personal.mobilePhotoUrl || portfolio.personal.coverPhotoUrl)}
                             alt="Cover Mobile Preview"
@@ -6352,20 +6409,7 @@ export default function AdminPage() {
                           </div>
                         </div>
 
-                        {/* 3. Hero Name: HARSH ARYAN — Crisp, Legible & Portfolio Aligned */}
-                        <div className="relative z-20 text-center my-0.5 px-2">
-                          <div
-                            className="font-hero-heading text-lg font-black uppercase tracking-tight leading-none select-none whitespace-nowrap text-stone-900"
-                            style={{
-                              fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
-                              textShadow: "1.5px 1.5px 0 #ffffff, -1.5px -1.5px 0 #ffffff, 1.5px -1.5px 0 #ffffff, -1.5px 1.5px 0 #ffffff, 2px 2px 0 #000000",
-                            }}
-                          >
-                            {portfolio.personal.name || "HARSH ARYAN"}
-                          </div>
-                        </div>
-
-                        {/* 4. Bento Dossier Card Pinned with Signature Washi Tape */}
+                        {/* 3. Bento Dossier Card Pinned with Signature Washi Tape */}
                         <div className="relative z-20 px-3 w-full my-auto">
                           {/* Washi Tape */}
                           {portfolio.personal.mobileWashiTapeStyle !== "none" && (
@@ -6427,7 +6471,20 @@ export default function AdminPage() {
                               </div>
                             </div>
 
-                            {/* Row 2: Pills */}
+                            {/* Row 2: Name Inside Bento Card */}
+                            <div className="w-full text-center py-0.5 select-none">
+                              <div
+                                className="font-hero-heading text-[11px] font-black uppercase tracking-tight leading-none text-stone-900"
+                                style={{
+                                  fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
+                                  color: portfolio.personal.mobileNameColor || "#000000",
+                                }}
+                              >
+                                {portfolio.personal.mobileCardName || portfolio.personal.name || "HARSH ARYAN"}
+                              </div>
+                            </div>
+
+                            {/* Row 3: Pills */}
                             <div className="flex items-center justify-center gap-1 flex-wrap w-full">
                               <div
                                 className="flex items-center gap-0.5 px-2 py-0.5 rounded-full border font-mono text-[7px] font-black"
