@@ -860,8 +860,7 @@ export function DoodleCrewCover({
     return { x: l - padX, y: t - padY, w: r - l + padX * 2, h: b - t + padY * 2 }
   }, [layout, placed, cap])
 
-  const effectiveTagline = portfolio?.personal?.desktopTagline || tagline || "DESIGN · CODE · MACHINE LEARNING"
-  const words = effectiveTagline.split(/\s+/).filter(Boolean)
+  const words = (tagline || "").split(/\s+/).filter(Boolean)
   const tl = timeline(chars.length, placed.length, words.length)
 
   const ground = React.useMemo(() => {

@@ -3000,46 +3000,26 @@ export default function AdminPage() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Desktop Upper Tagline:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.desktopTagline ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, desktopTagline: val },
-                            }));
-                          }}
-                          onBlur={() => saveInstantly(portfolioRef.current, "Desktop tagline updated!")}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          placeholder="DESIGN · CODE · MACHINE LEARNING"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Mobile Narrative Tagline:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.mobileTagline ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, mobileTagline: val },
-                            }));
-                          }}
-                          onBlur={() => saveInstantly(portfolioRef.current, "Mobile tagline updated!")}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          placeholder="Teaching Machines To Learn • Building Scientific Software"
-                        />
-                      </div>
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1 flex items-center justify-between">
+                        <span>Mobile Narrative Tagline (Shown on Phone Cover Card):</span>
+                        <span className="text-[10px] text-amber-600 font-mono font-bold">📱 Mobile Only</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={portfolio.personal.mobileTagline ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, mobileTagline: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "Mobile tagline updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="Teaching Machines To Learn • Building Scientific Software"
+                      />
+                    </div>
 
                       {/* Quick Cover Role Badge Toggles (Image 2 Pill) */}
                       <div className="pt-2 border-t border-stone-200 grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -3100,7 +3080,6 @@ export default function AdminPage() {
                         </div>
                       </div>
                     </div>
-                  </div>
 
                   {/* Right: Live Preview Card (5 cols) */}
                   <div className="lg:col-span-5 flex flex-col justify-center">
@@ -3109,9 +3088,6 @@ export default function AdminPage() {
                       <span>Live Hero Preview</span>
                     </div>
                     <div className="p-4 rounded-2xl bg-stone-900 text-white border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
-                      <div className="font-mono text-[10px] tracking-widest text-amber-400 font-bold uppercase">
-                        {portfolio.personal.desktopTagline || "DESIGN · CODE · MACHINE LEARNING"}
-                      </div>
                       <h4 className="font-['Space_Grotesk'] text-lg font-black tracking-tight text-white uppercase">
                         {portfolio.personal.desktopWordmark || portfolio.personal.name || "HARSH ARYAN"}
                       </h4>
