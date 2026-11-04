@@ -1374,8 +1374,8 @@ export function DoodleCrewCover({
                         style={customTrackColor ? { backgroundColor: customTrackColor } : undefined}
                       />
                       <span
-                        className={`relative inline-flex rounded-full h-2.5 w-2.5 ${customTrackColor ? "" : track.beaconCore} ring-2 ring-emerald-500/20`}
-                        style={customTrackColor ? { backgroundColor: customTrackColor } : undefined}
+                        className={`relative inline-flex rounded-full h-2.5 w-2.5 ${customTrackColor ? "" : `${track.beaconCore} ring-2 ring-emerald-500/20`}`}
+                        style={customTrackColor ? { backgroundColor: customTrackColor, boxShadow: `0 0 0 2px ${customTrackColor}33` } : undefined}
                       />
                     </span>
                     <span

@@ -1004,8 +1004,12 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
                 return (
                   <div
-                    className={`group/roleCard relative w-full overflow-hidden rounded-xl bg-gradient-to-br ${track.cardBg} p-2.5 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff]`}
-                    style={personal.coverRoleTrackColor ? { borderColor: personal.coverRoleTrackColor } : undefined}
+                    className={`group/roleCard relative w-full overflow-hidden rounded-xl p-2.5 border-2 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff] ${
+                      track.isCustomColor
+                        ? ""
+                        : `bg-gradient-to-br ${track.cardBg} border-black dark:border-white`
+                    }`}
+                    style={track.cardStyle}
                   >
                     {/* Technical blueprint grid texture */}
                     <div 
@@ -1024,24 +1028,33 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                       <div className="flex items-center gap-1.5">
                         <span className="relative flex h-2 w-2">
                           <span
-                            className={`animate-ping absolute inline-flex h-full w-full rounded-full ${personal.coverRoleTrackColor ? "" : track.beaconRing} opacity-75`}
-                            style={personal.coverRoleTrackColor ? { backgroundColor: personal.coverRoleTrackColor } : undefined}
+                            className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.isCustomColor ? "" : track.beaconRing} opacity-75`}
+                            style={track.isCustomColor ? { backgroundColor: track.activeColor } : undefined}
                           />
                           <span
-                            className={`relative inline-flex rounded-full h-2 w-2 ${personal.coverRoleTrackColor ? "" : track.beaconCore} ring-2 ring-emerald-500/20`}
-                            style={personal.coverRoleTrackColor ? { backgroundColor: personal.coverRoleTrackColor } : undefined}
+                            className={`relative inline-flex rounded-full h-2 w-2 ${track.isCustomColor ? "" : track.beaconCore}`}
+                            style={
+                              track.isCustomColor
+                                ? { backgroundColor: track.activeColor, boxShadow: `0 0 0 2px ${track.activeColor}33` }
+                                : undefined
+                            }
                           />
                         </span>
                         <span
-                          className={`font-mono text-[9.5px] font-black uppercase tracking-wider ${personal.coverRoleTrackColor ? "" : track.labelColor} flex items-center gap-1`}
-                          style={personal.coverRoleTrackColor ? { color: personal.coverRoleTrackColor } : undefined}
+                          className={`font-mono text-[9.5px] font-black uppercase tracking-wider ${track.isCustomColor ? "" : track.labelColor} flex items-center gap-1`}
+                          style={track.isCustomColor ? { color: track.activeColor } : undefined}
                         >
                           {track.icon}
                           <span>{track.label}</span>
                         </span>
                       </div>
                       {Boolean(tagText) && (
-                        <span className={`font-mono text-[8px] sm:text-[8.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${track.tagBg}`}>
+                        <span
+                          className={`font-mono text-[8px] sm:text-[8.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${
+                            track.isCustomColor ? "" : track.tagBg
+                          }`}
+                          style={track.tagStyle}
+                        >
                           {tagText}
                         </span>
                       )}
@@ -1056,9 +1069,19 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                       )}
 
                       {Boolean(workplace) && (
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md ${track.workplaceBadgeBg} font-mono text-[10.5px] sm:text-[11px] font-black tracking-wide shadow-2xs`}>
-                          <span className={`${track.workplaceAtColor} font-sans font-bold text-xs`}>@</span>
-                          <span>{workplace}</span>
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-mono text-[10.5px] sm:text-[11px] font-black tracking-wide shadow-2xs ${
+                            track.isCustomColor ? "border" : track.workplaceBadgeBg
+                          }`}
+                          style={track.workplaceBadgeStyle}
+                        >
+                          <span
+                            className={`${track.isCustomColor ? "" : track.workplaceAtColor} font-sans font-bold text-xs`}
+                            style={track.workplaceAtStyle}
+                          >
+                            @
+                          </span>
+                          <span className={track.isCustomColor ? "text-stone-900 dark:text-stone-100" : undefined}>{workplace}</span>
                         </span>
                       )}
                     </div>

@@ -8,6 +8,7 @@ export interface ResolvedRoleTrack {
   label: string;
   defaultTag: string;
   activeColor: string;
+  isCustomColor: boolean;
   icon: React.ReactNode;
   beaconRing: string;
   beaconCore: string;
@@ -16,6 +17,10 @@ export interface ResolvedRoleTrack {
   cardBg: string;
   workplaceBadgeBg: string;
   workplaceAtColor: string;
+  tagStyle?: React.CSSProperties;
+  workplaceBadgeStyle?: React.CSSProperties;
+  workplaceAtStyle?: React.CSSProperties;
+  cardStyle?: React.CSSProperties;
 }
 
 export const ROLE_TRACK_THEMES: Record<
@@ -94,10 +99,10 @@ export const ROLE_TRACK_THEMES: Record<
     beaconRing: "bg-emerald-400",
     beaconCore: "bg-emerald-500",
     labelColor: "text-emerald-700 dark:text-emerald-400",
-    tagBg: "bg-stone-100/90 dark:bg-stone-800/70 text-stone-700 dark:text-stone-300 border-stone-300 dark:border-stone-700",
-    cardBg: "from-emerald-50/95 via-amber-50/60 to-emerald-50/95 dark:from-[#141824] dark:via-[#1a1f30] dark:to-[#141824]",
-    workplaceBadgeBg: "bg-amber-200/90 dark:bg-amber-900/60 border-amber-950/25 dark:border-amber-400/30 text-amber-950 dark:text-amber-200",
-    workplaceAtColor: "text-amber-700 dark:text-amber-400",
+    tagBg: "bg-emerald-100/90 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200 border-emerald-400/40",
+    cardBg: "from-emerald-50/95 via-teal-50/60 to-emerald-50/95 dark:from-[#102018] dark:via-[#162a20] dark:to-[#102018]",
+    workplaceBadgeBg: "bg-emerald-200/90 dark:bg-emerald-900/60 border-emerald-950/25 dark:border-emerald-400/30 text-emerald-950 dark:text-emerald-200",
+    workplaceAtColor: "text-emerald-700 dark:text-emerald-400",
   },
 };
 
@@ -124,13 +129,45 @@ export function resolveRoleTrack(role = "", workplace = "", explicitType = "auto
   }
 
   const chosenTheme = ROLE_TRACK_THEMES[track] || ROLE_TRACK_THEMES.job;
-  const activeColor = (customColor && customColor.trim()) || chosenTheme.hex;
+  const isCustomColor = Boolean(customColor && customColor.trim());
+  const activeColor = isCustomColor ? customColor.trim() : chosenTheme.hex;
+
+  // Compute dynamic styles that guarantee 100% color sync whenever a custom color or swatch is active
+  const tagStyle: React.CSSProperties | undefined = isCustomColor
+    ? {
+        backgroundColor: `${activeColor}18`,
+        borderColor: `${activeColor}55`,
+        color: activeColor,
+      }
+    : undefined;
+
+  const workplaceBadgeStyle: React.CSSProperties | undefined = isCustomColor
+    ? {
+        backgroundColor: `${activeColor}20`,
+        borderColor: `${activeColor}60`,
+        color: activeColor,
+      }
+    : undefined;
+
+  const workplaceAtStyle: React.CSSProperties | undefined = isCustomColor
+    ? {
+        color: activeColor,
+      }
+    : undefined;
+
+  const cardStyle: React.CSSProperties | undefined = isCustomColor
+    ? {
+        borderColor: activeColor,
+        background: `linear-gradient(135deg, ${activeColor}14 0%, ${activeColor}06 50%, ${activeColor}18 100%)`,
+      }
+    : undefined;
 
   return {
     track,
     label: chosenTheme.label,
     defaultTag: chosenTheme.defaultTag,
     activeColor,
+    isCustomColor,
     icon: chosenTheme.icon(activeColor),
     beaconRing: chosenTheme.beaconRing,
     beaconCore: chosenTheme.beaconCore,
@@ -139,5 +176,9 @@ export function resolveRoleTrack(role = "", workplace = "", explicitType = "auto
     cardBg: chosenTheme.cardBg,
     workplaceBadgeBg: chosenTheme.workplaceBadgeBg,
     workplaceAtColor: chosenTheme.workplaceAtColor,
+    tagStyle,
+    workplaceBadgeStyle,
+    workplaceAtStyle,
+    cardStyle,
   };
 }

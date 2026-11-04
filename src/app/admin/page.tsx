@@ -5537,136 +5537,131 @@ export default function AdminPage() {
                             </div>
 
                             {/* Active Color Palette & Custom Swatches for Role & Icons */}
-                            <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 space-y-2 mt-2">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <span
-                                    className="w-3 h-3 rounded-full border border-black/30 animate-pulse"
-                                    style={{
-                                      backgroundColor:
-                                        portfolio.personal.coverRoleTrackColor ||
-                                        ROLE_TRACK_THEMES[(portfolio.personal.aboutRoleType as keyof typeof ROLE_TRACK_THEMES) || "job"]?.hex ||
-                                        "#10b981",
-                                    }}
-                                  />
-                                  <span className="font-mono text-[10.5px] font-bold text-stone-800">
-                                    Icon &amp; Badge Color:
-                                  </span>
-                                  <span
-                                    className="font-mono text-[10px] font-black px-1.5 py-0.5 rounded border border-black/15 uppercase"
-                                    style={{
-                                      color:
-                                        portfolio.personal.coverRoleTrackColor ||
-                                        ROLE_TRACK_THEMES[(portfolio.personal.aboutRoleType as keyof typeof ROLE_TRACK_THEMES) || "job"]?.hex ||
-                                        "#10b981",
-                                      backgroundColor: `${
-                                        portfolio.personal.coverRoleTrackColor ||
-                                        ROLE_TRACK_THEMES[(portfolio.personal.aboutRoleType as keyof typeof ROLE_TRACK_THEMES) || "job"]?.hex ||
-                                        "#10b981"
-                                      }18`,
-                                    }}
-                                  >
-                                    {portfolio.personal.coverRoleTrackColor || "Auto / Synced"}
-                                  </span>
+                            {(() => {
+                              const activeTrackObj = resolveRoleTrack(
+                                portfolio.personal.aboutCurrentWork || portfolio.personal.role || "",
+                                portfolio.personal.aboutWorkPlace || "",
+                                portfolio.personal.aboutRoleType,
+                                portfolio.personal.coverRoleTrackColor
+                              );
+
+                              return (
+                                <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 space-y-2 mt-2">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span
+                                        className="w-3 h-3 rounded-full border border-black/30 animate-pulse"
+                                        style={{ backgroundColor: activeTrackObj.activeColor }}
+                                      />
+                                      <span className="font-mono text-[10.5px] font-bold text-stone-800">
+                                        Icon &amp; Badge Color:
+                                      </span>
+                                      <span
+                                        className="font-mono text-[10px] font-black px-1.5 py-0.5 rounded border border-black/15 uppercase"
+                                        style={{
+                                          color: activeTrackObj.activeColor,
+                                          backgroundColor: `${activeTrackObj.activeColor}18`,
+                                        }}
+                                      >
+                                        {portfolio.personal.coverRoleTrackColor
+                                          ? `${portfolio.personal.coverRoleTrackColor.toUpperCase()} (Custom)`
+                                          : `${activeTrackObj.activeColor.toUpperCase()} (Auto / Synced)`}
+                                      </span>
+                                    </div>
+
+                                    {portfolio.personal.coverRoleTrackColor && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const nextPort = {
+                                            ...portfolio,
+                                            personal: {
+                                              ...portfolio.personal,
+                                              coverRoleTrackColor: "",
+                                            },
+                                          };
+                                          setPortfolio(nextPort);
+                                          portfolioRef.current = nextPort;
+                                          saveInstantly(nextPort, "Reset icon & badge color to track default!");
+                                        }}
+                                        className="text-[9.5px] font-mono font-bold text-stone-500 hover:text-rose-600 underline cursor-pointer"
+                                      >
+                                        Reset to Auto
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="font-mono text-[9.5px] text-stone-400 mr-1">Quick Presets:</span>
+                                    {[
+                                      { label: "Emerald (TA / Acad / Job)", color: "#10b981" },
+                                      { label: "Cyan (Research)", color: "#06b6d4" },
+                                      { label: "Amber (Intern)", color: "#f59e0b" },
+                                      { label: "Purple (Fellow)", color: "#8b5cf6" },
+                                      { label: "Rose (Lead)", color: "#f43f5e" },
+                                      { label: "Indigo (Engineer)", color: "#6366f1" },
+                                      { label: "Sky (Core)", color: "#0284c7" },
+                                    ].map((preset) => {
+                                      const activeHex = (portfolio.personal.coverRoleTrackColor || activeTrackObj.activeColor || "").toLowerCase();
+                                      const isCurrent = activeHex === preset.color.toLowerCase();
+                                      return (
+                                        <button
+                                          key={preset.color}
+                                          type="button"
+                                          onClick={() => {
+                                            const nextPort = {
+                                              ...portfolio,
+                                              personal: {
+                                                ...portfolio.personal,
+                                                coverRoleTrackColor: preset.color,
+                                              },
+                                            };
+                                            setPortfolio(nextPort);
+                                            portfolioRef.current = nextPort;
+                                            saveInstantly(nextPort, `Icon & Role color set to ${preset.label}!`);
+                                          }}
+                                          className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer relative ${
+                                            isCurrent ? "scale-115 border-black ring-2 ring-black/40 shadow-xs" : "border-white shadow-xs hover:scale-110"
+                                          }`}
+                                          style={{ backgroundColor: preset.color }}
+                                          title={preset.label}
+                                        >
+                                          {isCurrent && (
+                                            <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] font-black">
+                                              ✓
+                                            </span>
+                                          )}
+                                        </button>
+                                      );
+                                    })}
+
+                                    {/* Custom Color Input */}
+                                    <div className="flex items-center gap-1 ml-auto">
+                                      <span className="font-mono text-[9.5px] text-stone-500 font-bold">Custom:</span>
+                                      <input
+                                        type="color"
+                                        value={portfolio.personal.coverRoleTrackColor || activeTrackObj.activeColor || "#10b981"}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          const nextPort = {
+                                            ...portfolio,
+                                            personal: {
+                                              ...portfolio.personal,
+                                              coverRoleTrackColor: val,
+                                            },
+                                          };
+                                          setPortfolio(nextPort);
+                                          portfolioRef.current = nextPort;
+                                        }}
+                                        onBlur={() => saveInstantly(portfolioRef.current, "Custom role icon color saved!")}
+                                        className="w-7 h-7 rounded-md border border-stone-300 p-0.5 cursor-pointer bg-white"
+                                        title="Choose any custom hex color for role & icons"
+                                      />
+                                    </div>
+                                  </div>
                                 </div>
-
-                                {portfolio.personal.coverRoleTrackColor && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const currentTrack = (portfolio.personal.aboutRoleType || "auto") as keyof typeof ROLE_TRACK_THEMES;
-                                      const defaultThemeHex = ROLE_TRACK_THEMES[currentTrack]?.hex || "";
-                                      const nextPort = {
-                                        ...portfolio,
-                                        personal: {
-                                          ...portfolio.personal,
-                                          coverRoleTrackColor: defaultThemeHex,
-                                        },
-                                      };
-                                      setPortfolio(nextPort);
-                                      portfolioRef.current = nextPort;
-                                      saveInstantly(nextPort, "Reset icon color to track default!");
-                                    }}
-                                    className="text-[9.5px] font-mono font-bold text-stone-500 hover:text-rose-600 underline cursor-pointer"
-                                  >
-                                    Reset to Default
-                                  </button>
-                                )}
-                              </div>
-
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="font-mono text-[9.5px] text-stone-400 mr-1">Quick Presets:</span>
-                                {[
-                                  { label: "Emerald (TA / Acad / Job)", color: "#10b981" },
-                                  { label: "Cyan (Research)", color: "#06b6d4" },
-                                  { label: "Amber (Intern)", color: "#f59e0b" },
-                                  { label: "Purple (Fellow)", color: "#8b5cf6" },
-                                  { label: "Rose (Lead)", color: "#f43f5e" },
-                                  { label: "Indigo (Engineer)", color: "#6366f1" },
-                                  { label: "Sky (Core)", color: "#0284c7" },
-                                ].map((preset) => {
-                                  const activeHex = (portfolio.personal.coverRoleTrackColor || "").toLowerCase();
-                                  const isCurrent = activeHex === preset.color.toLowerCase();
-                                  return (
-                                    <button
-                                      key={preset.color}
-                                      type="button"
-                                      onClick={() => {
-                                        const nextPort = {
-                                          ...portfolio,
-                                          personal: {
-                                            ...portfolio.personal,
-                                            coverRoleTrackColor: preset.color,
-                                          },
-                                        };
-                                        setPortfolio(nextPort);
-                                        portfolioRef.current = nextPort;
-                                        saveInstantly(nextPort, `Icon & Role color set to ${preset.label}!`);
-                                      }}
-                                      className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer relative ${
-                                        isCurrent ? "scale-115 border-black ring-2 ring-black/40 shadow-xs" : "border-white shadow-xs hover:scale-110"
-                                      }`}
-                                      style={{ backgroundColor: preset.color }}
-                                      title={preset.label}
-                                    >
-                                      {isCurrent && (
-                                        <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] font-black">
-                                          ✓
-                                        </span>
-                                      )}
-                                    </button>
-                                  );
-                                })}
-
-                                {/* Custom Color Input */}
-                                <div className="flex items-center gap-1 ml-auto">
-                                  <span className="font-mono text-[9.5px] text-stone-500 font-bold">Custom:</span>
-                                  <input
-                                    type="color"
-                                    value={
-                                      portfolio.personal.coverRoleTrackColor ||
-                                      ROLE_TRACK_THEMES[(portfolio.personal.aboutRoleType as keyof typeof ROLE_TRACK_THEMES) || "job"]?.hex ||
-                                      "#10b981"
-                                    }
-                                    onChange={(e) => {
-                                      const val = e.target.value;
-                                      const nextPort = {
-                                        ...portfolio,
-                                        personal: {
-                                          ...portfolio.personal,
-                                          coverRoleTrackColor: val,
-                                        },
-                                      };
-                                      setPortfolio(nextPort);
-                                      portfolioRef.current = nextPort;
-                                    }}
-                                    onBlur={() => saveInstantly(portfolioRef.current, "Custom role icon color saved!")}
-                                    className="w-7 h-7 rounded-md border border-stone-300 p-0.5 cursor-pointer bg-white"
-                                    title="Choose any custom hex color for role & icons"
-                                  />
-                                </div>
-                              </div>
-                            </div>
+                              );
+                            })()}
                           </div>
 
                           <div>
@@ -5926,31 +5921,34 @@ export default function AdminPage() {
 
                             return (
                               <div
-                                className={`w-full rounded-lg bg-gradient-to-br ${track.cardBg} p-2 border border-black/20 shadow-xs relative overflow-hidden`}
-                                style={portfolio.personal.coverRoleTrackColor ? { borderColor: `${portfolio.personal.coverRoleTrackColor}80` } : undefined}
+                                className={`w-full rounded-lg ${track.isCustomColor ? "border" : `bg-gradient-to-br ${track.cardBg} border border-black/20`} p-2 shadow-xs relative overflow-hidden`}
+                                style={track.isCustomColor ? { borderColor: `${track.activeColor}80`, background: `linear-gradient(135deg, ${track.activeColor}14 0%, ${track.activeColor}06 50%, ${track.activeColor}18 100%)` } : undefined}
                               >
                                 <div className="flex items-center justify-between gap-1 pb-1 border-b border-black/10">
                                   <div className="flex items-center gap-1.5">
                                     <span className="relative flex h-1.5 w-1.5">
                                       <span
-                                        className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.beaconRing} opacity-75`}
-                                        style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: portfolio.personal.coverRoleTrackColor } : undefined}
+                                        className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.isCustomColor ? "" : track.beaconRing} opacity-75`}
+                                        style={track.isCustomColor ? { backgroundColor: track.activeColor } : undefined}
                                       />
                                       <span
-                                        className={`relative inline-flex rounded-full h-1.5 w-1.5 ${track.beaconCore}`}
-                                        style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: portfolio.personal.coverRoleTrackColor } : undefined}
+                                        className={`relative inline-flex rounded-full h-1.5 w-1.5 ${track.isCustomColor ? "" : track.beaconCore}`}
+                                        style={track.isCustomColor ? { backgroundColor: track.activeColor } : undefined}
                                       />
                                     </span>
                                     <span
-                                      className={`font-mono text-[8px] font-black uppercase tracking-wider ${track.labelColor} flex items-center gap-1`}
-                                      style={portfolio.personal.coverRoleTrackColor ? { color: portfolio.personal.coverRoleTrackColor } : undefined}
+                                      className={`font-mono text-[8px] font-black uppercase tracking-wider ${track.isCustomColor ? "" : track.labelColor} flex items-center gap-1`}
+                                      style={track.isCustomColor ? { color: track.activeColor } : undefined}
                                     >
                                       {track.icon}
                                       <span>{track.label}</span>
                                     </span>
                                   </div>
                                   {Boolean(tagText) && (
-                                    <span className={`font-mono text-[7px] font-bold uppercase tracking-wider px-1 py-0.2 rounded border ${track.tagBg}`}>
+                                    <span
+                                      className={`font-mono text-[7px] font-bold uppercase tracking-wider px-1 py-0.2 rounded border ${track.isCustomColor ? "" : track.tagBg}`}
+                                      style={track.tagStyle}
+                                    >
                                       {tagText}
                                     </span>
                                   )}
@@ -5962,9 +5960,17 @@ export default function AdminPage() {
                                     </span>
                                   )}
                                   {Boolean(workplace) && (
-                                    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded ${track.workplaceBadgeBg} font-mono text-[9.5px] font-black`}>
-                                      <span className={`${track.workplaceAtColor} font-sans font-bold text-[9px]`}>@</span>
-                                      <span>{workplace}</span>
+                                    <span
+                                      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded font-mono text-[9.5px] font-black ${track.isCustomColor ? "border" : track.workplaceBadgeBg}`}
+                                      style={track.workplaceBadgeStyle}
+                                    >
+                                      <span
+                                        className={`${track.isCustomColor ? "" : track.workplaceAtColor} font-sans font-bold text-[9px]`}
+                                        style={track.workplaceAtStyle}
+                                      >
+                                        @
+                                      </span>
+                                      <span className={track.isCustomColor ? "text-stone-900" : undefined}>{workplace}</span>
                                     </span>
                                   )}
                                 </div>
