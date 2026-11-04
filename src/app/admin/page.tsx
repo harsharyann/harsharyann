@@ -86,6 +86,7 @@ import {
   formatGoogleDriveViewUrl,
 } from "@/lib/googleDrive";
 import { resolveRoleTrack, ROLE_TRACK_THEMES } from "@/lib/roleTrack";
+import { MILESTONE_STATUS_PRESETS, resolveMilestoneStatus } from "@/lib/milestoneStatus";
 import { extractVibrantColor } from "@/lib/colorExtractor";
 import { compressImageFile } from "@/lib/imageCompressor";
 import { supabase } from "@/lib/supabase";
@@ -887,6 +888,8 @@ export default function AdminPage() {
       title: "New Trajectory Phase",
       subtitle: "Key Focus & Technologies",
       description: "Describe the key focus, achievements, algorithms, or systems built in this phase.",
+      status: "next",
+      statusLabel: "NEXT HORIZON 🚀",
     };
     const nextPort = { ...base, milestones: [...current, newMilestone] };
     setPortfolio(nextPort);
@@ -7301,6 +7304,7 @@ export default function AdminPage() {
                       ]
                   ).map((m, mIdx, arr) => {
                     const isEditingThisMilestone = editingMilestoneIdx === mIdx;
+                    const mStatus = resolveMilestoneStatus(m, mIdx);
                     return (
                     <div
                       key={mIdx}
@@ -7310,6 +7314,12 @@ export default function AdminPage() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-mono text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-lg border border-emerald-300">
                             PHASE {m.phaseNumber || `0${mIdx + 1}`}
+                          </span>
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full font-mono text-[9.5px] font-black uppercase border shadow-2xs ${mStatus.bg}`}
+                            style={mStatus.style}
+                          >
+                            {mStatus.label}
                           </span>
                           <span className="font-mono text-xs font-bold text-stone-700 bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
                             {m.period}
@@ -7374,38 +7384,144 @@ export default function AdminPage() {
                       {!isEditingThisMilestone ? (
                         /* ── View Mode: Clean Phase Card ── */
                         <div className="space-y-2 pt-1">
-                          <p className="font-mono text-xs font-bold text-stone-500">
-                            {m.subtitle}
-                          </p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-mono text-xs font-bold text-stone-500">
+                              {m.subtitle}
+                            </span>
+                          </div>
                           <p className="font-mono text-xs text-stone-700 leading-relaxed bg-[#faf8f5] p-3 rounded-xl border border-stone-200">
                             {m.description}
                           </p>
                           <div className="pt-1 flex items-center justify-between text-[11px] font-mono text-stone-400">
-                            <span>Click &ldquo;Edit&rdquo; above to modify phase details.</span>
+                            <span>Status: <strong className="text-stone-700">{mStatus.label}</strong> • Click &ldquo;Edit&rdquo; above to change status or details.</span>
                             <button
                               type="button"
                               onClick={() => setEditingMilestoneIdx(mIdx)}
-                              className="text-amber-700 hover:text-amber-900 font-bold"
+                              className="text-amber-700 hover:text-amber-900 font-bold cursor-pointer"
                             >
                               ✏️ Edit Phase ↗
                             </button>
                           </div>
                         </div>
                       ) : (
-                        /* ── Edit Mode: Form Inputs ── */
-                        <div className="space-y-3 pt-1">
-                          <div>
-                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                              Phase Subtitle / Domain Label:
+                        /* ── Edit Mode: Form Inputs with Full Status Control ── */
+                        <div className="space-y-4 pt-1">
+                          {/* 1. Status Selection Row (Completed / Active Execution / Next Horizon / Planned / Custom) */}
+                          <div className="p-3 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-2.5">
+                            <label className="block font-mono text-[11px] font-bold text-stone-800 flex items-center justify-between">
+                              <span className="flex items-center gap-1.5">
+                                <span>Phase Status / State:</span>
+                                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-amber-200 text-amber-900 border border-amber-300 font-black">
+                                  ACTIVE / COMPLETED / AAGE KARNA HAI
+                                </span>
+                              </span>
+                              <span className="text-stone-500 font-normal text-[10px]">Displayed on live cards</span>
                             </label>
-                            <input
-                              type="text"
-                              value={m.period}
-                              placeholder="e.g. Foundations, Data & Math"
-                              onChange={(e) => handleUpdateMilestone(mIdx, "period", e.target.value)}
-                              className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
-                            />
+
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              {MILESTONE_STATUS_PRESETS.map((preset) => {
+                                const currentStatus = (m.status || "").toLowerCase();
+                                const currentLabel = (m.statusLabel || "").toUpperCase();
+                                const isSelected =
+                                  currentStatus === preset.id ||
+                                  currentLabel === preset.label.toUpperCase() ||
+                                  (!m.status && !m.statusLabel && mStatus.label === preset.label);
+                                return (
+                                  <button
+                                    key={preset.id}
+                                    type="button"
+                                    onClick={() => {
+                                      handleUpdateMilestone(mIdx, "status", preset.id);
+                                      handleUpdateMilestone(mIdx, "statusLabel", preset.label);
+                                      handleUpdateMilestone(mIdx, "statusColor", "");
+                                    }}
+                                    className={`px-3 py-1.5 rounded-xl border-2 font-mono text-[10.5px] font-bold flex items-center gap-1.5 cursor-pointer transition-all ${
+                                      isSelected
+                                        ? "bg-black text-white border-black shadow-[2px_2px_0_rgba(0,0,0,0.25)] scale-[1.03]"
+                                        : "bg-white text-stone-700 border-stone-300 hover:bg-stone-50"
+                                    }`}
+                                  >
+                                    <span
+                                      className="w-2.5 h-2.5 rounded-full border border-black/20"
+                                      style={{ backgroundColor: preset.color }}
+                                    />
+                                    <span>{preset.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+
+                            {/* Custom Status Label & Color Input */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t border-dashed border-amber-200">
+                              <div>
+                                <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                                  Custom Status Label (Optional):
+                                </label>
+                                <input
+                                  type="text"
+                                  value={m.statusLabel || ""}
+                                  placeholder="e.g. AAGE KARNA HAI 🚀 or IN TESTING ⚡"
+                                  onChange={(e) => handleUpdateMilestone(mIdx, "statusLabel", e.target.value)}
+                                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                                  Custom Badge Color (Optional):
+                                </label>
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="color"
+                                    value={m.statusColor || mStatus.color || "#10b981"}
+                                    onChange={(e) => handleUpdateMilestone(mIdx, "statusColor", e.target.value)}
+                                    className="w-8 h-8 rounded-md border border-stone-300 p-0.5 cursor-pointer bg-white"
+                                  />
+                                  <span className="font-mono text-xs text-stone-700 font-bold">
+                                    {m.statusColor || "Preset Default"}
+                                  </span>
+                                  {m.statusColor && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleUpdateMilestone(mIdx, "statusColor", "")}
+                                      className="text-[10px] font-mono text-rose-600 underline cursor-pointer ml-auto font-bold"
+                                    >
+                                      Reset Color
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
                           </div>
+
+                          {/* 2. Phase Number & Domain Category */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                                Phase Number (e.g. 01, 02, 03):
+                              </label>
+                              <input
+                                type="text"
+                                value={m.phaseNumber || ""}
+                                placeholder="e.g. 01"
+                                onChange={(e) => handleUpdateMilestone(mIdx, "phaseNumber", e.target.value)}
+                                className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                                Domain / Category (e.g. Foundations, Data &amp; Math):
+                              </label>
+                              <input
+                                type="text"
+                                value={m.period}
+                                placeholder="e.g. Foundations, Data & Math"
+                                onChange={(e) => handleUpdateMilestone(mIdx, "period", e.target.value)}
+                                className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          {/* 3. Title & Subtitle */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                               <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
@@ -7432,6 +7548,7 @@ export default function AdminPage() {
                             </div>
                           </div>
 
+                          {/* 4. Description */}
                           <div>
                             <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
                               Phase Description:
@@ -7447,7 +7564,10 @@ export default function AdminPage() {
                           <div className="pt-2 flex justify-end">
                             <button
                               type="button"
-                              onClick={() => setEditingMilestoneIdx(null)}
+                              onClick={() => {
+                                setEditingMilestoneIdx(null);
+                                saveInstantly(portfolioRef.current, `Phase ${m.phaseNumber || mIdx + 1} updated!`);
+                              }}
                               className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1 cursor-pointer shadow-xs"
                             >
                               <Check className="w-3.5 h-3.5 text-emerald-400" />
@@ -7481,36 +7601,47 @@ export default function AdminPage() {
                           { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
                           { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
                         ]
-                    ).map((m, idx) => {
+                    ).map((m, idx, list) => {
                       const milestoneThemes = [
                         { badgeBg: "bg-amber-400 text-black", border: "border-amber-300", accentText: "text-amber-800" },
                         { badgeBg: "bg-emerald-500 text-white", border: "border-emerald-300", accentText: "text-emerald-800" },
                         { badgeBg: "bg-indigo-600 text-white", border: "border-indigo-300", accentText: "text-indigo-800" },
                       ];
                       const t = milestoneThemes[idx % milestoneThemes.length];
+                      const status = resolveMilestoneStatus(m, idx);
                       return (
                         <div
                           key={idx}
                           className="p-4 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-2 flex flex-col justify-between"
                         >
                           <div className="space-y-1.5">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between gap-1 flex-wrap">
                               <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-black uppercase ${t.badgeBg}`}>
                                 PHASE {m.phaseNumber || `0${idx + 1}`}
                               </span>
-                              <span className={`font-mono text-[11px] font-bold ${t.accentText}`}>
-                                {m.period}
+                              <span
+                                className={`px-2 py-0.5 rounded-full font-mono text-[8.5px] font-black uppercase border shadow-2xs ${status.bg}`}
+                                style={status.style}
+                              >
+                                {status.label}
                               </span>
                             </div>
+                            <span className={`block font-mono text-[10.5px] font-bold ${t.accentText}`}>
+                              {m.period}
+                            </span>
                             <h4 className="font-black text-sm uppercase text-black leading-snug">
                               {m.title}
                             </h4>
                             <p className="text-[11px] font-mono font-bold text-stone-500">
                               {m.subtitle}
                             </p>
-                            <p className="text-xs text-stone-600 leading-relaxed pt-1">
+                            <p className="text-xs text-stone-600 leading-relaxed pt-1 border-t border-dashed border-stone-200">
                               {m.description}
                             </p>
+                          </div>
+                          <div className="pt-2 flex items-center justify-between font-mono text-[9.5px] font-black text-stone-400 uppercase border-t border-stone-100">
+                            <span>STEP 0{idx + 1} OF {String(list.length).padStart(2, "0")}</span>
+                            <span className="text-amber-500">✦ ✦ ✦</span>
                           </div>
                         </div>
                       );

@@ -6,6 +6,7 @@ import Image from "next/image"
 import { usePortfolio } from "@/context/PortfolioContext"
 import { formatGoogleDriveImageUrl } from "@/lib/googleDrive"
 import { resolveRoleTrack } from "@/lib/roleTrack"
+import { resolveMilestoneStatus } from "@/lib/milestoneStatus"
 import {
   Brain,
   Code2,
@@ -1449,10 +1450,10 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                     <div className="relative space-y-2">
                       {/* Timeline Radar Node */}
                       <div
-                        className={`absolute -left-[30px] sm:-left-[43px] top-4 sm:top-5 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border-2 sm:border-3 z-10 transition-all ${
+                        className={`absolute -left-5 sm:-left-8 -translate-x-1/2 top-4 sm:top-5 flex items-center justify-center rounded-full z-10 transition-all ${
                           isCurrentRole
-                            ? "bg-emerald-400 text-black border-black dark:border-white shadow-[3px_3px_0_#059669] dark:shadow-[3px_3px_0_#10b981] scale-105"
-                            : "bg-stone-100 dark:bg-stone-800 border-stone-400 dark:border-stone-600 shadow-[2px_2px_0_#a8a29e] dark:shadow-[2px_2px_0_#292524] text-stone-400 dark:text-stone-500"
+                            ? "h-7 w-7 sm:h-8 sm:w-8 border-2 sm:border-3 bg-emerald-400 text-black border-black dark:border-white shadow-[0_0_12px_rgba(16,185,129,0.5)] scale-105"
+                            : "h-6 w-6 sm:h-7 sm:w-7 border-2 border-stone-400 dark:border-stone-600 bg-white dark:bg-stone-900 shadow-2xs text-stone-500 dark:text-stone-400"
                         }`}
                       >
                         {isCurrentRole ? (
@@ -1615,55 +1616,93 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                         {/* Two-Column Bento Split: Left Narrative + Right Impact Box */}
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 pt-1 relative z-10">
                           {/* Left: Role Scope & Description */}
-                          <div className="lg:col-span-7 space-y-2.5">
-                            <div className="font-mono text-[10px] font-bold text-stone-400 uppercase tracking-wider">
-                              [ROLE SCOPE &amp; MANDATE]
+                          <div className={exp.highlights && exp.highlights.length > 0 ? "lg:col-span-7 space-y-2.5" : "lg:col-span-12 space-y-2.5"}>
+                            <div className="font-mono text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider flex items-center gap-1.5">
+                              <span>[ROLE SCOPE &amp; MANDATE]</span>
+                              <span className="h-px flex-1 bg-stone-200 dark:bg-stone-800" />
                             </div>
-                            <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
-                              {exp.description}
-                            </p>
+                            {(() => {
+                              const desc = (exp.description || "").trim();
+                              if (!desc) {
+                                return (
+                                  <p className="text-xs sm:text-sm text-stone-500 italic">
+                                    No description provided for this mandate.
+                                  </p>
+                                );
+                              }
+                              // Smart bullet / paragraph parser (handles ✦, •, -, or newlines without ugly text jamming)
+                              const hasBulletSeparators = desc.includes("✦") || desc.includes("•") || desc.includes("\n");
+                              if (hasBulletSeparators) {
+                                const bulletItems = desc
+                                  .split(/(?:[✦•\n]+)/)
+                                  .map((s) => s.trim().replace(/^[-*•✦]\s*/, ""))
+                                  .filter((s) => s.length > 0);
+                                if (bulletItems.length > 1) {
+                                  return (
+                                    <ul className="space-y-2 pt-0.5">
+                                      {bulletItems.map((item, bIdx) => (
+                                        <li
+                                          key={bIdx}
+                                          className="flex items-start gap-2.5 text-xs sm:text-[13px] text-stone-700 dark:text-stone-300 leading-relaxed font-sans"
+                                        >
+                                          <span className="shrink-0 mt-1 text-amber-500 dark:text-amber-400 font-black text-xs">
+                                            ✦
+                                          </span>
+                                          <span>{item}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  );
+                                }
+                              }
+                              return (
+                                <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
+                                  {desc}
+                                </p>
+                              );
+                            })()}
                           </div>
 
                           {/* Right: Key Deliverables & Impact Box */}
-                          <div
-                            className={`lg:col-span-5 rounded-2xl p-3.5 sm:p-4 space-y-2 ${
-                              isCurrentRole
-                                ? "bg-gradient-to-br from-emerald-50/70 to-teal-50/40 dark:from-emerald-950/30 dark:to-teal-950/20 border-2 border-emerald-500/30 dark:border-emerald-500/40 shadow-2xs"
-                                : "bg-stone-100/70 dark:bg-stone-900/40 border border-stone-200 dark:border-stone-800"
-                            }`}
-                          >
+                          {exp.highlights && exp.highlights.length > 0 && (
                             <div
-                              className={`font-mono text-[10.5px] uppercase tracking-wider flex items-center gap-1.5 ${
+                              className={`lg:col-span-5 rounded-2xl p-4 sm:p-4.5 space-y-2.5 ${
                                 isCurrentRole
-                                  ? "font-black text-emerald-800 dark:text-emerald-300"
-                                  : "font-bold text-stone-500 dark:text-stone-400"
+                                  ? "bg-gradient-to-br from-emerald-50/80 via-teal-50/50 to-emerald-50/90 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-emerald-950/40 border-2 border-emerald-500/40 dark:border-emerald-500/50 shadow-2xs"
+                                  : "bg-stone-50/90 dark:bg-stone-900/60 border border-stone-200/90 dark:border-stone-800 shadow-2xs"
                               }`}
                             >
-                              <Sparkles
-                                className={`w-3.5 h-3.5 ${
+                              <div
+                                className={`font-mono text-[10.5px] uppercase tracking-wider flex items-center gap-1.5 pb-1 border-b ${
                                   isCurrentRole
-                                    ? "text-emerald-600 dark:text-emerald-400"
-                                    : "text-stone-400"
+                                    ? "font-black text-emerald-800 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-900/50"
+                                    : "font-bold text-stone-500 dark:text-stone-400 border-stone-200 dark:border-stone-800"
                                 }`}
-                              />
-                              <span>KEY DELIVERABLES &amp; IMPACT</span>
-                            </div>
-                            {exp.highlights && exp.highlights.length > 0 ? (
-                              <ul className="space-y-1.5">
+                              >
+                                <Sparkles
+                                  className={`w-3.5 h-3.5 shrink-0 ${
+                                    isCurrentRole
+                                      ? "text-emerald-600 dark:text-emerald-400"
+                                      : "text-amber-500"
+                                  }`}
+                                />
+                                <span>KEY DELIVERABLES &amp; IMPACT</span>
+                              </div>
+                              <ul className="space-y-2">
                                 {exp.highlights.map((h, hIdx) => (
                                   <li
                                     key={hIdx}
-                                    className={`flex items-start gap-2 text-xs leading-relaxed ${
+                                    className={`flex items-start gap-2.5 text-xs leading-relaxed ${
                                       isCurrentRole
                                         ? "text-stone-900 dark:text-stone-100 font-medium"
-                                        : "text-stone-600 dark:text-stone-400"
+                                        : "text-stone-700 dark:text-stone-300"
                                     }`}
                                   >
                                     <span
                                       className={`shrink-0 mt-0.5 ${
                                         isCurrentRole
-                                          ? "text-emerald-500 font-black"
-                                          : "text-stone-400"
+                                          ? "text-emerald-600 dark:text-emerald-400 font-black text-xs"
+                                          : "text-amber-500 text-xs"
                                       }`}
                                     >
                                       ✦
@@ -1672,10 +1711,8 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                                   </li>
                                 ))}
                               </ul>
-                            ) : (
-                              <p className="text-xs text-stone-500 italic">Core operational impact & milestones delivered.</p>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
 
                         {/* Bottom Skills / Domain Tag Strip */}
@@ -1740,12 +1777,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             {timelineMilestones.map((m, idx) => {
               const theme = milestoneThemes[idx % milestoneThemes.length];
-              const phaseStatuses = [
-                { label: "COMPLETED ✦", bg: "bg-emerald-500 text-white border-emerald-600" },
-                { label: "ACTIVE EXECUTION 🟢", bg: "bg-amber-400 text-black border-black" },
-                { label: "NEXT HORIZON 🚀", bg: "bg-indigo-500 text-white border-indigo-600" },
-              ];
-              const status = phaseStatuses[idx % phaseStatuses.length];
+              const status = resolveMilestoneStatus(m, idx);
 
               return (
                 <div
@@ -1762,9 +1794,12 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                     {/* Header Row: Phase Tag & Status Pill */}
                     <div className="flex items-center justify-between pt-1">
                       <span className={`px-2.5 py-0.5 rounded-lg font-mono text-[10px] font-black uppercase ${theme.badgeBg} border border-black/20`}>
-                        PHASE {m.phaseNumber}
+                        PHASE {m.phaseNumber || `0${idx + 1}`}
                       </span>
-                      <span className={`px-2 py-0.5 rounded-full font-mono text-[9px] font-black uppercase border shadow-2xs ${status.bg}`}>
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full font-mono text-[9px] font-black uppercase border shadow-2xs ${status.bg}`}
+                        style={status.style}
+                      >
                         {status.label}
                       </span>
                     </div>
@@ -1788,7 +1823,9 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
                   {/* Step Connector Indicator */}
                   <div className="pt-2 flex items-center justify-between font-mono text-[10px] font-black text-stone-400 uppercase">
-                    <span>STEP 0{idx + 1} OF 03</span>
+                    <span>
+                      STEP 0{idx + 1} OF {String(timelineMilestones.length).padStart(2, "0")}
+                    </span>
                     <span className="text-amber-500">✦ ✦ ✦</span>
                   </div>
                 </div>

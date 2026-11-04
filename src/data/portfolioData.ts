@@ -65,6 +65,9 @@ export interface TimelineMilestone {
   title: string;
   subtitle: string;
   description: string;
+  status?: "completed" | "active" | "next" | "planned" | "research" | string;
+  statusLabel?: string;
+  statusColor?: string;
 }
 
 export interface DailyThought {
