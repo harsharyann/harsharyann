@@ -385,7 +385,7 @@ export default function AdminPage() {
       }
     }
   }, [initialData]);
-  type AdminTab = "sublines" | "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
+  type AdminTab = "badges" | "sublines" | "cover" | "about" | "highlights" | "projects" | "certificates" | "milestones" | "skills" | "contact";
   const [activeTab, setActiveTab] = useState<AdminTab>("sublines");
   const [sublinesSectionFilter, setSublinesSectionFilter] = useState<"all" | "cover" | "about" | "projects" | "certificates" | "experience" | "contact">("all");
   const [expSkillsInputMap, setExpSkillsInputMap] = useState<Record<string, string>>({});
@@ -1908,6 +1908,7 @@ export default function AdminPage() {
   };
 
   const navTabs = [
+    { id: "badges", label: "⚡ Badges & Persona", title: "Role Badges & Persona Colors", desc: "Hide/unhide cover role badge & customize Persona and India colors", icon: Sparkles },
     { id: "sublines", label: "Section Sublines", title: "Master Section Sublines & Headings", desc: "Hero tagline, about subline, projects & certificates subtitles with live preview", icon: Type },
     { id: "cover", label: "Cover Hero", title: "Cover Page Manager", desc: "Hero portrait, wordmark, roles & cover buttons", icon: Sliders },
     { id: "about", label: "Profile & Bio", title: "Profile, Bio & Dossier", desc: "All-in-one: Photo mount, statement, bio highlighter, benchmarks & roadmap", icon: User },
@@ -2230,6 +2231,408 @@ export default function AdminPage() {
 
         {/* Content Container */}
         <main className="flex-1 p-4 sm:p-7 max-w-6xl w-full mx-auto space-y-8">
+
+        {/* ── UNMISSABLE HERO QUICK CONTROLS: ROLE BADGE (IMAGE 2) & PERSONA COLORS ── */}
+        {(activeTab === "badges" || activeTab === "sublines" || activeTab === "cover") && (
+          <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-amber-50/90 via-white to-purple-50/60 border-3 border-black shadow-[6px_6px_0_#000] space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b-2 border-black/10">
+              <div className="flex items-center gap-3">
+                <span className="p-2.5 rounded-2xl bg-amber-400 text-black border-2 border-black shadow-[2px_2px_0_#000] text-lg">
+                  ⚡
+                </span>
+                <div>
+                  <h3 className="font-['Space_Grotesk'] text-lg sm:text-xl font-black uppercase text-stone-900 flex items-center gap-2">
+                    <span>Role Badge &amp; Persona Color Controls</span>
+                    <span className="text-[10px] font-mono font-bold bg-amber-400 text-black border border-black px-2 py-0.5 rounded-full uppercase shadow-2xs">
+                      Live Controls
+                    </span>
+                  </h3>
+                  <p className="font-mono text-xs text-stone-600">
+                    Cover role pill (Image 2) hide/unhide karein, Persona tag color aur India/location accent customize karein.
+                  </p>
+                </div>
+              </div>
+
+              {activeTab !== "badges" && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("badges")}
+                  className="px-3 py-1 rounded-xl bg-stone-900 text-white font-mono text-[11px] font-bold self-start sm:self-auto cursor-pointer hover:bg-stone-800"
+                >
+                  ⚡ Focus Badges Tab ↗
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* 1. ROLE / FELLOWSHIP BADGE (IMAGE 2 PILL) */}
+              <div className="p-5 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-black uppercase text-stone-900 flex items-center gap-1.5">
+                    <Award className="w-4 h-4 text-purple-600" />
+                    <span>1. Cover Role Pill (Image 2 Badge)</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-purple-700 bg-purple-100 font-bold px-2 py-0.5 rounded-md border border-purple-300">
+                    Image 2 Badge
+                  </span>
+                </div>
+
+                {/* Live Badge Preview */}
+                <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200 flex flex-col items-center justify-center">
+                  <span className="text-[9.5px] font-mono text-stone-500 font-bold mb-1.5 uppercase">
+                    Live Role Pill Preview:
+                  </span>
+                  <div
+                    className="inline-flex items-center gap-2 py-1.5 px-3.5 rounded-full bg-white border-2 border-black shadow-[2px_2px_0_#000] transition-transform hover:scale-105"
+                    style={portfolio.personal.coverRoleTrackColor ? { borderColor: portfolio.personal.coverRoleTrackColor } : undefined}
+                  >
+                    <span
+                      className="w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse"
+                      style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: portfolio.personal.coverRoleTrackColor } : undefined}
+                    />
+                    <span
+                      className="font-mono text-[10.5px] font-black uppercase text-purple-700"
+                      style={portfolio.personal.coverRoleTrackColor ? { color: portfolio.personal.coverRoleTrackColor } : undefined}
+                    >
+                      FELLOWSHIP • APPOINTED
+                    </span>
+                    <span className="text-stone-300">|</span>
+                    <span className="font-['Space_Grotesk'] text-xs font-black uppercase text-black">
+                      {portfolio.personal.role || "NPTEL SCHOLAR"}
+                    </span>
+                    <span
+                      className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono text-[10px] font-black uppercase"
+                      style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: `${portfolio.personal.coverRoleTrackColor}20`, color: portfolio.personal.coverRoleTrackColor } : undefined}
+                    >
+                      @{portfolio.personal.aboutWorkPlace || "IIT MADRAS"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Hide / Unhide Controls */}
+                <div className="space-y-2 pt-1">
+                  <span className="block font-mono text-[11px] font-bold text-stone-700">
+                    Hide / Unhide Role Pill:
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {/* Desktop Toggle */}
+                    <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
+                      <div>
+                        <span className="font-mono text-[11px] font-bold text-stone-900 block">Desktop Cover:</span>
+                        <span className="font-mono text-[9px] text-stone-500">PC / Laptop</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const base = portfolioRef.current || portfolio;
+                          const nextVal = base.personal.showDesktopCurrentRole === false ? true : false;
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, showDesktopCurrentRole: nextVal },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, nextVal ? "✅ Desktop role pill is now SHOWN!" : "⚠️ Desktop role pill is now HIDDEN!");
+                        }}
+                        className={`px-3 py-1 rounded-full font-mono text-[10px] font-black uppercase transition-all cursor-pointer border ${
+                          portfolio.personal.showDesktopCurrentRole !== false
+                            ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
+                            : "bg-stone-200 text-stone-600 border-stone-300"
+                        }`}
+                      >
+                        {portfolio.personal.showDesktopCurrentRole !== false ? "● SHOWN" : "○ HIDDEN"}
+                      </button>
+                    </div>
+
+                    {/* Mobile Toggle */}
+                    <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
+                      <div>
+                        <span className="font-mono text-[11px] font-bold text-stone-900 block">Phone Cover:</span>
+                        <span className="font-mono text-[9px] text-stone-500">Mobile Phone</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const base = portfolioRef.current || portfolio;
+                          const nextVal = base.personal.showMobileCurrentRole === false ? true : false;
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, showMobileCurrentRole: nextVal },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, nextVal ? "✅ Phone role pill is now SHOWN!" : "⚠️ Phone role pill is now HIDDEN!");
+                        }}
+                        className={`px-3 py-1 rounded-full font-mono text-[10px] font-black uppercase transition-all cursor-pointer border ${
+                          portfolio.personal.showMobileCurrentRole !== false
+                            ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
+                            : "bg-stone-200 text-stone-600 border-stone-300"
+                        }`}
+                      >
+                        {portfolio.personal.showMobileCurrentRole !== false ? "● SHOWN" : "○ HIDDEN"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Role Pill Color Picker */}
+                <div className="pt-2 border-t border-stone-200">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-mono text-[11px] font-bold text-stone-700">Role Pill Color Accent:</span>
+                    {portfolio.personal.coverRoleTrackColor && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const base = portfolioRef.current || portfolio;
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, coverRoleTrackColor: "" },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, "Reset role pill color to auto");
+                        }}
+                        className="text-[10px] text-rose-600 hover:underline cursor-pointer font-mono font-bold"
+                      >
+                        Reset Color
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {[
+                      { label: "Purple (Fellowship)", color: "#8b5cf6" },
+                      { label: "Emerald (Academic)", color: "#10b981" },
+                      { label: "Cyan (Research)", color: "#06b6d4" },
+                      { label: "Amber (Internship)", color: "#f59e0b" },
+                      { label: "Rose", color: "#f43f5e" },
+                      { label: "Indigo", color: "#6366f1" },
+                    ].map((preset) => (
+                      <button
+                        key={preset.color}
+                        type="button"
+                        onClick={async () => {
+                          const base = portfolioRef.current || portfolio;
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, coverRoleTrackColor: preset.color },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, `Role badge color set to ${preset.label}`);
+                        }}
+                        className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer ${
+                          portfolio.personal.coverRoleTrackColor === preset.color
+                            ? "scale-110 border-black ring-2 ring-black/40"
+                            : "border-white shadow-xs hover:scale-105"
+                        }`}
+                        style={{ backgroundColor: preset.color }}
+                        title={preset.label}
+                      />
+                    ))}
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <span className="font-mono text-[10px] text-stone-400">Custom:</span>
+                      <input
+                        type="color"
+                        value={portfolio.personal.coverRoleTrackColor || "#8b5cf6"}
+                        onChange={async (e) => {
+                          const val = e.target.value;
+                          const base = portfolioRef.current || portfolio;
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, coverRoleTrackColor: val },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, "Custom role badge color saved");
+                        }}
+                        className="w-8 h-8 rounded-lg border border-stone-300 p-0.5 cursor-pointer bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. PERSONA TAG COLOR & INDIA/LOCATION COLOR */}
+              <div className="p-5 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-black uppercase text-stone-900 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    <span>2. Persona &amp; India Color Controls</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-amber-800 bg-amber-100 font-bold px-2 py-0.5 rounded-md border border-amber-300">
+                    Theme Colors
+                  </span>
+                </div>
+
+                {/* Live Persona Pill Preview */}
+                <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200 flex flex-col items-center justify-center">
+                  <span className="text-[9.5px] font-mono text-stone-500 font-bold mb-1.5 uppercase">
+                    Live Persona Pill Preview:
+                  </span>
+                  <div
+                    className="px-4 py-1.5 rounded-full border-2 font-mono text-xs font-black flex items-center gap-1.5 shadow-[2px_2px_0_#000] transition-transform hover:scale-105"
+                    style={{
+                      backgroundColor: portfolio.personal.coverPersonaColor ? `${portfolio.personal.coverPersonaColor}20` : "#f5f3ff",
+                      color: portfolio.personal.coverPersonaColor || "#7c3aed",
+                      borderColor: portfolio.personal.coverPersonaColor || "#7c3aed",
+                    }}
+                  >
+                    <span>✦</span>
+                    <span>{activeThoughtsList[selectedThoughtDay]?.persona || "The Philosopher"}</span>
+                  </div>
+                </div>
+
+                {/* Persona Color Swatches */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-mono text-[11px] font-bold text-stone-700">Persona Tag Color Accent:</span>
+                    {portfolio.personal.coverPersonaColor && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const base = portfolioRef.current || portfolio;
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, coverPersonaColor: "" },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, "Reset persona tag color");
+                        }}
+                        className="text-[10px] text-rose-600 hover:underline cursor-pointer font-mono font-bold"
+                      >
+                        Reset Color
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {[
+                      { label: "Purple", color: "#8b5cf6" },
+                      { label: "Emerald", color: "#10b981" },
+                      { label: "Cyan", color: "#06b6d4" },
+                      { label: "Orange", color: "#f97316" },
+                      { label: "Pink", color: "#ec4899" },
+                      { label: "Amber", color: "#f59e0b" },
+                      { label: "Indigo", color: "#6366f1" },
+                    ].map((pColor) => (
+                      <button
+                        key={pColor.color}
+                        type="button"
+                        onClick={async () => {
+                          const base = portfolioRef.current || portfolio;
+                          updateDailyThought(selectedThoughtDay, "personaColor", pColor.color);
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, coverPersonaColor: pColor.color },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, `Persona color set to ${pColor.label}`);
+                        }}
+                        className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer ${
+                          portfolio.personal.coverPersonaColor === pColor.color
+                            ? "scale-110 border-black ring-2 ring-black/40"
+                            : "border-white shadow-xs hover:scale-105"
+                        }`}
+                        style={{ backgroundColor: pColor.color }}
+                        title={pColor.label}
+                      />
+                    ))}
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <span className="font-mono text-[10px] text-stone-400">Custom:</span>
+                      <input
+                        type="color"
+                        value={portfolio.personal.coverPersonaColor || "#8b5cf6"}
+                        onChange={async (e) => {
+                          const val = e.target.value;
+                          updateDailyThought(selectedThoughtDay, "personaColor", val);
+                          const base = portfolioRef.current || portfolio;
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, coverPersonaColor: val },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, "Custom persona color saved");
+                        }}
+                        className="w-8 h-8 rounded-lg border border-stone-300 p-0.5 cursor-pointer bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* India / Location Badge Color */}
+                <div className="pt-2 border-t border-stone-200">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-mono text-[11px] font-bold text-stone-700">Location / India Badge Color:</span>
+                    {/* Preview */}
+                    <span
+                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-black border"
+                      style={{
+                        backgroundColor: portfolio.personal.locationBadgeColor ? `${portfolio.personal.locationBadgeColor}15` : "#fee2e2",
+                        color: portfolio.personal.locationBadgeColor || "#e11d48",
+                        borderColor: portfolio.personal.locationBadgeColor || "#f43f5e",
+                      }}
+                    >
+                      <MapPin className="w-2.5 h-2.5" />
+                      <span>{portfolio.personal.currentCity || "Chennai, India"}</span>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {[
+                      { label: "Rose", color: "#f43f5e" },
+                      { label: "Amber", color: "#f59e0b" },
+                      { label: "Emerald", color: "#10b981" },
+                      { label: "Sky Blue", color: "#0284c7" },
+                      { label: "Purple", color: "#8b5cf6" },
+                    ].map((lColor) => (
+                      <button
+                        key={lColor.color}
+                        type="button"
+                        onClick={async () => {
+                          const base = portfolioRef.current || portfolio;
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, locationBadgeColor: lColor.color },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, `Location badge color set to ${lColor.label}`);
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 transition-transform cursor-pointer ${
+                          portfolio.personal.locationBadgeColor === lColor.color
+                            ? "scale-110 border-black ring-2 ring-black/40"
+                            : "border-white shadow-xs hover:scale-105"
+                        }`}
+                        style={{ backgroundColor: lColor.color }}
+                        title={lColor.label}
+                      />
+                    ))}
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <span className="font-mono text-[10px] text-stone-400">Custom:</span>
+                      <input
+                        type="color"
+                        value={portfolio.personal.locationBadgeColor || "#f43f5e"}
+                        onChange={async (e) => {
+                          const val = e.target.value;
+                          const base = portfolioRef.current || portfolio;
+                          const nextPort = {
+                            ...base,
+                            personal: { ...base.personal, locationBadgeColor: val },
+                          };
+                          setPortfolio(nextPort);
+                          portfolioRef.current = nextPort;
+                          await saveInstantly(nextPort, "Custom location color saved");
+                        }}
+                        className="w-7 h-7 rounded border border-stone-300 p-0.5 cursor-pointer bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── TAB: MASTER SECTION SUBLINES & HEADINGS MANAGER ── */}
         {activeTab === "sublines" && (

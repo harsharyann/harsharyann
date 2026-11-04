@@ -3,38 +3,35 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Mail, Clock } from "lucide-react";
+import { Mail, Clock, Award } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { formatGoogleDriveImageUrl } from "@/lib/googleDrive";
 import { resolveRoleTrack } from "@/lib/roleTrack";
-import { useTheme } from "./ThemeProvider";
 import { ThemeToggle } from "./ThemeToggle";
-import { DoodleIcon, DoodleKind } from "./DoodleCrewCover";
 
-interface FloatingDoodleItem {
+interface Particle {
   id: number;
-  kind: DoodleKind;
-  x: number; // percentage (5 - 90)
-  y: number; // percentage (10 - 85)
+  x: number;
+  y: number;
   size: number;
-  rotate: number;
-  floatDelay: number;
+  duration: number;
+  delay: number;
+  opacity: number;
 }
 
-const INITIAL_MOBILE_DOODLES: FloatingDoodleItem[] = [
-  { id: 1, kind: "sparkle", x: 8, y: 14, size: 22, rotate: 12, floatDelay: 0 },
-  { id: 2, kind: "star", x: 86, y: 16, size: 20, rotate: -15, floatDelay: 0.6 },
-  { id: 3, kind: "bolt", x: 10, y: 46, size: 20, rotate: 18, floatDelay: 1.2 },
-  { id: 4, kind: "plane", x: 84, y: 48, size: 24, rotate: -25, floatDelay: 0.3 },
-  { id: 5, kind: "flame", x: 6, y: 72, size: 20, rotate: -8, floatDelay: 1.5 },
-  { id: 6, kind: "sparkle", x: 88, y: 74, size: 22, rotate: 20, floatDelay: 0.9 },
+const CINEMATIC_PARTICLES: Particle[] = [
+  { id: 1, x: 15, y: 22, size: 3, duration: 8, delay: 0, opacity: 0.6 },
+  { id: 2, x: 78, y: 18, size: 2.5, duration: 10, delay: 1.5, opacity: 0.5 },
+  { id: 3, x: 28, y: 44, size: 3.5, duration: 9, delay: 0.8, opacity: 0.7 },
+  { id: 4, x: 85, y: 40, size: 2, duration: 11, delay: 2, opacity: 0.4 },
+  { id: 5, x: 12, y: 68, size: 3, duration: 7, delay: 1, opacity: 0.5 },
+  { id: 6, x: 65, y: 72, size: 2.5, duration: 12, delay: 3, opacity: 0.6 },
+  { id: 7, x: 42, y: 82, size: 3, duration: 8.5, delay: 1.2, opacity: 0.5 },
 ];
 
 export function MobileDoodleCover() {
   const { data: portfolio, closeCover } = usePortfolio();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
 
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
@@ -62,30 +59,6 @@ export function MobileDoodleCover() {
     const interval = setInterval(updateTime, 30000);
     return () => clearInterval(interval);
   }, []);
-
-  // Floating Doodles Interactive State
-  const [doodles, setDoodles] = useState<FloatingDoodleItem[]>(INITIAL_MOBILE_DOODLES);
-  const [poppedId, setPoppedId] = useState<number | null>(null);
-
-  const handleDoodlePop = (id: number, e: React.MouseEvent | React.TouchEvent) => {
-    e.stopPropagation();
-    setPoppedId(id);
-    setTimeout(() => {
-      setDoodles((prev) =>
-        prev.map((d) =>
-          d.id === id
-            ? {
-                ...d,
-                x: 10 + Math.random() * 75,
-                y: 12 + Math.random() * 70,
-                rotate: (Math.random() - 0.5) * 60,
-              }
-            : d
-        )
-      );
-      setPoppedId(null);
-    }, 450);
-  };
 
   // Tap Ripple Animation State
   interface RippleEffect {
@@ -173,26 +146,38 @@ export function MobileDoodleCover() {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className={`relative w-full h-[100dvh] touch-none select-none flex flex-col justify-between overflow-hidden transition-colors duration-300 ${
-        isDark
-          ? "bg-[#0c0d14] text-white"
-          : "bg-[#faf8f3] text-stone-900"
-      }`}
-      aria-label="Harsh Aryan Mobile Sketchbook Cover"
+      className="relative w-full h-[100dvh] touch-none select-none bg-[#07080c] text-white flex flex-col justify-between overflow-hidden"
+      aria-label="Harsh Aryan Cinematic Mobile Cover"
     >
-      {/* ── THEMATIC SKETCHBOOK GRAPH-PAPER GRID BACKGROUND ── */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0 opacity-80"
-        style={{
-          backgroundImage: isDark
-            ? `radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)`
-            : `radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px), linear-gradient(to right, rgba(0,0,0,0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.035) 1px, transparent 1px)`,
-          backgroundSize: "20px 20px, 20px 20px, 20px 20px",
-        }}
-      />
+      {/* ── CINEMATIC AMBIENT LIGHT FLARES & DEPTH GLOWS ── */}
+      <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-[90px] pointer-events-none z-10" />
+      <div className="absolute bottom-20 left-0 w-72 h-72 bg-indigo-600/15 rounded-full blur-[100px] pointer-events-none z-10" />
 
-      {/* ── SPIRAL NOTEBOOK TOP BORDER STITCHING ── */}
-      <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-500 z-30" />
+      {/* ── FLOATING CINEMATIC BOKEH / FILM DUST PARTICLES ── */}
+      {CINEMATIC_PARTICLES.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full pointer-events-none z-20 bg-amber-300"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.size,
+            height: p.size,
+            boxShadow: `0 0 ${p.size * 3}px rgba(251, 191, 36, 0.8)`,
+          }}
+          animate={{
+            y: [0, -18, 0],
+            x: [0, 8, 0],
+            opacity: [p.opacity * 0.4, p.opacity, p.opacity * 0.4],
+          }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: p.delay,
+          }}
+        />
+      ))}
 
       {/* ── EXPANDING NEON TAP RIPPLE EFFECT ── */}
       {ripples.map((r) => (
@@ -212,167 +197,104 @@ export function MobileDoodleCover() {
         />
       ))}
 
-      {/* ── FLOATING INTERACTIVE SKETCHBOOK DOODLES ── */}
-      {doodles.map((d) => {
-        const isPopped = poppedId === d.id;
-        return (
-          <motion.div
-            key={d.id}
-            onClick={(e) => handleDoodlePop(d.id, e)}
-            onTouchEnd={(e) => handleDoodlePop(d.id, e)}
-            animate={
-              isPopped
-                ? { scale: [1, 1.8, 0], opacity: [1, 1, 0] }
-                : {
-                    y: [0, -10, 0],
-                    rotate: [d.rotate, d.rotate + 12, d.rotate],
-                  }
-            }
-            transition={
-              isPopped
-                ? { duration: 0.35 }
-                : {
-                    duration: 3 + (d.id % 3),
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: d.floatDelay,
-                  }
-            }
+      {/* ── 1. CINEMATIC HERO PORTRAIT SECTION (Dramatic Lighting & Cinematic Framing) ── */}
+      <div className="relative w-full h-[54vh] sm:h-[56vh] shrink-0 overflow-hidden bg-black/60">
+        <motion.div
+          className="relative w-full h-full"
+          initial={{ scale: 1 }}
+          animate={{
+            scale: [1, 1.035, 1],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "easeInOut",
+          }}
+          style={{ transform: "translateZ(0)" }}
+        >
+          <Image
+            src={displayPhotoSrc}
+            alt={portfolio?.personal?.name || "Harsh Aryan"}
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="object-cover filter brightness-[1.03] contrast-[1.06]"
             style={{
-              position: "absolute",
-              left: `${d.x}%`,
-              top: `${d.y}%`,
-              zIndex: 25,
+              objectPosition: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
+              transform: `scale(${portfolio?.personal?.coverPhotoZoom ?? 1})`,
+              transformOrigin: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
             }}
-            className="cursor-pointer active:scale-125 transition-transform"
-            title="Tap to pop doodle!"
-          >
-            <div className="filter drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">
-              <DoodleIcon kind={d.kind} size={d.size} isDark={isDark} />
-            </div>
-          </motion.div>
-        );
-      })}
-
-      {/* ── 1. TOP SKETCHBOOK HEADER BAR ── */}
-      <header className="relative z-30 w-full px-4 pt-3 pb-1 flex items-center justify-between">
-        {/* Sketchbook Stamp */}
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black text-white dark:bg-white dark:text-black font-mono text-[9.5px] font-black uppercase tracking-wider border border-black dark:border-white shadow-[2px_2px_0_#f59e0b]">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>PORTFOLIO // VOL. 2026</span>
-        </div>
-
-        {/* Live IST Time & Theme Toggle */}
-        <div className="flex items-center gap-2">
-          {currentTimeStr && (
-            <div
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-mono text-[9px] font-bold border border-black/20 dark:border-white/20 bg-white/80 dark:bg-stone-900/80 backdrop-blur-sm shadow-xs"
-              style={customLocationColor ? { borderColor: customLocationColor, color: customLocationColor } : undefined}
-            >
-              <Clock className="w-2.5 h-2.5 text-amber-500 shrink-0" />
-              <span>IST 🇮🇳 {currentTimeStr}</span>
-            </div>
-          )}
-
-          {/* Theme Toggle Button */}
-          <div
-            onClick={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
-            className="scale-90"
-          >
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
-
-      {/* ── 2. HERO STUDIO PORTRAIT FRAME (Thematic Framed Sketchbook Style) ── */}
-      <div className="relative z-20 w-full px-5 py-1 flex items-center justify-center shrink-0">
-        <div className="relative w-full max-w-[290px] sm:max-w-[320px] aspect-[4/4.3] rounded-3xl overflow-hidden border-3 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] bg-stone-200 dark:bg-stone-800 transition-transform hover:scale-[1.01]">
-          {/* Authentic Washi Tape Pinning Top of Frame */}
-          <div
-            className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-28 h-5 border-y border-black/30 shadow-xs rotate-[-1.5deg] z-30 rounded-xs bg-amber-400 opacity-95 pointer-events-none"
-            aria-hidden="true"
           />
+        </motion.div>
 
-          {/* Peeking Kitty Doodle Mascot on Top Right of Photo Frame */}
-          <div className="absolute -top-3.5 right-3 z-30 pointer-events-none filter drop-shadow-[2px_2px_0_rgba(0,0,0,0.6)]">
-            <svg viewBox="0 0 48 36" width="38" height="28">
-              <ellipse cx="24" cy="20" rx="15" ry="11" fill="#fff" stroke="#000" strokeWidth="2" />
-              <polygon points="12,14 16,4 21,12" fill="#fff" stroke="#000" strokeWidth="2" />
-              <polygon points="27,12 32,4 36,14" fill="#fff" stroke="#000" strokeWidth="2" />
-              <polygon points="14,12 17,6 20,11" fill="#fca5a5" />
-              <polygon points="28,11 31,6 34,12" fill="#fca5a5" />
-              <circle cx="19" cy="18" r="1.8" fill="#000" />
-              <circle cx="29" cy="18" r="1.8" fill="#000" />
-              <path d="M22 22 Q24 24 26 22" stroke="#000" strokeWidth="1.6" fill="none" />
-              <ellipse cx="15" cy="21" rx="2.5" ry="1.5" fill="#f43f5e" opacity="0.6" />
-              <ellipse cx="33" cy="21" rx="2.5" ry="1.5" fill="#f43f5e" opacity="0.6" />
-            </svg>
+        {/* Cinematic Vignettes: Subtle Top + Deep Velvet Fade at Bottom */}
+        <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none z-10" />
+        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#07080c] via-[#07080c]/85 to-transparent pointer-events-none z-10" />
+
+        {/* ── CAMERA HUD OVERLAYS (Cinematic 35mm Vibe) ── */}
+        <div className="absolute top-3.5 inset-x-4 z-20 flex items-center justify-between pointer-events-none">
+          {/* Film Stamp Pill */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white font-mono text-[9px] font-black uppercase tracking-wider shadow-lg">
+            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+            <span>RAW · 24FPS</span>
+            <span className="text-stone-400">|</span>
+            <span className="text-amber-400">35MM</span>
           </div>
 
-          {/* Portrait Image */}
-          <motion.div
-            className="relative w-full h-full"
-            initial={{ scale: 1 }}
-            animate={{
-              scale: [1, 1.025, 1],
-            }}
-            transition={{
-              duration: 16,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
-            }}
-          >
-            <Image
-              src={displayPhotoSrc}
-              alt={portfolio?.personal?.name || "Harsh Aryan"}
-              fill
-              priority
-              unoptimized
-              sizes="320px"
-              className="object-cover filter brightness-[1.02] contrast-[1.03]"
-              style={{
-                objectPosition: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
-                transform: `scale(${portfolio?.personal?.coverPhotoZoom ?? 1})`,
-                transformOrigin: `${portfolio?.personal?.coverPhotoPositionX ?? 50}% ${portfolio?.personal?.coverPhotoPositionY ?? 20}%`,
-              }}
-            />
-          </motion.div>
+          {/* Live India Clock & Theme Toggle */}
+          <div className="flex items-center gap-2 pointer-events-auto">
+            {currentTimeStr && (
+              <div
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-mono text-[9px] font-black border border-white/20 bg-black/60 backdrop-blur-md text-stone-200 shadow-lg"
+                style={customLocationColor ? { borderColor: customLocationColor, color: customLocationColor } : undefined}
+              >
+                <Clock className="w-2.5 h-2.5 text-amber-400 shrink-0" />
+                <span>IST 🇮🇳 {currentTimeStr}</span>
+              </div>
+            )}
 
-          {/* Frame Plaque Tag in Bottom Right Corner */}
-          <div className="absolute bottom-2.5 right-2.5 z-20 pointer-events-none">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-black/85 text-amber-400 font-mono text-[9px] font-black uppercase tracking-wider border border-amber-400/50 backdrop-blur-xs shadow-md">
-              <span className="text-rose-400">✦</span>
-              <span>{portfolio?.personal?.desktopPhotoTag || "AI & DS"}</span>
-            </span>
+            <div
+              onClick={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              onTouchEnd={(e) => e.stopPropagation()}
+              className="scale-90"
+            >
+              <ThemeToggle />
+            </div>
           </div>
+        </div>
+
+        {/* Bottom Corner Film Camera Chip */}
+        <div className="absolute bottom-4 left-4 z-20 pointer-events-none">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[8.5px] font-mono font-bold tracking-wider uppercase text-amber-400/90 shadow-md">
+            <span className="text-rose-400">✦</span>
+            <span>{portfolio?.personal?.desktopPhotoTag || "SONY α7 // AI & DS"}</span>
+          </span>
         </div>
       </div>
 
-      {/* ── 3. TYPOGRAPHY & SKETCH STICKER SECTION ── */}
-      <footer className="relative z-30 w-full px-4 pb-4 pt-0 flex flex-col items-center justify-between text-center overflow-visible gap-2">
-        {/* Name: "HARSH ARYAN" with vibrant doodle style */}
-        <div className="relative inline-block z-20">
+      {/* ── 2. CINEMATIC TYPOGRAPHY & DOSSIER STICKER SECTION ── */}
+      <footer className="relative z-30 w-full px-4 pb-4 pt-0 flex-1 flex flex-col items-center justify-between text-center overflow-visible">
+        {/* Name: "HARSH ARYAN" — Bold Cinematic Signature Typography */}
+        <div className="relative inline-block -mt-8 mb-1.5 z-20">
           <motion.h1
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-            className="font-hero-heading text-[2.4rem] sm:text-5xl tracking-wider px-2 leading-none select-none"
+            transition={{ duration: 0.55, delay: 0.1, ease: "easeOut" }}
+            className="font-hero-heading text-[2.85rem] sm:text-6xl text-white tracking-wider px-2 leading-none select-none"
             style={{
               fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
-              color: isDark ? "#ffffff" : "#0c0d14",
-              textShadow: isDark
-                ? "3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 5px 5px 0 #000, 6px 6px 14px rgba(0,0,0,0.9)"
-                : "3px 3px 0 #f59e0b, 4.5px 4.5px 0 #000",
+              color: "#ffffff",
+              textShadow: "0 2px 10px rgba(0,0,0,0.9), 0 8px 30px rgba(0,0,0,0.95), 2.5px 2.5px 0 #000, -1.5px -1.5px 0 #000, 3px 3px 0 #f59e0b",
             }}
           >
             {nameString}
           </motion.h1>
         </div>
 
-        {/* ── SKETCHBOOK STICKER NOTE ── */}
+        {/* ── CINEMATIC GLASSMORPHIC DOSSIER CARD ── */}
         <div
           onClick={(e) => {
             e.stopPropagation();
@@ -381,39 +303,39 @@ export function MobileDoodleCover() {
               closeCover();
             }, 220);
           }}
-          className="relative w-full max-w-[340px] select-none cursor-pointer"
+          className="relative w-full max-w-[345px] my-auto select-none cursor-pointer"
         >
-          {/* Realistic Washi Tape at Top of Note */}
+          {/* Realistic Golden Washi Tape Pinning Top of Card */}
           <div
-            className="w-24 h-3.5 border-y border-black/30 shadow-xs rotate-[-2deg] mx-auto -mb-2 z-20 relative rounded-xs bg-amber-400 opacity-90"
+            className="w-28 h-4 border-y border-black/30 shadow-md rotate-[-1.5deg] mx-auto -mb-2 z-20 relative rounded-xs backdrop-blur-xs bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 opacity-95"
             aria-hidden="true"
           />
 
-          {/* Comic Doodle Speech Bubble: "CLICK HERE 👇" */}
+          {/* Comic / Film Speech Bubble: "CLICK HERE 👇" */}
           <div className="absolute -top-4 right-1 z-30 pointer-events-none">
             <motion.div
               animate={{
                 y: [0, -3.5, 0],
-                rotate: [6, 2, 6],
+                rotate: [5, 2, 5],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="relative px-2.5 py-0.5 text-black border-2 border-black rounded-full font-mono text-[9.5px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] flex items-center gap-1 select-none bg-amber-300"
+              className="relative px-2.5 py-1 text-black border-2 border-black rounded-full font-mono text-[10px] font-black uppercase tracking-wider shadow-[2.5px_2.5px_0_#000] flex items-center gap-1.5 select-none bg-gradient-to-r from-amber-300 to-yellow-300"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping shrink-0" />
               <span>CLICK HERE</span>
               <span className="text-xs">👇</span>
-              <div className="absolute -bottom-1.5 right-5 w-2.5 h-2.5 bg-amber-300 border-r-2 border-b-2 border-black rotate-45" />
+              <div
+                className="absolute -bottom-1.5 right-6 w-2.5 h-2.5 bg-yellow-300 border-r-2 border-b-2 border-black rotate-45"
+              />
             </motion.div>
           </div>
 
-          {/* Sticky Note Body */}
+          {/* Dossier Body with Smoked Cinematic Frosted Glass */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className={`relative rounded-2xl p-3 sm:p-3.5 backdrop-blur-xl border-2 border-black dark:border-white shadow-[5px_5px_0_#000] dark:shadow-[5px_5px_0_#fff] flex flex-col items-center gap-2 rotate-[0.4deg] ${
-              isDark ? "bg-[#161722]/98 text-stone-100" : "bg-[#fffdf5]/98 text-stone-900"
-            }`}
+            className="relative rounded-2xl p-3.5 sm:p-4 bg-[#11131c]/95 backdrop-blur-2xl border-2 border-white/20 shadow-[0_12px_36px_rgba(0,0,0,0.85),_4px_4px_0_#000] text-stone-100 flex flex-col items-center gap-2.5 rotate-[0.3deg]"
           >
             {/* 1. CURRENT ROLE: Role & Workplace (Supports Hide/Unhide & Custom Colors from Admin!) */}
             {portfolio?.personal?.showMobileCurrentRole !== false &&
@@ -436,12 +358,12 @@ export function MobileDoodleCover() {
 
                 return (
                   <div
-                    className={`w-full flex flex-col items-center justify-center text-center py-1.5 px-3 rounded-xl bg-gradient-to-r ${track.cardBg} border border-black/15 dark:border-white/15 shadow-2xs`}
-                    style={customRoleColor ? { borderColor: `${customRoleColor}60` } : undefined}
+                    className="w-full flex flex-col items-center justify-center text-center py-2 px-3 rounded-xl bg-gradient-to-r from-white/[0.07] via-white/[0.04] to-white/[0.07] border border-white/20 shadow-md"
+                    style={customRoleColor ? { borderColor: `${customRoleColor}80` } : undefined}
                   >
                     {/* Top status indicator with Track Icon & Pulsing Dot */}
                     <div
-                      className={`flex items-center gap-1.5 pb-0.5 ${track.labelColor}`}
+                      className={`flex items-center gap-1.5 pb-1 ${track.labelColor}`}
                       style={customRoleColor ? { color: customRoleColor } : undefined}
                     >
                       <span className="relative flex h-2 w-2">
@@ -459,7 +381,7 @@ export function MobileDoodleCover() {
                         />
                       </span>
                       <span className="font-mono text-[9px] font-black uppercase tracking-wider flex items-center gap-1">
-                        {track.icon}
+                        {track.icon || <Award className="w-3 h-3 text-purple-400 shrink-0" />}
                         <span>{track.label}</span>
                       </span>
                     </div>
@@ -467,20 +389,21 @@ export function MobileDoodleCover() {
                     {/* Role & Organization display */}
                     <div className="flex flex-wrap items-center justify-center gap-1.5">
                       {Boolean(displayRole) && (
-                        <span className="font-['Space_Grotesk'] text-xs font-black uppercase tracking-tight text-stone-900 dark:text-stone-100">
+                        <span className="font-['Space_Grotesk'] text-xs sm:text-sm font-black uppercase tracking-tight text-white drop-shadow-xs">
                           {displayRole}
                         </span>
                       )}
                       {Boolean(workplace) && (
                         <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md ${
-                            customRoleColor ? "text-stone-900 dark:text-stone-100" : track.workplaceBadgeBg
-                          } font-mono text-[9.5px] font-black uppercase tracking-wide`}
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md font-mono text-[10px] font-black uppercase tracking-wide border shadow-xs ${
+                            customRoleColor ? "text-white" : track.workplaceBadgeBg
+                          }`}
                           style={
                             customRoleColor
                               ? {
-                                  backgroundColor: `${customRoleColor}20`,
-                                  border: `1px solid ${customRoleColor}60`,
+                                  backgroundColor: `${customRoleColor}25`,
+                                  borderColor: `${customRoleColor}70`,
+                                  color: "#ffffff",
                                 }
                               : undefined
                           }
@@ -504,7 +427,7 @@ export function MobileDoodleCover() {
             {/* 2. PUNCHY QUOTE / NARRATIVE TAGLINE */}
             {portfolio?.personal?.mobileTagline !== "" && (
               <p
-                className="text-stone-700 dark:text-stone-300 text-xs font-bold italic leading-snug text-center px-1"
+                className="text-amber-200/90 text-xs sm:text-sm font-bold italic leading-snug text-center px-1 drop-shadow-xs"
                 style={{ fontFamily: "'Patrick Hand', cursive" }}
               >
                 &ldquo;
@@ -514,8 +437,8 @@ export function MobileDoodleCover() {
               </p>
             )}
 
-            {/* 3. INTEGRATED SOCIAL CONNECT ICONS */}
-            <div className="flex items-center justify-center gap-3 pt-1.5 w-full border-t border-dashed border-stone-300 dark:border-stone-700">
+            {/* 3. INTEGRATED SOCIAL CONNECT ICONS (Frosted Glass Buttons) */}
+            <div className="flex items-center justify-center gap-3 pt-1.5 w-full border-t border-dashed border-white/15">
               <a
                 href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
                 target="_blank"
@@ -525,7 +448,7 @@ export function MobileDoodleCover() {
                 onTouchEnd={(e) => e.stopPropagation()}
                 aria-label="GitHub Profile"
                 title="GitHub"
-                className="flex items-center justify-center w-7 h-7 rounded-full bg-stone-900 text-white dark:bg-white dark:text-black border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-105 cursor-pointer"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/25 shadow-md backdrop-blur-md transition-transform active:scale-90 hover:scale-105 cursor-pointer"
               >
                 <GithubIcon className="w-3.5 h-3.5" />
               </a>
@@ -538,7 +461,7 @@ export function MobileDoodleCover() {
                 onTouchEnd={(e) => e.stopPropagation()}
                 aria-label="LinkedIn Profile"
                 title="LinkedIn"
-                className="flex items-center justify-center w-7 h-7 rounded-full bg-[#0077b5] text-white border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-105 cursor-pointer"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-[#0077b5] text-white border border-white/30 shadow-md backdrop-blur-md transition-transform active:scale-90 hover:scale-105 cursor-pointer"
               >
                 <LinkedinIcon className="w-3.5 h-3.5" />
               </a>
@@ -549,7 +472,7 @@ export function MobileDoodleCover() {
                 onTouchEnd={(e) => e.stopPropagation()}
                 aria-label="Send Email"
                 title="Email Harsh"
-                className="flex items-center justify-center w-7 h-7 rounded-full bg-[#f59e0b] text-white border border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] transition-transform active:scale-90 hover:scale-105 cursor-pointer"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-[#f59e0b] text-white border border-white/30 shadow-md backdrop-blur-md transition-transform active:scale-90 hover:scale-105 cursor-pointer"
               >
                 <Mail className="w-3.5 h-3.5" />
               </a>
@@ -567,7 +490,7 @@ export function MobileDoodleCover() {
               closeCover();
             }, 200);
           }}
-          className="group relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black text-white dark:bg-white dark:text-black active:scale-95 border-2 border-black dark:border-white font-mono text-[10.5px] font-black tracking-wider uppercase shadow-[3px_3px_0_#f59e0b] transition-all cursor-pointer select-none"
+          className="group relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 border-2 border-white/30 backdrop-blur-xl text-[10.5px] font-mono font-black tracking-wider uppercase text-white shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all cursor-pointer select-none"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping shrink-0" />
           <span>✦ CLICK HERE TO EXPLORE PORTFOLIO ✦</span>
