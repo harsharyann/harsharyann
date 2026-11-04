@@ -78,48 +78,70 @@ export interface DailyThought {
   personaColor?: string;
 }
 
+export const DEFAULT_DAY_PERSONA_COLORS: Record<number, string> = {
+  0: "#8b5cf6", // Sunday (Purple • The Philosopher)
+  1: "#a855f7", // Monday (Violet • The Dreamer)
+  2: "#f97316", // Tuesday (Orange • The Builder)
+  3: "#06b6d4", // Wednesday (Cyan • The Thinker)
+  4: "#10b981", // Thursday (Emerald • The Explorer)
+  5: "#ec4899", // Friday (Pink • The Creator)
+  6: "#eab308", // Saturday (Gold • The Rebel)
+};
+
+export function resolveDailyThoughtColor(dayIndex: number, customColor?: string): string {
+  if (customColor && customColor.trim()) return customColor.trim();
+  return DEFAULT_DAY_PERSONA_COLORS[dayIndex] || "#8b5cf6";
+}
+
 export const DEFAULT_DAILY_THOUGHTS: DailyThought[] = [
   {
     dayIndex: 0,
     dayName: "Sunday",
     persona: "The Philosopher",
     quote: "Teach machines to learn. Never stop learning yourself.",
+    personaColor: "#8b5cf6",
   },
   {
     dayIndex: 1,
     dayName: "Monday",
     persona: "The Dreamer",
     quote: "Every great invention begins with an unreasonable idea.",
+    personaColor: "#a855f7",
   },
   {
     dayIndex: 2,
     dayName: "Tuesday",
     persona: "The Builder",
     quote: "Dreams don't compile themselves. Start building.",
+    personaColor: "#f97316",
   },
   {
     dayIndex: 3,
     dayName: "Wednesday",
     persona: "The Thinker",
     quote: "Somewhere between logic and imagination, I build.",
+    personaColor: "#06b6d4",
   },
   {
     dayIndex: 4,
     dayName: "Thursday",
     persona: "The Explorer",
     quote: "Stay curious. The universe has more bugs than features.",
+    personaColor: "#10b981",
   },
   {
     dayIndex: 5,
     dayName: "Friday",
     persona: "The Creator",
     quote: "Code is how I turn 'what if' into 'what's next'.",
+    personaColor: "#ec4899",
   },
   {
     dayIndex: 6,
     dayName: "Saturday",
     persona: "The Rebel",
     quote: "Why follow the blueprint when you can invent one?",
+    personaColor: "#eab308",
   },
 ];
 

@@ -312,7 +312,7 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
         suppressHydrationWarning
         style={
           {
-            "--spark-accent": todaySpark.accentColor,
+            "--spark-accent": todayCustom?.personaColor || personal?.coverPersonaColor || todaySpark.accentColor,
             "--spark-border": isDark ? todaySpark.borderDark : todaySpark.borderLight,
             "--spark-shadow": isDark ? todaySpark.shadowDark : todaySpark.shadowLight,
           } as React.CSSProperties
