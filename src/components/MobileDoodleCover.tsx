@@ -13,7 +13,7 @@ import { extractPhotoPalette, PhotoPalette, DEFAULT_PHOTO_PALETTE } from "@/lib/
 
 export function MobileDoodleCover() {
   const { data: portfolio, closeCover } = usePortfolio();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const isDark = theme === "dark";
 
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -274,25 +274,6 @@ export function MobileDoodleCover() {
             }}
           />
         </motion.div>
-
-        {/* ── TOP RIGHT: THEME TOGGLE PILL (🔴 DARK / 🟡 LIGHT) ── */}
-        <div className="absolute top-3.5 right-3.5 z-30 pointer-events-auto">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleTheme();
-            }}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-stone-900 text-black dark:text-white border-2 border-black dark:border-white/60 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] font-mono font-black text-[9.5px] uppercase tracking-wider cursor-pointer active:translate-y-0.5 transition-all"
-            aria-label={isDark ? "Switch to Light Theme" : "Switch to Dark Theme"}
-            title="Toggle Light / Dark Mode"
-          >
-            <span className={`w-2 h-2 rounded-full ${isDark ? "bg-amber-400" : "bg-rose-500"} animate-pulse`} />
-            <span>{isDark ? "LIGHT" : "DARK"}</span>
-          </button>
-        </div>
 
         {/* ── PLAYFUL COMIC DOODLE OVERLAYS (Matches Uploaded Spec 1:1) ── */}
 
