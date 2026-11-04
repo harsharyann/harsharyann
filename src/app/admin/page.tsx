@@ -387,7 +387,7 @@ export default function AdminPage() {
   }, [initialData]);
   type AdminTab = "inquiries" | "sublines" | "cover" | "badges" | "about" | "experience" | "milestones" | "highlights" | "projects" | "certificates" | "skills" | "contact";
   const [activeTab, setActiveTab] = useState<AdminTab>("sublines");
-  const [sublinesSectionFilter, setSublinesSectionFilter] = useState<"all" | "cover" | "about" | "projects" | "certificates" | "experience" | "contact">("all");
+  const [sublinesSectionFilter, setSublinesSectionFilter] = useState<"all" | "about" | "projects" | "certificates" | "experience">("all");
   const [expSkillsInputMap, setExpSkillsInputMap] = useState<Record<string, string>>({});
   const [coverSubView, setCoverSubView] = useState<"desktop" | "mobile">("desktop");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -2923,12 +2923,10 @@ export default function AdminPage() {
             <div className="flex flex-wrap items-center gap-2 p-2 bg-stone-100 rounded-2xl border border-stone-200">
               {[
                 { id: "all", label: "All Sections", icon: Sparkles },
-                { id: "cover", label: "Hero & Cover", icon: Sliders },
                 { id: "about", label: "About Subline", icon: User },
                 { id: "projects", label: "Projects Lab", icon: FolderCode },
                 { id: "certificates", label: "Certificates & Laurels", icon: Award },
-                { id: "experience", label: "Experience", icon: Briefcase },
-                { id: "contact", label: "Contact Dispatch", icon: Send },
+                { id: "experience", label: "Work & Leadership", icon: Briefcase },
               ].map((f) => {
                 const isSelected = sublinesSectionFilter === f.id;
                 const IconComp = f.icon;
@@ -2950,159 +2948,14 @@ export default function AdminPage() {
               })}
             </div>
 
-            {/* 1. HERO & COVER PAGE SUBLINES */}
-            {(sublinesSectionFilter === "all" || sublinesSectionFilter === "cover") && (
-              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-                <div className="flex items-center justify-between pb-3 border-b border-stone-200">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-amber-400 border border-black" />
-                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      1. Hero &amp; Cover Page Sublines &amp; Taglines
-                    </h3>
-                  </div>
-                  <span className="font-mono text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-                    Hero Screen
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  {/* Left: Inputs (7 cols) */}
-                  <div className="lg:col-span-7 space-y-4">
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Desktop Headline / Hero Subtitle:
-                      </label>
-                      <textarea
-                        rows={2}
-                        value={portfolio.personal.desktopHeadline ?? portfolio.personal.headline ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, desktopHeadline: val, headline: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "Hero headline updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="e.g. Exploring Data Science, Machine Learning Foundations & Scientific Computing."
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1 flex items-center justify-between">
-                        <span>Mobile Narrative Tagline (Shown on Phone Cover Card):</span>
-                        <span className="text-[10px] text-amber-600 font-mono font-bold">📱 Mobile Only</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={portfolio.personal.mobileTagline ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, mobileTagline: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "Mobile tagline updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="Teaching Machines To Learn • Building Scientific Software"
-                      />
-                    </div>
-
-                      {/* Quick Cover Role Badge Toggles (Image 2 Pill) */}
-                      <div className="pt-2 border-t border-stone-200 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
-                          <div>
-                            <span className="font-mono text-[11px] font-bold text-stone-800 block">Desktop Role Pill:</span>
-                            <span className="font-mono text-[9px] text-stone-500">Image 2 badge</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              const base = portfolioRef.current || portfolio;
-                              const nextVal = base.personal.showDesktopCurrentRole === false ? true : false;
-                              const nextPort = {
-                                ...base,
-                                personal: { ...base.personal, showDesktopCurrentRole: nextVal },
-                              };
-                              setPortfolio(nextPort);
-                              portfolioRef.current = nextPort;
-                              await saveInstantly(nextPort, nextVal ? "Desktop role pill shown!" : "Desktop role pill hidden!");
-                            }}
-                            className={`px-2 py-0.5 rounded-full font-mono text-[9.5px] font-black uppercase cursor-pointer border ${
-                              portfolio.personal.showDesktopCurrentRole !== false
-                                ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
-                                : "bg-stone-200 text-stone-600 border-stone-300"
-                            }`}
-                          >
-                            {portfolio.personal.showDesktopCurrentRole !== false ? "● SHOWN" : "○ HIDDEN"}
-                          </button>
-                        </div>
-
-                        <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
-                          <div>
-                            <span className="font-mono text-[11px] font-bold text-stone-800 block">Phone Role Pill:</span>
-                            <span className="font-mono text-[9px] text-stone-500">Mobile cover note</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              const base = portfolioRef.current || portfolio;
-                              const nextVal = base.personal.showMobileCurrentRole === false ? true : false;
-                              const nextPort = {
-                                ...base,
-                                personal: { ...base.personal, showMobileCurrentRole: nextVal },
-                              };
-                              setPortfolio(nextPort);
-                              portfolioRef.current = nextPort;
-                              await saveInstantly(nextPort, nextVal ? "Mobile role pill shown!" : "Mobile role pill hidden!");
-                            }}
-                            className={`px-2 py-0.5 rounded-full font-mono text-[9.5px] font-black uppercase cursor-pointer border ${
-                              portfolio.personal.showMobileCurrentRole !== false
-                                ? "bg-emerald-500 text-white border-emerald-600 shadow-xs"
-                                : "bg-stone-200 text-stone-600 border-stone-300"
-                            }`}
-                          >
-                            {portfolio.personal.showMobileCurrentRole !== false ? "● SHOWN" : "○ HIDDEN"}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                  {/* Right: Live Preview Card (5 cols) */}
-                  <div className="lg:col-span-5 flex flex-col justify-center">
-                    <div className="font-mono text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                      <Eye className="w-3 h-3 text-amber-600" />
-                      <span>Live Hero Preview</span>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-[#fffdfa] text-stone-900 border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
-                      <h4 className="font-['Space_Grotesk'] text-lg font-black tracking-tight text-black uppercase">
-                        {portfolio.personal.desktopWordmark || portfolio.personal.name || "HARSH ARYAN"}
-                      </h4>
-                      <p className="font-mono text-xs text-stone-700 leading-relaxed">
-                        {portfolio.personal.desktopHeadline || portfolio.personal.headline}
-                      </p>
-                      {portfolio.personal.mobileTagline ? (
-                        <div className="pt-2 border-t border-stone-200">
-                          <span className="text-[11px] font-bold italic text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 inline-block" style={{ fontFamily: "'Patrick Hand', cursive" }}>
-                            &ldquo;{portfolio.personal.mobileTagline}&rdquo;
-                          </span>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 2. ABOUT SECTION ("BEHIND THE TERMINAL") */}
+            {/* 1. ABOUT SECTION ("BEHIND THE TERMINAL") */}
             {(sublinesSectionFilter === "all" || sublinesSectionFilter === "about") && (
               <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
                 <div className="flex items-center justify-between pb-3 border-b border-stone-200">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-emerald-400 border border-black" />
                     <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      2. Behind the Terminal (About Section) Heading &amp; Subline
+                      1. Behind the Terminal (About Section) Heading &amp; Subline
                     </h3>
                   </div>
                   <span className="font-mono text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
@@ -3113,46 +2966,24 @@ export default function AdminPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                   {/* Left: Inputs (7 cols) */}
                   <div className="lg:col-span-7 space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Section Eyebrow / Zone Badge:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.aboutZoneBadge ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, aboutZoneBadge: val },
-                            }));
-                          }}
-                          onBlur={() => saveInstantly(portfolioRef.current, "Zone badge updated!")}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          placeholder="✦ THE ARCHITECT & MIND"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Section Main Heading:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.aboutHeading ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, aboutHeading: val },
-                            }));
-                          }}
-                          onBlur={() => saveInstantly(portfolioRef.current, "About heading updated!")}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          placeholder="Behind the Terminal"
-                        />
-                      </div>
+                    <div>
+                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                        Section Main Heading:
+                      </label>
+                      <input
+                        type="text"
+                        value={portfolio.personal.aboutHeading ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPortfolio((prev) => ({
+                            ...prev,
+                            personal: { ...prev.personal, aboutHeading: val },
+                          }));
+                        }}
+                        onBlur={() => saveInstantly(portfolioRef.current, "About heading updated!")}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        placeholder="Behind the Terminal"
+                      />
                     </div>
 
                     <div>
@@ -3209,7 +3040,7 @@ export default function AdminPage() {
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-purple-500 border border-black" />
                     <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      3. Projects Lab Heading &amp; Subline
+                      2. Projects Lab Heading &amp; Subline
                     </h3>
                   </div>
                   <span className="font-mono text-[10px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded border border-purple-300">
@@ -3290,7 +3121,7 @@ export default function AdminPage() {
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-amber-500 border border-black" />
                     <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      4. Certifications &amp; Laurels Headings &amp; Sublines
+                      3. Certifications &amp; Laurels Headings &amp; Sublines
                     </h3>
                   </div>
                   <span className="font-mono text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
@@ -3430,7 +3261,7 @@ export default function AdminPage() {
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-cyan-500 border border-black" />
                     <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      5. Work &amp; Leadership (Experience) Heading &amp; Subline
+                      4. Work &amp; Leadership (Experience) Heading &amp; Subline
                     </h3>
                   </div>
                   <span className="font-mono text-[10px] font-bold text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded border border-cyan-300">
@@ -3505,109 +3336,6 @@ export default function AdminPage() {
                 </div>
               </div>
             )}
-
-            {/* 6. CONTACT & DISPATCH SECTION */}
-            {(sublinesSectionFilter === "all" || sublinesSectionFilter === "contact") && (
-              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-                <div className="flex items-center justify-between pb-3 border-b border-stone-200">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-rose-500 border border-black" />
-                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      6. Inquiries &amp; Contact Section Heading &amp; Subline
-                    </h3>
-                  </div>
-                  <span className="font-mono text-[10px] font-bold text-rose-800 bg-rose-100 px-2 py-0.5 rounded border border-rose-300">
-                    Contact Section
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  {/* Left: Inputs (7 cols) */}
-                  <div className="lg:col-span-7 space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Contact Main Heading:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.contactTitle ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, contactTitle: val },
-                            }));
-                          }}
-                          onBlur={() => saveInstantly(portfolioRef.current, "Contact heading updated!")}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          placeholder="Send a Dispatch"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Doodle Post-it Note:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.contactDoodleNote ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, contactDoodleNote: val },
-                            }));
-                          }}
-                          onBlur={() => saveInstantly(portfolioRef.current, "Doodle note updated!")}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          placeholder="drop a note anytime 💌"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Contact Dispatch Subline (Prompt Subtitle):
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={portfolio.personal.contactSubtitle ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, contactSubtitle: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "Contact subtitle updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="Have an interesting machine learning challenge, internship opportunity, or algorithmic project in mind? Drop your inquiry directly into my terminal."
-                      />
-                    </div>
-                  </div>
-
-                  {/* Right: Live Preview Card (5 cols) */}
-                  <div className="lg:col-span-5 flex flex-col justify-center">
-                    <div className="font-mono text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                      <Eye className="w-3 h-3 text-rose-500" />
-                      <span>Live Contact Header Preview</span>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-[#fffdfa] border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
-                      <h3 className="text-xl font-black uppercase text-black font-['Space_Grotesk'] leading-tight">
-                        {portfolio.personal.contactTitle || "Send a Dispatch"}
-                      </h3>
-                      <p className="text-xs font-mono text-stone-700 leading-relaxed">
-                        {portfolio.personal.contactSubtitle}
-                      </p>
-                      <div className="inline-block px-2 py-0.5 rounded bg-yellow-200 text-stone-900 font-mono text-[10px] font-bold">
-                        {portfolio.personal.contactDoodleNote || "drop a note anytime 💌"}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -3653,17 +3381,6 @@ export default function AdminPage() {
                     <span>📱 Mobile</span>
                   </button>
                 </div>
-
-                {/* Quick Save */}
-                <button
-                  type="button"
-                  onClick={handleSaveAll}
-                  disabled={isSaving}
-                  className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>{isSaving ? "Saving..." : "Save"}</span>
-                </button>
               </div>
             </div>
 
@@ -3947,67 +3664,24 @@ export default function AdminPage() {
                           </button>
                         </div>
 
-                        {/* Role Track / Badge Color Picker */}
-                        <div className="pt-2 border-t border-stone-200">
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1.5 flex items-center justify-between">
-                            <span>Role / Fellowship Pill Color Override:</span>
-                            {portfolio.personal.coverRoleTrackColor && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setPortfolio((prev) => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, coverRoleTrackColor: "" },
-                                  }));
-                                }}
-                                className="text-[10px] text-rose-600 hover:underline cursor-pointer"
-                              >
-                                Reset to Default
-                              </button>
-                            )}
-                          </label>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {[
-                              { label: "Purple (Fellowship)", color: "#8b5cf6" },
-                              { label: "Emerald (Academic)", color: "#10b981" },
-                              { label: "Cyan (Research)", color: "#06b6d4" },
-                              { label: "Amber (Internship)", color: "#f59e0b" },
-                              { label: "Rose", color: "#f43f5e" },
-                              { label: "Indigo", color: "#6366f1" },
-                            ].map((preset) => (
-                              <button
-                                key={preset.color}
-                                type="button"
-                                onClick={() =>
-                                  setPortfolio((prev) => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, coverRoleTrackColor: preset.color },
-                                  }))
-                                }
-                                className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer ${
-                                  portfolio.personal.coverRoleTrackColor === preset.color
-                                    ? "scale-110 border-black ring-2 ring-black/30"
-                                    : "border-white shadow-xs hover:scale-105"
-                                }`}
-                                style={{ backgroundColor: preset.color }}
-                                title={preset.label}
-                              />
-                            ))}
-                            <div className="flex items-center gap-1.5 ml-2">
-                              <span className="font-mono text-[10px] text-stone-400">Custom:</span>
-                              <input
-                                type="color"
-                                value={portfolio.personal.coverRoleTrackColor || "#8b5cf6"}
-                                onChange={(e) =>
-                                  setPortfolio((prev) => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, coverRoleTrackColor: e.target.value },
-                                  }))
-                                }
-                                className="w-8 h-8 rounded-lg border border-stone-300 p-0.5 cursor-pointer bg-white"
-                              />
-                            </div>
-                          </div>
+                        {/* Role Track / Badge Color Link */}
+                        <div className="pt-2 border-t border-stone-200 flex items-center justify-between">
+                          <span className="font-mono text-[11px] text-stone-600">
+                            Pill Color Accent:{" "}
+                            <span
+                              className="font-black px-1.5 py-0.5 rounded border border-black/10"
+                              style={{ color: portfolio.personal.coverRoleTrackColor || "#8b5cf6" }}
+                            >
+                              {portfolio.personal.coverRoleTrackColor || "Purple (Default)"}
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab("badges")}
+                            className="font-mono text-[10.5px] font-bold text-amber-700 hover:text-amber-900 bg-amber-50 px-2 py-1 rounded border border-amber-200 cursor-pointer"
+                          >
+                            🎨 Change in Badges &amp; Persona ↗
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -4622,67 +4296,24 @@ export default function AdminPage() {
                           </div>
                         </div>
 
-                        {/* Mobile Role Track / Badge Color Picker */}
-                        <div className="pt-2 border-t border-stone-200">
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1.5 flex items-center justify-between">
-                            <span>Phone Role Pill Color Override (Image 2 Pill):</span>
-                            {portfolio.personal.coverRoleTrackColor && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setPortfolio((prev) => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, coverRoleTrackColor: "" },
-                                  }));
-                                }}
-                                className="text-[10px] text-rose-600 hover:underline cursor-pointer"
-                              >
-                                Reset to Default
-                              </button>
-                            )}
-                          </label>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {[
-                              { label: "Purple (Fellowship)", color: "#8b5cf6" },
-                              { label: "Emerald (Academic)", color: "#10b981" },
-                              { label: "Cyan (Research)", color: "#06b6d4" },
-                              { label: "Amber (Internship)", color: "#f59e0b" },
-                              { label: "Rose", color: "#f43f5e" },
-                              { label: "Indigo", color: "#6366f1" },
-                            ].map((preset) => (
-                              <button
-                                key={preset.color}
-                                type="button"
-                                onClick={() =>
-                                  setPortfolio((prev) => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, coverRoleTrackColor: preset.color },
-                                  }))
-                                }
-                                className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer ${
-                                  portfolio.personal.coverRoleTrackColor === preset.color
-                                    ? "scale-110 border-black ring-2 ring-black/30"
-                                    : "border-white shadow-xs hover:scale-105"
-                                }`}
-                                style={{ backgroundColor: preset.color }}
-                                title={preset.label}
-                              />
-                            ))}
-                            <div className="flex items-center gap-1.5 ml-2">
-                              <span className="font-mono text-[10px] text-stone-400">Custom:</span>
-                              <input
-                                type="color"
-                                value={portfolio.personal.coverRoleTrackColor || "#8b5cf6"}
-                                onChange={(e) =>
-                                  setPortfolio((prev) => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, coverRoleTrackColor: e.target.value },
-                                  }))
-                                }
-                                className="w-8 h-8 rounded-lg border border-stone-300 p-0.5 cursor-pointer bg-white"
-                              />
-                            </div>
-                          </div>
+                        {/* Mobile Role Track / Badge Color Link */}
+                        <div className="pt-2 border-t border-stone-200 flex items-center justify-between">
+                          <span className="font-mono text-[11px] text-stone-600">
+                            Phone Role Color Accent:{" "}
+                            <span
+                              className="font-black px-1.5 py-0.5 rounded border border-black/10"
+                              style={{ color: portfolio.personal.coverRoleTrackColor || "#8b5cf6" }}
+                            >
+                              {portfolio.personal.coverRoleTrackColor || "Purple (Default)"}
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab("badges")}
+                            className="font-mono text-[10.5px] font-bold text-amber-700 hover:text-amber-900 bg-amber-50 px-2 py-1 rounded border border-amber-200 cursor-pointer"
+                          >
+                            🎨 Change in Badges &amp; Persona ↗
+                          </button>
                         </div>
                       </div>
 
@@ -4990,19 +4621,6 @@ export default function AdminPage() {
                 )}
               </div>
             </div>
-
-            {/* Bottom Final Save Button for Cover Hero */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                <span>{isSaving ? "Saving..." : "Save Cover Settings"}</span>
-              </button>
-            </div>
           </div>
         )}
 
@@ -5067,47 +4685,24 @@ export default function AdminPage() {
                   {/* Left Column: Form Inputs (7 cols) */}
                   <div className="lg:col-span-7 space-y-4">
                     {/* Section Heading & Subtitle */}
-                    <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
-                      <div className="font-mono text-xs font-black uppercase text-stone-800 flex items-center gap-1.5">
-                        <span>🏷️</span>
-                        <span>Section Header &amp; Subtitle (Live Above Frame)</span>
+                    {/* Section Header & Subtitle Central Link */}
+                    <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm">🏷️</span>
+                        <span className="font-mono text-xs font-bold text-stone-700">
+                          About Heading:
+                        </span>
+                        <span className="font-mono text-xs font-black text-stone-900 bg-white px-2 py-0.5 rounded-md border border-stone-300">
+                          &ldquo;{portfolio.personal.aboutHeading || "Behind the Terminal"}&rdquo;
+                        </span>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                            Section Main Heading:
-                          </label>
-                          <input
-                            type="text"
-                            value={portfolio.personal.aboutHeading ?? "Behind the Terminal"}
-                            onChange={(e) =>
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: { ...prev.personal, aboutHeading: e.target.value },
-                              }))
-                            }
-                            className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                            placeholder="e.g. Behind the Terminal"
-                          />
-                        </div>
-                        <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                            Section Subtitle:
-                          </label>
-                          <input
-                            type="text"
-                            value={portfolio.personal.aboutSubtitle ?? ""}
-                            onChange={(e) =>
-                              setPortfolio((prev) => ({
-                                ...prev,
-                                personal: { ...prev.personal, aboutSubtitle: e.target.value },
-                              }))
-                            }
-                            className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs text-stone-900 focus:border-black focus:outline-none"
-                            placeholder="Curious mind blending machine learning..."
-                          />
-                        </div>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("sublines")}
+                        className="font-mono text-[10.5px] font-bold text-amber-700 hover:text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 cursor-pointer self-start sm:self-auto hover:bg-amber-100 transition-colors"
+                      >
+                        ✏️ Edit in Headlines Tab ↗
+                      </button>
                     </div>
 
                     {/* Photo Source Input */}
@@ -5518,18 +5113,6 @@ export default function AdminPage() {
                             Photo chin ke bottom me pin ke saath show hota hai.
                           </p>
                         </div>
-                      </div>
-
-                      {/* Save Button for Photo Frame */}
-                      <div className="pt-2 flex items-center justify-end">
-                        <button
-                          type="button"
-                          onClick={() => saveInstantly(portfolioRef.current, "Photo frame & badges saved to Supabase cloud!")}
-                          className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs active:translate-y-0.5"
-                        >
-                          <Save className="w-3.5 h-3.5" />
-                          <span>Save Frame & Badges</span>
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -6721,7 +6304,7 @@ export default function AdminPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                          5. Development Trajectory (Roadmap Milestones)
+                          Development Trajectory (Roadmap Milestones)
                         </h3>
                         {portfolio.personal.showDevelopmentTrajectory === false && (
                           <span className="px-2 py-0.5 rounded-md bg-red-100 text-red-800 border border-red-300 font-mono text-[10px] font-black uppercase">
@@ -6992,24 +6575,15 @@ export default function AdminPage() {
                     </span>
                     <div>
                       <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                        3. Key Benchmarks (Quick Stats Cards)
+                        Key Benchmarks &amp; Impact Metrics
                       </h3>
                       <p className="font-mono text-xs text-stone-500">
-                        About section me Statement aur Bio ke theek neeche render hone wale 4 slim benchmark capsules.
+                        About section me Statement aur Bio ke theek neeche render hone wale slim benchmark capsules.
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => saveInstantly(portfolioRef.current, "Key Benchmarks saved to Supabase cloud!")}
-                      className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black border-2 border-black font-mono text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0_#000] active:translate-y-0.5"
-                    >
-                      <Save className="w-3.5 h-3.5" />
-                      <span>Save Benchmarks</span>
-                    </button>
-
                     <button
                       type="button"
                       onClick={handleAddQuickStat}
@@ -7292,16 +6866,6 @@ export default function AdminPage() {
                   Skills categories aur har category ke toolchips ko customize karein.
                 </p>
               </div>
-
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer shrink-0 flex items-center gap-1.5 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Skills"}</span>
-              </button>
             </div>
 
             {/* Technical Arsenal Block */}
@@ -7660,19 +7224,6 @@ export default function AdminPage() {
                   );
                 })}
               </div>
-            </div>
-
-            {/* Bottom Final Save Button for Skills */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Skills Changes"}</span>
-              </button>
             </div>
           </div>
         )}
@@ -8424,16 +7975,6 @@ export default function AdminPage() {
                   Full control over contact headers, inquiry form copy, live coordinates station, and received client messages
                 </p>
               </div>
-
-              <button
-                type="button"
-                onClick={() => saveInstantly(portfolioRef.current, "✓ Contact page & dispatch settings updated successfully!")}
-                disabled={isSaving}
-                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] active:translate-y-0.5 cursor-pointer flex items-center gap-2 self-start sm:self-auto shrink-0"
-              >
-                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                <span>{isSaving ? "Saving..." : "Save Contact Settings"}</span>
-              </button>
             </div>
 
             {/* Quick Sub-Section Switcher Tabs */}
@@ -8749,20 +8290,14 @@ export default function AdminPage() {
                     />
                   </div>
 
-                  {/* Location / India Badge Color Picker */}
-                  <div className="md:col-span-2 p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="font-mono text-xs font-bold text-stone-700 block">
-                          Location / India Badge Accent Color:
-                        </span>
-                        <span className="font-mono text-[10px] text-stone-500">
-                          Work &amp; Leadership section ke &ldquo;Chennai, India&rdquo; aur cover coordinates pin ka color
-                        </span>
-                      </div>
-                      {/* Live Preview */}
+                  {/* Location / India Badge Color Link */}
+                  <div className="md:col-span-2 p-3.5 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-stone-700">
+                        Location Pin Accent:
+                      </span>
                       <span
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-mono text-[10px] font-black border shadow-2xs"
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-black border shadow-2xs"
                         style={{
                           backgroundColor: portfolio.personal.locationBadgeColor ? `${portfolio.personal.locationBadgeColor}15` : "#fee2e2",
                           color: portfolio.personal.locationBadgeColor || "#e11d48",
@@ -8773,48 +8308,13 @@ export default function AdminPage() {
                         <span>{portfolio.personal.currentCity || portfolio.personal.location || "Chennai, India"}</span>
                       </span>
                     </div>
-
-                    <div className="flex items-center gap-2 flex-wrap pt-1">
-                      {[
-                        { label: "Rose Red", color: "#f43f5e" },
-                        { label: "Amber Gold", color: "#f59e0b" },
-                        { label: "Emerald Green", color: "#10b981" },
-                        { label: "Sky Blue", color: "#0284c7" },
-                        { label: "Violet Purple", color: "#8b5cf6" },
-                      ].map((preset) => (
-                        <button
-                          key={preset.color}
-                          type="button"
-                          onClick={() =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, locationBadgeColor: preset.color },
-                            }))
-                          }
-                          className={`w-6 h-6 rounded-full border-2 transition-transform cursor-pointer ${
-                            portfolio.personal.locationBadgeColor === preset.color
-                              ? "scale-110 border-black ring-2 ring-black/30"
-                              : "border-white shadow-xs hover:scale-105"
-                          }`}
-                          style={{ backgroundColor: preset.color }}
-                          title={preset.label}
-                        />
-                      ))}
-                      <div className="flex items-center gap-1.5 ml-2">
-                        <span className="font-mono text-[10px] text-stone-400">Custom:</span>
-                        <input
-                          type="color"
-                          value={portfolio.personal.locationBadgeColor || "#f43f5e"}
-                          onChange={(e) =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, locationBadgeColor: e.target.value },
-                            }))
-                          }
-                          className="w-7 h-7 rounded border border-stone-300 p-0.5 cursor-pointer bg-white"
-                        />
-                      </div>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("badges")}
+                      className="font-mono text-[10.5px] font-bold text-amber-700 hover:text-amber-900 bg-amber-50 px-2 py-1 rounded border border-amber-200 cursor-pointer self-start sm:self-auto"
+                    >
+                      🎨 Change Pin Color in Badges Tab ↗
+                    </button>
                   </div>
 
                   {/* Current Role / Workplace ("kha job kr rha hu") */}
@@ -9059,19 +8559,6 @@ export default function AdminPage() {
                 </div>
               </div>
             )}
-
-            {/* Bottom Final Save Button for Contact */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={() => saveInstantly(portfolioRef.current, "✓ Contact page & dispatch settings updated successfully!")}
-                disabled={isSaving}
-                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                <span>{isSaving ? "Saving..." : "Save Contact Settings"}</span>
-              </button>
-            </div>
           </div>
         )}
         </main>
