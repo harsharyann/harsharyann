@@ -5288,21 +5288,13 @@ export default function AdminPage() {
                           </div>
                         </div>
 
-                        {/* 3. Hero Name: HARSH ARYAN with White Outline & Indigo Glow */}
-                        <div className="relative z-20 text-center my-0.5">
+                        {/* 3. Hero Name: HARSH ARYAN — Crisp, Legible & Theme Adaptive */}
+                        <div className="relative z-20 text-center my-0.5 px-2">
                           <div
-                            className="font-hero-heading text-xl font-black uppercase tracking-wider leading-none select-none"
+                            className="font-hero-heading text-lg font-black uppercase tracking-tight leading-none select-none whitespace-nowrap text-stone-900"
                             style={{
                               fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
-                              color: "#1e1b4b",
-                              WebkitTextStroke: "1.5px #ffffff",
-                              textShadow: `
-                                -1.5px -1.5px 0 #ffffff,
-                                 1.5px -1.5px 0 #ffffff,
-                                -1.5px  1.5px 0 #ffffff,
-                                 1.5px  1.5px 0 #ffffff,
-                                 2px  2px 0 #6366f1
-                              `,
+                              textShadow: "1.5px 1.5px 0 #ffffff, -1.5px -1.5px 0 #ffffff, 1.5px -1.5px 0 #ffffff, -1.5px 1.5px 0 #ffffff, 2px 2px 0 #4f46e5",
                             }}
                           >
                             {portfolio.personal.name || "HARSH ARYAN"}
@@ -5321,7 +5313,7 @@ export default function AdminPage() {
                           />
 
                           {/* Card Body */}
-                          <div className="w-full rounded-2xl p-2.5 bg-[#fcfbff] border-2 border-black shadow-[3px_3px_0_#6366f1] flex flex-col gap-1.5 text-black">
+                          <div className="w-full rounded-2xl p-2.5 bg-white border-2 border-black shadow-[3px_3px_0_#4f46e5] flex flex-col gap-1.5 text-black">
                             {/* Row 1: Header */}
                             <div className="flex items-center justify-between w-full">
                               <span className="px-1.5 py-0.2 rounded-full bg-[#86efac] text-[#064e3b] border border-black font-mono text-[6.5px] font-black uppercase">

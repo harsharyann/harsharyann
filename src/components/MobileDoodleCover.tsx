@@ -125,7 +125,7 @@ export function MobileDoodleCover() {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="relative w-full h-[100dvh] touch-none select-none bg-[#fffdfa] dark:bg-[#0c0d14] text-stone-900 dark:text-stone-100 flex flex-col justify-between overflow-hidden transition-colors duration-300"
+      className="relative w-full h-[100dvh] touch-none select-none bg-[#faf8f3] dark:bg-[#07080d] text-black dark:text-white flex flex-col justify-between overflow-hidden transition-colors duration-300"
       aria-label="Harsh Aryan Comic Sketchbook Mobile Cover"
     >
       <style>{`
@@ -221,7 +221,7 @@ export function MobileDoodleCover() {
             }}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-stone-900 text-black dark:text-white border-2 border-black shadow-[2px_2px_0_#000] font-mono font-black text-[9.5px] uppercase tracking-wider cursor-pointer active:translate-y-0.5 transition-transform"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-stone-900 text-black dark:text-white border-2 border-black dark:border-white/60 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] font-mono font-black text-[9.5px] uppercase tracking-wider cursor-pointer active:translate-y-0.5 transition-all"
             aria-label={isDark ? "Switch to Light Theme" : "Switch to Dark Theme"}
             title="Toggle Light / Dark Mode"
           >
@@ -284,7 +284,7 @@ export function MobileDoodleCover() {
         <span className="absolute top-[41%] right-14 pointer-events-none z-20 text-[#10b981] font-black text-xs">+</span>
         <span className="absolute top-[35%] left-14 pointer-events-none z-20 text-[#a855f7] font-black text-xs">×</span>
 
-        {/* ── SMOOTH FROSTED BLUR TRANSITION AT BOTTOM OF PHOTO (Blends into Graph Paper) ── */}
+        {/* ── SMOOTH FROSTED BLUR TRANSITION AT BOTTOM OF PHOTO (Blends into Theme Paper) ── */}
         <div
           className="absolute bottom-0 inset-x-0 h-32 pointer-events-none z-10 backdrop-blur-md"
           style={{
@@ -293,7 +293,7 @@ export function MobileDoodleCover() {
           }}
         />
         <div
-          className="absolute bottom-0 inset-x-0 h-20 pointer-events-none z-10 backdrop-blur-lg bg-gradient-to-t from-[#fffdfa] dark:from-[#0c0d14] via-[#fffdfa]/60 dark:via-[#0c0d14]/60 to-transparent"
+          className="absolute bottom-0 inset-x-0 h-20 pointer-events-none z-10 backdrop-blur-lg bg-gradient-to-t from-[#faf8f3] dark:from-[#07080d] via-[#faf8f3]/60 dark:via-[#07080d]/60 to-transparent"
           style={{
             WebkitMaskImage: "linear-gradient(to top, black 30%, transparent 100%)",
             maskImage: "linear-gradient(to top, black 30%, transparent 100%)",
@@ -303,31 +303,31 @@ export function MobileDoodleCover() {
 
       {/* ── 2. ANGLED TICKER BANNERS (Crossed Pink & Cyan Ribbons) ── */}
       <div className="relative w-full -mt-7 z-20 overflow-hidden pointer-events-none flex flex-col items-center">
-        {/* Top Pink Ribbon */}
+        {/* Top Pink / Rose Ribbon */}
         <div
-          className="w-[110%] py-1 bg-[#f472b6] border-y-2 border-black shadow-[2px_2px_0_#000] overflow-hidden"
+          className="w-[110%] py-1 bg-[#f472b6] dark:bg-[#e11d48] border-y-2 border-black shadow-[2px_2px_0_#000] overflow-hidden"
           style={{ transform: "rotate(-2.2deg)" }}
         >
           <div className="marquee-track-left">
-            <span className="font-mono text-[9.5px] font-black uppercase text-black tracking-widest px-3 whitespace-nowrap">
+            <span className="font-mono text-[9.5px] font-black uppercase text-black dark:text-white tracking-widest px-3 whitespace-nowrap">
               {tagline} ✦ {tagline} ✦{" "}
             </span>
-            <span className="font-mono text-[9.5px] font-black uppercase text-black tracking-widest px-3 whitespace-nowrap">
+            <span className="font-mono text-[9.5px] font-black uppercase text-black dark:text-white tracking-widest px-3 whitespace-nowrap">
               {tagline} ✦ {tagline} ✦{" "}
             </span>
           </div>
         </div>
 
-        {/* Bottom Cyan Ribbon (Angled underneath) */}
+        {/* Bottom Cyan / Teal Ribbon (Angled underneath) */}
         <div
-          className="w-[110%] py-0.5 -mt-1.5 bg-[#2dd4bf] border-y-2 border-black shadow-[2px_2px_0_#000] overflow-hidden"
+          className="w-[110%] py-0.5 -mt-1.5 bg-[#2dd4bf] dark:bg-[#0891b2] border-y-2 border-black shadow-[2px_2px_0_#000] overflow-hidden"
           style={{ transform: "rotate(1.8deg)" }}
         >
           <div className="marquee-track-right">
-            <span className="font-mono text-[9px] font-black uppercase text-black tracking-widest px-3 whitespace-nowrap">
+            <span className="font-mono text-[9px] font-black uppercase text-black dark:text-white tracking-widest px-3 whitespace-nowrap">
               FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE COMPUTING ✦{" "}
             </span>
-            <span className="font-mono text-[9px] font-black uppercase text-black tracking-widest px-3 whitespace-nowrap">
+            <span className="font-mono text-[9px] font-black uppercase text-black dark:text-white tracking-widest px-3 whitespace-nowrap">
               FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE COMPUTING ✦{" "}
             </span>
           </div>
@@ -336,25 +336,18 @@ export function MobileDoodleCover() {
 
       {/* ── 3. HERO NAME & BENTO DOSSIER CARD ── */}
       <footer className="relative z-30 w-full px-4 pb-4 pt-1 flex-1 flex flex-col items-center justify-between text-center overflow-visible">
-        {/* Hero Name: "HARSH ARYAN" with White Sticker Outline & Indigo 3D Glow */}
-        <div className="relative z-20 my-auto py-0.5">
+        {/* Hero Name: "HARSH ARYAN" — Theme Adaptive, Razor-Sharp & Legible */}
+        <div className="relative z-20 my-auto py-1 px-2 max-w-full">
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45 }}
-            className="font-hero-heading text-[2.75rem] sm:text-5xl font-black uppercase tracking-wider text-center select-none leading-none"
+            className="font-hero-heading text-[clamp(1.85rem,7.5vw,2.65rem)] font-black uppercase tracking-tight text-center select-none leading-none whitespace-nowrap text-black dark:text-white"
             style={{
               fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
-              color: "#1e1b4b",
-              WebkitTextStroke: "2.5px #ffffff",
-              textShadow: `
-                -2.5px -2.5px 0 #ffffff,
-                 2.5px -2.5px 0 #ffffff,
-                -2.5px  2.5px 0 #ffffff,
-                 2.5px  2.5px 0 #ffffff,
-                 3.5px  3.5px 0 #6366f1,
-                 0 6px 18px rgba(99, 102, 241, 0.45)
-              `,
+              textShadow: isDark
+                ? "2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000, 3.5px 3.5px 0 #6366f1, 0 0 24px rgba(99, 102, 241, 0.55)"
+                : "2px 2px 0 #ffffff, -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 3px 3px 0 #4f46e5, 0 4px 14px rgba(79, 70, 229, 0.35)",
             }}
           >
             {nameString}
@@ -363,12 +356,14 @@ export function MobileDoodleCover() {
 
         {/* ── BENTO ROLE CARD PINNED WITH STRIPED PASTEL WASHI TAPE ── */}
         <div className="relative w-full max-w-[340px] my-auto">
-          {/* Pastel Striped Washi Tape (Diagonal Pink & Lavender Stripes) */}
+          {/* Pastel Striped Washi Tape (Diagonal Stripes) */}
           <div
             className="w-24 h-4 border border-dashed border-black/30 shadow-xs mx-auto -mb-2 z-20 relative rounded-xs pointer-events-none"
             style={{
               transform: "rotate(-1.5deg)",
-              background: "repeating-linear-gradient(45deg, #d8b4fe, #d8b4fe 8px, #fbcfe8 8px, #fbcfe8 16px)",
+              background: isDark
+                ? "repeating-linear-gradient(45deg, #4c1d95, #4c1d95 8px, #831843 8px, #831843 16px)"
+                : "repeating-linear-gradient(45deg, #d8b4fe, #d8b4fe 8px, #fbcfe8 8px, #fbcfe8 16px)",
             }}
             aria-hidden="true"
           />
@@ -382,12 +377,12 @@ export function MobileDoodleCover() {
                 closeCover();
               }, 220);
             }}
-            className="relative w-full rounded-[24px] p-3.5 sm:p-4 bg-[#fcfbff] dark:bg-[#141624] border-[2.5px] border-black shadow-[4px_4px_0_#6366f1] text-stone-900 dark:text-stone-100 flex flex-col gap-3 cursor-pointer select-none transition-transform hover:scale-[1.01]"
+            className="relative w-full rounded-[24px] p-3.5 sm:p-4 bg-white dark:bg-[#11131f] border-[2.5px] border-black dark:border-white/25 shadow-[4px_4px_0_#4f46e5] dark:shadow-[4px_4px_0_#000,0_8px_24px_rgba(0,0,0,0.6)] text-stone-900 dark:text-stone-100 flex flex-col gap-3 cursor-pointer select-none transition-transform hover:scale-[1.01]"
           >
             {/* Row 1: Header / Status row */}
             <div className="flex items-center justify-between w-full">
               {/* NOW Pill Badge */}
-              <span className="px-2.5 py-0.5 rounded-full bg-[#86efac] text-[#064e3b] border-1.5 border-black font-mono text-[9px] font-black uppercase shadow-[1px_1px_0_#000]">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#86efac] dark:bg-emerald-950 text-[#064e3b] dark:text-emerald-300 border-1.5 border-black dark:border-emerald-500/50 font-mono text-[9px] font-black uppercase shadow-[1px_1px_0_#000]">
                 NOW
               </span>
 
@@ -398,7 +393,7 @@ export function MobileDoodleCover() {
               </div>
 
               {/* Active Status Badge */}
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-400 font-mono text-[9px] font-black uppercase text-emerald-700 dark:text-emerald-300">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-400 dark:border-emerald-500/50 font-mono text-[9px] font-black uppercase text-emerald-700 dark:text-emerald-300">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                 <span>ACTIVE</span>
               </span>
@@ -407,13 +402,19 @@ export function MobileDoodleCover() {
             {/* Row 2: Role & Workplace Capsule Pills */}
             <div className="flex items-center justify-center gap-2 flex-wrap w-full">
               {/* Pill 1: Blue - Role */}
-              <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#bae6fd] text-[#0369a1] border-2 border-black font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]">
+              <div
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#bae6fd] dark:bg-sky-950/80 text-[#0369a1] dark:text-sky-300 border-2 border-black dark:border-sky-400/60 font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]"
+                style={customRoleColor ? { borderColor: customRoleColor, color: customRoleColor } : undefined}
+              >
                 <span className="text-[9px]">✦</span>
                 <span>{displayRole}</span>
               </div>
 
               {/* Pill 2: Pink - Workplace */}
-              <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#fbcfe8] text-[#be185d] border-2 border-black font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]">
+              <div
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#fbcfe8] dark:bg-rose-950/80 text-[#be185d] dark:text-rose-300 border-2 border-black dark:border-rose-400/60 font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]"
+                style={customRoleColor ? { borderColor: customRoleColor } : undefined}
+              >
                 <span className="text-[9px]">✦</span>
                 <span>@ {workplace}</span>
               </div>
@@ -430,7 +431,7 @@ export function MobileDoodleCover() {
                   onClick={(e) => e.stopPropagation()}
                   aria-label="GitHub Profile"
                   title="GitHub"
-                  className="w-9 h-9 rounded-full bg-[#e9d5ff] border-2 border-black shadow-[2px_2px_0_#000] flex items-center justify-center text-black hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                  className="w-9 h-9 rounded-full bg-[#e9d5ff] dark:bg-purple-950/70 border-2 border-black dark:border-purple-400/50 shadow-[2px_2px_0_#000] flex items-center justify-center text-black dark:text-purple-200 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
                 >
                   <GithubIcon className="w-4 h-4" />
                 </a>
@@ -443,7 +444,7 @@ export function MobileDoodleCover() {
                   onClick={(e) => e.stopPropagation()}
                   aria-label="LinkedIn Profile"
                   title="LinkedIn"
-                  className="w-9 h-9 rounded-full bg-[#bae6fd] border-2 border-black shadow-[2px_2px_0_#000] flex items-center justify-center text-[#0284c7] hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                  className="w-9 h-9 rounded-full bg-[#bae6fd] dark:bg-sky-950/70 border-2 border-black dark:border-sky-400/50 shadow-[2px_2px_0_#000] flex items-center justify-center text-[#0284c7] dark:text-sky-300 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
                 >
                   <LinkedinIcon className="w-4 h-4" />
                 </a>
@@ -454,7 +455,7 @@ export function MobileDoodleCover() {
                   onClick={(e) => e.stopPropagation()}
                   aria-label="Send Email"
                   title="Email"
-                  className="w-9 h-9 rounded-full bg-[#fbcfe8] border-2 border-black shadow-[2px_2px_0_#000] flex items-center justify-center text-[#e11d48] hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                  className="w-9 h-9 rounded-full bg-[#fbcfe8] dark:bg-rose-950/70 border-2 border-black dark:border-rose-400/50 shadow-[2px_2px_0_#000] flex items-center justify-center text-[#e11d48] dark:text-rose-300 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
                 >
                   <Mail className="w-4 h-4" />
                 </a>
@@ -496,7 +497,7 @@ export function MobileDoodleCover() {
                 closeCover();
               }, 220);
             }}
-            className="group relative w-full px-4 py-2.5 rounded-full bg-gradient-to-r from-[#4338ca] via-[#4f46e5] to-[#6366f1] border-2 border-black shadow-[4px_4px_0_#f43f5e] active:translate-y-0.5 active:shadow-[1px_1px_0_#f43f5e] flex items-center justify-between cursor-pointer select-none transition-all"
+            className="group relative w-full px-4 py-2.5 rounded-full bg-gradient-to-r from-[#4338ca] via-[#4f46e5] to-[#6366f1] border-2 border-black dark:border-white/40 shadow-[4px_4px_0_#f43f5e] dark:shadow-[4px_4px_0_#f43f5e,0_0_20px_rgba(99,102,241,0.5)] active:translate-y-0.5 active:shadow-[1px_1px_0_#f43f5e] flex items-center justify-between cursor-pointer select-none transition-all"
           >
             {/* Inner dashed stitched line */}
             <div className="absolute inset-[3px] rounded-full border border-dashed border-white/45 pointer-events-none" />
