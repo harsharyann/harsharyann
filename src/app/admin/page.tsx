@@ -87,7 +87,7 @@ import {
 } from "@/lib/googleDrive";
 import { resolveRoleTrack, ROLE_TRACK_THEMES } from "@/lib/roleTrack";
 import { MILESTONE_STATUS_PRESETS, resolveMilestoneStatus } from "@/lib/milestoneStatus";
-import { extractVibrantColor } from "@/lib/colorExtractor";
+import { extractVibrantColor, extractPhotoPalette, PhotoPalette, DEFAULT_PHOTO_PALETTE } from "@/lib/colorExtractor";
 import { compressImageFile } from "@/lib/imageCompressor";
 import { supabase } from "@/lib/supabase";
 
@@ -4967,27 +4967,442 @@ export default function AdminPage() {
                         </div>
                       </div>
 
-                      {/* Mobile Narrative Tagline */}
-                      <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Mobile Handwritten Tagline Quote:
-                        </label>
-                        <textarea
-                          rows={2}
-                          placeholder="e.g. Teaching Machines To Learn • Building Scientific Software"
-                          value={portfolio.personal.mobileTagline ?? ""}
-                          onChange={(e) =>
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, mobileTagline: e.target.value },
-                            }))
-                          }
-                          className="w-full p-3.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        />
+                      {/* 2. Mobile Scrolling Ribbons Manager (Crossed Tickers) */}
+                      <div className="p-4 rounded-2xl bg-amber-50/70 border-2 border-amber-300/80 space-y-4">
+                        <div className="flex items-center justify-between gap-2 pb-2 border-b border-amber-200">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-amber-600" />
+                            <h4 className="font-mono text-xs font-black uppercase text-stone-900">
+                              Mobile Scrolling Ribbons &amp; Tickers
+                            </h4>
+                          </div>
+
+                          {/* Auto-Match Colors from Photo Action Button */}
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const pUrl = formatGoogleDriveImageUrl(portfolio.personal.mobilePhotoUrl || portfolio.personal.coverPhotoUrl);
+                              try {
+                                const pal = await extractPhotoPalette(pUrl);
+                                const nextPort = {
+                                  ...portfolio,
+                                  personal: {
+                                    ...portfolio.personal,
+                                    mobileScrollColor1: pal.dominant,
+                                    mobileScrollTextColor1: "#000000",
+                                    mobileScrollColor2: pal.secondary || "#000000",
+                                    mobileScrollTextColor2: pal.accent || "#fde047",
+                                    mobileCtaButtonBg: "#000000",
+                                    mobileCtaButtonTextColor: "#ffffff",
+                                    mobileCtaButtonShadowColor: pal.dominant,
+                                    mobileClickHereBadgeBg: pal.accent || pal.dominant,
+                                    mobileClickHereBadgeTextColor: "#000000",
+                                    mobileCoverAutoPhotoColors: true,
+                                    showMobileActivePill: false,
+                                  },
+                                };
+                                setPortfolio(nextPort);
+                                portfolioRef.current = nextPort;
+                                saveInstantly(nextPort, "Auto-matched all cover colors from photo!");
+                              } catch (e) {
+                                alert("Photo colors sampled with default portfolio palette.");
+                              }
+                            }}
+                            className="px-2.5 py-1 rounded-lg bg-black text-white hover:bg-stone-800 font-mono text-[10px] font-black uppercase flex items-center gap-1 cursor-pointer shadow-xs transition-transform hover:scale-[1.02]"
+                            title="Automatically sample colors from your mobile cover photo"
+                          >
+                            <span>⚡ Auto-Match Photo Colors</span>
+                          </button>
+                        </div>
+
+                        {/* Ribbon 1 (Top Ticker) */}
+                        <div className="space-y-2">
+                          <label className="block font-mono text-xs font-bold text-stone-800">
+                            Ribbon #1 Text (Top Ticker Scrolling Left):
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. TEACHING MACHINES TO LEARN ✦ BUILDING SCIENTIFIC SOFTWARE"
+                            value={portfolio.personal.mobileScrollText1 ?? portfolio.personal.mobileTagline ?? ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: {
+                                  ...prev.personal,
+                                  mobileScrollText1: e.target.value,
+                                  mobileTagline: e.target.value,
+                                },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-xl bg-white border-2 border-black font-mono text-xs focus:ring-2 focus:ring-amber-400 focus:outline-none"
+                          />
+
+                          {/* Ribbon 1 Colors */}
+                          <div className="flex items-center gap-3 flex-wrap pt-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-[10.5px] font-bold text-stone-600">Ribbon #1 BG:</span>
+                              {[
+                                { label: "Amber Gold", hex: "#f59e0b" },
+                                { label: "Jet Black", hex: "#000000" },
+                                { label: "Emerald", hex: "#10b981" },
+                                { label: "Rose", hex: "#f43f5e" },
+                                { label: "Sky Blue", hex: "#0ea5e9" },
+                                { label: "White", hex: "#ffffff" },
+                              ].map((c) => {
+                                const curr = portfolio.personal.mobileScrollColor1 || "#f59e0b";
+                                const isSelected = curr.toLowerCase() === c.hex.toLowerCase();
+                                return (
+                                  <button
+                                    key={c.hex}
+                                    type="button"
+                                    onClick={() =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileScrollColor1: c.hex },
+                                      }))
+                                    }
+                                    className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold border flex items-center gap-1 cursor-pointer transition-all ${
+                                      isSelected
+                                        ? "border-black bg-stone-900 text-white shadow-xs scale-105"
+                                        : "border-stone-300 bg-white text-stone-700 hover:border-black"
+                                    }`}
+                                  >
+                                    <span className="w-2.5 h-2.5 rounded-full border border-black/30" style={{ backgroundColor: c.hex }} />
+                                    <span>{c.label}</span>
+                                  </button>
+                                );
+                              })}
+                              <input
+                                type="color"
+                                value={portfolio.personal.mobileScrollColor1 || "#f59e0b"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileScrollColor1: e.target.value },
+                                  }))
+                                }
+                                className="w-6 h-6 rounded cursor-pointer border border-black p-0"
+                                title="Custom Color"
+                              />
+                            </div>
+
+                            <div className="flex items-center gap-1.5 ml-auto">
+                              <span className="font-mono text-[10.5px] font-bold text-stone-600">Text:</span>
+                              <input
+                                type="color"
+                                value={portfolio.personal.mobileScrollTextColor1 || "#000000"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileScrollTextColor1: e.target.value },
+                                  }))
+                                }
+                                className="w-6 h-6 rounded cursor-pointer border border-black p-0"
+                                title="Text Color"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Ribbon 2 (Bottom Ticker) */}
+                        <div className="space-y-2 pt-2 border-t border-amber-200/70">
+                          <label className="block font-mono text-xs font-bold text-stone-800">
+                            Ribbon #2 Text (Bottom Ticker Scrolling Right):
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE COMPUTING"
+                            value={portfolio.personal.mobileScrollText2 ?? ""}
+                            onChange={(e) =>
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, mobileScrollText2: e.target.value },
+                              }))
+                            }
+                            className="w-full px-3 py-2 rounded-xl bg-white border-2 border-black font-mono text-xs focus:ring-2 focus:ring-amber-400 focus:outline-none"
+                          />
+
+                          {/* Ribbon 2 Colors */}
+                          <div className="flex items-center gap-3 flex-wrap pt-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-[10.5px] font-bold text-stone-600">Ribbon #2 BG:</span>
+                              {[
+                                { label: "Jet Black", hex: "#000000" },
+                                { label: "Amber Gold", hex: "#f59e0b" },
+                                { label: "Emerald", hex: "#10b981" },
+                                { label: "Slate", hex: "#1e293b" },
+                                { label: "Rose", hex: "#e11d48" },
+                                { label: "White", hex: "#ffffff" },
+                              ].map((c) => {
+                                const curr = portfolio.personal.mobileScrollColor2 || "#000000";
+                                const isSelected = curr.toLowerCase() === c.hex.toLowerCase();
+                                return (
+                                  <button
+                                    key={c.hex}
+                                    type="button"
+                                    onClick={() =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileScrollColor2: c.hex },
+                                      }))
+                                    }
+                                    className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold border flex items-center gap-1 cursor-pointer transition-all ${
+                                      isSelected
+                                        ? "border-black bg-stone-900 text-white shadow-xs scale-105"
+                                        : "border-stone-300 bg-white text-stone-700 hover:border-black"
+                                    }`}
+                                  >
+                                    <span className="w-2.5 h-2.5 rounded-full border border-black/30" style={{ backgroundColor: c.hex }} />
+                                    <span>{c.label}</span>
+                                  </button>
+                                );
+                              })}
+                              <input
+                                type="color"
+                                value={portfolio.personal.mobileScrollColor2 || "#000000"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileScrollColor2: e.target.value },
+                                  }))
+                                }
+                                className="w-6 h-6 rounded cursor-pointer border border-black p-0"
+                                title="Custom Color"
+                              />
+                            </div>
+
+                            <div className="flex items-center gap-1.5 ml-auto">
+                              <span className="font-mono text-[10.5px] font-bold text-stone-600">Text:</span>
+                              <input
+                                type="color"
+                                value={portfolio.personal.mobileScrollTextColor2 || "#fde047"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileScrollTextColor2: e.target.value },
+                                  }))
+                                }
+                                className="w-6 h-6 rounded cursor-pointer border border-black p-0"
+                                title="Text Color"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 3. CTA Action Buttons & Angled Badge Styling */}
+                      <div className="p-4 rounded-2xl bg-amber-50/70 border-2 border-amber-300/80 space-y-4">
+                        <div className="flex items-center gap-2 pb-1.5 border-b border-amber-200">
+                          <Sparkles className="w-4 h-4 text-amber-600" />
+                          <h4 className="font-mono text-xs font-black uppercase text-stone-900">
+                            CTA Button &amp; Action Badges Styling
+                          </h4>
+                        </div>
+
+                        {/* CTA Button Text & Background & Shadow */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div className="sm:col-span-1">
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Main Button Text:
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="EXPLORE PORTFOLIO"
+                              value={portfolio.personal.mobileCtaButtonText ?? ""}
+                              onChange={(e) =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, mobileCtaButtonText: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Button Background:
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={portfolio.personal.mobileCtaButtonBg || "#000000"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileCtaButtonBg: e.target.value },
+                                  }))
+                                }
+                                className="w-8 h-8 rounded cursor-pointer border border-black p-0.5"
+                              />
+                              <span className="font-mono text-[10px] text-stone-600 font-bold">
+                                {portfolio.personal.mobileCtaButtonBg || "#000000"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Button 3D Shadow:
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={portfolio.personal.mobileCtaButtonShadowColor || "#f59e0b"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileCtaButtonShadowColor: e.target.value },
+                                  }))
+                                }
+                                className="w-8 h-8 rounded cursor-pointer border border-black p-0.5"
+                              />
+                              <span className="font-mono text-[10px] text-stone-600 font-bold">
+                                {portfolio.personal.mobileCtaButtonShadowColor || "#f59e0b"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Angled Badge Text & Colors */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-amber-200/70">
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Angled Badge Text:
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="CLICK HERE ↓"
+                              value={portfolio.personal.mobileClickHereBadgeText ?? ""}
+                              onChange={(e) =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, mobileClickHereBadgeText: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Badge Color:
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={portfolio.personal.mobileClickHereBadgeBg || "#f59e0b"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileClickHereBadgeBg: e.target.value },
+                                  }))
+                                }
+                                className="w-8 h-8 rounded cursor-pointer border border-black p-0.5"
+                              />
+                              <span className="font-mono text-[10px] text-stone-600 font-bold">
+                                {portfolio.personal.mobileClickHereBadgeBg || "#f59e0b"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Badge Text Color:
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={portfolio.personal.mobileClickHereBadgeTextColor || "#000000"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileClickHereBadgeTextColor: e.target.value },
+                                  }))
+                                }
+                                className="w-8 h-8 rounded cursor-pointer border border-black p-0.5"
+                              />
+                              <span className="font-mono text-[10px] text-stone-600 font-bold">
+                                {portfolio.personal.mobileClickHereBadgeTextColor || "#000000"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 4. Mobile Bento Dossier Card Header & Mandate */}
+                      <div className="p-4 rounded-2xl bg-amber-50/70 border-2 border-amber-300/80 space-y-4">
+                        <div className="flex items-center justify-between pb-1.5 border-b border-amber-200">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-amber-600" />
+                            <h4 className="font-mono text-xs font-black uppercase text-stone-900">
+                              Mobile Bento Dossier Card Header
+                            </h4>
+                          </div>
+                          <span className="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            ✓ ACTIVE pill removed
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Top Left Pill Badge:
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="NOW"
+                              value={portfolio.personal.mobileNowBadgeText ?? ""}
+                              onChange={(e) =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, mobileNowBadgeText: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Center Mandate / Track:
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="RESEARCH"
+                              value={portfolio.personal.mobileCenterTrackText ?? ""}
+                              onChange={(e) =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, mobileCenterTrackText: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Arrow Note Text:
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="LET'S CONNECT"
+                              value={portfolio.personal.mobileConnectNote ?? ""}
+                              onChange={(e) =>
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, mobileConnectNote: e.target.value },
+                                }))
+                              }
+                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    {/* 3. Mobile Social Links */}
+                    {/* 4. Mobile Social Links */}
                     <div className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-3">
                       <div className="flex items-center gap-2 pb-2 border-b border-stone-100">
                         <Send className="w-4 h-4 text-amber-500" />
@@ -5302,77 +5717,85 @@ export default function AdminPage() {
                           />
                         </div>
 
-                        {/* 2. Crossed Angled Ribbons */}
+                        {/* 2. Crossed Angled Ribbons (Uses dynamic colors & text from state) */}
                         <div className="relative w-full -mt-4 z-20 overflow-hidden pointer-events-none flex flex-col items-center">
-                          {/* Pink Ribbon */}
+                          {/* Ribbon 1 */}
                           <div
-                            className="w-[115%] py-0.5 bg-[#f472b6] border-y border-black shadow-[1.5px_1.5px_0_#000] overflow-hidden"
-                            style={{ transform: "rotate(-2.2deg)" }}
+                            className="w-[115%] py-0.5 border-y border-black shadow-[1.5px_1.5px_0_#000] overflow-hidden"
+                            style={{
+                              transform: "rotate(-2.2deg)",
+                              backgroundColor: portfolio.personal.mobileScrollColor1 || "#f59e0b",
+                            }}
                           >
-                            <div className="whitespace-nowrap font-mono text-[6.5px] font-black uppercase text-black tracking-widest px-1">
-                              {portfolio.personal.mobileTagline || "TEACHING MACHINES TO LEARN ✦ BUILDING SCIENTIFIC SOFTWARE ✦"}
+                            <div
+                              className="whitespace-nowrap font-mono text-[6.5px] font-black uppercase tracking-widest px-1"
+                              style={{ color: portfolio.personal.mobileScrollTextColor1 || "#000000" }}
+                            >
+                              {portfolio.personal.mobileScrollText1 || portfolio.personal.mobileTagline || "TEACHING MACHINES TO LEARN ✦ BUILDING SCIENTIFIC SOFTWARE ✦"}
                             </div>
                           </div>
-                          {/* Cyan Ribbon */}
+                          {/* Ribbon 2 */}
                           <div
-                            className="w-[115%] py-0.5 -mt-1 bg-[#2dd4bf] border-y border-black shadow-[1.5px_1.5px_0_#000] overflow-hidden"
-                            style={{ transform: "rotate(1.8deg)" }}
+                            className="w-[115%] py-0.5 -mt-1 border-y border-black shadow-[1.5px_1.5px_0_#000] overflow-hidden"
+                            style={{
+                              transform: "rotate(1.8deg)",
+                              backgroundColor: portfolio.personal.mobileScrollColor2 || "#000000",
+                            }}
                           >
-                            <div className="whitespace-nowrap font-mono text-[6px] font-black uppercase text-black tracking-widest px-1">
-                              FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE CODE ✦
+                            <div
+                              className="whitespace-nowrap font-mono text-[6px] font-black uppercase tracking-widest px-1"
+                              style={{ color: portfolio.personal.mobileScrollTextColor2 || "#fde047" }}
+                            >
+                              {portfolio.personal.mobileScrollText2 || "FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE CODE ✦"}
                             </div>
                           </div>
                         </div>
 
-                        {/* 3. Hero Name: HARSH ARYAN — Crisp, Legible & Theme Adaptive */}
+                        {/* 3. Hero Name: HARSH ARYAN — Crisp, Legible & Portfolio Aligned */}
                         <div className="relative z-20 text-center my-0.5 px-2">
                           <div
                             className="font-hero-heading text-lg font-black uppercase tracking-tight leading-none select-none whitespace-nowrap text-stone-900"
                             style={{
                               fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
-                              textShadow: "1.5px 1.5px 0 #ffffff, -1.5px -1.5px 0 #ffffff, 1.5px -1.5px 0 #ffffff, -1.5px 1.5px 0 #ffffff, 2px 2px 0 #4f46e5",
+                              textShadow: "1.5px 1.5px 0 #ffffff, -1.5px -1.5px 0 #ffffff, 1.5px -1.5px 0 #ffffff, -1.5px 1.5px 0 #ffffff, 2px 2px 0 #000000",
                             }}
                           >
                             {portfolio.personal.name || "HARSH ARYAN"}
                           </div>
                         </div>
 
-                        {/* 4. Bento Dossier Card Pinned with Striped Washi Tape */}
+                        {/* 4. Bento Dossier Card Pinned with Signature Amber Washi Tape */}
                         <div className="relative z-20 px-3 w-full my-auto">
-                          {/* Striped Pastel Washi Tape */}
+                          {/* Amber Washi Tape */}
                           <div
-                            className="w-16 h-2.5 border border-dashed border-black/30 shadow-xs mx-auto -mb-1 z-20 relative rounded-xs pointer-events-none"
-                            style={{
-                              transform: "rotate(-1.5deg)",
-                              background: "repeating-linear-gradient(45deg, #d8b4fe, #d8b4fe 6px, #fbcfe8 6px, #fbcfe8 12px)",
-                            }}
+                            className="w-16 h-2.5 bg-amber-300 border border-dashed border-black/40 shadow-xs mx-auto -mb-1 z-20 relative rounded-xs pointer-events-none"
+                            style={{ transform: "rotate(-1.5deg)" }}
                           />
 
-                          {/* Card Body */}
-                          <div className="w-full rounded-2xl p-2.5 bg-white border-2 border-black shadow-[3px_3px_0_#4f46e5] flex flex-col gap-1.5 text-black">
+                          {/* Card Body (Neo-Brutalist White & Solid Black 3D Shadow) */}
+                          <div className="w-full rounded-2xl p-2.5 bg-white border-2 border-black shadow-[3.5px_3.5px_0_#000] flex flex-col gap-1.5 text-black">
                             {/* Row 1: Header */}
                             <div className="flex items-center justify-between w-full">
-                              <span className="px-1.5 py-0.2 rounded-full bg-[#86efac] text-[#064e3b] border border-black font-mono text-[6.5px] font-black uppercase">
-                                NOW
+                              <span
+                                className="px-1.5 py-0.2 rounded-full text-black border border-black font-mono text-[6.5px] font-black uppercase"
+                                style={{ backgroundColor: portfolio.personal.mobileClickHereBadgeBg || "#f59e0b" }}
+                              >
+                                {portfolio.personal.mobileNowBadgeText || "NOW"}
                               </span>
                               <div className="flex items-center gap-1 font-mono text-[7px] font-black uppercase tracking-wider text-stone-900">
-                                <span>⚗️</span>
-                                <span>RESEARCH</span>
+                                <span>{portfolio.personal.aboutRoleIcon || "⚗️"}</span>
+                                <span>{portfolio.personal.mobileCenterTrackText || "RESEARCH"}</span>
                               </div>
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full bg-emerald-50 border border-emerald-400 font-mono text-[6.5px] font-black uppercase text-emerald-700">
-                                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                                <span>ACTIVE</span>
-                              </span>
                             </div>
 
-                            {/* Row 2: Pills */}
+                            {/* Row 2: Pills (Amber & Sky) */}
                             <div className="flex items-center justify-center gap-1.5 flex-wrap w-full">
-                              <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-[#bae6fd] text-[#0369a1] border border-black font-mono text-[7.5px] font-black shadow-[1px_1px_0_#000]">
-                                <span className="text-[6px]">✦</span>
-                                <span>{portfolio.personal.role || "Data Research"}</span>
+                              <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-black font-mono text-[7.5px] font-black shadow-[1px_1px_0_#000]">
+                                <span className="text-[6px] text-amber-600">✦</span>
+                                <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Data Research"}</span>
                               </div>
-                              <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-[#fbcfe8] text-[#be185d] border border-black font-mono text-[7.5px] font-black shadow-[1px_1px_0_#000]">
-                                <span className="text-[6px]">✦</span>
+                              <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-sky-100 text-sky-900 border border-black font-mono text-[7.5px] font-black shadow-[1px_1px_0_#000]">
+                                <span className="text-[6px] text-sky-600">✦</span>
                                 <span>@ {portfolio.personal.aboutWorkPlace || "IIT Madras"}</span>
                               </div>
                             </div>
@@ -5380,13 +5803,13 @@ export default function AdminPage() {
                             {/* Row 3: Circular Social Icons + Curved Arrow */}
                             <div className="flex items-center justify-between w-full pt-1 border-t border-dashed border-stone-300">
                               <div className="flex items-center gap-1.5">
-                                <span className="w-6 h-6 rounded-full bg-[#e9d5ff] border border-black shadow-[1px_1px_0_#000] text-black text-[7px] font-black flex items-center justify-center">
+                                <span className="w-6 h-6 rounded-full bg-white border border-black shadow-[1px_1px_0_#000] text-black text-[7px] font-black flex items-center justify-center">
                                   GH
                                 </span>
-                                <span className="w-6 h-6 rounded-full bg-[#bae6fd] border border-black shadow-[1px_1px_0_#000] text-[#0284c7] text-[7px] font-black flex items-center justify-center">
+                                <span className="w-6 h-6 rounded-full bg-white border border-black shadow-[1px_1px_0_#000] text-[#0284c7] text-[7px] font-black flex items-center justify-center">
                                   in
                                 </span>
-                                <span className="w-6 h-6 rounded-full bg-[#fbcfe8] border border-black shadow-[1px_1px_0_#000] text-[#e11d48] text-[7px] font-black flex items-center justify-center">
+                                <span className="w-6 h-6 rounded-full bg-white border border-black shadow-[1px_1px_0_#000] text-rose-500 text-[7px] font-black flex items-center justify-center">
                                   ✉
                                 </span>
                               </div>
@@ -5396,9 +5819,7 @@ export default function AdminPage() {
                                   <path d="M2 11 L 5 17 L 10 14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                                 <div className="font-mono font-black text-[6px] uppercase tracking-wider leading-tight text-stone-900 text-left">
-                                  <span>LET&apos;S</span>
-                                  <br />
-                                  <span>CONNECT</span>
+                                  <span>{portfolio.personal.mobileConnectNote || "LET'S CONNECT"}</span>
                                 </div>
                               </div>
                             </div>
@@ -5408,17 +5829,38 @@ export default function AdminPage() {
                         {/* 5. CTA Area: CLICK HERE badge + Explore Portfolio Button */}
                         <div className="relative z-20 px-3 pb-2.5 w-full flex flex-col items-center">
                           <div className="w-full flex justify-end pr-2 -mb-1.5 z-20 pointer-events-none">
-                            <span className="px-1.5 py-0.2 rounded-full bg-[#86efac] text-black border border-black font-mono text-[6.5px] font-black uppercase shadow-[1px_1px_0_#000] rotate-[-2.5deg] flex items-center gap-0.5">
-                              <span>CLICK HERE</span>
-                              <span>↓</span>
+                            <span
+                              className="px-1.5 py-0.2 rounded-full border border-black font-mono text-[6.5px] font-black uppercase shadow-[1px_1px_0_#000] rotate-[-2.5deg] flex items-center gap-0.5"
+                              style={{
+                                backgroundColor: portfolio.personal.mobileClickHereBadgeBg || "#f59e0b",
+                                color: portfolio.personal.mobileClickHereBadgeTextColor || "#000000",
+                              }}
+                            >
+                              <span>{portfolio.personal.mobileClickHereBadgeText || "CLICK HERE ↓"}</span>
                             </span>
                           </div>
-                          <div className="w-full py-1.5 px-2.5 rounded-full bg-gradient-to-r from-[#4338ca] via-[#4f46e5] to-[#6366f1] border border-black shadow-[2.5px_2.5px_0_#f43f5e] flex items-center justify-between text-white">
-                            <span className="font-mono text-[7.5px] font-black uppercase tracking-wider flex items-center gap-1 pl-1">
-                              <span className="text-amber-300">✦</span>
-                              <span>EXPLORE PORTFOLIO</span>
+                          <div
+                            className="w-full py-1.5 px-2.5 rounded-full border border-black flex items-center justify-between"
+                            style={{
+                              backgroundColor: portfolio.personal.mobileCtaButtonBg || "#000000",
+                              color: portfolio.personal.mobileCtaButtonTextColor || "#ffffff",
+                              boxShadow: `2.5px 2.5px 0 ${portfolio.personal.mobileCtaButtonShadowColor || "#f59e0b"}`,
+                            }}
+                          >
+                            <span
+                              className="font-mono text-[7.5px] font-black uppercase tracking-wider flex items-center gap-1 pl-1"
+                              style={{ color: portfolio.personal.mobileCtaButtonTextColor || "#ffffff" }}
+                            >
+                              <span style={{ color: portfolio.personal.mobileCtaButtonShadowColor || "#f59e0b" }}>✦</span>
+                              <span>{portfolio.personal.mobileCtaButtonText || "EXPLORE PORTFOLIO"}</span>
                             </span>
-                            <span className="w-4 h-4 rounded-full bg-white text-black border border-black flex items-center justify-center font-black text-[8px]">
+                            <span
+                              className="w-4 h-4 rounded-full border border-black flex items-center justify-center font-black text-[8px]"
+                              style={{
+                                backgroundColor: portfolio.personal.mobileCtaButtonShadowColor || "#f59e0b",
+                                color: "#000000",
+                              }}
+                            >
                               →
                             </span>
                           </div>
@@ -5824,7 +6266,10 @@ export default function AdminPage() {
                                 portfolio.personal.aboutCurrentWork || portfolio.personal.role || "",
                                 portfolio.personal.aboutWorkPlace || "",
                                 portfolio.personal.aboutRoleType,
-                                portfolio.personal.coverRoleTrackColor
+                                portfolio.personal.coverRoleTrackColor,
+                                portfolio.personal.aboutRoleStatusText,
+                                portfolio.personal.aboutRoleIcon,
+                                portfolio.personal.aboutRoleCardStyle
                               );
 
                               return (
@@ -5836,7 +6281,7 @@ export default function AdminPage() {
                                         style={{ backgroundColor: activeTrackObj.activeColor }}
                                       />
                                       <span className="font-mono text-[10.5px] font-bold text-stone-800">
-                                        Icon &amp; Badge Color:
+                                        Card Thematic Accent Color:
                                       </span>
                                       <span
                                         className="font-mono text-[10px] font-black px-1.5 py-0.5 rounded border border-black/15 uppercase"
@@ -5847,7 +6292,7 @@ export default function AdminPage() {
                                       >
                                         {portfolio.personal.coverRoleTrackColor
                                           ? `${portfolio.personal.coverRoleTrackColor.toUpperCase()} (Custom)`
-                                          : `${activeTrackObj.activeColor.toUpperCase()} (Auto / Synced)`}
+                                          : `${activeTrackObj.activeColor.toUpperCase()} (Portfolio Thematic)`}
                                       </span>
                                     </div>
 
@@ -5876,13 +6321,13 @@ export default function AdminPage() {
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="font-mono text-[9.5px] text-stone-400 mr-1">Quick Presets:</span>
                                     {[
-                                      { label: "Emerald (TA / Acad / Job)", color: "#10b981" },
+                                      { label: "Amber Gold (Portfolio Theme)", color: "#f59e0b" },
+                                      { label: "Emerald (TA / Academic)", color: "#10b981" },
+                                      { label: "Sky (Systems & Tech)", color: "#0284c7" },
                                       { label: "Cyan (Research)", color: "#06b6d4" },
-                                      { label: "Amber (Intern)", color: "#f59e0b" },
-                                      { label: "Purple (Fellow)", color: "#8b5cf6" },
-                                      { label: "Rose (Lead)", color: "#f43f5e" },
-                                      { label: "Indigo (Engineer)", color: "#6366f1" },
-                                      { label: "Sky (Core)", color: "#0284c7" },
+                                      { label: "Purple (Fellowship)", color: "#8b5cf6" },
+                                      { label: "Rose (Lead / Core)", color: "#f43f5e" },
+                                      { label: "Jet Black (Mono Brutalist)", color: "#000000" },
                                     ].map((preset) => {
                                       const activeHex = (portfolio.personal.coverRoleTrackColor || activeTrackObj.activeColor || "").toLowerCase();
                                       const isCurrent = activeHex === preset.color.toLowerCase();
@@ -5922,7 +6367,7 @@ export default function AdminPage() {
                                       <span className="font-mono text-[9.5px] text-stone-500 font-bold">Custom:</span>
                                       <input
                                         type="color"
-                                        value={portfolio.personal.coverRoleTrackColor || activeTrackObj.activeColor || "#10b981"}
+                                        value={portfolio.personal.coverRoleTrackColor || activeTrackObj.activeColor || "#f59e0b"}
                                         onChange={(e) => {
                                           const val = e.target.value;
                                           const nextPort = {
@@ -5944,6 +6389,150 @@ export default function AdminPage() {
                                 </div>
                               );
                             })()}
+                          </div>
+
+                          {/* Live Status Badge Text */}
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
+                              <span>Live Status Badge Text:</span>
+                              <span className="text-amber-700 font-normal">Upper left status pill</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. RESEARCH · ACTIVE or TA · ACTIVE or BUILDER · ACTIVE"
+                              value={portfolio.personal.aboutRoleStatusText ?? ""}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    aboutRoleStatusText: val,
+                                  },
+                                }));
+                              }}
+                              onBlur={() => saveInstantly(portfolioRef.current, "Status badge text updated!")}
+                              className="w-full px-3 py-2 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                            />
+                            {/* Suggestions */}
+                            <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+                              <span className="font-mono text-[9px] text-stone-400">Suggestions:</span>
+                              {[
+                                "RESEARCH · ACTIVE",
+                                "TA · ACTIVE",
+                                "BUILDER · ACTIVE",
+                                "WORK · ACTIVE",
+                                "FELLOW · ACTIVE",
+                                "OPEN TO COLLAB",
+                              ].map((suggestion) => (
+                                <button
+                                  key={suggestion}
+                                  type="button"
+                                  onClick={() => {
+                                    const nextPort = {
+                                      ...portfolio,
+                                      personal: { ...portfolio.personal, aboutRoleStatusText: suggestion },
+                                    };
+                                    setPortfolio(nextPort);
+                                    portfolioRef.current = nextPort;
+                                    saveInstantly(nextPort, `Status badge set to ${suggestion}!`);
+                                  }}
+                                  className="px-1.5 py-0.5 rounded bg-white hover:bg-stone-100 border border-stone-200 font-mono text-[9px] font-bold text-stone-700 cursor-pointer"
+                                >
+                                  {suggestion}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Track Focus Icon / Emoji */}
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1 flex items-center justify-between">
+                              <span>Track Focus Icon / Emoji:</span>
+                              <span className="text-stone-500 font-normal">Displays next to live status</span>
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                placeholder="e.g. ⚗️"
+                                value={portfolio.personal.aboutRoleIcon ?? "⚗️"}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: {
+                                      ...prev.personal,
+                                      aboutRoleIcon: val,
+                                    },
+                                  }));
+                                }}
+                                onBlur={() => saveInstantly(portfolioRef.current, "Role icon updated!")}
+                                className="w-16 px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-sm text-center font-bold text-stone-900 focus:border-black focus:outline-none"
+                              />
+                              <div className="flex items-center gap-1 flex-wrap">
+                                {["⚗️", "🔬", "⚡", "💼", "🎓", "🏆", "🚀", "✦", "💻", "🧠"].map((emoji) => (
+                                  <button
+                                    key={emoji}
+                                    type="button"
+                                    onClick={() => {
+                                      const nextPort = {
+                                        ...portfolio,
+                                        personal: { ...portfolio.personal, aboutRoleIcon: emoji },
+                                      };
+                                      setPortfolio(nextPort);
+                                      portfolioRef.current = nextPort;
+                                      saveInstantly(nextPort, `Role icon set to ${emoji}!`);
+                                    }}
+                                    className={`w-7 h-7 rounded-lg border flex items-center justify-center text-sm cursor-pointer transition-all ${
+                                      (portfolio.personal.aboutRoleIcon || "⚗️") === emoji
+                                        ? "bg-stone-900 text-white border-black scale-110 shadow-xs"
+                                        : "bg-white text-stone-700 border-stone-200 hover:border-black"
+                                    }`}
+                                  >
+                                    {emoji}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Card Style Mode */}
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Card Border &amp; Texture Theme:
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                              {[
+                                { id: "paper", label: "Neo-Brutalist Paper", desc: "Black 2px border + 3D shadow (Portfolio Classic)" },
+                                { id: "bordered", label: "Theme Accent Border", desc: "Border colored in theme accent" },
+                                { id: "tinted", label: "Thematic Tint Wash", desc: "Subtle background gradient tint" },
+                              ].map((styleOpt) => {
+                                const isSel = (portfolio.personal.aboutRoleCardStyle || "paper") === styleOpt.id;
+                                return (
+                                  <button
+                                    key={styleOpt.id}
+                                    type="button"
+                                    onClick={() => {
+                                      const nextPort = {
+                                        ...portfolio,
+                                        personal: { ...portfolio.personal, aboutRoleCardStyle: styleOpt.id },
+                                      };
+                                      setPortfolio(nextPort);
+                                      portfolioRef.current = nextPort;
+                                      saveInstantly(nextPort, `Card style set to ${styleOpt.label}!`);
+                                    }}
+                                    className={`p-2 rounded-xl border text-left font-mono transition-all cursor-pointer ${
+                                      isSel
+                                        ? "bg-black text-white border-black shadow-[2px_2px_0_rgba(0,0,0,0.2)]"
+                                        : "bg-white text-stone-700 border-stone-200 hover:border-black"
+                                    }`}
+                                  >
+                                    <div className="text-[10px] font-bold leading-tight">{styleOpt.label}</div>
+                                    <div className="text-[8px] opacity-75 mt-0.5 leading-snug">{styleOpt.desc}</div>
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
 
                           <div>
@@ -6198,29 +6787,49 @@ export default function AdminPage() {
                             const displayRole = workplace && rawRole.toLowerCase().includes(`@ ${workplace.toLowerCase()}`)
                               ? rawRole.replace(new RegExp(`\\s*@\\s*${workplace}`, 'i'), '').trim()
                               : rawRole;
-                            const track = resolveRoleTrack(rawRole, workplace, portfolio.personal.aboutRoleType, portfolio.personal.coverRoleTrackColor);
+                            const track = resolveRoleTrack(
+                              rawRole,
+                              workplace,
+                              portfolio.personal.aboutRoleType,
+                              portfolio.personal.coverRoleTrackColor,
+                              portfolio.personal.aboutRoleStatusText,
+                              portfolio.personal.aboutRoleIcon,
+                              portfolio.personal.aboutRoleCardStyle
+                            );
                             const tagText = (portfolio.personal.aboutRoleTag || "").trim() || track.defaultTag;
 
                             return (
                               <div
-                                className={`w-full rounded-lg ${track.isCustomColor ? "border" : `bg-gradient-to-br ${track.cardBg} border border-black/20`} p-2 shadow-xs relative overflow-hidden`}
-                                style={track.isCustomColor ? { borderColor: `${track.activeColor}80`, background: `linear-gradient(135deg, ${track.activeColor}14 0%, ${track.activeColor}06 50%, ${track.activeColor}18 100%)` } : undefined}
+                                className="w-full rounded-xl bg-[#fffdfa] border-2 border-black p-2.5 shadow-[3px_3px_0_#000] relative overflow-hidden space-y-1.5"
+                                style={track.cardStyle}
                               >
-                                <div className="flex items-center justify-between gap-1 pb-1 border-b border-black/10">
+                                {/* Blueprint dot pattern */}
+                                <div 
+                                  className="absolute inset-0 opacity-[0.06] pointer-events-none"
+                                  style={{
+                                    backgroundImage: `radial-gradient(currentColor 1px, transparent 1px)`,
+                                    backgroundSize: '6px 6px',
+                                  }}
+                                />
+
+                                <div className="relative z-10 flex items-center justify-between gap-1 pb-1 border-b border-black/10">
                                   <div className="flex items-center gap-1.5">
                                     <span className="relative flex h-1.5 w-1.5">
                                       <span
-                                        className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.isCustomColor ? "" : track.beaconRing} opacity-75`}
-                                        style={track.isCustomColor ? { backgroundColor: track.activeColor } : undefined}
+                                        className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                                        style={{ backgroundColor: track.activeColor }}
                                       />
                                       <span
-                                        className={`relative inline-flex rounded-full h-1.5 w-1.5 ${track.isCustomColor ? "" : track.beaconCore}`}
-                                        style={track.isCustomColor ? { backgroundColor: track.activeColor } : undefined}
+                                        className="relative inline-flex rounded-full h-1.5 w-1.5"
+                                        style={{
+                                          backgroundColor: track.activeColor,
+                                          boxShadow: `0 0 0 2px ${track.activeColor}33`,
+                                        }}
                                       />
                                     </span>
                                     <span
-                                      className={`font-mono text-[8px] font-black uppercase tracking-wider ${track.isCustomColor ? "" : track.labelColor} flex items-center gap-1`}
-                                      style={track.isCustomColor ? { color: track.activeColor } : undefined}
+                                      className="font-mono text-[8.5px] font-black uppercase tracking-wider flex items-center gap-1"
+                                      style={{ color: track.activeColor }}
                                     >
                                       {track.icon}
                                       <span>{track.label}</span>
@@ -6228,14 +6837,14 @@ export default function AdminPage() {
                                   </div>
                                   {Boolean(tagText) && (
                                     <span
-                                      className={`font-mono text-[7px] font-bold uppercase tracking-wider px-1 py-0.2 rounded border ${track.isCustomColor ? "" : track.tagBg}`}
+                                      className="font-mono text-[7px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded border shadow-2xs"
                                       style={track.tagStyle}
                                     >
                                       {tagText}
                                     </span>
                                   )}
                                 </div>
-                                <div className="pt-1 flex flex-wrap items-center gap-1">
+                                <div className="relative z-10 pt-0.5 flex flex-wrap items-center gap-1.5">
                                   {Boolean(displayRole) && (
                                     <span className="font-['Space_Grotesk'] text-[11px] font-black uppercase text-black leading-tight">
                                       {displayRole}
@@ -6243,16 +6852,16 @@ export default function AdminPage() {
                                   )}
                                   {Boolean(workplace) && (
                                     <span
-                                      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded font-mono text-[9.5px] font-black ${track.isCustomColor ? "border" : track.workplaceBadgeBg}`}
+                                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-mono text-[9px] font-black border shadow-2xs"
                                       style={track.workplaceBadgeStyle}
                                     >
                                       <span
-                                        className={`${track.isCustomColor ? "" : track.workplaceAtColor} font-sans font-bold text-[9px]`}
+                                        className="font-sans font-bold text-[9px]"
                                         style={track.workplaceAtStyle}
                                       >
                                         @
                                       </span>
-                                      <span className={track.isCustomColor ? "text-stone-900" : undefined}>{workplace}</span>
+                                      <span className="text-stone-900">{workplace}</span>
                                     </span>
                                   )}
                                 </div>
@@ -6980,9 +7589,9 @@ export default function AdminPage() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-xs font-black uppercase text-stone-500 mr-1">Filter Roles:</span>
                     {[
+                      { id: "current", label: `🟢 Current (${(portfolio.experiences || []).filter(e => e.isCurrent || (e.isCurrent !== false && (e.period || "").toLowerCase().includes("present"))).length})` },
+                      { id: "past", label: `📁 Past (${(portfolio.experiences || []).filter(e => !e.isCurrent && (e.isCurrent === false || !(e.period || "").toLowerCase().includes("present"))).length})` },
                       { id: "all", label: `✦ All (${(portfolio.experiences || []).length})` },
-                      { id: "current", label: `🟢 Current (${(portfolio.experiences || []).filter(e => e.isCurrent || (e.period || "").toLowerCase().includes("present")).length})` },
-                      { id: "past", label: `🏆 Past (${(portfolio.experiences || []).filter(e => !e.isCurrent && !(e.period || "").toLowerCase().includes("present")).length})` },
                     ].map((f) => (
                       <button
                         key={f.id}
@@ -7148,10 +7757,14 @@ export default function AdminPage() {
                             <span className="font-mono text-xs text-stone-500">
                               @ {exp.company || "Company"}
                             </span>
-                            {exp.isCurrent && (
+                            {exp.isCurrent ? (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono text-[10px] font-bold">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
                                 Current Active Role
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 border border-stone-300 font-mono text-[10px] font-medium">
+                                ✓ Past Milestone
                               </span>
                             )}
                           </div>
@@ -7385,21 +7998,42 @@ export default function AdminPage() {
                           </div>
                         </div>
 
-                        {/* Current Role Checkbox */}
-                        <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-stone-200">
-                          <input
-                            type="checkbox"
-                            id={`current-role-${idx}`}
-                            checked={exp.isCurrent || false}
-                            onChange={(e) => handleUpdateExperience(idx, "isCurrent", e.target.checked)}
-                            className="w-4 h-4 rounded-sm border-2 border-black accent-yellow-400 cursor-pointer"
-                          />
-                          <label
-                            htmlFor={`current-role-${idx}`}
-                            className="font-mono text-xs font-bold text-stone-800 cursor-pointer select-none"
-                          >
-                            Currently active position (Displays glowing live green pulse badge on website)
+                        {/* Current vs Past Station Status Controller */}
+                        <div className="p-3.5 rounded-2xl bg-stone-50 border-2 border-stone-200 space-y-2">
+                          <label className="block text-xs font-mono font-black uppercase text-stone-700">
+                            Role Status Station (Current vs Past)
                           </label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateExperience(idx, "isCurrent", true)}
+                              className={`px-3.5 py-2.5 rounded-xl border-2 font-mono text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                exp.isCurrent
+                                  ? "bg-emerald-400 text-black border-black shadow-[3px_3px_0_#000] scale-101"
+                                  : "bg-white text-stone-600 border-stone-300 hover:border-black"
+                              }`}
+                            >
+                              <span className="w-2.5 h-2.5 rounded-full bg-emerald-700 animate-ping" />
+                              <span>🟢 CURRENT ACTIVE ROLE</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateExperience(idx, "isCurrent", false)}
+                              className={`px-3.5 py-2.5 rounded-xl border-2 font-mono text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                !exp.isCurrent
+                                  ? "bg-stone-800 text-white border-black shadow-[3px_3px_0_#000] scale-101"
+                                  : "bg-white text-stone-600 border-stone-300 hover:border-black"
+                              }`}
+                            >
+                              <span>✓ PAST MILESTONE / COMPLETED</span>
+                            </button>
+                          </div>
+                          <p className="text-[11px] font-mono text-stone-500">
+                            {exp.isCurrent
+                              ? "✨ ACTIVE MANDATE: Appears first under CURRENT ROLES on the main site with a live radar beacon."
+                              : "📁 COMPLETED: Appears under PAST MILESTONES in the flight log archive."}
+                          </p>
                         </div>
 
                         {/* Role Description */}

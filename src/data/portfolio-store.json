@@ -35,11 +35,33 @@
     "mobileBadge1": "Teaching Assistant • IIT Madras",
     "mobileBadge2": "📍Chennai,IND",
     "mobileTagline": "Teaching Machines To Learn • Building Scientific Software",
+    "mobileScrollText1": "TEACHING MACHINES TO LEARN ✦ BUILDING SCIENTIFIC SOFTWARE",
+    "mobileScrollText2": "FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE COMPUTING",
+    "mobileScrollColor1": "#f59e0b",
+    "mobileScrollColor2": "#000000",
+    "mobileScrollTextColor1": "#000000",
+    "mobileScrollTextColor2": "#fde047",
+    "mobileCtaButtonBg": "#000000",
+    "mobileCtaButtonTextColor": "#ffffff",
+    "mobileCtaButtonShadowColor": "#f59e0b",
+    "mobileClickHereBadgeBg": "#f59e0b",
+    "mobileClickHereBadgeTextColor": "#000000",
+    "mobileCoverAutoPhotoColors": true,
+    "showMobileActivePill": false,
     "aboutPhotoTag": "✦ TA @ IIT MADRAS",
     "aboutCurrentWork": "Teaching Assistant",
     "aboutWorkPlace": "IIT Madras",
     "aboutRoleType": "auto",
-    "aboutRoleTag": "",
+    "aboutRoleTag": "Research Lab",
+    "aboutRoleStatusText": "RESEARCH · ACTIVE",
+    "aboutRoleIcon": "⚗️",
+    "aboutRoleCardStyle": "paper",
+    "mobileNowBadgeText": "NOW",
+    "mobileCenterTrackText": "RESEARCH",
+    "mobileActiveStatusText": "ACTIVE",
+    "mobileConnectNote": "LET'S CONNECT",
+    "mobileClickHereBadgeText": "CLICK HERE ↓",
+    "mobileCtaButtonText": "EXPLORE PORTFOLIO",
     "aboutHighlightedWords": "Harsh Aryan, IIT Madras, Artificial Intelligence, Data Science, Machine Learning",
     "aboutHighlightColor": "#f59e0b",
     "aboutZoneBadge": "✦ THE ARCHITECT & MIND",
@@ -248,39 +270,45 @@
   ],
   "experiences": [
     {
-      "id": "exp-1793605703313",
-      "role": "Freelancer",
-      "company": "Socius",
-      "companyUrl": "socius.com",
-      "location": "Remote",
-      "period": "2023-Present",
-      "type": "UI & UX Designer",
+      "id": "exp-1793605796248",
+      "role": "Teaching Assistant",
+      "company": "IIT Madras",
+      "companyUrl": "https://www.iitm.ac.in",
+      "location": "Chennai, India",
+      "period": "2024 — Present",
+      "type": "Academic & Mentorship",
       "isCurrent": true,
-      "description": "Brief overview of responsibilities and scope in this role.",
+      "description": "Mentoring undergraduate cohorts in Python programming, fundamental data structures, computational logic, and algorithmic problem-solving methodologies.",
       "highlights": [
-        "Key achievement or project contribution."
+        "Mentoring student cohorts through hands-on computational labs and code reviews.",
+        "Hosting interactive problem-solving clinics bridging mathematical theory with Python code."
       ],
       "skillsUsed": [
         "Python",
-        "Problem Solving"
+        "Algorithms",
+        "Data Structures",
+        "Mentorship"
       ]
     },
     {
-      "id": "exp-1793605796248",
-      "role": "TEACHING ASSISANT ",
-      "company": "IIT MADRAS",
-      "companyUrl": "NDDN",
-      "location": "CHENNAI,INDIA",
-      "period": "2027-PRESENT",
-      "type": "Academic & Mentorship",
+      "id": "exp-1793605703313",
+      "role": "Freelancer",
+      "company": "Socius",
+      "companyUrl": "https://socius.com",
+      "location": "Remote",
+      "period": "2023 — 2025",
+      "type": "UI & UX Designer",
       "isCurrent": false,
-      "description": "Brief overview of responsibilities and scope in this role.",
+      "description": "Architected clean user interfaces, interaction designs, and responsive frontend components for diverse creative clients and collaborative web prototypes.",
       "highlights": [
-        "Key achievement or project contribution."
+        "Delivered responsive web interfaces and design systems with neo-brutalist flair.",
+        "Collaborated across multidisciplinary teams to transform ideas into tangible software."
       ],
       "skillsUsed": [
-        "Python",
-        "Problem Solving"
+        "Figma",
+        "Git & GitHub",
+        "Notion",
+        "DaVinci"
       ]
     }
   ],

@@ -9,6 +9,7 @@ import { usePortfolio } from "@/context/PortfolioContext";
 import { useTheme } from "./ThemeProvider";
 import { formatGoogleDriveImageUrl } from "@/lib/googleDrive";
 import { resolveRoleTrack } from "@/lib/roleTrack";
+import { extractPhotoPalette, PhotoPalette, DEFAULT_PHOTO_PALETTE } from "@/lib/colorExtractor";
 
 export function MobileDoodleCover() {
   const { data: portfolio, closeCover } = usePortfolio();
@@ -88,9 +89,17 @@ export function MobileDoodleCover() {
   const mobilePhotoRaw = portfolio?.personal?.mobilePhotoUrl || portfolio?.personal?.coverPhotoUrl;
   const photoSrc = formatGoogleDriveImageUrl(mobilePhotoRaw);
   const [displayPhotoSrc, setDisplayPhotoSrc] = useState<string>(photoSrc);
+  const [photoPalette, setPhotoPalette] = useState<PhotoPalette>(DEFAULT_PHOTO_PALETTE);
 
   useEffect(() => {
     setDisplayPhotoSrc(photoSrc);
+    if (photoSrc) {
+      extractPhotoPalette(photoSrc)
+        .then((pal) => {
+          if (pal) setPhotoPalette(pal);
+        })
+        .catch(() => {});
+    }
   }, [photoSrc]);
 
   const nameString = portfolio?.personal?.name || "HARSH ARYAN";
@@ -109,12 +118,66 @@ export function MobileDoodleCover() {
       : rawRole || "Data Research";
 
   const customRoleColor = portfolio?.personal?.coverRoleTrackColor;
-  const track = resolveRoleTrack(rawRole, workplace, portfolio?.personal?.aboutRoleType, customRoleColor);
-  const trackLabel = (track.label || "RESEARCH").replace(/\s+LAB$/i, "");
+  const track = resolveRoleTrack(
+    rawRole,
+    workplace,
+    portfolio?.personal?.aboutRoleType,
+    customRoleColor,
+    portfolio?.personal?.aboutRoleStatusText,
+    portfolio?.personal?.aboutRoleIcon,
+    portfolio?.personal?.aboutRoleCardStyle
+  );
+  const trackLabel = portfolio?.personal?.mobileCenterTrackText || (track.label || "RESEARCH").replace(/\s+LAB$/i, "");
 
-  const tagline =
+  // Auto-derived Photo Colors or Custom Admin Overrides
+  const autoPhotoColors = portfolio?.personal?.mobileCoverAutoPhotoColors !== false;
+
+  const scrollColor1 =
+    portfolio?.personal?.mobileScrollColor1 ||
+    (autoPhotoColors && photoPalette?.dominant) ||
+    "#f59e0b";
+
+  const scrollColor2 =
+    portfolio?.personal?.mobileScrollColor2 ||
+    (autoPhotoColors && (photoPalette?.secondary || "#000000")) ||
+    "#000000";
+
+  const scrollTextColor1 =
+    portfolio?.personal?.mobileScrollTextColor1 || "#000000";
+
+  const scrollTextColor2 =
+    portfolio?.personal?.mobileScrollTextColor2 ||
+    (autoPhotoColors && (photoPalette?.accent || "#fde047")) ||
+    "#fde047";
+
+  const ctaButtonBg =
+    portfolio?.personal?.mobileCtaButtonBg || "#000000";
+
+  const ctaButtonTextColor =
+    portfolio?.personal?.mobileCtaButtonTextColor || "#ffffff";
+
+  const ctaButtonShadowColor =
+    portfolio?.personal?.mobileCtaButtonShadowColor ||
+    (autoPhotoColors && photoPalette?.dominant) ||
+    "#f59e0b";
+
+  const clickHereBadgeBg =
+    portfolio?.personal?.mobileClickHereBadgeBg ||
+    (autoPhotoColors && (photoPalette?.accent || photoPalette?.dominant)) ||
+    "#f59e0b";
+
+  const clickHereBadgeTextColor =
+    portfolio?.personal?.mobileClickHereBadgeTextColor || "#000000";
+
+  // Editable scrolling ribbon banners (from Admin panel)
+  const scrollText1 =
+    portfolio?.personal?.mobileScrollText1 ||
     portfolio?.personal?.mobileTagline ||
     "TEACHING MACHINES TO LEARN ✦ BUILDING SCIENTIFIC SOFTWARE";
+
+  const scrollText2 =
+    portfolio?.personal?.mobileScrollText2 ||
+    "FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE COMPUTING";
 
   return (
     <section
@@ -162,20 +225,20 @@ export function MobileDoodleCover() {
       {/* ── GRAPH NOTEBOOK PAPER GRID BACKGROUND ── */}
       <div className="absolute inset-0 mobile-cover-grid pointer-events-none z-0" />
 
-      {/* ── EXPANDING NEON TAP RIPPLE EFFECT ── */}
+      {/* ── EXPANDING GOLDEN SPARKLE TAP RIPPLE EFFECT ── */}
       {ripples.map((r) => (
         <motion.span
           key={r.id}
           initial={{ scale: 0.1, opacity: 0.9 }}
           animate={{ scale: 4.5, opacity: 0 }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-          className="pointer-events-none absolute rounded-full border-2 border-indigo-500 z-50"
+          className="pointer-events-none absolute rounded-full border-2 border-amber-400 z-50"
           style={{
             left: r.x - 35,
             top: r.y - 35,
             width: 70,
             height: 70,
-            boxShadow: "0 0 35px rgba(99, 102, 241, 0.8), inset 0 0 20px rgba(99, 102, 241, 0.4)",
+            boxShadow: "0 0 35px rgba(245, 158, 11, 0.8), inset 0 0 20px rgba(245, 158, 11, 0.4)",
           }}
         />
       ))}
@@ -302,34 +365,52 @@ export function MobileDoodleCover() {
         />
       </div>
 
-      {/* ── 2. ANGLED TICKER BANNERS (Crossed Pink & Cyan Ribbons) ── */}
+      {/* ── 2. ANGLED TICKER BANNERS (Editable Scrolling Ribbons with Portfolio Palette) ── */}
       <div className="relative w-full -mt-7 z-20 overflow-hidden pointer-events-none flex flex-col items-center">
-        {/* Top Pink / Rose Ribbon */}
+        {/* Top Ribbon */}
         <div
-          className="w-[110%] py-1 bg-[#f472b6] dark:bg-[#e11d48] border-y-2 border-black shadow-[2px_2px_0_#000] overflow-hidden"
-          style={{ transform: "rotate(-2.2deg)" }}
+          className="w-[110%] py-1 border-y-2 border-black shadow-[2px_2px_0_#000] overflow-hidden"
+          style={{
+            transform: "rotate(-2.2deg)",
+            backgroundColor: scrollColor1,
+          }}
         >
           <div className="marquee-track-left">
-            <span className="font-mono text-[9.5px] font-black uppercase text-black dark:text-white tracking-widest px-3 whitespace-nowrap">
-              {tagline} ✦ {tagline} ✦{" "}
+            <span
+              className="font-mono text-[9.5px] font-black uppercase tracking-widest px-3 whitespace-nowrap"
+              style={{ color: scrollTextColor1 }}
+            >
+              {scrollText1} ✦ {scrollText1} ✦{" "}
             </span>
-            <span className="font-mono text-[9.5px] font-black uppercase text-black dark:text-white tracking-widest px-3 whitespace-nowrap">
-              {tagline} ✦ {tagline} ✦{" "}
+            <span
+              className="font-mono text-[9.5px] font-black uppercase tracking-widest px-3 whitespace-nowrap"
+              style={{ color: scrollTextColor1 }}
+            >
+              {scrollText1} ✦ {scrollText1} ✦{" "}
             </span>
           </div>
         </div>
 
-        {/* Bottom Cyan / Teal Ribbon (Angled underneath) */}
+        {/* Bottom Ribbon */}
         <div
-          className="w-[110%] py-0.5 -mt-1.5 bg-[#2dd4bf] dark:bg-[#0891b2] border-y-2 border-black shadow-[2px_2px_0_#000] overflow-hidden"
-          style={{ transform: "rotate(1.8deg)" }}
+          className="w-[110%] py-0.5 -mt-1.5 border-y-2 border-black shadow-[2px_2px_0_#000] overflow-hidden"
+          style={{
+            transform: "rotate(1.8deg)",
+            backgroundColor: scrollColor2,
+          }}
         >
           <div className="marquee-track-right">
-            <span className="font-mono text-[9px] font-black uppercase text-black dark:text-white tracking-widest px-3 whitespace-nowrap">
-              FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE COMPUTING ✦{" "}
+            <span
+              className="font-mono text-[9px] font-black uppercase tracking-widest px-3 whitespace-nowrap"
+              style={{ color: scrollTextColor2 }}
+            >
+              {scrollText2} ✦ {scrollText2} ✦{" "}
             </span>
-            <span className="font-mono text-[9px] font-black uppercase text-black dark:text-white tracking-widest px-3 whitespace-nowrap">
-              FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE COMPUTING ✦{" "}
+            <span
+              className="font-mono text-[9px] font-black uppercase tracking-widest px-3 whitespace-nowrap"
+              style={{ color: scrollTextColor2 }}
+            >
+              {scrollText2} ✦ {scrollText2} ✦{" "}
             </span>
           </div>
         </div>
@@ -337,7 +418,7 @@ export function MobileDoodleCover() {
 
       {/* ── 3. HERO NAME & BENTO DOSSIER CARD ── */}
       <footer className="relative z-30 w-full px-4 pb-4 pt-1 flex-1 flex flex-col items-center justify-between text-center overflow-visible">
-        {/* Hero Name: "HARSH ARYAN" — Theme Adaptive, Razor-Sharp & Legible */}
+        {/* Hero Name: "HARSH ARYAN" — Theme Adaptive, Razor-Sharp & Legible (Zero Purple) */}
         <div className="relative z-20 my-auto py-1 px-2 max-w-full">
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
@@ -347,29 +428,24 @@ export function MobileDoodleCover() {
             style={{
               fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
               textShadow: isDark
-                ? "2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000, 3.5px 3.5px 0 #6366f1, 0 0 24px rgba(99, 102, 241, 0.55)"
-                : "2px 2px 0 #ffffff, -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 3px 3px 0 #4f46e5, 0 4px 14px rgba(79, 70, 229, 0.35)",
+                ? "2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000, 3.5px 3.5px 0 #f59e0b, 0 0 20px rgba(245, 158, 11, 0.45)"
+                : "2px 2px 0 #ffffff, -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 3.5px 3.5px 0 #000000, 0 4px 14px rgba(0, 0, 0, 0.18)",
             }}
           >
             {nameString}
           </motion.h1>
         </div>
 
-        {/* ── BENTO ROLE CARD PINNED WITH STRIPED PASTEL WASHI TAPE ── */}
+        {/* ── BENTO ROLE CARD PINNED WITH PORTFOLIO AMBER WASHI TAPE ── */}
         <div className="relative w-full max-w-[340px] my-auto">
-          {/* Pastel Striped Washi Tape (Diagonal Stripes) */}
+          {/* Signature Amber Washi Tape */}
           <div
-            className="w-24 h-4 border border-dashed border-black/30 shadow-xs mx-auto -mb-2 z-20 relative rounded-xs pointer-events-none"
-            style={{
-              transform: "rotate(-1.5deg)",
-              background: isDark
-                ? "repeating-linear-gradient(45deg, #4c1d95, #4c1d95 8px, #831843 8px, #831843 16px)"
-                : "repeating-linear-gradient(45deg, #d8b4fe, #d8b4fe 8px, #fbcfe8 8px, #fbcfe8 16px)",
-            }}
+            className="w-24 h-4 bg-amber-300 dark:bg-amber-400/90 border border-dashed border-black/40 shadow-xs mx-auto -mb-2 z-20 relative rounded-xs pointer-events-none"
+            style={{ transform: "rotate(-1.5deg)" }}
             aria-hidden="true"
           />
 
-          {/* Bento Card Body */}
+          {/* Bento Card Body (Neo-Brutalist White & Solid Black/White 3D Drop Shadow) */}
           <div
             onClick={(e) => {
               e.stopPropagation();
@@ -378,45 +454,42 @@ export function MobileDoodleCover() {
                 closeCover();
               }, 220);
             }}
-            className="relative w-full rounded-[24px] p-3.5 sm:p-4 bg-white dark:bg-[#11131f] border-[2.5px] border-black dark:border-white/25 shadow-[4px_4px_0_#4f46e5] dark:shadow-[4px_4px_0_#000,0_8px_24px_rgba(0,0,0,0.6)] text-stone-900 dark:text-stone-100 flex flex-col gap-3 cursor-pointer select-none transition-transform hover:scale-[1.01]"
+            className="relative w-full rounded-[24px] p-3.5 sm:p-4 bg-white dark:bg-[#11131a] border-[2.5px] border-black dark:border-stone-600 shadow-[5px_5px_0_#000] dark:shadow-[5px_5px_0_#fff] text-stone-900 dark:text-stone-100 flex flex-col gap-3 cursor-pointer select-none transition-transform hover:scale-[1.01]"
           >
-            {/* Row 1: Header / Status row */}
+            {/* Row 1: Header / Mandate row */}
             <div className="flex items-center justify-between w-full">
               {/* NOW Pill Badge */}
-              <span className="px-2.5 py-0.5 rounded-full bg-[#86efac] dark:bg-emerald-950 text-[#064e3b] dark:text-emerald-300 border-1.5 border-black dark:border-emerald-500/50 font-mono text-[9px] font-black uppercase shadow-[1px_1px_0_#000]">
-                NOW
+              <span
+                className="px-2.5 py-0.5 rounded-full text-black border-1.5 border-black font-mono text-[9px] font-black uppercase shadow-[1px_1px_0_#000]"
+                style={{ backgroundColor: clickHereBadgeBg || "#f59e0b" }}
+              >
+                {portfolio?.personal?.mobileNowBadgeText || "NOW"}
               </span>
 
               {/* Center Track / Mandate */}
               <div className="flex items-center gap-1.5 font-mono text-[10.5px] font-black uppercase tracking-wider text-stone-900 dark:text-white">
-                <span className="text-sm">⚗️</span>
+                <span className="text-sm">{portfolio?.personal?.aboutRoleIcon || "⚗️"}</span>
                 <span>{trackLabel}</span>
               </div>
-
-              {/* Active Status Badge */}
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-400 dark:border-emerald-500/50 font-mono text-[9px] font-black uppercase text-emerald-700 dark:text-emerald-300">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                <span>ACTIVE</span>
-              </span>
             </div>
 
             {/* Row 2: Role & Workplace Capsule Pills */}
             <div className="flex items-center justify-center gap-2 flex-wrap w-full">
-              {/* Pill 1: Blue - Role */}
+              {/* Pill 1: Amber - Role */}
               <div
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#bae6fd] dark:bg-sky-950/80 text-[#0369a1] dark:text-sky-300 border-2 border-black dark:border-sky-400/60 font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]"
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border-2 border-black dark:border-amber-400/60 font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]"
                 style={customRoleColor ? { borderColor: customRoleColor, color: customRoleColor } : undefined}
               >
-                <span className="text-[9px]">✦</span>
+                <span className="text-[9px] text-amber-600 dark:text-amber-400">✦</span>
                 <span>{displayRole}</span>
               </div>
 
-              {/* Pill 2: Pink - Workplace */}
+              {/* Pill 2: Sky/Cyan - Workplace */}
               <div
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#fbcfe8] dark:bg-rose-950/80 text-[#be185d] dark:text-rose-300 border-2 border-black dark:border-rose-400/60 font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]"
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-sky-100 dark:bg-sky-950/80 text-sky-900 dark:text-sky-300 border-2 border-black dark:border-sky-400/60 font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]"
                 style={customRoleColor ? { borderColor: customRoleColor } : undefined}
               >
-                <span className="text-[9px]">✦</span>
+                <span className="text-[9px] text-sky-600 dark:text-sky-400">✦</span>
                 <span>@ {workplace}</span>
               </div>
             </div>
@@ -432,7 +505,7 @@ export function MobileDoodleCover() {
                   onClick={(e) => e.stopPropagation()}
                   aria-label="GitHub Profile"
                   title="GitHub"
-                  className="w-9 h-9 rounded-full bg-[#e9d5ff] dark:bg-purple-950/70 border-2 border-black dark:border-purple-400/50 shadow-[2px_2px_0_#000] flex items-center justify-center text-black dark:text-purple-200 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                  className="w-9 h-9 rounded-full bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center justify-center text-black dark:text-white hover:bg-amber-300 hover:text-black active:scale-95 transition-all cursor-pointer"
                 >
                   <GithubIcon className="w-4 h-4" />
                 </a>
@@ -445,7 +518,7 @@ export function MobileDoodleCover() {
                   onClick={(e) => e.stopPropagation()}
                   aria-label="LinkedIn Profile"
                   title="LinkedIn"
-                  className="w-9 h-9 rounded-full bg-[#bae6fd] dark:bg-sky-950/70 border-2 border-black dark:border-sky-400/50 shadow-[2px_2px_0_#000] flex items-center justify-center text-[#0284c7] dark:text-sky-300 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                  className="w-9 h-9 rounded-full bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center justify-center text-[#0284c7] dark:text-sky-400 hover:bg-amber-300 hover:text-black active:scale-95 transition-all cursor-pointer"
                 >
                   <LinkedinIcon className="w-4 h-4" />
                 </a>
@@ -456,7 +529,7 @@ export function MobileDoodleCover() {
                   onClick={(e) => e.stopPropagation()}
                   aria-label="Send Email"
                   title="Email"
-                  className="w-9 h-9 rounded-full bg-[#fbcfe8] dark:bg-rose-950/70 border-2 border-black dark:border-rose-400/50 shadow-[2px_2px_0_#000] flex items-center justify-center text-[#e11d48] dark:text-rose-300 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                  className="w-9 h-9 rounded-full bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center justify-center text-rose-500 dark:text-rose-400 hover:bg-amber-300 hover:text-black active:scale-95 transition-all cursor-pointer"
                 >
                   <Mail className="w-4 h-4" />
                 </a>
@@ -469,22 +542,25 @@ export function MobileDoodleCover() {
                   <path d="M2 11 L 5 17 L 10 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <div className="font-mono font-black text-[8.5px] uppercase tracking-wider leading-tight text-stone-900 dark:text-stone-100 text-left">
-                  <span>LET&apos;S</span>
-                  <br />
-                  <span>CONNECT</span>
+                  <span>{portfolio?.personal?.mobileConnectNote || "LET'S CONNECT"}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── 4. CTA AREA: "CLICK HERE ↓" BADGE & MAIN BUTTON ── */}
+        {/* ── 4. CTA AREA: "CLICK HERE ↓" BADGE & EXPLORE PORTFOLIO BUTTON ── */}
         <div className="w-full max-w-[340px] flex flex-col items-center mt-1">
-          {/* Angled Mint Badge */}
+          {/* Angled Signature Badge */}
           <div className="w-full flex justify-end pr-3 -mb-2 z-20 pointer-events-none">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#86efac] text-black border-2 border-black font-mono text-[9px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] rotate-[-2.5deg] flex items-center gap-1">
-              <span>CLICK HERE</span>
-              <span>↓</span>
+            <span
+              className="px-2.5 py-0.5 rounded-full border-2 border-black font-mono text-[9px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] rotate-[-2.5deg] flex items-center gap-1"
+              style={{
+                backgroundColor: clickHereBadgeBg,
+                color: clickHereBadgeTextColor,
+              }}
+            >
+              <span>{portfolio?.personal?.mobileClickHereBadgeText || "CLICK HERE ↓"}</span>
             </span>
           </div>
 
@@ -498,19 +574,33 @@ export function MobileDoodleCover() {
                 closeCover();
               }, 220);
             }}
-            className="group relative w-full px-4 py-2.5 rounded-full bg-gradient-to-r from-[#4338ca] via-[#4f46e5] to-[#6366f1] border-2 border-black dark:border-white/40 shadow-[4px_4px_0_#f43f5e] dark:shadow-[4px_4px_0_#f43f5e,0_0_20px_rgba(99,102,241,0.5)] active:translate-y-0.5 active:shadow-[1px_1px_0_#f43f5e] flex items-center justify-between cursor-pointer select-none transition-all"
+            className="group relative w-full px-4 py-2.5 rounded-full border-2 sm:border-3 border-black dark:border-white active:translate-y-0.5 flex items-center justify-between cursor-pointer select-none transition-all"
+            style={{
+              backgroundColor: ctaButtonBg,
+              color: ctaButtonTextColor,
+              boxShadow: `4px 4px 0 ${ctaButtonShadowColor}`,
+            }}
           >
             {/* Inner dashed stitched line */}
-            <div className="absolute inset-[3px] rounded-full border border-dashed border-white/45 pointer-events-none" />
+            <div className="absolute inset-[3px] rounded-full border border-dashed border-white/40 dark:border-black/40 pointer-events-none" />
 
             {/* Button Text */}
-            <span className="font-mono text-xs font-black uppercase text-white tracking-widest flex items-center gap-1.5 pl-2 z-10">
-              <span className="text-amber-300">✦</span>
-              <span>EXPLORE PORTFOLIO</span>
+            <span
+              className="font-mono text-xs font-black uppercase tracking-widest flex items-center gap-1.5 pl-2 z-10"
+              style={{ color: ctaButtonTextColor }}
+            >
+              <span style={{ color: ctaButtonShadowColor }}>✦</span>
+              <span>{portfolio?.personal?.mobileCtaButtonText || "EXPLORE PORTFOLIO"}</span>
             </span>
 
             {/* Right Arrow Circle */}
-            <span className="w-7 h-7 rounded-full bg-white text-black border-1.5 border-black flex items-center justify-center font-black text-sm shadow-xs z-10 group-hover:translate-x-0.5 transition-transform">
+            <span
+              className="w-7 h-7 rounded-full border-1.5 border-black flex items-center justify-center font-black text-sm shadow-xs z-10 group-hover:translate-x-0.5 transition-transform"
+              style={{
+                backgroundColor: ctaButtonShadowColor,
+                color: "#000000",
+              }}
+            >
               →
             </span>
           </button>

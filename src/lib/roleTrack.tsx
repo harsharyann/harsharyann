@@ -106,7 +106,15 @@ export const ROLE_TRACK_THEMES: Record<
   },
 };
 
-export function resolveRoleTrack(role = "", workplace = "", explicitType = "auto", customColor = ""): ResolvedRoleTrack {
+export function resolveRoleTrack(
+  role = "",
+  workplace = "",
+  explicitType = "auto",
+  customColor = "",
+  customStatusText = "",
+  customIcon = "",
+  cardStyleMode = "paper"
+): ResolvedRoleTrack {
   const combined = `${role} ${workplace}`.toLowerCase();
   
   let track: "research" | "internship" | "job" | "academic" | "fellowship" = "job";
@@ -132,43 +140,52 @@ export function resolveRoleTrack(role = "", workplace = "", explicitType = "auto
   const isCustomColor = Boolean(customColor && customColor.trim());
   const activeColor = isCustomColor ? customColor.trim() : chosenTheme.hex;
 
-  // Compute dynamic styles that guarantee 100% color sync whenever a custom color or swatch is active
-  const tagStyle: React.CSSProperties | undefined = isCustomColor
-    ? {
-        backgroundColor: `${activeColor}18`,
-        borderColor: `${activeColor}55`,
-        color: activeColor,
-      }
-    : undefined;
+  // Custom status label override if provided
+  const label = customStatusText && customStatusText.trim() ? customStatusText.trim() : chosenTheme.label;
 
-  const workplaceBadgeStyle: React.CSSProperties | undefined = isCustomColor
-    ? {
-        backgroundColor: `${activeColor}20`,
-        borderColor: `${activeColor}60`,
-        color: activeColor,
-      }
-    : undefined;
+  // Custom icon override if provided
+  const icon = customIcon && customIcon.trim() ? (
+    <span className="text-[11px] leading-none shrink-0" aria-hidden="true">
+      {customIcon.trim()}
+    </span>
+  ) : (
+    chosenTheme.icon(activeColor)
+  );
 
-  const workplaceAtStyle: React.CSSProperties | undefined = isCustomColor
-    ? {
-        color: activeColor,
-      }
-    : undefined;
+  // Compute dynamic styles that guarantee 100% color sync
+  const tagStyle: React.CSSProperties = {
+    backgroundColor: `${activeColor}16`,
+    borderColor: `${activeColor}55`,
+    color: activeColor,
+  };
 
-  const cardStyle: React.CSSProperties | undefined = isCustomColor
-    ? {
-        borderColor: activeColor,
-        background: `linear-gradient(135deg, ${activeColor}14 0%, ${activeColor}06 50%, ${activeColor}18 100%)`,
-      }
-    : undefined;
+  const workplaceBadgeStyle: React.CSSProperties = {
+    backgroundColor: `${activeColor}1a`,
+    borderColor: `${activeColor}60`,
+    color: activeColor,
+  };
+
+  const workplaceAtStyle: React.CSSProperties = {
+    color: activeColor,
+  };
+
+  const cardStyle: React.CSSProperties | undefined =
+    cardStyleMode === "bordered"
+      ? { borderColor: activeColor }
+      : cardStyleMode === "tinted"
+      ? {
+          borderColor: activeColor,
+          background: `linear-gradient(135deg, rgba(255, 253, 246, 0.98) 0%, ${activeColor}12 50%, rgba(255, 253, 246, 0.98) 100%)`,
+        }
+      : undefined;
 
   return {
     track,
-    label: chosenTheme.label,
+    label,
     defaultTag: chosenTheme.defaultTag,
     activeColor,
     isCustomColor,
-    icon: chosenTheme.icon(activeColor),
+    icon,
     beaconRing: chosenTheme.beaconRing,
     beaconCore: chosenTheme.beaconCore,
     labelColor: chosenTheme.labelColor,

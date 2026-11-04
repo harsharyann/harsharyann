@@ -804,10 +804,14 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
   // Year-wise & Station-wise (Current vs Past) Experience state
   const [activeExpYear, setActiveExpYear] = React.useState<string>("all");
-  const [expStationFilter, setExpStationFilter] = React.useState<"all" | "current" | "past">("all");
+  // Default to "current" roles view as requested ("current role wla openn ho jb vi aae all wala nahi")
+  const [expStationFilter, setExpStationFilter] = React.useState<"current" | "past" | "all">("current");
 
-  const isCurrentRoleItem = (exp: { isCurrent?: boolean; period?: string }) =>
-    Boolean(exp.isCurrent || (exp.period && /present|current/i.test(exp.period)));
+  const isCurrentRoleItem = (exp: { isCurrent?: boolean; period?: string }) => {
+    if (exp.isCurrent === true) return true;
+    if (exp.isCurrent === false) return false;
+    return Boolean(exp.period && /present|current|now|active/i.test(exp.period));
+  };
 
   const parseEndYear = (period?: string) => {
     if (!period) return 0;
@@ -999,21 +1003,25 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                   ? rawRole.replace(new RegExp(`\\s*@\\s*${workplace}`, 'i'), '').trim()
                   : rawRole;
 
-                const track = resolveRoleTrack(rawRole, workplace, personal.aboutRoleType, personal.coverRoleTrackColor);
+                const track = resolveRoleTrack(
+                  rawRole,
+                  workplace,
+                  personal.aboutRoleType,
+                  personal.coverRoleTrackColor,
+                  personal.aboutRoleStatusText,
+                  personal.aboutRoleIcon,
+                  personal.aboutRoleCardStyle
+                );
                 const tagText = (personal.aboutRoleTag || "").trim() || track.defaultTag;
 
                 return (
                   <div
-                    className={`group/roleCard relative w-full overflow-hidden rounded-xl p-2.5 border-2 shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff] ${
-                      track.isCustomColor
-                        ? ""
-                        : `bg-gradient-to-br ${track.cardBg} border-black dark:border-white`
-                    }`}
+                    className="group/roleCard relative w-full overflow-hidden rounded-xl p-3 border-2 border-black dark:border-white shadow-[3.5px_3.5px_0_#000] dark:shadow-[3.5px_3.5px_0_#fff] bg-[#fffdfa] dark:bg-stone-900 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] dark:hover:shadow-[4.5px_4.5px_0_#fff]"
                     style={track.cardStyle}
                   >
                     {/* Technical blueprint grid texture */}
                     <div 
-                      className="absolute inset-0 opacity-[0.05] dark:opacity-[0.10] pointer-events-none"
+                      className="absolute inset-0 opacity-[0.06] dark:opacity-[0.12] pointer-events-none"
                       style={{
                         backgroundImage: `radial-gradient(currentColor 1px, transparent 1px)`,
                         backgroundSize: '8px 8px',
@@ -1028,21 +1036,20 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                       <div className="flex items-center gap-1.5">
                         <span className="relative flex h-2 w-2">
                           <span
-                            className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.isCustomColor ? "" : track.beaconRing} opacity-75`}
-                            style={track.isCustomColor ? { backgroundColor: track.activeColor } : undefined}
+                            className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                            style={{ backgroundColor: track.activeColor }}
                           />
                           <span
-                            className={`relative inline-flex rounded-full h-2 w-2 ${track.isCustomColor ? "" : track.beaconCore}`}
-                            style={
-                              track.isCustomColor
-                                ? { backgroundColor: track.activeColor, boxShadow: `0 0 0 2px ${track.activeColor}33` }
-                                : undefined
-                            }
+                            className="relative inline-flex rounded-full h-2 w-2"
+                            style={{
+                              backgroundColor: track.activeColor,
+                              boxShadow: `0 0 0 2px ${track.activeColor}33`,
+                            }}
                           />
                         </span>
                         <span
-                          className={`font-mono text-[9.5px] font-black uppercase tracking-wider ${track.isCustomColor ? "" : track.labelColor} flex items-center gap-1`}
-                          style={track.isCustomColor ? { color: track.activeColor } : undefined}
+                          className="font-mono text-[9.5px] font-black uppercase tracking-wider flex items-center gap-1.5"
+                          style={{ color: track.activeColor }}
                         >
                           {track.icon}
                           <span>{track.label}</span>
@@ -1050,9 +1057,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                       </div>
                       {Boolean(tagText) && (
                         <span
-                          className={`font-mono text-[8px] sm:text-[8.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${
-                            track.isCustomColor ? "" : track.tagBg
-                          }`}
+                          className="font-mono text-[8px] sm:text-[8.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded border shadow-2xs"
                           style={track.tagStyle}
                         >
                           {tagText}
@@ -1061,7 +1066,7 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                     </div>
 
                     {/* Role Title & Organization Badge */}
-                    <div className="relative z-10 pt-1.5 flex flex-wrap items-center gap-1.5">
+                    <div className="relative z-10 pt-2 flex flex-wrap items-center gap-2">
                       {Boolean(displayRole) && (
                         <span className="font-['Space_Grotesk'] text-xs sm:text-[13px] font-black uppercase tracking-tight text-black dark:text-white leading-tight">
                           {displayRole}
@@ -1070,18 +1075,16 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
                       {Boolean(workplace) && (
                         <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-mono text-[10.5px] sm:text-[11px] font-black tracking-wide shadow-2xs ${
-                            track.isCustomColor ? "border" : track.workplaceBadgeBg
-                          }`}
+                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md font-mono text-[10.5px] sm:text-[11px] font-black tracking-wide border shadow-2xs"
                           style={track.workplaceBadgeStyle}
                         >
                           <span
-                            className={`${track.isCustomColor ? "" : track.workplaceAtColor} font-sans font-bold text-xs`}
+                            className="font-sans font-bold text-xs"
                             style={track.workplaceAtStyle}
                           >
                             @
                           </span>
-                          <span className={track.isCustomColor ? "text-stone-900 dark:text-stone-100" : undefined}>{workplace}</span>
+                          <span className="text-stone-900 dark:text-stone-100">{workplace}</span>
                         </span>
                       )}
                     </div>
@@ -1351,23 +1354,8 @@ export function AboutSection({ id = "about" }: { id?: string }) {
 
           {/* ── INTERACTIVE VIEW SWITCHER (Current Stations vs Past Milestones) ── */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
-            {/* Primary Track Filter: All vs Current vs Past */}
+            {/* Primary Track Filter: Current Roles first by default */}
             <div className="inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] self-start sm:self-auto">
-              <button
-                type="button"
-                onClick={() => {
-                  setExpStationFilter("all");
-                  setActiveExpYear("all");
-                }}
-                className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                  expStationFilter === "all"
-                    ? "bg-black text-white dark:bg-white dark:text-black shadow-xs"
-                    : "text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white"
-                }`}
-              >
-                <span>✦ ALL ({experiencesList.length})</span>
-              </button>
-
               <button
                 type="button"
                 onClick={() => {
@@ -1376,11 +1364,11 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                 }}
                 className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                   expStationFilter === "current"
-                    ? "bg-emerald-400 text-black shadow-xs font-black"
+                    ? "bg-emerald-400 text-black shadow-xs font-black scale-102"
                     : "text-stone-600 dark:text-stone-400 hover:text-emerald-500"
                 }`}
               >
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
                 <span>CURRENT ROLES ({currentExperiences.length})</span>
               </button>
 
@@ -1392,12 +1380,27 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                 }}
                 className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                   expStationFilter === "past"
-                    ? "bg-amber-400 text-black shadow-xs font-black"
+                    ? "bg-amber-400 text-black shadow-xs font-black scale-102"
                     : "text-stone-600 dark:text-stone-400 hover:text-amber-500"
                 }`}
               >
                 <Calendar className="w-3 h-3" />
                 <span>PAST MILESTONES ({pastExperiences.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setExpStationFilter("all");
+                  setActiveExpYear("all");
+                }}
+                className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  expStationFilter === "all"
+                    ? "bg-black text-white dark:bg-white dark:text-black shadow-xs scale-102"
+                    : "text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white"
+                }`}
+              >
+                <span>✦ ALL ({experiencesList.length})</span>
               </button>
             </div>
 
@@ -1446,9 +1449,67 @@ export function AboutSection({ id = "about" }: { id?: string }) {
           {/* Chronological Spine Rail */}
           <div className="relative pl-5 sm:pl-8 ml-2 sm:ml-4 border-l-2 sm:border-l-3 border-dashed border-stone-300 dark:border-stone-700/80 space-y-8">
             {filteredExperiences.length === 0 ? (
-              <div className="p-8 rounded-2xl bg-stone-50 dark:bg-stone-900 border-2 border-dashed border-stone-300 dark:border-stone-700 text-center font-mono text-xs text-stone-500">
-                No roles found for this selected filter. Click &ldquo;ALL&rdquo; to reset.
-              </div>
+              expStationFilter === "current" ? (
+                /* High-energy fallback when 0 current roles are configured yet */
+                <div className="relative rounded-3xl bg-[#fffdfa] dark:bg-[#11131a] border-2 sm:border-3 border-black dark:border-stone-700 shadow-[6px_6px_0_#10b981] p-6 sm:p-8 space-y-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-[11px] font-black uppercase bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_#000]">
+                      <span className="w-2 h-2 rounded-full bg-black animate-ping" />
+                      <span>LIVE RADAR &middot; OPEN FOR NEW HORIZONS</span>
+                    </span>
+                    <span className="px-2.5 py-1 rounded-full font-mono text-[11px] font-bold uppercase bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-300 dark:border-stone-700">
+                      ✦ IIT MADRAS &bull; CHENNAI
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="font-['Space_Grotesk'] text-2xl sm:text-3xl font-black uppercase tracking-tight text-black dark:text-white">
+                      Actively Seeking Next Engineering &amp; Research Station
+                    </h3>
+                    <p className="text-xs sm:text-sm font-sans text-stone-700 dark:text-stone-300 leading-relaxed max-w-2xl">
+                      Harsh is currently immersed in foundational Machine Learning, exploratory modeling &amp; Python architectures at IIT Madras. Open for Summer 2026 internships, hackathon collaborations, and high-impact engineering roles.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setExpStationFilter("past");
+                        setActiveExpYear("all");
+                      }}
+                      className="px-4 py-2.5 rounded-xl bg-amber-400 text-black border-2 border-black font-mono text-xs font-black shadow-[3px_3px_0_#000] hover:translate-x-0.5 hover:translate-y-0.5 transition-all cursor-pointer flex items-center gap-2"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      <span>Explore Past Milestones &amp; Flight Log ({pastExperiences.length}) &rarr;</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setExpStationFilter("all");
+                        setActiveExpYear("all");
+                      }}
+                      className="px-4 py-2.5 rounded-xl bg-white dark:bg-stone-800 text-black dark:text-white border-2 border-black dark:border-white font-mono text-xs font-bold shadow-[3px_3px_0_#000] hover:translate-x-0.5 hover:translate-y-0.5 transition-all cursor-pointer"
+                    >
+                      <span>✦ View All Historical Roles ({experiencesList.length})</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-8 rounded-2xl bg-stone-50 dark:bg-stone-900 border-2 border-dashed border-stone-300 dark:border-stone-700 text-center font-mono text-xs text-stone-500 space-y-3">
+                  <p>No roles found for this selected filter ({activeExpYear !== "all" ? `Year ${activeExpYear}` : expStationFilter}).</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExpStationFilter("current");
+                      setActiveExpYear("all");
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-black text-white dark:bg-white dark:text-black font-mono text-xs font-bold cursor-pointer"
+                  >
+                    Reset to Current Roles
+                  </button>
+                </div>
+              )
             ) : (
               filteredExperiences.map((exp, idx) => {
                 const yearMatch = exp.period?.match(/\b(20\d{2})\b/);
@@ -1473,85 +1534,36 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                     <div className="relative space-y-2">
                       {/* Timeline Radar Node */}
                       <div
-                        className={`absolute -left-5 sm:-left-8 -translate-x-1/2 top-4 sm:top-5 flex items-center justify-center rounded-full z-10 transition-all ${
+                        className={`absolute -left-5 sm:-left-8 -translate-x-1/2 top-5 flex items-center justify-center rounded-full z-10 transition-all ${
                           isCurrentRole
-                            ? "h-7 w-7 sm:h-8 sm:w-8 border-2 sm:border-3 bg-emerald-400 text-black border-black dark:border-white shadow-[0_0_12px_rgba(16,185,129,0.5)] scale-105"
-                            : "h-6 w-6 sm:h-7 sm:w-7 border-2 border-stone-400 dark:border-stone-600 bg-white dark:bg-stone-900 shadow-2xs text-stone-500 dark:text-stone-400"
+                            ? "h-8 w-8 border-2 sm:border-3 bg-emerald-400 text-black border-black dark:border-white shadow-[0_0_14px_rgba(16,185,129,0.55)] scale-105"
+                            : "h-7 w-7 border-2 border-black dark:border-white bg-white dark:bg-stone-800 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] text-stone-900 dark:text-stone-100 font-black text-xs"
                         }`}
                       >
                         {isCurrentRole ? (
-                          <span className="relative flex h-2.5 w-2.5">
+                          <span className="relative flex h-3 w-3">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-200 opacity-90" />
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-black" />
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-black" />
                           </span>
                         ) : (
-                          <span className="text-[10px] font-bold">✓</span>
+                          <span>✓</span>
                         )}
                       </div>
 
-                      {/* Year Tag Banner Above Card */}
-                      <div className={`flex flex-wrap items-center gap-2 pb-0.5 ${isCurrentRole ? "" : "opacity-85"}`}>
-                        <span
-                          className={`inline-flex items-center gap-1.5 font-mono uppercase tracking-wider border-2 transition-all ${
-                            isCurrentRole
-                              ? "px-3 py-1 rounded-lg text-[11px] font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 text-black border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff]"
-                              : "px-2.5 py-0.5 rounded-md text-[10.5px] font-bold bg-stone-200/90 dark:bg-stone-800/90 text-stone-700 dark:text-stone-300 border-stone-300 dark:border-stone-700 shadow-2xs"
-                          }`}
-                        >
-                          {isCurrentRole ? (
-                            <>
-                              <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-black" />
-                              </span>
-                              <span>ACTIVE STATION &middot; {exp.period}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Calendar className="w-3 h-3 text-stone-500" />
-                              <span>MILESTONE &middot; {exp.period}</span>
-                            </>
-                          )}
-                        </span>
-
-                        {/* Current vs Past Marker Tag */}
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-md font-mono text-[10px] font-black uppercase border ${
-                            isCurrentRole
-                              ? "bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border-2 border-emerald-500/40 shadow-xs"
-                              : "bg-stone-100 dark:bg-stone-900/60 text-stone-500 dark:text-stone-400 border border-stone-200 dark:border-stone-800"
-                          }`}
-                        >
-                          {isCurrentRole ? "⚡ CURRENT MANDATE" : "✓ PAST JOURNEY"}
-                        </span>
-
-                        {exp.type && (
-                          <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-md font-mono text-[10px] uppercase ${
-                              isCurrentRole
-                                ? "bg-black text-amber-300 dark:bg-stone-900 dark:text-amber-300 border-2 border-black dark:border-stone-700 font-black shadow-xs"
-                                : "bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 font-medium text-stone-600 dark:text-stone-400"
-                            }`}
-                          >
-                            ✦ {exp.type}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Executive Dossier Card */}
+                      {/* Executive Dossier Card (100% crisp contrast, no dull opacity wash) */}
                       <div
                         className={
                           isCurrentRole
-                            ? "group/expCard relative overflow-hidden rounded-[26px] bg-[#fffdfa] dark:bg-[#0f1118] border-2 sm:border-3 border-black dark:border-emerald-400 shadow-[7px_7px_0_#10b981] dark:shadow-[7px_7px_0_#059669] p-5 sm:p-7 space-y-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[10px_10px_0_#000] dark:hover:shadow-[10px_10px_0_#34d399]"
-                            : "group/expCard relative overflow-hidden rounded-[26px] bg-[#fbfaf8]/90 dark:bg-[#14151b]/85 border-2 border-stone-300 dark:border-stone-700 shadow-[4px_4px_0_#d6d3d1] dark:shadow-[4px_4px_0_#292524] p-5 sm:p-7 space-y-4 opacity-75 sm:opacity-80 hover:opacity-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-[7px_7px_0_#000] dark:hover:shadow-[7px_7px_0_#fff] hover:border-black dark:hover:border-white"
+                            ? "group/expCard relative overflow-hidden rounded-[26px] bg-[#fffdfa] dark:bg-[#0c0e14] border-2 sm:border-3 border-black dark:border-emerald-400 shadow-[6px_6px_0_#10b981] dark:shadow-[6px_6px_0_#059669] p-5 sm:p-7 space-y-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[9px_9px_0_#000] dark:hover:shadow-[9px_9px_0_#34d399]"
+                            : "group/expCard relative overflow-hidden rounded-[26px] bg-[#fffefc] dark:bg-[#11131a] border-2 sm:border-3 border-black dark:border-stone-600 shadow-[5px_5px_0_#000] dark:shadow-[5px_5px_0_#fff] p-5 sm:p-7 space-y-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_#000] dark:hover:shadow-[8px_8px_0_#f59e0b]"
                         }
                       >
                         {/* Background Typographic Year Watermark */}
                         <div
-                          className={`absolute right-3 -bottom-4 text-7xl sm:text-8xl font-black font-mono tracking-tighter select-none pointer-events-none uppercase ${
+                          className={`absolute right-4 -bottom-4 text-7xl sm:text-8xl font-black font-mono tracking-tighter select-none pointer-events-none uppercase ${
                             isCurrentRole
                               ? "text-emerald-500/10 dark:text-emerald-400/15"
-                              : "text-black/5 dark:text-white/5"
+                              : "text-stone-900/5 dark:text-stone-100/5"
                           }`}
                           aria-hidden="true"
                         >
@@ -1562,206 +1574,231 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                         <div
                           className={`absolute -top-1.5 right-8 sm:right-12 rounded-xs pointer-events-none z-10 ${
                             isCurrentRole
-                              ? "w-20 sm:w-24 h-3.5 bg-gradient-to-r from-amber-300 via-emerald-300 to-teal-300 border border-black/30 shadow-xs rotate-[2deg]"
-                              : "w-16 sm:w-20 h-3 bg-stone-300/60 dark:bg-stone-700/50 border border-black/15 dark:border-white/10 shadow-xs rotate-[1.5deg]"
+                              ? "w-20 sm:w-24 h-3.5 bg-gradient-to-r from-amber-300 via-emerald-300 to-teal-300 border border-black/40 shadow-xs rotate-[2deg]"
+                              : "w-16 sm:w-20 h-3 bg-amber-300/80 dark:bg-amber-400/60 border border-black/30 dark:border-white/20 shadow-xs rotate-[-1.5deg]"
                           }`}
                           aria-hidden="true"
                         />
 
-                        {/* Top Bar: Role Title, Company & Location, Period */}
-                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b-2 border-dashed border-stone-200 dark:border-stone-800 relative z-10">
-                          <div className="space-y-1">
-                            <h3 className="font-['Space_Grotesk'] text-xl sm:text-2xl font-black uppercase text-black dark:text-white tracking-tight leading-tight">
-                              {exp.role}
-                            </h3>
-
-                            <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs text-stone-600 dark:text-stone-400">
-                              {/* Company Name with Live Link */}
-                              <div
-                                className={`flex items-center gap-1.5 font-black ${
-                                  isCurrentRole
-                                    ? "text-emerald-700 dark:text-emerald-400"
-                                    : "text-amber-600 dark:text-amber-400"
-                                }`}
-                              >
-                                <Building2 className="w-3.5 h-3.5 shrink-0" />
-                                {exp.companyUrl ? (
-                                  <Link
-                                    href={exp.companyUrl.startsWith("http") ? exp.companyUrl : `https://${exp.companyUrl}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="hover:underline inline-flex items-center gap-1 font-bold"
-                                  >
-                                    <span>{exp.company}</span>
-                                    <ExternalLink className="w-3 h-3" />
-                                  </Link>
-                                ) : (
-                                  <span>{exp.company}</span>
-                                )}
-                              </div>
-
-                              {/* Location (with optional custom color from admin panel) */}
-                              {exp.location && (
-                                <div
-                                  className="flex items-center gap-1 font-bold text-stone-500 dark:text-stone-400"
-                                  style={personal?.locationBadgeColor ? { color: personal.locationBadgeColor } : undefined}
-                                >
-                                  <span>•</span>
-                                  <MapPin
-                                    className="w-3.5 h-3.5 text-rose-500 shrink-0"
-                                    style={personal?.locationBadgeColor ? { color: personal.locationBadgeColor } : undefined}
-                                  />
-                                  <span>{exp.location}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Period Pill in top right */}
-                          <div className="self-start sm:self-center shrink-0">
+                        {/* Top Bar: Station Banner, Role Type, Status Marker */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b-2 border-stone-200 dark:border-stone-800 relative z-10">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {/* Station Pill */}
                             <span
-                              className={`inline-flex items-center gap-1.5 font-mono text-xs shadow-2xs ${
+                              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-[11px] font-black uppercase border-2 border-black transition-all ${
                                 isCurrentRole
-                                  ? "px-3.5 py-1.5 rounded-xl border-2 border-emerald-500/50 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-200 font-black shadow-xs"
-                                  : "px-3 py-1 rounded-xl border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 font-semibold"
+                                  ? "bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 text-black shadow-[2px_2px_0_#000]"
+                                  : "bg-stone-200 dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff]"
                               }`}
                             >
                               {isCurrentRole ? (
-                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <>
+                                  <span className="w-2 h-2 rounded-full bg-black animate-ping" />
+                                  <span>ACTIVE STATION &middot; {exp.period}</span>
+                                </>
                               ) : (
-                                <Calendar className="w-3.5 h-3.5 text-stone-400" />
+                                <>
+                                  <Calendar className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
+                                  <span>MILESTONE &middot; {exp.period}</span>
+                                </>
                               )}
-                              <span>{exp.period}</span>
+                            </span>
+
+                            {/* Role Type Tag */}
+                            {exp.type && (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full font-mono text-[11px] font-bold uppercase bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border-2 border-black dark:border-stone-600">
+                                ✦ {exp.type}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Status Marker Pill */}
+                          <div className="self-start sm:self-auto shrink-0">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-[10.5px] font-black uppercase border-2 ${
+                                isCurrentRole
+                                  ? "bg-black text-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 border-black dark:border-emerald-500 shadow-xs"
+                                  : "bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-400 dark:border-stone-700 shadow-2xs"
+                              }`}
+                            >
+                              {isCurrentRole ? (
+                                <>
+                                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                  <span>⚡ CURRENT MANDATE</span>
+                                </>
+                              ) : (
+                                <span>✓ PAST JOURNEY</span>
+                              )}
                             </span>
                           </div>
                         </div>
 
-                        {/* Two-Column Bento Split: Left Narrative + Right Impact Box */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 pt-1 relative z-10">
-                          {/* Left: Role Scope & Description */}
-                          <div className={exp.highlights && exp.highlights.length > 0 ? "lg:col-span-7 space-y-2.5" : "lg:col-span-12 space-y-2.5"}>
-                            <div className="font-mono text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider flex items-center gap-1.5">
-                              <span>[ROLE SCOPE &amp; MANDATE]</span>
-                              <span className="h-px flex-1 bg-stone-200 dark:bg-stone-800" />
+                        {/* Title, Organization & Coordinates */}
+                        <div className="space-y-1.5 relative z-10">
+                          <h3 className="font-['Space_Grotesk'] text-2xl sm:text-3xl font-black uppercase text-black dark:text-white tracking-tight leading-tight">
+                            {exp.role}
+                          </h3>
+
+                          <div className="flex flex-wrap items-center gap-3 font-mono text-xs sm:text-sm font-bold text-stone-700 dark:text-stone-300">
+                            <div
+                              className={`flex items-center gap-1.5 font-black ${
+                                isCurrentRole
+                                  ? "text-emerald-700 dark:text-emerald-400"
+                                  : "text-amber-600 dark:text-amber-400"
+                              }`}
+                            >
+                              <Building2 className="w-4 h-4 shrink-0" />
+                              {exp.companyUrl ? (
+                                <Link
+                                  href={exp.companyUrl.startsWith("http") ? exp.companyUrl : `https://${exp.companyUrl}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hover:underline inline-flex items-center gap-1 font-bold"
+                                >
+                                  <span>{exp.company}</span>
+                                  <ExternalLink className="w-3.5 h-3.5" />
+                                </Link>
+                              ) : (
+                                <span>{exp.company}</span>
+                              )}
                             </div>
-                            {(() => {
-                              const desc = (exp.description || "").trim();
-                              if (!desc) {
-                                return (
-                                  <p className="text-xs sm:text-sm text-stone-500 italic">
-                                    No description provided for this mandate.
-                                  </p>
-                                );
-                              }
-                              // Smart bullet / paragraph parser (handles ✦, •, -, or newlines without ugly text jamming)
-                              const hasBulletSeparators = desc.includes("✦") || desc.includes("•") || desc.includes("\n");
-                              if (hasBulletSeparators) {
-                                const bulletItems = desc
-                                  .split(/(?:[✦•\n]+)/)
-                                  .map((s) => s.trim().replace(/^[-*•✦]\s*/, ""))
-                                  .filter((s) => s.length > 0);
-                                if (bulletItems.length > 1) {
+
+                            {exp.location && (
+                              <div
+                                className="flex items-center gap-1 font-bold text-stone-600 dark:text-stone-400"
+                                style={personal?.locationBadgeColor ? { color: personal.locationBadgeColor } : undefined}
+                              >
+                                <span>•</span>
+                                <MapPin
+                                  className="w-3.5 h-3.5 text-rose-500 shrink-0"
+                                  style={personal?.locationBadgeColor ? { color: personal.locationBadgeColor } : undefined}
+                                />
+                                <span>{exp.location}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Two-Column Bento Split: Left Narrative + Right Impact Box */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch pt-1 relative z-10">
+                          {/* Left: Role Scope & Description */}
+                          <div
+                            className={`${
+                              exp.highlights && exp.highlights.length > 0 ? "lg:col-span-7" : "lg:col-span-12"
+                            } bg-stone-50/90 dark:bg-stone-900/60 rounded-2xl p-4 sm:p-5 border-2 border-stone-200 dark:border-stone-800 space-y-3 flex flex-col justify-between`}
+                          >
+                            <div className="space-y-2.5">
+                              <div className="flex items-center gap-2 pb-2 border-b border-stone-200 dark:border-stone-800">
+                                <span className="font-mono text-[11px] font-black uppercase tracking-wider text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
+                                  📋 ROLE MANDATE &amp; SCOPE
+                                </span>
+                                <div className="h-px flex-1 bg-stone-200 dark:bg-stone-800" />
+                              </div>
+                              {(() => {
+                                const desc = (exp.description || "").trim();
+                                if (!desc) {
                                   return (
-                                    <ul className="space-y-2 pt-0.5">
-                                      {bulletItems.map((item, bIdx) => (
-                                        <li
-                                          key={bIdx}
-                                          className="flex items-start gap-2.5 text-xs sm:text-[13px] text-stone-700 dark:text-stone-300 leading-relaxed font-sans"
-                                        >
-                                          <span className="shrink-0 mt-1 text-amber-500 dark:text-amber-400 font-black text-xs">
-                                            ✦
-                                          </span>
-                                          <span>{item}</span>
-                                        </li>
-                                      ))}
-                                    </ul>
+                                    <p className="text-xs sm:text-sm text-stone-500 italic">
+                                      No description provided for this mandate.
+                                    </p>
                                   );
                                 }
-                              }
-                              return (
-                                <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
-                                  {desc}
-                                </p>
-                              );
-                            })()}
+                                // Smart bullet / paragraph parser (handles ✦, •, -, or newlines without ugly text jamming)
+                                const hasBulletSeparators = desc.includes("✦") || desc.includes("•") || desc.includes("\n");
+                                if (hasBulletSeparators) {
+                                  const bulletItems = desc
+                                    .split(/(?:[✦•\n]+)/)
+                                    .map((s) => s.trim().replace(/^[-*•✦]\s*/, ""))
+                                    .filter((s) => s.length > 0);
+                                  if (bulletItems.length > 1) {
+                                    return (
+                                      <ul className="space-y-2 pt-0.5">
+                                        {bulletItems.map((item, bIdx) => (
+                                          <li
+                                            key={bIdx}
+                                            className="flex items-start gap-2.5 text-xs sm:text-[13px] text-stone-800 dark:text-stone-200 leading-relaxed font-sans"
+                                          >
+                                            <span className="shrink-0 mt-1 text-amber-500 dark:text-amber-400 font-black text-xs">
+                                              ✦
+                                            </span>
+                                            <span>{item}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    );
+                                  }
+                                }
+                                return (
+                                  <p className="text-xs sm:text-sm text-stone-800 dark:text-stone-200 leading-relaxed font-sans">
+                                    {desc}
+                                  </p>
+                                );
+                              })()}
+                            </div>
                           </div>
 
                           {/* Right: Key Deliverables & Impact Box */}
                           {exp.highlights && exp.highlights.length > 0 && (
                             <div
-                              className={`lg:col-span-5 rounded-2xl p-4 sm:p-4.5 space-y-2.5 ${
+                              className={`lg:col-span-5 rounded-2xl p-4 sm:p-5 border-2 space-y-3 flex flex-col justify-between ${
                                 isCurrentRole
-                                  ? "bg-gradient-to-br from-emerald-50/80 via-teal-50/50 to-emerald-50/90 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-emerald-950/40 border-2 border-emerald-500/40 dark:border-emerald-500/50 shadow-2xs"
-                                  : "bg-stone-50/90 dark:bg-stone-900/60 border border-stone-200/90 dark:border-stone-800 shadow-2xs"
+                                  ? "bg-gradient-to-br from-emerald-50/80 via-teal-50/40 to-emerald-50/80 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-emerald-950/30 border-emerald-300 dark:border-emerald-800 shadow-2xs"
+                                  : "bg-gradient-to-br from-amber-50/70 via-stone-50/40 to-amber-50/60 dark:from-stone-900/90 dark:via-stone-900/60 dark:to-stone-900/90 border-amber-200 dark:border-stone-700 shadow-2xs"
                               }`}
                             >
-                              <div
-                                className={`font-mono text-[10.5px] uppercase tracking-wider flex items-center gap-1.5 pb-1 border-b ${
-                                  isCurrentRole
-                                    ? "font-black text-emerald-800 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-900/50"
-                                    : "font-bold text-stone-500 dark:text-stone-400 border-stone-200 dark:border-stone-800"
-                                }`}
-                              >
-                                <Sparkles
-                                  className={`w-3.5 h-3.5 shrink-0 ${
+                              <div className="space-y-2.5">
+                                <div
+                                  className={`flex items-center gap-2 pb-2 border-b ${
                                     isCurrentRole
-                                      ? "text-emerald-600 dark:text-emerald-400"
-                                      : "text-amber-500"
+                                      ? "border-emerald-200/80 dark:border-emerald-900/60 text-emerald-900 dark:text-emerald-300"
+                                      : "border-amber-200 dark:border-stone-800 text-amber-900 dark:text-amber-300"
                                   }`}
-                                />
-                                <span>KEY DELIVERABLES &amp; IMPACT</span>
-                              </div>
-                              <ul className="space-y-2">
-                                {exp.highlights.map((h, hIdx) => (
-                                  <li
-                                    key={hIdx}
-                                    className={`flex items-start gap-2.5 text-xs leading-relaxed ${
-                                      isCurrentRole
-                                        ? "text-stone-900 dark:text-stone-100 font-medium"
-                                        : "text-stone-700 dark:text-stone-300"
-                                    }`}
-                                  >
-                                    <span
-                                      className={`shrink-0 mt-0.5 ${
-                                        isCurrentRole
-                                          ? "text-emerald-600 dark:text-emerald-400 font-black text-xs"
-                                          : "text-amber-500 text-xs"
-                                      }`}
+                                >
+                                  <span className="font-mono text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5">
+                                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                                    KEY DELIVERABLES &amp; IMPACT
+                                  </span>
+                                </div>
+
+                                <ul className="space-y-2">
+                                  {exp.highlights.map((h, hIdx) => (
+                                    <li
+                                      key={hIdx}
+                                      className="flex items-start gap-2.5 text-xs sm:text-[13px] text-stone-800 dark:text-stone-200 leading-relaxed font-sans"
                                     >
-                                      ✦
-                                    </span>
-                                    <span>{h}</span>
-                                  </li>
-                                ))}
-                              </ul>
+                                      <span
+                                        className={`shrink-0 mt-0.5 text-xs font-black ${
+                                          isCurrentRole ? "text-emerald-600 dark:text-emerald-400" : "text-amber-500"
+                                        }`}
+                                      >
+                                        ✦
+                                      </span>
+                                      <span>{h}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
                             </div>
                           )}
                         </div>
 
                         {/* Bottom Skills / Domain Tag Strip */}
                         {exp.skillsUsed && exp.skillsUsed.length > 0 && (
-                          <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-dashed border-stone-200 dark:border-stone-800 relative z-10">
-                            <span
-                              className={`font-mono text-[10px] uppercase mr-1 ${
-                                isCurrentRole
-                                  ? "font-black text-emerald-800 dark:text-emerald-300"
-                                  : "font-semibold text-stone-400"
-                              }`}
-                            >
-                              Domain:
+                          <div className="flex flex-wrap items-center gap-2 pt-3 border-t-2 border-dashed border-stone-200 dark:border-stone-800 relative z-10">
+                            <span className="font-mono text-[10.5px] font-black uppercase tracking-wider text-stone-500 dark:text-stone-400 mr-1">
+                              DOMAIN:
                             </span>
                             {exp.skillsUsed.map((skill) => (
                               <span
                                 key={skill}
-                                className={`font-mono text-[11px] transition-all cursor-default ${
+                                className={`font-mono text-[11px] px-2.5 py-1 rounded-lg border-2 transition-all cursor-default flex items-center gap-1 ${
                                   isCurrentRole
-                                    ? "px-3 py-1 rounded-full border-2 border-black/15 dark:border-emerald-500/40 bg-white dark:bg-stone-900 text-stone-900 dark:text-emerald-200 font-bold shadow-2xs hover:-translate-y-0.5 hover:scale-105 hover:border-black"
-                                    : "px-2.5 py-0.5 rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100/80 dark:bg-stone-800/60 text-stone-600 dark:text-stone-400 font-medium hover:-translate-y-0.5"
+                                    ? "bg-white dark:bg-stone-900 border-black dark:border-emerald-500/50 text-black dark:text-emerald-200 font-bold shadow-[2px_2px_0_#10b981] hover:-translate-y-0.5"
+                                    : "bg-white dark:bg-stone-800 border-black dark:border-stone-600 text-black dark:text-white font-bold shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] hover:-translate-y-0.5"
                                 }`}
                               >
-                                {isCurrentRole && <span className="text-emerald-500 mr-1 font-black">✦</span>}
-                                {!isCurrentRole && <span className="mr-1 opacity-70">✦</span>}
-                                {skill}
+                                <span className="text-amber-500 font-black">✦</span>
+                                <span>{skill}</span>
                               </span>
                             ))}
                           </div>

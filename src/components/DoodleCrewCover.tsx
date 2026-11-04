@@ -1360,7 +1360,14 @@ export function DoodleCrewCover({
                 : rawRole;
 
               const customTrackColor = portfolio?.personal?.coverRoleTrackColor;
-              const track = resolveRoleTrack(rawRole, workplace, portfolio?.personal?.aboutRoleType, customTrackColor);
+              const track = resolveRoleTrack(
+                rawRole,
+                workplace,
+                portfolio?.personal?.aboutRoleType,
+                customTrackColor,
+                portfolio?.personal?.aboutRoleStatusText,
+                portfolio?.personal?.aboutRoleIcon
+              );
 
               return (
                 <div
