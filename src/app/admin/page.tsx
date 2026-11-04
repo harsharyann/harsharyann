@@ -431,6 +431,17 @@ export default function AdminPage() {
   const [thoughtViewMode, setThoughtViewMode] = useState<"tabs" | "grid">("tabs");
   const [newKeywordInput, setNewKeywordInput] = useState<string>("");
 
+  // ── "Click to Edit" State Modes (Only edit after clicking "Edit") ──
+  const [editingSublines, setEditingSublines] = useState<Record<string, boolean>>({});
+  const [editingExpIndex, setEditingExpIndex] = useState<number | null>(null);
+  const [editingMilestoneIdx, setEditingMilestoneIdx] = useState<number | null>(null);
+  const [editingStatIdx, setEditingStatIdx] = useState<number | null>(null);
+  const [editingSkillCatIdx, setEditingSkillCatIdx] = useState<number | null>(null);
+  const [isEditingCoverTexts, setIsEditingCoverTexts] = useState<boolean>(false);
+  const [isEditingPhotoCard, setIsEditingPhotoCard] = useState<boolean>(false);
+  const [isEditingBio, setIsEditingBio] = useState<boolean>(false);
+  const [isEditingContactTexts, setIsEditingContactTexts] = useState<boolean>(false);
+
   useEffect(() => {
     const day = new Date().getDay();
     setTodayWeekday(day);
@@ -642,10 +653,12 @@ export default function AdminPage() {
     };
     setPortfolio(nextPort);
     portfolioRef.current = nextPort;
+    setEditingStatIdx(currentList.length);
     saveInstantly(nextPort, "Added new benchmark capsule!");
   };
 
   const handleRemoveQuickStat = (index: number) => {
+    if (editingStatIdx === index) setEditingStatIdx(null);
     const base = portfolioRef.current || portfolio;
     const nextPort = {
       ...base,
@@ -690,11 +703,13 @@ export default function AdminPage() {
     };
     setPortfolio(nextPort);
     portfolioRef.current = nextPort;
+    setEditingExpIndex((base.experiences || []).length);
     saveInstantly(nextPort, "Added new experience entry!");
   };
 
   const handleRemoveExperience = (idx: number) => {
     if (!confirm("Are you sure you want to delete this experience entry?")) return;
+    if (editingExpIndex === idx) setEditingExpIndex(null);
     const base = portfolioRef.current || portfolio;
     const nextPort = {
       ...base,
@@ -876,11 +891,13 @@ export default function AdminPage() {
     const nextPort = { ...base, milestones: [...current, newMilestone] };
     setPortfolio(nextPort);
     portfolioRef.current = nextPort;
+    setEditingMilestoneIdx(current.length);
     saveInstantly(nextPort, `Added Phase ${newMilestone.phaseNumber} to Trajectory!`);
   };
 
   const handleRemoveMilestone = (index: number) => {
     if (!confirm("Are you sure you want to remove this trajectory phase?")) return;
+    if (editingMilestoneIdx === index) setEditingMilestoneIdx(null);
     const base = portfolioRef.current || portfolio;
     const current = base.milestones && base.milestones.length > 0 ? [...base.milestones] : [
       { phaseNumber: "01", period: "Foundations", title: "Algorithmic Intuition & Logic", subtitle: "Python, C & Core Problem Solving", description: "Cultivating a deep focus on core data structures, algorithms, and mathematical logic through hundreds of practice problems." },
@@ -2958,57 +2975,122 @@ export default function AdminPage() {
                       1. Behind the Terminal (About Section) Heading &amp; Subline
                     </h3>
                   </div>
-                  <span className="font-mono text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
-                    About Section
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditingSublines((prev) => ({ ...prev, about: !prev.about }))}
+                      className={`px-3 py-1 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 ${
+                        editingSublines["about"]
+                          ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                          : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                      }`}
+                    >
+                      {editingSublines["about"] ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Done</span>
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </>
+                      )}
+                    </button>
+                    <span className="font-mono text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+                      About Section
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  {/* Left: Inputs (7 cols) */}
+                  {/* Left: View Mode vs Edit Mode (7 cols) */}
                   <div className="lg:col-span-7 space-y-4">
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Section Main Heading:
-                      </label>
-                      <input
-                        type="text"
-                        value={portfolio.personal.aboutHeading ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, aboutHeading: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "About heading updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="Behind the Terminal"
-                      />
-                    </div>
+                    {!editingSublines["about"] ? (
+                      /* ── View Mode: Clean Typography Plaque ── */
+                      <div className="space-y-3.5 p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                        <div>
+                          <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Current Heading:</span>
+                          <h4 className="font-['Space_Grotesk'] text-lg font-black text-stone-900">
+                            {portfolio.personal.aboutHeading || "Behind the Terminal"}
+                          </h4>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Current Subline:</span>
+                          <p className="font-mono text-xs text-stone-700 leading-relaxed bg-white p-3 rounded-xl border border-stone-200">
+                            {portfolio.personal.aboutSubtitle || "Curious mind blending machine learning fundamentals with expressive software architecture..."}
+                          </p>
+                        </div>
+                        <div className="pt-1 flex items-center justify-between text-xs font-mono text-stone-400">
+                          <span>Locked. Click &ldquo;Edit&rdquo; above to modify.</span>
+                          <button
+                            type="button"
+                            onClick={() => setEditingSublines((prev) => ({ ...prev, about: true }))}
+                            className="text-amber-700 hover:text-amber-900 font-bold"
+                          >
+                            ✏️ Edit Heading &amp; Subline ↗
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* ── Edit Mode: Form Inputs ── */
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Section Main Heading:
+                          </label>
+                          <input
+                            type="text"
+                            value={portfolio.personal.aboutHeading ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutHeading: val },
+                              }));
+                            }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "About heading updated!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                            placeholder="Behind the Terminal"
+                          />
+                        </div>
 
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1 flex items-center justify-between">
-                        <span>Section Description Subline (Sub-heading):</span>
-                        <span className="text-amber-700 font-normal text-[10px]">Displayed right under heading</span>
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={portfolio.personal.aboutSubtitle ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, aboutSubtitle: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "About subtitle updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="Curious mind blending machine learning fundamentals with expressive software architecture..."
-                      />
-                      <p className="font-mono text-[9.5px] text-stone-500 mt-1">
-                        Ye exact subline website par Behind the Terminal ke neeche render hoti hai.
-                      </p>
-                    </div>
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1 flex items-center justify-between">
+                            <span>Section Description Subline (Sub-heading):</span>
+                            <span className="text-amber-700 font-normal text-[10px]">Displayed right under heading</span>
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={portfolio.personal.aboutSubtitle ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, aboutSubtitle: val },
+                              }));
+                            }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "About subtitle updated!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                            placeholder="Curious mind blending machine learning fundamentals with expressive software architecture..."
+                          />
+                          <p className="font-mono text-[9.5px] text-stone-500 mt-1">
+                            Ye exact subline website par Behind the Terminal ke neeche render hoti hai.
+                          </p>
+                        </div>
+
+                        <div className="pt-1 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setEditingSublines((prev) => ({ ...prev, about: false }))}
+                            className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1 cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Save &amp; Lock View</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Right: Live Preview Card (5 cols) */}
@@ -3043,53 +3125,118 @@ export default function AdminPage() {
                       2. Projects Lab Heading &amp; Subline
                     </h3>
                   </div>
-                  <span className="font-mono text-[10px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded border border-purple-300">
-                    Projects Section
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditingSublines((prev) => ({ ...prev, projects: !prev.projects }))}
+                      className={`px-3 py-1 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 ${
+                        editingSublines["projects"]
+                          ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                          : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                      }`}
+                    >
+                      {editingSublines["projects"] ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Done</span>
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </>
+                      )}
+                    </button>
+                    <span className="font-mono text-[10px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded border border-purple-300">
+                      Projects Section
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  {/* Left: Inputs (7 cols) */}
+                  {/* Left: View Mode vs Edit Mode (7 cols) */}
                   <div className="lg:col-span-7 space-y-4">
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Projects Section Heading:
-                      </label>
-                      <input
-                        type="text"
-                        value={portfolio.personal.projectsHeading ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, projectsHeading: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "Projects heading updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="Projects and Builds"
-                      />
-                    </div>
+                    {!editingSublines["projects"] ? (
+                      /* ── View Mode: Clean Typography Plaque ── */
+                      <div className="space-y-3.5 p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                        <div>
+                          <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Current Heading:</span>
+                          <h4 className="font-['Space_Grotesk'] text-lg font-black text-stone-900">
+                            {portfolio.personal.projectsHeading || "Projects and Builds"}
+                          </h4>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Current Subline:</span>
+                          <p className="font-mono text-xs text-stone-700 leading-relaxed bg-white p-3 rounded-xl border border-stone-200">
+                            {portfolio.personal.projectsSubtitle || "End-to-end exploratory data analysis, foundational machine learning algorithms..."}
+                          </p>
+                        </div>
+                        <div className="pt-1 flex items-center justify-between text-xs font-mono text-stone-400">
+                          <span>Locked. Click &ldquo;Edit&rdquo; above to modify.</span>
+                          <button
+                            type="button"
+                            onClick={() => setEditingSublines((prev) => ({ ...prev, projects: true }))}
+                            className="text-amber-700 hover:text-amber-900 font-bold"
+                          >
+                            ✏️ Edit Heading &amp; Subline ↗
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* ── Edit Mode: Form Inputs ── */
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Projects Section Heading:
+                          </label>
+                          <input
+                            type="text"
+                            value={portfolio.personal.projectsHeading ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, projectsHeading: val },
+                              }));
+                            }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "Projects heading updated!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                            placeholder="Projects and Builds"
+                          />
+                        </div>
 
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Projects Section Subline (Description Subtitle):
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={portfolio.personal.projectsSubtitle ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, projectsSubtitle: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "Projects subtitle updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="End-to-end exploratory data analysis, foundational machine learning algorithms..."
-                      />
-                    </div>
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Projects Section Subline (Description Subtitle):
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={portfolio.personal.projectsSubtitle ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, projectsSubtitle: val },
+                              }));
+                            }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "Projects subtitle updated!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                            placeholder="End-to-end exploratory data analysis, foundational machine learning algorithms..."
+                          />
+                        </div>
+
+                        <div className="pt-1 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setEditingSublines((prev) => ({ ...prev, projects: false }))}
+                            className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1 cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Save &amp; Lock View</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Right: Live Preview Card (5 cols) */}
@@ -3124,95 +3271,177 @@ export default function AdminPage() {
                       3. Certifications &amp; Laurels Headings &amp; Sublines
                     </h3>
                   </div>
-                  <span className="font-mono text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-                    Certificates Section
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditingSublines((prev) => ({ ...prev, certificates: !prev.certificates }))}
+                      className={`px-3 py-1 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 ${
+                        editingSublines["certificates"]
+                          ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                          : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                      }`}
+                    >
+                      {editingSublines["certificates"] ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Done</span>
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </>
+                      )}
+                    </button>
+                    <span className="font-mono text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+                      Certificates Section
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  {/* Left: Inputs (7 cols) */}
+                  {/* Left: View Mode vs Edit Mode (7 cols) */}
                   <div className="lg:col-span-7 space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Certifications Main Heading:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.certificatesHeading ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, certificatesHeading: val },
-                            }));
-                          }}
-                          onBlur={() => saveInstantly(portfolioRef.current, "Certificates heading updated!")}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          placeholder="Certifications and Laurels"
-                        />
+                    {!editingSublines["certificates"] ? (
+                      /* ── View Mode: Clean Typography Plaque ── */
+                      <div className="space-y-3.5 p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Certifications Heading:</span>
+                            <h4 className="font-['Space_Grotesk'] text-base font-black text-stone-900">
+                              {portfolio.personal.certificatesHeading || "Certifications and Laurels"}
+                            </h4>
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Laurels Stamp Title:</span>
+                            <span className="sketch-stamp font-black text-xs inline-block">
+                              {portfolio.personal.laurelsTitle || "LAURELS"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Certificates Subline:</span>
+                          <p className="font-mono text-xs text-stone-700 leading-relaxed bg-white p-3 rounded-xl border border-stone-200">
+                            {portfolio.personal.certificatesSubtitle || "Verified academic achievements, hackathon laurels, and institutional recognitions..."}
+                          </p>
+                        </div>
+
+                        <div>
+                          <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Laurels Subline:</span>
+                          <p className="font-mono text-xs text-stone-700 leading-relaxed bg-white p-3 rounded-xl border border-stone-200">
+                            {portfolio.personal.laurelsSubtitle || "Academic accolades, hackathon triumphs, research publications..."}
+                          </p>
+                        </div>
+
+                        <div className="pt-1 flex items-center justify-between text-xs font-mono text-stone-400">
+                          <span>Locked. Click &ldquo;Edit&rdquo; above to modify.</span>
+                          <button
+                            type="button"
+                            onClick={() => setEditingSublines((prev) => ({ ...prev, certificates: true }))}
+                            className="text-amber-700 hover:text-amber-900 font-bold"
+                          >
+                            ✏️ Edit Headings ↗
+                          </button>
+                        </div>
                       </div>
+                    ) : (
+                      /* ── Edit Mode: Form Inputs ── */
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                              Certifications Main Heading:
+                            </label>
+                            <input
+                              type="text"
+                              value={portfolio.personal.certificatesHeading ?? ""}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, certificatesHeading: val },
+                                }));
+                              }}
+                              onBlur={() => saveInstantly(portfolioRef.current, "Certificates heading updated!")}
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                              placeholder="Certifications and Laurels"
+                            />
+                          </div>
 
-                      <div>
-                        <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                          Laurels Stamp Title:
-                        </label>
-                        <input
-                          type="text"
-                          value={portfolio.personal.laurelsTitle ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPortfolio((prev) => ({
-                              ...prev,
-                              personal: { ...prev.personal, laurelsTitle: val },
-                            }));
-                          }}
-                          onBlur={() => saveInstantly(portfolioRef.current, "Laurels title updated!")}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                          placeholder="LAURELS"
-                        />
+                          <div>
+                            <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                              Laurels Stamp Title:
+                            </label>
+                            <input
+                              type="text"
+                              value={portfolio.personal.laurelsTitle ?? ""}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: { ...prev.personal, laurelsTitle: val },
+                                }));
+                              }}
+                              onBlur={() => saveInstantly(portfolioRef.current, "Laurels title updated!")}
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                              placeholder="LAURELS"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Certificates Section Subline:
+                          </label>
+                          <textarea
+                            rows={2}
+                            value={portfolio.personal.certificatesSubtitle ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, certificatesSubtitle: val },
+                              }));
+                            }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "Certificates subtitle updated!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                            placeholder="Verified academic achievements, hackathon laurels, and institutional recognitions..."
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Laurels Section Subline:
+                          </label>
+                          <textarea
+                            rows={2}
+                            value={portfolio.personal.laurelsSubtitle ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, laurelsSubtitle: val },
+                              }));
+                            }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "Laurels subtitle updated!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                            placeholder="Academic accolades, hackathon triumphs, research publications..."
+                          />
+                        </div>
+
+                        <div className="pt-1 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setEditingSublines((prev) => ({ ...prev, certificates: false }))}
+                            className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1 cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Save &amp; Lock View</span>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Certificates Section Subline:
-                      </label>
-                      <textarea
-                        rows={2}
-                        value={portfolio.personal.certificatesSubtitle ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, certificatesSubtitle: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "Certificates subtitle updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="Verified academic achievements, hackathon laurels, and institutional recognitions..."
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Laurels Section Subline:
-                      </label>
-                      <textarea
-                        rows={2}
-                        value={portfolio.personal.laurelsSubtitle ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, laurelsSubtitle: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "Laurels subtitle updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="Academic accolades, hackathon triumphs, research publications..."
-                      />
-                    </div>
+                    )}
                   </div>
 
                   {/* Right: Live Preview Card (5 cols) */}
@@ -3264,53 +3493,118 @@ export default function AdminPage() {
                       4. Work &amp; Leadership (Experience) Heading &amp; Subline
                     </h3>
                   </div>
-                  <span className="font-mono text-[10px] font-bold text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded border border-cyan-300">
-                    Experience Section
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditingSublines((prev) => ({ ...prev, experience: !prev.experience }))}
+                      className={`px-3 py-1 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 ${
+                        editingSublines["experience"]
+                          ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                          : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                      }`}
+                    >
+                      {editingSublines["experience"] ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Done</span>
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </>
+                      )}
+                    </button>
+                    <span className="font-mono text-[10px] font-bold text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded border border-cyan-300">
+                      Experience Section
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  {/* Left: Inputs (7 cols) */}
+                  {/* Left: View Mode vs Edit Mode (7 cols) */}
                   <div className="lg:col-span-7 space-y-4">
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Experience Stamp Title:
-                      </label>
-                      <input
-                        type="text"
-                        value={portfolio.personal.experienceTitle ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, experienceTitle: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "Experience title updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="WORK & LEADERSHIP"
-                      />
-                    </div>
+                    {!editingSublines["experience"] ? (
+                      /* ── View Mode: Clean Typography Plaque ── */
+                      <div className="space-y-3.5 p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                        <div>
+                          <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Stamp Title:</span>
+                          <span className="sketch-stamp bg-amber-400 text-black font-black text-xs inline-block">
+                            {portfolio.personal.experienceTitle || "WORK & LEADERSHIP"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Timeline Subline:</span>
+                          <p className="font-mono text-xs text-stone-700 leading-relaxed bg-white p-3 rounded-xl border border-stone-200">
+                            {portfolio.personal.experienceSubtitle || "A chronological flight track of engineering leadership, academic mentorship, and industry contributions."}
+                          </p>
+                        </div>
+                        <div className="pt-1 flex items-center justify-between text-xs font-mono text-stone-400">
+                          <span>Locked. Click &ldquo;Edit&rdquo; above to modify.</span>
+                          <button
+                            type="button"
+                            onClick={() => setEditingSublines((prev) => ({ ...prev, experience: true }))}
+                            className="text-amber-700 hover:text-amber-900 font-bold"
+                          >
+                            ✏️ Edit Heading &amp; Subline ↗
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* ── Edit Mode: Form Inputs ── */
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Experience Stamp Title:
+                          </label>
+                          <input
+                            type="text"
+                            value={portfolio.personal.experienceTitle ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, experienceTitle: val },
+                              }));
+                            }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "Experience title updated!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                            placeholder="WORK & LEADERSHIP"
+                          />
+                        </div>
 
-                    <div>
-                      <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                        Experience Subline (Timeline Subtitle):
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={portfolio.personal.experienceSubtitle ?? ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setPortfolio((prev) => ({
-                            ...prev,
-                            personal: { ...prev.personal, experienceSubtitle: val },
-                          }));
-                        }}
-                        onBlur={() => saveInstantly(portfolioRef.current, "Experience subtitle updated!")}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                        placeholder="A chronological flight track of engineering leadership, academic mentorship, and industry contributions."
-                      />
-                    </div>
+                        <div>
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                            Experience Subline (Timeline Subtitle):
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={portfolio.personal.experienceSubtitle ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => ({
+                                ...prev,
+                                personal: { ...prev.personal, experienceSubtitle: val },
+                              }));
+                            }}
+                            onBlur={() => saveInstantly(portfolioRef.current, "Experience subtitle updated!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                            placeholder="A chronological flight track of engineering leadership, academic mentorship, and industry contributions."
+                          />
+                        </div>
+
+                        <div className="pt-1 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setEditingSublines((prev) => ({ ...prev, experience: false }))}
+                            className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1 cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Save &amp; Lock View</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Right: Live Preview Card (5 cols) */}
@@ -3381,6 +3675,28 @@ export default function AdminPage() {
                     <span>📱 Mobile</span>
                   </button>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsEditingCoverTexts(!isEditingCoverTexts)}
+                  className={`px-3.5 py-1.5 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 ${
+                    isEditingCoverTexts
+                      ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                      : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                  }`}
+                >
+                  {isEditingCoverTexts ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Done</span>
+                    </>
+                  ) : (
+                    <>
+                      <Edit className="w-3.5 h-3.5" />
+                      <span>Edit Cover Details</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 
@@ -3389,6 +3705,65 @@ export default function AdminPage() {
               
               {/* ── LEFT: FORM INPUTS FOR SELECTED VIEW ── */}
               <div className="xl:col-span-7 space-y-6">
+
+                {!isEditingCoverTexts ? (
+                  /* ── View Mode: Clean Cover Plaque Overview ── */
+                  <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                      <div className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full bg-amber-400 border border-black" />
+                        <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                          Cover Hero Overview ({coverSubView === "desktop" ? "Desktop Stage" : "Mobile Phone"})
+                        </h3>
+                      </div>
+                      <span className="font-mono text-[10px] font-bold text-stone-500 bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
+                        Locked View
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                      <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                        <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Hero Display Name</span>
+                        <span className="font-black text-stone-900 text-base">{portfolio.personal.name || "HARSH ARYAN"}</span>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                        <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Current Role Pill</span>
+                        <span className="font-bold text-stone-900">{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"} @ {portfolio.personal.aboutWorkPlace || "IIT Madras"}</span>
+                      </div>
+                      <div className="sm:col-span-2 p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                        <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">
+                          {coverSubView === "desktop" ? "Desktop Subtitle / Headline" : "Mobile Handwritten Quote"}
+                        </span>
+                        <span className="text-stone-700 leading-relaxed block font-medium">
+                          {coverSubView === "desktop"
+                            ? (portfolio.personal.desktopHeadline || portfolio.personal.headline || "Exploring Data Science, Machine Learning Foundations & Scientific Computing")
+                            : (portfolio.personal.mobileTagline || "Teaching Machines To Learn • Building Scientific Software")}
+                        </span>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                        <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Photo Tag Plaque</span>
+                        <span className="font-bold text-amber-800">{portfolio.personal.desktopPhotoTag || "AI & DS"}</span>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                        <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Daily Spark Persona</span>
+                        <span className="font-bold text-purple-700">{portfolio.personal.coverDailyThoughtHeader || "A LITTLE THOUGHT FOR TODAY"}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 flex items-center justify-between text-xs font-mono text-stone-400 border-t border-dashed border-stone-200">
+                      <span>Cover details locked. Click &ldquo;Edit Cover Details&rdquo; to modify.</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingCoverTexts(true)}
+                        className="text-amber-700 hover:text-amber-900 font-black cursor-pointer"
+                      >
+                        ✏️ Edit Cover Details ↗
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* ── Edit Mode: Form Inputs ── */
+                  <div className="space-y-6">
 
                 {/* ========================================================
                     SUB-VIEW A: DESKTOP / LAPTOP COVER CONFIGURATION
@@ -4398,6 +4773,19 @@ export default function AdminPage() {
                     </div>
                   </div>
                 )}
+
+                    <div className="pt-2 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingCoverTexts(false)}
+                        className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Save &amp; Lock Cover View</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* ── RIGHT: REAL-TIME LIVE VISUAL PREVIEW (STICKY) ── */}
@@ -4676,15 +5064,37 @@ export default function AdminPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-full">
-                    Left Column Mount
-                  </span>
+                  <div className="flex items-center gap-2 self-start sm:self-center">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingPhotoCard(!isEditingPhotoCard)}
+                      className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 ${
+                        isEditingPhotoCard
+                          ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                          : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                      }`}
+                    >
+                      {isEditingPhotoCard ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Done</span>
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Edit Plaque Details</span>
+                        </>
+                      )}
+                    </button>
+                    <span className="font-mono text-[10px] font-black uppercase bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-full">
+                      Left Mount
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                  {/* Left Column: Form Inputs (7 cols) */}
+                  {/* Left Column: View Mode vs Edit Mode (7 cols) */}
                   <div className="lg:col-span-7 space-y-4">
-                    {/* Section Heading & Subtitle */}
                     {/* Section Header & Subtitle Central Link */}
                     <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -4704,6 +5114,51 @@ export default function AdminPage() {
                         ✏️ Edit in Headlines Tab ↗
                       </button>
                     </div>
+
+                    {!isEditingPhotoCard ? (
+                      /* ── View Mode: Clean Overview Plaque ── */
+                      <div className="space-y-3.5 p-5 rounded-2xl bg-stone-50 border border-stone-200">
+                        <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                          <span className="font-mono text-xs font-black uppercase text-stone-700">Plaque Overview</span>
+                          <span className="text-[10px] font-mono text-stone-400">Locked</span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                          <div className="p-3 rounded-xl bg-white border border-stone-200">
+                            <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Signature Name</span>
+                            <span className="font-black text-stone-900 text-sm font-signature">{portfolio.personal.name || "Harsh Aryan"}</span>
+                          </div>
+                          <div className="p-3 rounded-xl bg-white border border-stone-200">
+                            <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Active Role &amp; Org</span>
+                            <span className="font-bold text-stone-900">{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Teaching Assistant"} @ {portfolio.personal.aboutWorkPlace || "IIT Madras"}</span>
+                          </div>
+                          <div className="p-3 rounded-xl bg-white border border-stone-200">
+                            <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Role Tag</span>
+                            <span className="font-bold text-indigo-700">{portfolio.personal.aboutRoleTag || "CS5002P"}</span>
+                          </div>
+                          <div className="p-3 rounded-xl bg-white border border-stone-200">
+                            <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Location</span>
+                            <span className="font-bold text-stone-900">{portfolio.personal.location || "Chennai, India"}</span>
+                          </div>
+                          <div className="sm:col-span-2 p-3 rounded-xl bg-white border border-stone-200">
+                            <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Education</span>
+                            <span className="font-bold text-stone-900">{portfolio.personal.aboutEducationDegree || "BS in Data Science & Applications"} • {portfolio.personal.aboutEducationCollege || "IIT Madras"}</span>
+                          </div>
+                        </div>
+
+                        <div className="pt-2 flex items-center justify-between text-xs font-mono text-stone-400">
+                          <span>Click &ldquo;Edit Plaque Details&rdquo; above to modify these inputs.</span>
+                          <button
+                            type="button"
+                            onClick={() => setIsEditingPhotoCard(true)}
+                            className="text-amber-700 hover:text-amber-900 font-bold"
+                          >
+                            ✏️ Edit Inputs ↗
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* ── Edit Mode: Form Inputs ── */
+                      <div className="space-y-4">
 
                     {/* Photo Source Input */}
                     <div>
@@ -5115,7 +5570,20 @@ export default function AdminPage() {
                         </div>
                       </div>
                     </div>
-                  </div>
+
+                      <div className="pt-2 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingPhotoCard(false)}
+                          className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Save &amp; Lock Plaque View</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                   {/* Right Column: Live Studio Frame Preview (5 cols) */}
                   <div className="lg:col-span-5 flex flex-col items-center">
@@ -5269,10 +5737,75 @@ export default function AdminPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="self-start sm:self-center font-mono text-[10px] font-black uppercase bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-full">
-                    Portfolio Accent Studio
-                  </span>
+                  <div className="flex items-center gap-2 self-start sm:self-center">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingBio(!isEditingBio)}
+                      className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 ${
+                        isEditingBio
+                          ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                          : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                      }`}
+                    >
+                      {isEditingBio ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Done</span>
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Edit Bio &amp; Statement</span>
+                        </>
+                      )}
+                    </button>
+                    <span className="font-mono text-[10px] font-black uppercase bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-full">
+                      Studio
+                    </span>
+                  </div>
                 </div>
+
+                {!isEditingBio ? (
+                  /* ── View Mode: Clean Typography & Highlights ── */
+                  <div className="space-y-4">
+                    <div className="p-5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+                      <div>
+                        <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Headline Statement:</span>
+                        <div className="p-3.5 rounded-xl bg-white border border-stone-200 text-sm font-semibold leading-relaxed text-stone-900">
+                          <FormattedHighlightedText
+                            text={portfolio.personal.headline}
+                            highlightKeywords={portfolio.personal.aboutHighlightedWords}
+                            highlightColor={portfolio.personal.aboutHighlightColor}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] font-mono font-black uppercase text-stone-400 block mb-1">Narrative Bio:</span>
+                        <div className="p-4 rounded-xl bg-white border border-stone-200 text-xs font-mono leading-relaxed text-stone-800 whitespace-pre-wrap">
+                          <FormattedHighlightedText
+                            text={portfolio.personal.bio}
+                            highlightKeywords={portfolio.personal.aboutHighlightedWords}
+                            highlightColor={portfolio.personal.aboutHighlightColor}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pt-2 flex items-center justify-between text-xs font-mono text-stone-400 border-t border-dashed border-stone-200">
+                        <span>Bio is locked. Click &ldquo;Edit Bio &amp; Statement&rdquo; to modify or highlight words.</span>
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingBio(true)}
+                          className="text-amber-700 hover:text-amber-900 font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <span>✏️ Edit Statement &amp; Bio ↗</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* ── Edit Mode: Highlighter & Form Inputs ── */
+                  <div className="space-y-7">
 
                 {/* ── MASTER PORTFOLIO COLOR PICKER BAR ── */}
                 <div className="p-4 sm:p-5 rounded-2xl bg-[#faf7ee] border-2 border-black shadow-[2px_2px_0_#000] space-y-3">
@@ -5787,6 +6320,19 @@ export default function AdminPage() {
                   </div>
                 </div>
 
+                  <div className="pt-2 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingBio(false)}
+                      className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Save &amp; Lock Bio View</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
                 {/* ── 2D. FULL COMBINED LIVE PERSONA PREVIEW (EXACT WEBSITE REPLICA) ── */}
                 <div className="p-5 sm:p-6 rounded-3xl bg-[#faf8f3] dark:bg-[#13141b] border-2 border-black dark:border-white shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff] space-y-4">
                   <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-2">
@@ -5968,10 +6514,12 @@ export default function AdminPage() {
                       </button>
                     </div>
                   ) : (
-                    (portfolio.experiences || []).map((exp, idx) => (
+                    (portfolio.experiences || []).map((exp, idx) => {
+                      const isEditingThisExp = editingExpIndex === idx;
+                      return (
                       <div
                         key={exp.id || idx}
-                        className="p-5 sm:p-6 rounded-2xl border-2 border-black bg-stone-50/70 shadow-[3px_3px_0_#000] space-y-5"
+                        className="p-5 sm:p-6 rounded-2xl border-2 border-black bg-white shadow-[3px_3px_0_#000] space-y-5"
                       >
                         {/* Entry Header */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-stone-200 gap-2">
@@ -5994,6 +6542,30 @@ export default function AdminPage() {
                           </div>
 
                           <div className="flex items-center gap-1.5 self-end sm:self-auto">
+                            {/* Primary Edit / Done Toggle */}
+                            <button
+                              type="button"
+                              onClick={() => setEditingExpIndex(isEditingThisExp ? null : idx)}
+                              className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 ${
+                                isEditingThisExp
+                                  ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                                  : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                              }`}
+                              title={isEditingThisExp ? "Close editor & lock" : "Click to edit this role"}
+                            >
+                              {isEditingThisExp ? (
+                                <>
+                                  <Check className="w-3.5 h-3.5" />
+                                  <span>Done Editing</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Edit className="w-3.5 h-3.5" />
+                                  <span>Edit Role</span>
+                                </>
+                              )}
+                            </button>
+
                             <button
                               type="button"
                               onClick={() => handleMoveExperience(idx, "up")}
@@ -6028,6 +6600,94 @@ export default function AdminPage() {
                             </button>
                           </div>
                         </div>
+
+                        {!isEditingThisExp ? (
+                          /* ── VIEW MODE (READABLE PLAQUE CARD) ── */
+                          <div className="space-y-4 pt-1">
+                            {/* Metadata Pills: Period, Location, Type */}
+                            <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-stone-50 border border-stone-300 font-bold text-stone-800 shadow-2xs">
+                                <span>📅</span>
+                                <span>{exp.period || "Period not set"}</span>
+                              </span>
+                              {exp.location && (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-stone-50 border border-stone-300 font-bold text-stone-800 shadow-2xs">
+                                  <span>📍</span>
+                                  <span>{exp.location}</span>
+                                </span>
+                              )}
+                              {exp.type && (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-indigo-50 border border-indigo-200 font-bold text-indigo-900">
+                                  <span>🏷️</span>
+                                  <span>{exp.type}</span>
+                                </span>
+                              )}
+                              {exp.companyUrl && (
+                                <a
+                                  href={exp.companyUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 font-bold text-[11px]"
+                                >
+                                  <span>🔗</span>
+                                  <span>{exp.companyUrl.replace(/^https?:\/\//, "")}</span>
+                                </a>
+                              )}
+                            </div>
+
+                            {/* Description snippet */}
+                            {exp.description && (
+                              <p className="text-xs text-stone-700 font-mono leading-relaxed bg-[#faf8f5] p-3.5 rounded-xl border border-stone-200">
+                                {exp.description}
+                              </p>
+                            )}
+
+                            {/* Bullets Preview */}
+                            {(exp.highlights || []).length > 0 && (
+                              <div className="space-y-1.5">
+                                <span className="text-[10px] font-mono font-black uppercase tracking-wider text-stone-400">
+                                  Key Deliverables &amp; Impact ({(exp.highlights || []).length}):
+                                </span>
+                                <ul className="space-y-1.5 bg-[#faf8f5] p-3.5 rounded-xl border border-stone-200">
+                                  {(exp.highlights || []).map((h, i) => (
+                                    <li key={i} className="flex items-start gap-2 font-mono text-xs text-stone-800">
+                                      <span className="text-amber-500 font-black">✦</span>
+                                      <span>{h}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Skill Tags */}
+                            {(exp.skillsUsed || []).length > 0 && (
+                              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                                <span className="text-[10px] font-mono font-bold text-stone-400 mr-1">Technologies:</span>
+                                {(exp.skillsUsed || []).map((sk, i) => (
+                                  <span
+                                    key={i}
+                                    className="px-2.5 py-0.5 rounded-lg bg-stone-100 border border-stone-300 font-mono text-[10px] font-bold text-stone-800"
+                                  >
+                                    #{sk}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            <div className="pt-2 flex items-center justify-between text-xs font-mono text-stone-400 border-t border-dashed border-stone-200">
+                              <span>Role details locked. Click &ldquo;Edit Role&rdquo; to modify.</span>
+                              <button
+                                type="button"
+                                onClick={() => setEditingExpIndex(idx)}
+                                className="text-amber-700 hover:text-amber-900 font-black flex items-center gap-1 cursor-pointer"
+                              >
+                                <span>✏️ Edit this Role ↗</span>
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          /* ── EDIT MODE (INPUT FIELDS) ── */
+                          <div className="space-y-5 pt-1">
 
                         {/* Fields Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -6278,8 +6938,23 @@ export default function AdminPage() {
                             )}
                           </div>
                         </div>
+
+                        {/* Done Editing Button at Bottom of Form */}
+                        <div className="pt-3 border-t border-stone-200 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setEditingExpIndex(null)}
+                            className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                          >
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Save &amp; Lock Role View</span>
+                          </button>
+                        </div>
                       </div>
-                    ))
+                    )}
+                  </div>
+                );
+              })
                   )}
                 </div>
               </div>
@@ -6408,26 +7083,49 @@ export default function AdminPage() {
                         { phaseNumber: "02", period: "Data & Math", title: "Exploratory Modeling & Linear Algebra", subtitle: "Vectorized Computations & Analytics", description: "Diving into statistical data pipelines, hypothesis tests, PCA dimensionality reductions, and building reproducible notebooks." },
                         { phaseNumber: "03", period: "Frontiers", title: "Modern AI Systems & Interactive Tools", subtitle: "Full-Stack AI Prototypes & Deployment", description: "Architecting clean Next.js interfaces powered by Python backend microservices, real-time embeddings, and automated workflows." },
                       ]
-                  ).map((m, mIdx, arr) => (
+                  ).map((m, mIdx, arr) => {
+                    const isEditingThisMilestone = editingMilestoneIdx === mIdx;
+                    return (
                     <div
                       key={mIdx}
-                      className="p-4 sm:p-5 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3"
+                      className="p-4 sm:p-5 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-3"
                     >
                       <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-mono text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-lg border border-emerald-300">
                             PHASE {m.phaseNumber || `0${mIdx + 1}`}
                           </span>
-                          <input
-                            type="text"
-                            value={m.period}
-                            placeholder="e.g. Foundations, Data & Math"
-                            onChange={(e) => handleUpdateMilestone(mIdx, "period", e.target.value)}
-                            className="px-2.5 py-1 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
-                          />
+                          <span className="font-mono text-xs font-bold text-stone-700 bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
+                            {m.period}
+                          </span>
+                          <span className="font-['Space_Grotesk'] text-sm font-black text-stone-900 truncate max-w-[200px] sm:max-w-none">
+                            {m.title}
+                          </span>
                         </div>
 
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setEditingMilestoneIdx(isEditingThisMilestone ? null : mIdx)}
+                            className={`px-2.5 py-1 rounded-lg font-mono text-[11px] font-black cursor-pointer flex items-center gap-1 border-2 border-black shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 transition-all ${
+                              isEditingThisMilestone
+                                ? "bg-emerald-400 text-black hover:bg-emerald-300"
+                                : "bg-amber-400 text-black hover:bg-amber-300"
+                            }`}
+                            title={isEditingThisMilestone ? "Done editing" : "Edit phase"}
+                          >
+                            {isEditingThisMilestone ? (
+                              <>
+                                <Check className="w-3 h-3" />
+                                <span>Done</span>
+                              </>
+                            ) : (
+                              <>
+                                <Edit className="w-3 h-3" />
+                                <span>Edit</span>
+                              </>
+                            )}
+                          </button>
                           <button
                             type="button"
                             onClick={() => handleMoveMilestone(mIdx, "up")}
@@ -6457,45 +7155,94 @@ export default function AdminPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                            Phase Title:
-                          </label>
-                          <input
-                            type="text"
-                            value={m.title}
-                            onChange={(e) => handleUpdateMilestone(mIdx, "title", e.target.value)}
-                            className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                          />
+                      {!isEditingThisMilestone ? (
+                        /* ── View Mode: Clean Phase Card ── */
+                        <div className="space-y-2 pt-1">
+                          <p className="font-mono text-xs font-bold text-stone-500">
+                            {m.subtitle}
+                          </p>
+                          <p className="font-mono text-xs text-stone-700 leading-relaxed bg-[#faf8f5] p-3 rounded-xl border border-stone-200">
+                            {m.description}
+                          </p>
+                          <div className="pt-1 flex items-center justify-between text-[11px] font-mono text-stone-400">
+                            <span>Click &ldquo;Edit&rdquo; above to modify phase details.</span>
+                            <button
+                              type="button"
+                              onClick={() => setEditingMilestoneIdx(mIdx)}
+                              className="text-amber-700 hover:text-amber-900 font-bold"
+                            >
+                              ✏️ Edit Phase ↗
+                            </button>
+                          </div>
                         </div>
+                      ) : (
+                        /* ── Edit Mode: Form Inputs ── */
+                        <div className="space-y-3 pt-1">
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Phase Subtitle / Domain Label:
+                            </label>
+                            <input
+                              type="text"
+                              value={m.period}
+                              placeholder="e.g. Foundations, Data & Math"
+                              onChange={(e) => handleUpdateMilestone(mIdx, "period", e.target.value)}
+                              className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-800 focus:border-black focus:outline-none"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                                Phase Title:
+                              </label>
+                              <input
+                                type="text"
+                                value={m.title}
+                                onChange={(e) => handleUpdateMilestone(mIdx, "title", e.target.value)}
+                                className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                              />
+                            </div>
 
-                        <div>
-                          <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                            Phase Subtitle:
-                          </label>
-                          <input
-                            type="text"
-                            value={m.subtitle}
-                            onChange={(e) => handleUpdateMilestone(mIdx, "subtitle", e.target.value)}
-                            className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                          />
+                            <div>
+                              <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                                Focus &amp; Tools Subtitle:
+                              </label>
+                              <input
+                                type="text"
+                                value={m.subtitle}
+                                onChange={(e) => handleUpdateMilestone(mIdx, "subtitle", e.target.value)}
+                                className="w-full px-3 py-1.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
+                              Phase Description:
+                            </label>
+                            <textarea
+                              rows={2}
+                              value={m.description}
+                              onChange={(e) => handleUpdateMilestone(mIdx, "description", e.target.value)}
+                              className="w-full p-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs text-stone-800 focus:border-black focus:outline-none leading-relaxed"
+                            />
+                          </div>
+
+                          <div className="pt-2 flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => setEditingMilestoneIdx(null)}
+                              className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1 cursor-pointer shadow-xs"
+                            >
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                              <span>Save &amp; Lock Phase View</span>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-
-                      <div>
-                        <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                          Phase Description:
-                        </label>
-                        <textarea
-                          rows={2}
-                          value={m.description}
-                          onChange={(e) => handleUpdateMilestone(mIdx, "description", e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs text-stone-800 focus:border-black focus:outline-none leading-relaxed"
-                        />
-                      </div>
+                      )}
                     </div>
-                  ))}
+                  );
+                })}
                 </div>
 
                 {/* Live Trajectory Roadmap Preview (Real Website Banners) */}
@@ -6600,11 +7347,12 @@ export default function AdminPage() {
                   {(portfolio.quickStats || []).map((stat, idx) => {
                     const theme = getBenchmarkStickerTheme(stat, idx);
                     const currentColor = (stat.color || "").toLowerCase().trim();
+                    const isEditingThisStat = editingStatIdx === idx;
 
                     return (
                       <div
                         key={idx}
-                        className="p-4 rounded-2xl bg-stone-50 border-2 border-stone-300 hover:border-black transition-all space-y-3.5 shadow-2xs"
+                        className="p-4 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-3.5"
                       >
                         {/* Header & Ordering */}
                         <div className="flex items-center justify-between pb-2 border-b border-stone-200">
@@ -6616,6 +7364,28 @@ export default function AdminPage() {
                           </div>
 
                           <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => setEditingStatIdx(isEditingThisStat ? null : idx)}
+                              className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-black cursor-pointer flex items-center gap-1 border border-black shadow-[1px_1px_0_#000] active:translate-y-0.5 transition-all ${
+                                isEditingThisStat
+                                  ? "bg-emerald-400 text-black hover:bg-emerald-300"
+                                  : "bg-amber-400 text-black hover:bg-amber-300"
+                              }`}
+                              title={isEditingThisStat ? "Done editing" : "Edit metric"}
+                            >
+                              {isEditingThisStat ? (
+                                <>
+                                  <Check className="w-2.5 h-2.5" />
+                                  <span>Done</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Edit className="w-2.5 h-2.5" />
+                                  <span>Edit</span>
+                                </>
+                              )}
+                            </button>
                             <button
                               type="button"
                               onClick={() => handleMoveQuickStat(idx, "up")}
@@ -6645,146 +7415,178 @@ export default function AdminPage() {
                           </div>
                         </div>
 
-                        {/* 1. Color Picker & Palette */}
-                        <div className="space-y-1.5 bg-white p-2.5 rounded-xl border border-stone-200">
-                          <div className="flex items-center justify-between">
-                            <label className="font-mono text-[10px] font-black uppercase text-stone-700 flex items-center gap-1">
-                              <Palette className="w-3 h-3 text-stone-500" />
-                              <span>Card Color:</span>
-                            </label>
-                            <span className="font-mono text-[9.5px] font-bold text-stone-500 uppercase">
-                              {theme.name}
-                            </span>
-                          </div>
+                        {!isEditingThisStat ? (
+                          /* ── View Mode: Clean Sticker Card ── */
+                          <div className="space-y-2.5 pt-1">
+                            <div className="flex items-center justify-between">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[9px] font-black uppercase tracking-wider bg-stone-100 border border-stone-300">
+                                <span>{stat.icon || theme.defaultIcon}</span>
+                                <span>{stat.tag || theme.defaultTag}</span>
+                              </span>
+                              <span className="w-3.5 h-3.5 rounded-full border border-stone-300 shadow-2xs" style={{ backgroundColor: theme.hex }} />
+                            </div>
 
-                          {/* 8 Preset Swatches */}
-                          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                            {Object.entries(BENCHMARK_STICKER_COLOR_MAP).map(([key, val]) => {
-                              const isSelected =
-                                currentColor === key ||
-                                currentColor === val.hex.toLowerCase() ||
-                                (!stat.color && theme.hex.toLowerCase() === val.hex.toLowerCase());
+                            <div className="text-2xl font-black font-mono tracking-tight text-stone-900 leading-none">
+                              {stat.value || "0"}
+                            </div>
+                            <div className="text-[11px] font-mono font-black uppercase tracking-wider text-stone-800 leading-tight">
+                              {stat.label || "METRIC"}
+                            </div>
+                            {stat.sublabel && (
+                              <div className="text-[10px] font-mono text-stone-500 truncate leading-tight font-medium">
+                                {stat.sublabel}
+                              </div>
+                            )}
 
-                              return (
-                                <button
-                                  key={key}
-                                  type="button"
-                                  onClick={() => handleUpdateQuickStat(idx, "color", key)}
-                                  className={`w-5 h-5 rounded-full border transition-all cursor-pointer ${
-                                    isSelected
-                                      ? "scale-120 ring-2 ring-black shadow-xs"
-                                      : "border-stone-300 hover:scale-110 opacity-75 hover:opacity-100"
-                                  }`}
-                                  style={{ backgroundColor: val.hex }}
-                                  title={`${val.name} (${val.hex})`}
-                                />
-                              );
-                            })}
-
-                            {/* Native Custom Hex Color Input */}
-                            <div className="flex items-center gap-1 pl-1 ml-auto border-l border-stone-200">
-                              <input
-                                type="color"
-                                value={theme.hex}
-                                onChange={(e) => handleUpdateQuickStat(idx, "color", e.target.value)}
-                                className="w-4.5 h-4.5 rounded cursor-pointer border-0 p-0 bg-transparent"
-                                title="Pick custom color"
-                              />
+                            <div className="pt-2 flex items-center justify-between text-[10px] font-mono text-stone-400 border-t border-dashed border-stone-200">
+                              <span>Locked. Click Edit to change.</span>
+                              <button
+                                type="button"
+                                onClick={() => setEditingStatIdx(idx)}
+                                className="text-amber-700 hover:text-amber-900 font-bold"
+                              >
+                                ✏️ Edit Metric ↗
+                              </button>
                             </div>
                           </div>
-                        </div>
+                        ) : (
+                          /* ── Edit Mode: Form Inputs ── */
+                          <div className="space-y-3 pt-1">
+                            {/* 1. Color Picker & Palette */}
+                            <div className="space-y-1.5 bg-stone-50 p-2.5 rounded-xl border border-stone-200">
+                              <div className="flex items-center justify-between">
+                                <label className="font-mono text-[10px] font-black uppercase text-stone-700 flex items-center gap-1">
+                                  <Palette className="w-3 h-3 text-stone-500" />
+                                  <span>Card Color:</span>
+                                </label>
+                                <span className="font-mono text-[9.5px] font-bold text-stone-500 uppercase">
+                                  {theme.name}
+                                </span>
+                              </div>
 
-                        {/* 2. Tag & Icon (HONORS, PROJECTS, SOLVED, etc.) */}
-                        <div className="grid grid-cols-3 gap-2">
-                          <div className="col-span-2 space-y-1">
-                            <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
-                              Top Tag (e.g. HONORS):
-                            </label>
-                            <input
-                              type="text"
-                              value={stat.tag !== undefined ? stat.tag : theme.defaultTag}
-                              onChange={(e) => handleUpdateQuickStat(idx, "tag", e.target.value)}
-                              className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black uppercase text-stone-900 focus:border-black focus:outline-none"
-                              placeholder="e.g. HONORS"
-                            />
+                              {/* 8 Preset Swatches */}
+                              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                                {Object.entries(BENCHMARK_STICKER_COLOR_MAP).map(([key, val]) => {
+                                  const isSelected =
+                                    currentColor === key ||
+                                    currentColor === val.hex.toLowerCase() ||
+                                    (!stat.color && theme.hex.toLowerCase() === val.hex.toLowerCase());
+
+                                  return (
+                                    <button
+                                      key={key}
+                                      type="button"
+                                      onClick={() => handleUpdateQuickStat(idx, "color", key)}
+                                      className={`w-5 h-5 rounded-full border transition-all cursor-pointer ${
+                                        isSelected
+                                          ? "scale-120 ring-2 ring-black shadow-xs"
+                                          : "border-stone-300 hover:scale-110 opacity-75 hover:opacity-100"
+                                      }`}
+                                      style={{ backgroundColor: val.hex }}
+                                      title={`${val.name} (${val.hex})`}
+                                    />
+                                  );
+                                })}
+
+                                {/* Native Custom Hex Color Input */}
+                                <div className="flex items-center gap-1 pl-1 ml-auto border-l border-stone-200">
+                                  <input
+                                    type="color"
+                                    value={theme.hex}
+                                    onChange={(e) => handleUpdateQuickStat(idx, "color", e.target.value)}
+                                    className="w-4.5 h-4.5 rounded cursor-pointer border-0 p-0 bg-transparent"
+                                    title="Pick custom color"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* 2. Tag & Icon */}
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className="col-span-2 space-y-1">
+                                <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
+                                  Top Tag:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={stat.tag !== undefined ? stat.tag : theme.defaultTag}
+                                  onChange={(e) => handleUpdateQuickStat(idx, "tag", e.target.value)}
+                                  className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black uppercase text-stone-900 focus:border-black focus:outline-none"
+                                  placeholder="e.g. HONORS"
+                                />
+                              </div>
+
+                              <div className="space-y-1">
+                                <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
+                                  Icon:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={stat.icon !== undefined ? stat.icon : theme.defaultIcon}
+                                  onChange={(e) => handleUpdateQuickStat(idx, "icon", e.target.value)}
+                                  className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs text-center text-stone-900 focus:border-black focus:outline-none"
+                                  placeholder="🏆"
+                                />
+                              </div>
+                            </div>
+
+                            {/* 3. Big Metric Value */}
+                            <div>
+                              <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                                Value (Big Stat):
+                              </label>
+                              <input
+                                type="text"
+                                value={stat.value}
+                                onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
+                                onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} stat value!`)}
+                                className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
+                                placeholder="e.g. 5+ / 150+ / AI & DS"
+                              />
+                            </div>
+
+                            {/* 4. Title / Label */}
+                            <div>
+                              <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                                Label / Heading:
+                              </label>
+                              <input
+                                type="text"
+                                value={stat.label}
+                                onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
+                                onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} label!`)}
+                                className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
+                                placeholder="e.g. CERTIFICATIONS"
+                              />
+                            </div>
+
+                            {/* 5. Sublabel / Description */}
+                            <div>
+                              <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
+                                Sublabel / Note:
+                              </label>
+                              <input
+                                type="text"
+                                value={stat.sublabel}
+                                onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
+                                onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} note!`)}
+                                className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-[11px] text-stone-600 focus:border-black focus:outline-none"
+                                placeholder="e.g. Courses & Hackathons"
+                              />
+                            </div>
+
+                            <div className="pt-1 flex justify-end">
+                              <button
+                                type="button"
+                                onClick={() => setEditingStatIdx(null)}
+                                className="px-3 py-1 rounded-lg bg-black text-white hover:bg-stone-800 font-mono text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                              >
+                                <Check className="w-3 h-3 text-emerald-400" />
+                                <span>Done</span>
+                              </button>
+                            </div>
                           </div>
-
-                          <div className="space-y-1">
-                            <label className="block font-mono text-[10px] font-black uppercase text-stone-700">
-                              Icon:
-                            </label>
-                            <input
-                              type="text"
-                              value={stat.icon !== undefined ? stat.icon : theme.defaultIcon}
-                              onChange={(e) => handleUpdateQuickStat(idx, "icon", e.target.value)}
-                              className="w-full px-2 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs text-center text-stone-900 focus:border-black focus:outline-none"
-                              placeholder="🏆"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Quick Tag Suggestions */}
-                        <div className="flex flex-wrap items-center gap-1">
-                          {["HONORS", "PROJECTS", "SOLVED", "SPECIALTY", "AWARDS", "CODING"].map((presetTag) => (
-                            <button
-                              key={presetTag}
-                              type="button"
-                              onClick={() => handleUpdateQuickStat(idx, "tag", presetTag)}
-                              className={`px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase transition-all cursor-pointer border ${
-                                (stat.tag || theme.defaultTag).toUpperCase() === presetTag
-                                  ? "bg-black text-white border-black"
-                                  : "bg-white text-stone-600 border-stone-300 hover:border-black"
-                              }`}
-                            >
-                              {presetTag}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* 3. Big Metric Value */}
-                        <div>
-                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
-                            Value (Big Stat):
-                          </label>
-                          <input
-                            type="text"
-                            value={stat.value}
-                            onChange={(e) => handleUpdateQuickStat(idx, "value", e.target.value)}
-                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} stat value!`)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-sm font-black text-stone-900 focus:border-black focus:outline-none"
-                            placeholder="e.g. 5+ / 150+ / AI & DS"
-                          />
-                        </div>
-
-                        {/* 4. Title / Label */}
-                        <div>
-                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
-                            Label / Heading:
-                          </label>
-                          <input
-                            type="text"
-                            value={stat.label}
-                            onChange={(e) => handleUpdateQuickStat(idx, "label", e.target.value)}
-                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} label!`)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-bold text-stone-900 focus:border-black focus:outline-none"
-                            placeholder="e.g. CERTIFICATIONS"
-                          />
-                        </div>
-
-                        {/* 5. Sublabel / Description */}
-                        <div>
-                          <label className="block font-mono text-[10px] font-bold text-stone-700 mb-1">
-                            Sublabel / Note:
-                          </label>
-                          <input
-                            type="text"
-                            value={stat.sublabel}
-                            onChange={(e) => handleUpdateQuickStat(idx, "sublabel", e.target.value)}
-                            onBlur={() => saveInstantly(portfolioRef.current, `Saved Card #${idx + 1} note!`)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-[11px] text-stone-600 focus:border-black focus:outline-none"
-                            placeholder="e.g. Courses & Hackathons"
-                          />
-                        </div>
+                        )}
                       </div>
                     );
                   })}
@@ -6887,10 +7689,12 @@ export default function AdminPage() {
               </div>
 
               <div className="space-y-5">
-                {(portfolio.skills || []).map((cat, cIdx) => (
+                {(portfolio.skills || []).map((cat, cIdx) => {
+                  const isEditingThisSkillCat = editingSkillCatIdx === cIdx;
+                  return (
                   <div
                     key={cIdx}
-                    className="p-5 rounded-2xl bg-stone-50 border-2 border-stone-200 hover:border-black transition-all space-y-4"
+                    className="p-5 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-4"
                   >
                     {/* Category Title & Order Controls */}
                     <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-200">
@@ -6898,26 +7702,59 @@ export default function AdminPage() {
                         <span className="px-2 py-0.5 rounded-md bg-black text-amber-300 font-mono text-[10px] font-black shrink-0">
                           #{String(cIdx + 1).padStart(2, "0")}
                         </span>
-                        <input
-                          type="text"
-                          value={cat.category}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setPortfolio((prev) => {
-                              const updated = [...(prev.skills || [])];
-                              updated[cIdx] = { ...updated[cIdx], category: val };
-                              return { ...prev, skills: updated };
-                            });
-                          }}
-                          onBlur={() => {
-                            saveInstantly(portfolioRef.current, `Saved category "${cat.category}"`);
-                          }}
-                          className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black text-stone-900 focus:border-black focus:outline-none uppercase"
-                          placeholder="Category Name"
-                        />
+                        {!isEditingThisSkillCat ? (
+                          <div className="flex items-center gap-2">
+                            <span className="font-['Space_Grotesk'] text-base font-black text-stone-900 uppercase">
+                              {cat.category || "Untitled Category"}
+                            </span>
+                            <span className="text-[10px] font-mono text-stone-500 font-bold bg-stone-100 px-2 py-0.5 rounded-md">
+                              {(cat.items || []).length} Skills
+                            </span>
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            value={cat.category}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setPortfolio((prev) => {
+                                const updated = [...(prev.skills || [])];
+                                updated[cIdx] = { ...updated[cIdx], category: val };
+                                return { ...prev, skills: updated };
+                              });
+                            }}
+                            onBlur={() => {
+                              saveInstantly(portfolioRef.current, `Saved category "${cat.category}"`);
+                            }}
+                            className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-stone-300 font-mono text-xs font-black text-stone-900 focus:border-black focus:outline-none uppercase"
+                            placeholder="Category Name"
+                          />
+                        )}
                       </div>
 
                       <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setEditingSkillCatIdx(isEditingThisSkillCat ? null : cIdx)}
+                          className={`px-2.5 py-1 rounded-lg font-mono text-[11px] font-black cursor-pointer flex items-center gap-1 border border-black shadow-[1px_1px_0_#000] active:translate-y-0.5 transition-all ${
+                            isEditingThisSkillCat
+                              ? "bg-emerald-400 text-black hover:bg-emerald-300"
+                              : "bg-amber-400 text-black hover:bg-amber-300"
+                          }`}
+                        >
+                          {isEditingThisSkillCat ? (
+                            <>
+                              <Check className="w-3 h-3" />
+                              <span>Done</span>
+                            </>
+                          ) : (
+                            <>
+                              <Edit className="w-3 h-3" />
+                              <span>Edit Category</span>
+                            </>
+                          )}
+                        </button>
+
                         <button
                           type="button"
                           onClick={() => handleMoveSkillCategory(cIdx, "up")}
@@ -6955,126 +7792,128 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    {/* Card Color Theme & Icon / Emoji Customizers */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 rounded-xl bg-white border border-stone-200">
-                      {/* Card Color Theme Picker */}
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <label className="text-[10px] font-mono font-bold text-stone-600 uppercase flex items-center gap-1">
-                            <Palette className="w-3 h-3 text-amber-500" />
-                            <span>Card Color Theme:</span>
-                          </label>
-                          <span className="text-[9px] font-mono font-bold uppercase text-stone-500">
-                            {cat.color || "amber"}
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          {ADMIN_PALETTE_COLORS.map((col) => {
-                            const isSelected = (cat.color || "amber").toLowerCase() === col.id;
-                            return (
-                              <button
-                                key={col.id}
-                                type="button"
-                                onClick={() => {
+                    {/* Card Color Theme & Icon / Emoji Customizers (Only in Edit Mode) */}
+                    {isEditingThisSkillCat && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200">
+                        {/* Card Color Theme Picker */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[10px] font-mono font-bold text-stone-600 uppercase flex items-center gap-1">
+                              <Palette className="w-3 h-3 text-amber-500" />
+                              <span>Card Color Theme:</span>
+                            </label>
+                            <span className="text-[9px] font-mono font-bold uppercase text-stone-500">
+                              {cat.color || "amber"}
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {ADMIN_PALETTE_COLORS.map((col) => {
+                              const isSelected = (cat.color || "amber").toLowerCase() === col.id;
+                              return (
+                                <button
+                                  key={col.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setPortfolio((prev) => {
+                                      const updated = [...(prev.skills || [])];
+                                      updated[cIdx] = { ...updated[cIdx], color: col.id };
+                                      return { ...prev, skills: updated };
+                                    });
+                                    saveInstantly(portfolioRef.current, `Set color "${col.name}" for "${cat.category}"`);
+                                  }}
+                                  className={`w-6 h-6 rounded-full border-2 transition-transform cursor-pointer flex items-center justify-center ${
+                                    isSelected ? "border-black scale-110 shadow-xs" : "border-stone-200 hover:scale-105"
+                                  }`}
+                                  style={{ backgroundColor: col.hex }}
+                                  title={col.name}
+                                >
+                                  {isSelected && <span className="text-white text-[9px] font-black drop-shadow-xs">✓</span>}
+                                </button>
+                              );
+                            })}
+                            {/* Custom Color Input */}
+                            <div className="relative inline-flex items-center ml-1">
+                              <input
+                                type="color"
+                                value={
+                                  cat.color && cat.color.startsWith("#")
+                                    ? cat.color
+                                    : (ADMIN_PALETTE_COLORS.find((c) => c.id === cat.color)?.hex || "#f59e0b")
+                                }
+                                onChange={(e) => {
+                                  const hex = e.target.value;
                                   setPortfolio((prev) => {
                                     const updated = [...(prev.skills || [])];
-                                    updated[cIdx] = { ...updated[cIdx], color: col.id };
+                                    updated[cIdx] = { ...updated[cIdx], color: hex };
                                     return { ...prev, skills: updated };
                                   });
-                                  saveInstantly(portfolioRef.current, `Set color "${col.name}" for "${cat.category}"`);
                                 }}
-                                className={`w-6 h-6 rounded-full border-2 transition-transform cursor-pointer flex items-center justify-center ${
-                                  isSelected ? "border-black scale-110 shadow-xs" : "border-stone-200 hover:scale-105"
-                                }`}
-                                style={{ backgroundColor: col.hex }}
-                                title={col.name}
-                              >
-                                {isSelected && <span className="text-white text-[9px] font-black drop-shadow-xs">✓</span>}
-                              </button>
-                            );
-                          })}
-                          {/* Custom Color Input */}
-                          <div className="relative inline-flex items-center ml-1">
+                                onBlur={() => {
+                                  saveInstantly(portfolioRef.current, `Saved custom color for "${cat.category}"`);
+                                }}
+                                className="w-6 h-6 rounded-full border border-stone-300 p-0 cursor-pointer overflow-hidden"
+                                title="Pick custom hex color"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Card Icon Picker */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-mono font-bold text-stone-600 uppercase flex items-center gap-1">
+                            <Sparkles className="w-3 h-3 text-indigo-500" />
+                            <span>Category Icon / Emoji:</span>
+                          </label>
+                          <div className="flex flex-wrap items-center gap-1">
+                            {SKILL_ICON_PRESETS.map((ic) => {
+                              const isSelected = (cat.icon || "code").toLowerCase() === ic.id;
+                              return (
+                                <button
+                                  key={ic.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setPortfolio((prev) => {
+                                      const updated = [...(prev.skills || [])];
+                                      updated[cIdx] = { ...updated[cIdx], icon: ic.id };
+                                      return { ...prev, skills: updated };
+                                    });
+                                    saveInstantly(portfolioRef.current, `Set icon "${ic.label}" for "${cat.category}"`);
+                                  }}
+                                  className={`px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                                    isSelected
+                                      ? "bg-black text-white border-black shadow-xs"
+                                      : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100"
+                                  }`}
+                                  title={ic.label}
+                                >
+                                  <span>{ic.emoji}</span>
+                                  <span className="hidden xl:inline">{ic.label}</span>
+                                </button>
+                              );
+                            })}
+                            {/* Custom Icon/Emoji Input */}
                             <input
-                              type="color"
-                              value={
-                                cat.color && cat.color.startsWith("#")
-                                  ? cat.color
-                                  : (ADMIN_PALETTE_COLORS.find((c) => c.id === cat.color)?.hex || "#f59e0b")
-                              }
+                              type="text"
+                              placeholder="Custom: e.g. 🤖, 🚀"
+                              value={cat.icon || ""}
                               onChange={(e) => {
-                                const hex = e.target.value;
+                                const val = e.target.value;
                                 setPortfolio((prev) => {
                                   const updated = [...(prev.skills || [])];
-                                  updated[cIdx] = { ...updated[cIdx], color: hex };
+                                  updated[cIdx] = { ...updated[cIdx], icon: val };
                                   return { ...prev, skills: updated };
                                 });
                               }}
                               onBlur={() => {
-                                saveInstantly(portfolioRef.current, `Saved custom color for "${cat.category}"`);
+                                saveInstantly(portfolioRef.current, `Saved custom icon for "${cat.category}"`);
                               }}
-                              className="w-6 h-6 rounded-full border border-stone-300 p-0 cursor-pointer overflow-hidden"
-                              title="Pick custom hex color"
+                              className="w-28 px-2 py-0.5 rounded-lg bg-stone-50 border border-stone-300 font-mono text-[10px] text-stone-900 focus:border-black focus:outline-none"
+                              title="Type any emoji or icon name (e.g. 🤖, 🚀, brain, laptop, terminal)"
                             />
                           </div>
                         </div>
                       </div>
-
-                      {/* Card Icon Picker */}
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-mono font-bold text-stone-600 uppercase flex items-center gap-1">
-                          <Sparkles className="w-3 h-3 text-indigo-500" />
-                          <span>Category Icon / Emoji:</span>
-                        </label>
-                        <div className="flex flex-wrap items-center gap-1">
-                          {SKILL_ICON_PRESETS.map((ic) => {
-                            const isSelected = (cat.icon || "code").toLowerCase() === ic.id;
-                            return (
-                              <button
-                                key={ic.id}
-                                type="button"
-                                onClick={() => {
-                                  setPortfolio((prev) => {
-                                    const updated = [...(prev.skills || [])];
-                                    updated[cIdx] = { ...updated[cIdx], icon: ic.id };
-                                    return { ...prev, skills: updated };
-                                  });
-                                  saveInstantly(portfolioRef.current, `Set icon "${ic.label}" for "${cat.category}"`);
-                                }}
-                                className={`px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold border transition-all cursor-pointer flex items-center gap-1 ${
-                                  isSelected
-                                    ? "bg-black text-white border-black shadow-xs"
-                                    : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100"
-                                }`}
-                                title={ic.label}
-                              >
-                                <span>{ic.emoji}</span>
-                                <span className="hidden xl:inline">{ic.label}</span>
-                              </button>
-                            );
-                          })}
-                          {/* Custom Icon/Emoji Input */}
-                          <input
-                            type="text"
-                            placeholder="Custom: e.g. 🤖, 🚀"
-                            value={cat.icon || ""}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setPortfolio((prev) => {
-                                const updated = [...(prev.skills || [])];
-                                updated[cIdx] = { ...updated[cIdx], icon: val };
-                                return { ...prev, skills: updated };
-                              });
-                            }}
-                            onBlur={() => {
-                              saveInstantly(portfolioRef.current, `Saved custom icon for "${cat.category}"`);
-                            }}
-                            className="w-28 px-2 py-0.5 rounded-lg bg-stone-50 border border-stone-300 font-mono text-[10px] text-stone-900 focus:border-black focus:outline-none"
-                            title="Type any emoji or icon name (e.g. 🤖, 🚀, brain, laptop, terminal)"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    )}
 
                     {/* Skill Tags */}
                     <div className="space-y-1.5">
@@ -7127,7 +7966,8 @@ export default function AdminPage() {
                       </button>
                     </div>
                   </div>
-                ))}
+                );
+              })}
 
                 {/* Add New Category */}
                 <div className="flex gap-2 pt-2 max-w-md">
@@ -7975,6 +8815,27 @@ export default function AdminPage() {
                   Full control over contact headers, inquiry form copy, live coordinates station, and received client messages
                 </p>
               </div>
+              <button
+                type="button"
+                onClick={() => setIsEditingContactTexts(!isEditingContactTexts)}
+                className={`px-4 py-2 rounded-xl font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 shadow-[2px_2px_0_#000] active:translate-y-0.5 self-start sm:self-auto shrink-0 ${
+                  isEditingContactTexts
+                    ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                    : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                }`}
+              >
+                {isEditingContactTexts ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    <span>Done Editing</span>
+                  </>
+                ) : (
+                  <>
+                    <Edit className="w-4 h-4" />
+                    <span>Edit Station Setup</span>
+                  </>
+                )}
+              </button>
             </div>
 
             {/* Quick Sub-Section Switcher Tabs */}
@@ -8013,75 +8874,147 @@ export default function AdminPage() {
             {/* ── 1. CONTACT PAGE HEADER & HANDWRITTEN DOODLES ── */}
             {(contactSubTab === "all" || contactSubTab === "copy") && (
               <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
-                <div className="flex items-center gap-2.5 pb-4 border-b border-stone-200">
-                  <span className="p-2 rounded-xl bg-rose-100 text-rose-900 border border-rose-300 text-sm">
-                    📝
-                  </span>
-                  <div>
-                    <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                      1. Contact Header &amp; Visual Doodles
-                    </h3>
-                    <p className="font-mono text-xs text-stone-500">
-                      Main heading, introductory subtitle, and airmail letter doodle sticker
-                    </p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-rose-100 text-rose-900 border border-rose-300 text-sm">
+                      📝
+                    </span>
+                    <div>
+                      <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                        1. Contact Header &amp; Visual Doodles
+                      </h3>
+                      <p className="font-mono text-xs text-stone-500">
+                        Main heading, introductory subtitle, and airmail letter doodle sticker
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingContactTexts(!isEditingContactTexts)}
+                      className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] active:translate-y-0.5 ${
+                        isEditingContactTexts
+                          ? "bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black"
+                          : "bg-amber-400 hover:bg-amber-300 text-black border-2 border-black"
+                      }`}
+                    >
+                      {isEditingContactTexts ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Done</span>
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Edit Header</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
-                      Section Heading Title *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Send a Dispatch"
-                      value={portfolio.personal.contactTitle || ""}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, contactTitle: e.target.value },
-                        }))
-                      }
-                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                    />
-                  </div>
+                {!isEditingContactTexts ? (
+                  /* ── View Mode: Clean Plaque ── */
+                  <div className="space-y-3.5 p-5 rounded-2xl bg-stone-50 border border-stone-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+                      <div className="p-3.5 rounded-xl bg-white border border-stone-200">
+                        <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Contact Section Title</span>
+                        <span className="font-['Space_Grotesk'] font-black text-stone-900 text-base">{portfolio.personal.contactTitle || "LET'S BUILD SOMETHING EXTRAORDINARY"}</span>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-white border border-stone-200">
+                        <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Airmail Sticky Note</span>
+                        <span className="font-bold text-amber-800">{portfolio.personal.contactDoodleNote || "Open for Summer 2025 AI/ML Research & Engineering Internships"}</span>
+                      </div>
+                      <div className="sm:col-span-2 p-3.5 rounded-xl bg-white border border-stone-200">
+                        <span className="text-[10px] font-black uppercase text-stone-400 block mb-0.5">Scope Description Subline</span>
+                        <p className="text-stone-700 leading-relaxed font-medium">
+                          {portfolio.personal.contactSubtitle || "Have an ambitious idea, research proposition, or engineering role in mind? Drop your dispatch directly into my terminal station."}
+                        </p>
+                      </div>
+                    </div>
 
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
-                      Airmail Doodle Handwritten Note (Sticky Pill)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. drop a note anytime 💌"
-                      value={portfolio.personal.contactDoodleNote || ""}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, contactDoodleNote: e.target.value },
-                        }))
-                      }
-                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                    />
+                    <div className="pt-2 flex items-center justify-between text-xs font-mono text-stone-400 border-t border-dashed border-stone-200">
+                      <span>Header texts locked. Click &ldquo;Edit Header&rdquo; to modify.</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingContactTexts(true)}
+                        className="text-amber-700 hover:text-amber-900 font-bold"
+                      >
+                        ✏️ Edit Header Texts ↗
+                      </button>
+                    </div>
                   </div>
+                ) : (
+                  /* ── Edit Mode: Form Inputs ── */
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                          Section Heading Title *
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Send a Dispatch"
+                          value={portfolio.personal.contactTitle || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, contactTitle: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        />
+                      </div>
 
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
-                      Introductory Subtitle / Scope Description
-                    </label>
-                    <textarea
-                      rows={2}
-                      placeholder="e.g. Have an interesting machine learning challenge, internship opportunity, or algorithmic project in mind? Drop your inquiry directly into my terminal."
-                      value={portfolio.personal.contactSubtitle || ""}
-                      onChange={(e) =>
-                        setPortfolio((prev) => ({
-                          ...prev,
-                          personal: { ...prev.personal, contactSubtitle: e.target.value },
-                        }))
-                      }
-                      className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
-                    />
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                          Airmail Doodle Handwritten Note (Sticky Pill)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. drop a note anytime 💌"
+                          value={portfolio.personal.contactDoodleNote || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, contactDoodleNote: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-xs font-mono font-bold text-stone-700 mb-1">
+                          Introductory Subtitle / Scope Description
+                        </label>
+                        <textarea
+                          rows={2}
+                          placeholder="e.g. Have an interesting machine learning challenge, internship opportunity, or algorithmic project in mind? Drop your inquiry directly into my terminal."
+                          value={portfolio.personal.contactSubtitle || ""}
+                          onChange={(e) =>
+                            setPortfolio((prev) => ({
+                              ...prev,
+                              personal: { ...prev.personal, contactSubtitle: e.target.value },
+                            }))
+                          }
+                          className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:bg-white focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-2 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingContactTexts(false)}
+                        className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Save &amp; Lock Header View</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
