@@ -2758,52 +2758,52 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* 2. PERSONA TAG COLOR & INDIA/LOCATION COLOR */}
+              {/* 2. LOCATION & INDIA BADGE COLOR */}
               <div className="p-5 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-black uppercase text-stone-900 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-amber-500" />
-                    <span>2. Persona &amp; India Color Controls</span>
+                    <MapPin className="w-4 h-4 text-rose-500" />
+                    <span>2. Location &amp; India Badge Color</span>
                   </span>
-                  <span className="text-[10px] font-mono text-amber-800 bg-amber-100 font-bold px-2 py-0.5 rounded-md border border-amber-300">
-                    Theme Colors
+                  <span className="text-[10px] font-mono text-rose-800 bg-rose-100 font-bold px-2 py-0.5 rounded-md border border-rose-300">
+                    Location Badge
                   </span>
                 </div>
 
-                {/* Live Persona Pill Preview */}
+                {/* Live Location Badge Preview */}
                 <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200 flex flex-col items-center justify-center">
                   <span className="text-[9.5px] font-mono text-stone-500 font-bold mb-1.5 uppercase">
-                    Live Persona Pill Preview:
+                    Live Location Badge Preview:
                   </span>
-                  <div
-                    className="px-4 py-1.5 rounded-full border-2 font-mono text-xs font-black flex items-center gap-1.5 shadow-[2px_2px_0_#000] transition-transform hover:scale-105"
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-mono text-xs font-black border-2 shadow-[2px_2px_0_#000] transition-transform hover:scale-105"
                     style={{
-                      backgroundColor: portfolio.personal.coverPersonaColor ? `${portfolio.personal.coverPersonaColor}20` : "#f5f3ff",
-                      color: portfolio.personal.coverPersonaColor || "#7c3aed",
-                      borderColor: portfolio.personal.coverPersonaColor || "#7c3aed",
+                      backgroundColor: portfolio.personal.locationBadgeColor ? `${portfolio.personal.locationBadgeColor}15` : "#fee2e2",
+                      color: portfolio.personal.locationBadgeColor || "#e11d48",
+                      borderColor: portfolio.personal.locationBadgeColor || "#f43f5e",
                     }}
                   >
-                    <span>✦</span>
-                    <span>{activeThoughtsList[selectedThoughtDay]?.persona || "The Philosopher"}</span>
-                  </div>
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>{portfolio.personal.currentCity || "Chennai, India"}</span>
+                  </span>
                 </div>
 
-                {/* Persona Color Swatches */}
+                {/* Location Color Swatches */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-mono text-[11px] font-bold text-stone-700">Persona Tag Color Accent:</span>
-                    {portfolio.personal.coverPersonaColor && (
+                    <span className="font-mono text-[11px] font-bold text-stone-700">Location Badge Color Accent:</span>
+                    {portfolio.personal.locationBadgeColor && (
                       <button
                         type="button"
                         onClick={async () => {
                           const base = portfolioRef.current || portfolio;
                           const nextPort = {
                             ...base,
-                            personal: { ...base.personal, coverPersonaColor: "" },
+                            personal: { ...base.personal, locationBadgeColor: "" },
                           };
                           setPortfolio(nextPort);
                           portfolioRef.current = nextPort;
-                          await saveInstantly(nextPort, "Reset persona tag color");
+                          await saveInstantly(nextPort, "Reset location badge color to default");
                         }}
                         className="text-[10px] text-rose-600 hover:underline cursor-pointer font-mono font-bold"
                       >
@@ -2813,84 +2813,12 @@ export default function AdminPage() {
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
                     {[
-                      { label: "Purple", color: "#8b5cf6" },
-                      { label: "Emerald", color: "#10b981" },
-                      { label: "Cyan", color: "#06b6d4" },
-                      { label: "Orange", color: "#f97316" },
-                      { label: "Pink", color: "#ec4899" },
-                      { label: "Amber", color: "#f59e0b" },
-                      { label: "Indigo", color: "#6366f1" },
-                    ].map((pColor) => (
-                      <button
-                        key={pColor.color}
-                        type="button"
-                        onClick={async () => {
-                          const base = portfolioRef.current || portfolio;
-                          updateDailyThought(selectedThoughtDay, "personaColor", pColor.color);
-                          const nextPort = {
-                            ...base,
-                            personal: { ...base.personal, coverPersonaColor: pColor.color },
-                          };
-                          setPortfolio(nextPort);
-                          portfolioRef.current = nextPort;
-                          await saveInstantly(nextPort, `Persona color set to ${pColor.label}`);
-                        }}
-                        className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer ${
-                          portfolio.personal.coverPersonaColor === pColor.color
-                            ? "scale-110 border-black ring-2 ring-black/40"
-                            : "border-white shadow-xs hover:scale-105"
-                        }`}
-                        style={{ backgroundColor: pColor.color }}
-                        title={pColor.label}
-                      />
-                    ))}
-                    <div className="flex items-center gap-1.5 ml-2">
-                      <span className="font-mono text-[10px] text-stone-400">Custom:</span>
-                      <input
-                        type="color"
-                        value={portfolio.personal.coverPersonaColor || "#8b5cf6"}
-                        onChange={async (e) => {
-                          const val = e.target.value;
-                          updateDailyThought(selectedThoughtDay, "personaColor", val);
-                          const base = portfolioRef.current || portfolio;
-                          const nextPort = {
-                            ...base,
-                            personal: { ...base.personal, coverPersonaColor: val },
-                          };
-                          setPortfolio(nextPort);
-                          portfolioRef.current = nextPort;
-                          await saveInstantly(nextPort, "Custom persona color saved");
-                        }}
-                        className="w-8 h-8 rounded-lg border border-stone-300 p-0.5 cursor-pointer bg-white"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* India / Location Badge Color */}
-                <div className="pt-2 border-t border-stone-200">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-mono text-[11px] font-bold text-stone-700">Location / India Badge Color:</span>
-                    {/* Preview */}
-                    <span
-                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-black border"
-                      style={{
-                        backgroundColor: portfolio.personal.locationBadgeColor ? `${portfolio.personal.locationBadgeColor}15` : "#fee2e2",
-                        color: portfolio.personal.locationBadgeColor || "#e11d48",
-                        borderColor: portfolio.personal.locationBadgeColor || "#f43f5e",
-                      }}
-                    >
-                      <MapPin className="w-2.5 h-2.5" />
-                      <span>{portfolio.personal.currentCity || "Chennai, India"}</span>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {[
                       { label: "Rose", color: "#f43f5e" },
                       { label: "Amber", color: "#f59e0b" },
                       { label: "Emerald", color: "#10b981" },
                       { label: "Sky Blue", color: "#0284c7" },
                       { label: "Purple", color: "#8b5cf6" },
+                      { label: "Indigo", color: "#6366f1" },
                     ].map((lColor) => (
                       <button
                         key={lColor.color}
@@ -2905,7 +2833,7 @@ export default function AdminPage() {
                           portfolioRef.current = nextPort;
                           await saveInstantly(nextPort, `Location badge color set to ${lColor.label}`);
                         }}
-                        className={`w-6 h-6 rounded-full border-2 transition-transform cursor-pointer ${
+                        className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer ${
                           portfolio.personal.locationBadgeColor === lColor.color
                             ? "scale-110 border-black ring-2 ring-black/40"
                             : "border-white shadow-xs hover:scale-105"
@@ -2930,10 +2858,28 @@ export default function AdminPage() {
                           portfolioRef.current = nextPort;
                           await saveInstantly(nextPort, "Custom location color saved");
                         }}
-                        className="w-7 h-7 rounded border border-stone-300 p-0.5 cursor-pointer bg-white"
+                        className="w-8 h-8 rounded-lg border border-stone-300 p-0.5 cursor-pointer bg-white"
                       />
                     </div>
                   </div>
+                </div>
+
+                {/* Helpful bridge pointing to merged Daily Thought & Persona Studio */}
+                <div className="pt-3 border-t border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-purple-50/70 p-3.5 rounded-xl border border-purple-200">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-purple-600 shrink-0" />
+                    <span className="font-mono text-[11px] text-purple-900 leading-snug">
+                      <strong>Daily Thought &amp; Persona Tag:</strong> Persona pill ka color aur content ab Desktop Cover Studio mein completely merge kar diya gaya hai.
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("cover")}
+                    className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold shrink-0 self-start sm:self-auto cursor-pointer shadow-xs active:translate-y-0.5 flex items-center gap-1"
+                  >
+                    <span>Open Thought Studio</span>
+                    <span>↗</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -4109,40 +4055,45 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    {/* 4. Desktop 7-Day Thought of the Day / Daily Spark Manager */}
-                    <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
+                    {/* 4. Desktop 7-Day Thought of the Day / Daily Spark & Persona Studio (MERGED) */}
+                    <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200">
                         <div className="flex items-center gap-2.5">
-                          <span className="p-2 rounded-xl bg-purple-100 text-purple-900 border border-purple-300 text-sm">
+                          <span className="p-2.5 rounded-xl bg-purple-100 text-purple-900 border border-purple-300 text-base">
                             ✨
                           </span>
                           <div>
-                            <h3 className="font-['Space_Grotesk'] text-base sm:text-lg font-black uppercase text-stone-900">
-                              4. Weekly Sparks: 7 Days Daily Thoughts Manager
-                            </h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-['Space_Grotesk'] text-base sm:text-lg font-black uppercase text-stone-900">
+                                4. Weekly Sparks: 7 Days Daily Thoughts &amp; Persona Studio
+                              </h3>
+                              <span className="text-[9.5px] font-mono font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md border border-amber-300">
+                                Unified Studio
+                              </span>
+                            </div>
                             <p className="font-mono text-xs text-stone-500">
-                              Har ek din (Sunday se Saturday) ke liye unique thought &amp; persona customize karein. Live desktop cover par automatically us din ka thought display hoga.
+                              Desktop cover ke daily thoughts, persona tag aur signature colors ko yahan ek hi jagah se live customize karein.
                             </p>
                           </div>
                         </div>
 
-                        {/* View Switcher: Tabs vs All 7 Days Grid */}
+                        {/* View Switcher: Single Day Studio vs All 7 Days Grid */}
                         <div className="inline-flex p-1 rounded-xl bg-stone-100 border border-stone-200 self-start sm:self-auto shrink-0">
                           <button
                             type="button"
                             onClick={() => setThoughtViewMode("tabs")}
-                            className={`px-3 py-1 rounded-lg font-mono text-[11px] font-bold transition-all cursor-pointer ${
+                            className={`px-3 py-1.5 rounded-lg font-mono text-[11px] font-bold transition-all cursor-pointer ${
                               thoughtViewMode === "tabs"
                                 ? "bg-black text-white shadow-xs font-black"
                                 : "text-stone-600 hover:text-black"
                             }`}
                           >
-                            Single Day View
+                            Single Day Studio
                           </button>
                           <button
                             type="button"
                             onClick={() => setThoughtViewMode("grid")}
-                            className={`px-3 py-1 rounded-lg font-mono text-[11px] font-bold transition-all cursor-pointer ${
+                            className={`px-3 py-1.5 rounded-lg font-mono text-[11px] font-bold transition-all cursor-pointer ${
                               thoughtViewMode === "grid"
                                 ? "bg-black text-white shadow-xs font-black"
                                 : "text-stone-600 hover:text-black"
@@ -4156,8 +4107,9 @@ export default function AdminPage() {
                       {/* Header & Signature Settings */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-2xl bg-stone-50 border border-stone-200">
                         <div>
-                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                            Card Heading (Shown above the thought):
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1 flex items-center justify-between">
+                            <span>Card Top Heading:</span>
+                            <span className="text-stone-400 font-normal text-[10px]">Shown above quote</span>
                           </label>
                           <input
                             type="text"
@@ -4169,13 +4121,15 @@ export default function AdminPage() {
                                 personal: { ...prev.personal, coverDailyThoughtHeader: e.target.value },
                               }))
                             }
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                            onBlur={() => saveInstantly(portfolioRef.current, "Daily thought header saved!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold focus:border-black focus:outline-none"
                           />
                         </div>
 
                         <div>
-                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                            Bottom Signature:
+                          <label className="block font-mono text-xs font-bold text-stone-700 mb-1 flex items-center justify-between">
+                            <span>Bottom Signature:</span>
+                            <span className="text-stone-400 font-normal text-[10px]">Shown below quote</span>
                           </label>
                           <input
                             type="text"
@@ -4187,206 +4141,341 @@ export default function AdminPage() {
                                 personal: { ...prev.personal, coverDailyThoughtSignature: e.target.value },
                               }))
                             }
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                            onBlur={() => saveInstantly(portfolioRef.current, "Daily thought signature saved!")}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold focus:border-black focus:outline-none"
                           />
                         </div>
                       </div>
 
                       {/* 7-Day Day Selector Bar */}
-                      <div className="space-y-2">
+                      <div className="space-y-2.5">
                         <div className="flex items-center justify-between text-xs font-mono font-bold text-stone-600">
-                          <span>Select Day to Edit ({activeThoughtsList.length} Days Configured):</span>
-                          <span className="text-emerald-700 font-extrabold flex items-center gap-1">
+                          <span className="flex items-center gap-1.5">
+                            <span>Select Day to Edit ({activeThoughtsList.length} Days Configured):</span>
+                          </span>
+                          <span className="text-emerald-700 font-extrabold flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             <span>Today is {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][todayWeekday]}</span>
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
                           {activeThoughtsList.map((dayItem) => {
                             const isToday = dayItem.dayIndex === todayWeekday;
                             const isSelected = dayItem.dayIndex === selectedThoughtDay;
                             const DAY_EMOJIS = ["☀️", "🚀", "🛠️", "💡", "🧭", "🎨", "⚡"];
+                            const dayColor =
+                              dayItem.personaColor ||
+                              (isSelected ? portfolio.personal.coverPersonaColor : undefined) ||
+                              "#8b5cf6";
 
                             return (
                               <button
                                 key={dayItem.dayIndex}
                                 type="button"
                                 onClick={() => setSelectedThoughtDay(dayItem.dayIndex)}
-                                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                                className={`p-3 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
                                   isSelected
-                                    ? "bg-black text-white border-black shadow-[2px_2px_0_#f59e0b] scale-[1.02]"
-                                    : "bg-white hover:bg-stone-50 border-stone-200 text-stone-800"
+                                    ? "bg-black text-white border-black shadow-[3px_3px_0_#f59e0b] scale-[1.03]"
+                                    : "bg-white hover:bg-stone-50 border-stone-200 text-stone-800 hover:border-stone-400 hover:shadow-xs"
                                 }`}
                               >
                                 <div className="flex items-center justify-between gap-1 w-full">
-                                  <span className="font-mono text-xs font-black uppercase flex items-center gap-1">
+                                  <span className="font-mono text-xs font-black uppercase flex items-center gap-1.5">
                                     <span>{DAY_EMOJIS[dayItem.dayIndex] || "✦"}</span>
                                     <span>{dayItem.dayName.slice(0, 3)}</span>
                                   </span>
                                   {isToday && (
-                                    <span className={`text-[8px] font-black px-1.5 py-0.2 rounded-full uppercase ${
+                                    <span className={`text-[8.5px] font-black px-1.5 py-0.2 rounded-full uppercase flex items-center gap-0.5 ${
                                       isSelected ? "bg-emerald-400 text-black" : "bg-emerald-100 text-emerald-800 border border-emerald-300"
                                     }`}>
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                       Today
                                     </span>
                                   )}
                                 </div>
-                                <span className={`text-[9.5px] font-mono truncate mt-1 ${
-                                  isSelected ? "text-amber-300 font-bold" : "text-stone-500"
-                                }`}>
-                                  {dayItem.persona}
-                                </span>
+
+                                <div className="flex items-center gap-1.5 pt-1 border-t border-black/10 dark:border-white/10 w-full overflow-hidden">
+                                  <span
+                                    className="w-2.5 h-2.5 rounded-full border border-black/20 shrink-0"
+                                    style={{ backgroundColor: dayColor }}
+                                    title={`Signature color: ${dayColor}`}
+                                  />
+                                  <span
+                                    className={`text-[10px] font-mono font-bold leading-tight truncate ${
+                                      isSelected ? "text-amber-300" : "text-stone-600"
+                                    }`}
+                                    title={dayItem.persona}
+                                  >
+                                    {dayItem.persona || "Persona"}
+                                  </span>
+                                </div>
                               </button>
                             );
                           })}
                         </div>
                       </div>
 
-                      {/* MODE A: Single Day Focused Editor */}
-                      {thoughtViewMode === "tabs" && (
-                        <div className="p-5 sm:p-6 rounded-2xl bg-amber-50/50 border-2 border-black shadow-[3px_3px_0_#000] space-y-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-black/10">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xl">
-                                {["☀️", "🚀", "🛠️", "💡", "🧭", "🎨", "⚡"][selectedThoughtDay] || "📅"}
-                              </span>
-                              <div>
-                                <h4 className="font-['Space_Grotesk'] text-base font-black uppercase text-stone-900">
-                                  {activeThoughtsList[selectedThoughtDay]?.dayName}&apos;s Daily Thought
-                                </h4>
-                                <span className="font-mono text-[10px] text-stone-500 font-bold">
-                                  Day #{selectedThoughtDay} • {selectedThoughtDay === todayWeekday ? "Active on Cover Today!" : "Scheduled for " + activeThoughtsList[selectedThoughtDay]?.dayName}
-                                </span>
+                      {/* MODE A: Single Day Focused Studio (MERGED Persona & Color & Quote) */}
+                      {thoughtViewMode === "tabs" && (() => {
+                        const currentDayItem = activeThoughtsList[selectedThoughtDay];
+                        const activePersonaColor =
+                          currentDayItem?.personaColor ||
+                          portfolio.personal.coverPersonaColor ||
+                          "#8b5cf6";
+
+                        return (
+                          <div className="space-y-5">
+                            <div className="p-5 sm:p-6 rounded-3xl bg-amber-50/50 border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
+                              {/* Focused Day Top Bar */}
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-black/10">
+                                <div className="flex items-center gap-2.5">
+                                  <span className="text-2xl p-2 rounded-2xl bg-white border border-stone-200 shadow-2xs">
+                                    {["☀️", "🚀", "🛠️", "💡", "🧭", "🎨", "⚡"][selectedThoughtDay] || "📅"}
+                                  </span>
+                                  <div>
+                                    <h4 className="font-['Space_Grotesk'] text-base sm:text-lg font-black uppercase text-stone-900">
+                                      {currentDayItem?.dayName}&apos;s Daily Thought &amp; Persona
+                                    </h4>
+                                    <span className="font-mono text-xs text-stone-600 font-bold flex items-center gap-1.5">
+                                      <span>Day #{selectedThoughtDay}</span>
+                                      <span>•</span>
+                                      <span className={selectedThoughtDay === todayWeekday ? "text-emerald-700 font-black" : "text-stone-500"}>
+                                        {selectedThoughtDay === todayWeekday ? "● Active Live on Cover Today!" : `Scheduled for ${currentDayItem?.dayName}`}
+                                      </span>
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => resetDailyThought(selectedThoughtDay)}
+                                  className="px-3 py-1.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-100 text-stone-700 font-mono text-xs font-bold cursor-pointer self-start sm:self-auto flex items-center gap-1.5 shadow-2xs active:translate-y-0.5"
+                                  title="Reset this day to default quote"
+                                >
+                                  <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
+                                  <span>Reset to Default</span>
+                                </button>
+                              </div>
+
+                              {/* Two-Column Studio: Left Persona & Color vs Right Quote */}
+                              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                                {/* Left Column: Day Label + Persona Tag + Color Swatches (MERGED) */}
+                                <div className="lg:col-span-5 space-y-4">
+                                  <div>
+                                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
+                                      Day Label:
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={currentDayItem?.dayName || ""}
+                                      onChange={(e) => updateDailyThought(selectedThoughtDay, "dayName", e.target.value)}
+                                      onBlur={() => saveInstantly(portfolioRef.current, "Day name updated!")}
+                                      className="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="block font-mono text-xs font-bold text-stone-700 mb-1 flex items-center justify-between">
+                                      <span>Persona / Author Tag:</span>
+                                      <span className="text-purple-700 font-normal text-[10.5px]">Appears in pill</span>
+                                    </label>
+                                    <input
+                                      type="text"
+                                      placeholder="e.g. The Creator, The Builder, The Philosopher..."
+                                      value={currentDayItem?.persona || ""}
+                                      onChange={(e) => updateDailyThought(selectedThoughtDay, "persona", e.target.value)}
+                                      onBlur={() => saveInstantly(portfolioRef.current, "Persona tag updated!")}
+                                      className="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold focus:border-black focus:outline-none"
+                                    />
+                                  </div>
+
+                                  {/* Merged Persona Pill Color Palette & Live Preview */}
+                                  <div className="p-3.5 rounded-2xl bg-white border-2 border-black/15 shadow-2xs space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-mono text-xs font-bold text-stone-800">
+                                        Persona Tag Color Accent:
+                                      </span>
+                                      {/* Live Persona Pill Preview */}
+                                      <div
+                                        className="px-3 py-1 rounded-full border-2 font-mono text-xs font-black flex items-center gap-1.5 shadow-2xs transition-transform hover:scale-105"
+                                        style={{
+                                          backgroundColor: `${activePersonaColor}18`,
+                                          color: activePersonaColor,
+                                          borderColor: activePersonaColor,
+                                        }}
+                                      >
+                                        <span>✦</span>
+                                        <span>{currentDayItem?.persona || "The Creator"}</span>
+                                      </div>
+                                    </div>
+
+                                    {/* Color Swatches */}
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      {[
+                                        { label: "Purple", color: "#8b5cf6" },
+                                        { label: "Emerald", color: "#10b981" },
+                                        { label: "Cyan", color: "#06b6d4" },
+                                        { label: "Orange", color: "#f97316" },
+                                        { label: "Pink", color: "#ec4899" },
+                                        { label: "Amber", color: "#f59e0b" },
+                                        { label: "Indigo", color: "#6366f1" },
+                                        { label: "Rose", color: "#f43f5e" },
+                                        { label: "Sky", color: "#0284c7" },
+                                      ].map((pColor) => {
+                                        const isCurColor = activePersonaColor.toLowerCase() === pColor.color.toLowerCase();
+                                        return (
+                                          <button
+                                            key={pColor.color}
+                                            type="button"
+                                            onClick={() => {
+                                              updateDailyThought(selectedThoughtDay, "personaColor", pColor.color);
+                                              const base = portfolioRef.current || portfolio;
+                                              const nextPort = {
+                                                ...base,
+                                                personal: { ...base.personal, coverPersonaColor: pColor.color },
+                                              };
+                                              setPortfolio(nextPort);
+                                              portfolioRef.current = nextPort;
+                                              saveInstantly(nextPort, `Persona color set to ${pColor.label}!`);
+                                            }}
+                                            className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer relative ${
+                                              isCurColor
+                                                ? "scale-110 border-black ring-2 ring-black/40 shadow-xs"
+                                                : "border-white shadow-xs hover:scale-110"
+                                            }`}
+                                            style={{ backgroundColor: pColor.color }}
+                                            title={pColor.label}
+                                          >
+                                            {isCurColor && (
+                                              <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] font-black">
+                                                ✓
+                                              </span>
+                                            )}
+                                          </button>
+                                        );
+                                      })}
+
+                                      {/* Custom Color Input */}
+                                      <div className="flex items-center gap-1.5 ml-auto">
+                                        <span className="font-mono text-[10px] text-stone-500 font-bold">Custom:</span>
+                                        <input
+                                          type="color"
+                                          value={activePersonaColor || "#8b5cf6"}
+                                          onChange={(e) => {
+                                            const val = e.target.value;
+                                            updateDailyThought(selectedThoughtDay, "personaColor", val);
+                                            const base = portfolioRef.current || portfolio;
+                                            const nextPort = {
+                                              ...base,
+                                              personal: { ...base.personal, coverPersonaColor: val },
+                                            };
+                                            setPortfolio(nextPort);
+                                            portfolioRef.current = nextPort;
+                                          }}
+                                          onBlur={() => saveInstantly(portfolioRef.current, "Custom persona color saved!")}
+                                          className="w-7 h-7 rounded-md border border-stone-300 p-0.5 cursor-pointer bg-white"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Right Column: Quote / Thought for Selected Day */}
+                                <div className="lg:col-span-7 flex flex-col justify-between space-y-2">
+                                  <div>
+                                    <div className="flex items-center justify-between mb-1">
+                                      <label className="block font-mono text-xs font-bold text-stone-700">
+                                        Quote / Thought for {currentDayItem?.dayName}:
+                                      </label>
+                                      <span className="font-mono text-[10.5px] text-stone-500 font-bold px-2 py-0.5 rounded bg-white border border-stone-200">
+                                        {(currentDayItem?.quote || "").length} characters
+                                      </span>
+                                    </div>
+                                    <textarea
+                                      rows={5}
+                                      placeholder="Enter inspiring thought for this day..."
+                                      value={currentDayItem?.quote || ""}
+                                      onChange={(e) => updateDailyThought(selectedThoughtDay, "quote", e.target.value)}
+                                      onBlur={() => saveInstantly(portfolioRef.current, `Thought for ${currentDayItem?.dayName} saved!`)}
+                                      className="w-full p-4 rounded-2xl bg-white border-2 border-stone-300 font-mono text-xs leading-relaxed focus:border-black focus:outline-none"
+                                    />
+                                    <p className="font-mono text-[10.5px] text-stone-500 mt-1">
+                                      💡 Tip: Live desktop cover par daily thought typewriter animation ke saath render hota hai.
+                                    </p>
+                                  </div>
+
+                                  <div className="flex justify-end pt-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => saveInstantly(portfolioRef.current, `Thought for ${currentDayItem?.dayName} saved!`)}
+                                      className="px-4 py-2 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs active:translate-y-0.5"
+                                    >
+                                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                      <span>Save Day Changes</span>
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
 
-                            <button
-                              type="button"
-                              onClick={() => resetDailyThought(selectedThoughtDay)}
-                              className="px-2.5 py-1 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 text-stone-700 font-mono text-[10px] font-bold cursor-pointer self-start sm:self-auto flex items-center gap-1"
-                              title="Reset this day to default quote"
-                            >
-                              <RotateCcw className="w-3 h-3" />
-                              <span>Reset to Default</span>
-                            </button>
-                          </div>
+                            {/* Authentic Live Desktop Thought Card Mockup */}
+                            <div className="p-5 sm:p-6 rounded-3xl bg-stone-100 border border-stone-300 space-y-3">
+                              <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                                <span className="font-mono text-xs font-black uppercase text-stone-800 flex items-center gap-1.5">
+                                  <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Live Desktop Cover Thought Card Mockup (Real Component):</span>
+                                </span>
+                                <span className="text-[10px] font-mono text-stone-500 bg-white px-2 py-0.5 rounded border border-stone-200 font-bold">
+                                  Live Preview
+                                </span>
+                              </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                              <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                                Day Label:
-                              </label>
-                              <input
-                                type="text"
-                                value={activeThoughtsList[selectedThoughtDay]?.dayName || ""}
-                                onChange={(e) => updateDailyThought(selectedThoughtDay, "dayName", e.target.value)}
-                                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                              />
-                            </div>
+                              <div className="relative max-w-xl mx-auto p-5 sm:p-6 rounded-2xl bg-[#fffdf6] border-2 border-black shadow-[4px_4px_0_#000] space-y-3">
+                                {/* Washi tape detail */}
+                                <div className="absolute -top-1.5 left-10 w-16 h-3 bg-amber-300/80 border border-black/20 shadow-xs rotate-[-2deg] rounded-xs pointer-events-none" />
 
-                            <div className="md:col-span-2 space-y-2">
-                              <label className="block font-mono text-xs font-bold text-stone-700 mb-1">
-                                Persona / Author Tag (Shown in Card Pill):
-                              </label>
-                              <input
-                                type="text"
-                                placeholder="e.g. The Philosopher, The Builder, The Thinker..."
-                                value={activeThoughtsList[selectedThoughtDay]?.persona || ""}
-                                onChange={(e) => updateDailyThought(selectedThoughtDay, "persona", e.target.value)}
-                                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-mono text-xs font-bold focus:border-black focus:outline-none"
-                              />
+                                {/* Heading Row with Persona Pill */}
+                                <div className="flex items-center justify-between pt-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-amber-500 text-xs">✦</span>
+                                    <span className="font-mono text-[10.5px] font-black uppercase text-stone-700 tracking-wider">
+                                      {portfolio.personal.coverDailyThoughtHeader || "A LITTLE THOUGHT FOR TODAY"}
+                                    </span>
+                                  </div>
 
-                              {/* Persona Pill Color Selector */}
-                              <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <span className="font-mono text-[11px] font-bold text-stone-700">
-                                    Persona Pill Color:
-                                  </span>
-                                  {/* Live Preview Pill */}
-                                  <div
-                                    className="px-2.5 py-0.5 rounded-full border text-[10px] font-mono font-bold flex items-center gap-1 shadow-2xs"
+                                  <span
+                                    className="px-2.5 py-0.5 rounded-full border text-[10px] font-mono font-black uppercase flex items-center gap-1 shadow-2xs"
                                     style={{
-                                      backgroundColor: activeThoughtsList[selectedThoughtDay]?.personaColor
-                                        ? `${activeThoughtsList[selectedThoughtDay].personaColor}22`
-                                        : "#f5f3ff",
-                                      color: activeThoughtsList[selectedThoughtDay]?.personaColor || "#7c3aed",
-                                      borderColor: activeThoughtsList[selectedThoughtDay]?.personaColor || "#7c3aed",
+                                      backgroundColor: `${activePersonaColor}18`,
+                                      color: activePersonaColor,
+                                      borderColor: activePersonaColor,
                                     }}
                                   >
                                     <span>✦</span>
-                                    <span>{activeThoughtsList[selectedThoughtDay]?.persona || "Persona Tag"}</span>
-                                  </div>
+                                    <span>{currentDayItem?.persona || "The Creator"}</span>
+                                  </span>
                                 </div>
 
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  {[
-                                    { label: "Purple", color: "#8b5cf6" },
-                                    { label: "Emerald", color: "#10b981" },
-                                    { label: "Cyan", color: "#06b6d4" },
-                                    { label: "Orange", color: "#f97316" },
-                                    { label: "Pink", color: "#ec4899" },
-                                    { label: "Amber", color: "#f59e0b" },
-                                    { label: "Indigo", color: "#6366f1" },
-                                  ].map((pColor) => (
-                                    <button
-                                      key={pColor.color}
-                                      type="button"
-                                      onClick={() => {
-                                        updateDailyThought(selectedThoughtDay, "personaColor", pColor.color);
-                                        setPortfolio((prev) => ({
-                                          ...prev,
-                                          personal: { ...prev.personal, coverPersonaColor: pColor.color },
-                                        }));
-                                      }}
-                                      className={`w-6 h-6 rounded-full border-2 transition-transform cursor-pointer ${
-                                        (activeThoughtsList[selectedThoughtDay]?.personaColor || portfolio.personal.coverPersonaColor) === pColor.color
-                                          ? "scale-110 border-black ring-2 ring-black/30"
-                                          : "border-white shadow-xs hover:scale-105"
-                                      }`}
-                                      style={{ backgroundColor: pColor.color }}
-                                      title={pColor.label}
-                                    />
-                                  ))}
-                                  <div className="flex items-center gap-1 ml-1.5">
-                                    <span className="font-mono text-[9px] text-stone-400">Custom:</span>
-                                    <input
-                                      type="color"
-                                      value={activeThoughtsList[selectedThoughtDay]?.personaColor || portfolio.personal.coverPersonaColor || "#8b5cf6"}
-                                      onChange={(e) => {
-                                        updateDailyThought(selectedThoughtDay, "personaColor", e.target.value);
-                                        setPortfolio((prev) => ({
-                                          ...prev,
-                                          personal: { ...prev.personal, coverPersonaColor: e.target.value },
-                                        }));
-                                      }}
-                                      className="w-7 h-7 rounded border border-stone-300 p-0.5 cursor-pointer bg-white"
-                                    />
-                                  </div>
+                                {/* Quote */}
+                                <p className="font-['Space_Grotesk'] text-sm sm:text-base font-bold text-stone-900 leading-relaxed italic border-l-2 border-amber-400 pl-3">
+                                  &ldquo;{currentDayItem?.quote || "Code is how I turn 'what if' into 'what's next'."}&rdquo;
+                                </p>
+
+                                {/* Bottom Signature */}
+                                <div className="flex items-center justify-between pt-1 border-t border-dashed border-stone-200">
+                                  <span className="font-mono text-[10px] font-bold text-stone-500">
+                                    {portfolio.personal.coverDailyThoughtSignature || "— Harsh’s Daily Thoughts"}
+                                  </span>
+                                  <span className="font-mono text-[9px] text-stone-400">
+                                    {selectedThoughtDay === todayWeekday ? "Active Live Today" : `Scheduled for ${currentDayItem?.dayName}`}
+                                  </span>
                                 </div>
                               </div>
-                            </div>
-
-                            <div className="md:col-span-3">
-                              <div className="flex items-center justify-between mb-1">
-                                <label className="block font-mono text-xs font-bold text-stone-700">
-                                  Quote / Thought for {activeThoughtsList[selectedThoughtDay]?.dayName}:
-                                </label>
-                                <span className="font-mono text-[10px] text-stone-400">
-                                  {(activeThoughtsList[selectedThoughtDay]?.quote || "").length} characters
-                                </span>
-                              </div>
-                              <textarea
-                                rows={3}
-                                placeholder="Enter inspiring thought for this day..."
-                                value={activeThoughtsList[selectedThoughtDay]?.quote || ""}
-                                onChange={(e) => updateDailyThought(selectedThoughtDay, "quote", e.target.value)}
-                                className="w-full p-3.5 rounded-xl bg-white border border-stone-300 font-mono text-xs leading-relaxed focus:border-black focus:outline-none"
-                              />
                             </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
 
                       {/* MODE B: All 7 Days Grid Editor */}
                       {thoughtViewMode === "grid" && (
@@ -4394,6 +4483,10 @@ export default function AdminPage() {
                           {activeThoughtsList.map((dayItem) => {
                             const isToday = dayItem.dayIndex === todayWeekday;
                             const DAY_EMOJIS = ["☀️", "🚀", "🛠️", "💡", "🧭", "🎨", "⚡"];
+                            const dayColor =
+                              dayItem.personaColor ||
+                              portfolio.personal.coverPersonaColor ||
+                              "#8b5cf6";
 
                             return (
                               <div
@@ -4417,7 +4510,7 @@ export default function AdminPage() {
                                   <button
                                     type="button"
                                     onClick={() => resetDailyThought(dayItem.dayIndex)}
-                                    className="text-[10px] font-mono text-stone-400 hover:text-stone-800"
+                                    className="text-[10px] font-mono text-stone-400 hover:text-stone-800 cursor-pointer"
                                     title="Reset to default"
                                   >
                                     Reset
@@ -4425,16 +4518,31 @@ export default function AdminPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                  <div>
-                                    <label className="block font-mono text-[10px] font-bold text-stone-500 mb-0.5">
-                                      Persona:
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={dayItem.persona}
-                                      onChange={(e) => updateDailyThought(dayItem.dayIndex, "persona", e.target.value)}
-                                      className="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 font-mono text-xs font-bold focus:border-black focus:bg-white focus:outline-none"
-                                    />
+                                  <div className="flex items-center justify-between gap-2">
+                                    <div className="flex-1">
+                                      <label className="block font-mono text-[10px] font-bold text-stone-500 mb-0.5">
+                                        Persona:
+                                      </label>
+                                      <input
+                                        type="text"
+                                        value={dayItem.persona}
+                                        onChange={(e) => updateDailyThought(dayItem.dayIndex, "persona", e.target.value)}
+                                        className="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 font-mono text-xs font-bold focus:border-black focus:bg-white focus:outline-none"
+                                      />
+                                    </div>
+                                    <div className="shrink-0 pt-4">
+                                      <span
+                                        className="px-2 py-1 rounded-full border text-[9px] font-mono font-bold flex items-center gap-1"
+                                        style={{
+                                          backgroundColor: `${dayColor}18`,
+                                          color: dayColor,
+                                          borderColor: dayColor,
+                                        }}
+                                      >
+                                        <span>✦</span>
+                                        <span className="max-w-[70px] truncate">{dayItem.persona}</span>
+                                      </span>
+                                    </div>
                                   </div>
 
                                   <div>
