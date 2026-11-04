@@ -72,6 +72,7 @@ export interface DailyThought {
   dayName: string;
   persona: string;
   quote: string;
+  personaColor?: string;
 }
 
 export const DEFAULT_DAILY_THOUGHTS: DailyThought[] = [
@@ -151,7 +152,11 @@ export interface PortfolioData {
     mobileBadge1?: string;
     mobileBadge2?: string;
     mobileTagline?: string;
+    showDesktopCurrentRole?: boolean;
     showMobileCurrentRole?: boolean;
+    coverPersonaColor?: string;
+    coverRoleTrackColor?: string;
+    locationBadgeColor?: string;
     showAboutRole?: boolean;
     showEducationBadge?: boolean;
     aboutEducationDegree?: string;
@@ -280,7 +285,11 @@ export const portfolioData: PortfolioData = {
     mobileBadge1: "TA IIT Madras",
     mobileBadge2: "AI & Data Science",
     mobileTagline: "Teaching Machines To Learn • Building Scientific Software",
+    showDesktopCurrentRole: true,
     showMobileCurrentRole: true,
+    coverPersonaColor: "",
+    coverRoleTrackColor: "",
+    locationBadgeColor: "",
     showAboutRole: true,
     showEducationBadge: true,
     aboutEducationDegree: "Data Science and Applications",

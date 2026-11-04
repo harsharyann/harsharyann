@@ -801,8 +801,21 @@ export function AboutSection({ id = "about" }: { id?: string }) {
         },
       ];
 
-  // Year-wise Experience state & chronological extraction
+  // Year-wise & Station-wise (Current vs Past) Experience state
   const [activeExpYear, setActiveExpYear] = React.useState<string>("all");
+  const [expStationFilter, setExpStationFilter] = React.useState<"all" | "current" | "past">("all");
+
+  const currentExperiences = React.useMemo(() => {
+    return experiencesList.filter(
+      (exp) => exp.isCurrent || (exp.period && /present|current/i.test(exp.period))
+    );
+  }, [experiencesList]);
+
+  const pastExperiences = React.useMemo(() => {
+    return experiencesList.filter(
+      (exp) => !exp.isCurrent && !(exp.period && /present|current/i.test(exp.period))
+    );
+  }, [experiencesList]);
 
   const expYearsList = React.useMemo(() => {
     const years = new Set<string>();
@@ -823,14 +836,21 @@ export function AboutSection({ id = "about" }: { id?: string }) {
   }, [experiencesList]);
 
   const filteredExperiences = React.useMemo(() => {
-    if (activeExpYear === "all") return experiencesList;
+    let baseList = experiencesList;
+    if (expStationFilter === "current") {
+      baseList = currentExperiences;
+    } else if (expStationFilter === "past") {
+      baseList = pastExperiences;
+    }
+
+    if (activeExpYear === "all") return baseList;
     if (activeExpYear === "Current") {
-      return experiencesList.filter(
+      return baseList.filter(
         (exp) => exp.isCurrent || (exp.period && /present|current/i.test(exp.period))
       );
     }
-    return experiencesList.filter((exp) => exp.period?.includes(activeExpYear));
-  }, [experiencesList, activeExpYear]);
+    return baseList.filter((exp) => exp.period?.includes(activeExpYear));
+  }, [experiencesList, expStationFilter, activeExpYear, currentExperiences, pastExperiences]);
 
   // Dynamic milestone phases from portfolio state with fallback
   const timelineMilestones = (milestones && milestones.length > 0)
@@ -1282,152 +1302,213 @@ export function AboutSection({ id = "about" }: { id?: string }) {
             <ExperienceBriefcaseDoodle />
           </div>
 
-          {/* Interactive Year-Wise Segmented Filter Bar */}
-          {expYearsList.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
-              <span className="font-mono text-[10px] font-black uppercase text-stone-400 mr-1">
-                FILTER YEAR:
-              </span>
+          {/* ── INTERACTIVE VIEW SWITCHER (Current Stations vs Past Milestones) ── */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1">
+            {/* Primary Track Filter: All vs Current vs Past */}
+            <div className="inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] self-start sm:self-auto">
               <button
                 type="button"
-                onClick={() => setActiveExpYear("all")}
-                className={`px-3 py-1 rounded-full border-2 font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
-                  activeExpYear === "all"
-                    ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-[2px_2px_0_#f59e0b]"
-                    : "bg-white text-stone-700 dark:bg-stone-900 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:border-black shadow-xs"
+                onClick={() => {
+                  setExpStationFilter("all");
+                  setActiveExpYear("all");
+                }}
+                className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  expStationFilter === "all"
+                    ? "bg-black text-white dark:bg-white dark:text-black shadow-xs"
+                    : "text-stone-600 dark:text-stone-400 hover:text-black dark:hover:text-white"
                 }`}
               >
-                ✦ ALL ({experiencesList.length})
+                <span>✦ ALL ({experiencesList.length})</span>
               </button>
 
-              {expYearsList.map((yr) => {
-                const count = experiencesList.filter((exp) => {
-                  if (yr === "Current") {
-                    return exp.isCurrent || (exp.period && /present|current/i.test(exp.period));
-                  }
-                  return exp.period?.includes(yr);
-                }).length;
-                const isSelected = activeExpYear === yr;
+              <button
+                type="button"
+                onClick={() => {
+                  setExpStationFilter("current");
+                  setActiveExpYear("all");
+                }}
+                className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  expStationFilter === "current"
+                    ? "bg-emerald-400 text-black shadow-xs font-black"
+                    : "text-stone-600 dark:text-stone-400 hover:text-emerald-500"
+                }`}
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                <span>CURRENT ROLES ({currentExperiences.length})</span>
+              </button>
 
-                return (
-                  <button
-                    key={yr}
-                    type="button"
-                    onClick={() => setActiveExpYear(yr)}
-                    className={`px-3 py-1 rounded-full border-2 font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                      isSelected
-                        ? "bg-amber-400 text-black border-black shadow-[2px_2px_0_#000] scale-105"
-                        : "bg-white text-stone-700 dark:bg-stone-900 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:border-amber-400 shadow-xs"
-                    }`}
-                  >
-                    {yr === "Current" ? (
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    ) : (
-                      <Calendar className="w-3 h-3 text-stone-400" />
-                    )}
-                    <span>{yr === "Current" ? "PRESENT" : yr} ({count})</span>
-                  </button>
-                );
-              })}
+              <button
+                type="button"
+                onClick={() => {
+                  setExpStationFilter("past");
+                  setActiveExpYear("all");
+                }}
+                className={`px-3 py-1.5 rounded-xl font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                  expStationFilter === "past"
+                    ? "bg-amber-400 text-black shadow-xs font-black"
+                    : "text-stone-600 dark:text-stone-400 hover:text-amber-500"
+                }`}
+              >
+                <Calendar className="w-3 h-3" />
+                <span>PAST MILESTONES ({pastExperiences.length})</span>
+              </button>
             </div>
-          )}
+
+            {/* Year-Wise Segmented Filter Chips */}
+            {expYearsList.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-mono text-[10px] font-black uppercase text-stone-400 mr-1">
+                  YEAR:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setActiveExpYear("all")}
+                  className={`px-2.5 py-0.5 rounded-full border font-mono text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                    activeExpYear === "all"
+                      ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-xs"
+                      : "bg-white text-stone-700 dark:bg-stone-800 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:border-black"
+                  }`}
+                >
+                  ALL
+                </button>
+
+                {expYearsList.map((yr) => {
+                  const isSelected = activeExpYear === yr;
+                  return (
+                    <button
+                      key={yr}
+                      type="button"
+                      onClick={() => setActiveExpYear(yr)}
+                      className={`px-2.5 py-0.5 rounded-full border font-mono text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 ${
+                        isSelected
+                          ? "bg-amber-400 text-black border-black shadow-xs font-black scale-105"
+                          : "bg-white text-stone-700 dark:bg-stone-800 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:border-amber-400"
+                      }`}
+                    >
+                      {yr === "Current" ? (
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      ) : null}
+                      <span>{yr === "Current" ? "NOW" : yr}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           {/* Chronological Spine Rail */}
           <div className="relative pl-5 sm:pl-8 ml-2 sm:ml-4 border-l-2 sm:border-l-3 border-dashed border-stone-300 dark:border-stone-700/80 space-y-8">
-            {filteredExperiences.map((exp, idx) => {
-              const cardThemes = [
-                {
-                  border: "border-black dark:border-white",
-                  shadow: "shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff]",
-                  badgeBg: "bg-amber-400 text-black",
-                  accent: "text-amber-700 dark:text-amber-400",
-                },
-                {
-                  border: "border-black dark:border-emerald-400/80",
-                  shadow: "shadow-[6px_6px_0_#10b981] dark:shadow-[6px_6px_0_#34d399]",
-                  badgeBg: "bg-emerald-500 text-white",
-                  accent: "text-emerald-700 dark:text-emerald-400",
-                },
-                {
-                  border: "border-black dark:border-indigo-400/80",
-                  shadow: "shadow-[6px_6px_0_#6366f1] dark:shadow-[6px_6px_0_#818cf8]",
-                  badgeBg: "bg-indigo-600 text-white",
-                  accent: "text-indigo-700 dark:text-indigo-400",
-                },
-              ];
-              const t = cardThemes[idx % cardThemes.length];
-              const yearMatch = exp.period?.match(/\b(20\d{2})\b/);
-              const watermarkYear = yearMatch ? yearMatch[1] : (exp.isCurrent ? "NOW" : "EXP");
+            {filteredExperiences.length === 0 ? (
+              <div className="p-8 rounded-2xl bg-stone-50 dark:bg-stone-900 border-2 border-dashed border-stone-300 dark:border-stone-700 text-center font-mono text-xs text-stone-500">
+                No roles found for this selected filter. Click &ldquo;ALL&rdquo; to reset.
+              </div>
+            ) : (
+              filteredExperiences.map((exp, idx) => {
+                const cardThemes = [
+                  {
+                    border: "border-black dark:border-white",
+                    shadow: "shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff]",
+                    badgeBg: "bg-amber-400 text-black",
+                    accent: "text-amber-700 dark:text-amber-400",
+                  },
+                  {
+                    border: "border-black dark:border-emerald-400/80",
+                    shadow: "shadow-[6px_6px_0_#10b981] dark:shadow-[6px_6px_0_#34d399]",
+                    badgeBg: "bg-emerald-500 text-white",
+                    accent: "text-emerald-700 dark:text-emerald-400",
+                  },
+                  {
+                    border: "border-black dark:border-indigo-400/80",
+                    shadow: "shadow-[6px_6px_0_#6366f1] dark:shadow-[6px_6px_0_#818cf8]",
+                    badgeBg: "bg-indigo-600 text-white",
+                    accent: "text-indigo-700 dark:text-indigo-400",
+                  },
+                ];
+                const t = cardThemes[idx % cardThemes.length];
+                const yearMatch = exp.period?.match(/\b(20\d{2})\b/);
+                const watermarkYear = yearMatch ? yearMatch[1] : (exp.isCurrent ? "NOW" : "EXP");
+                const isCurrentRole = exp.isCurrent || (exp.period && /present|current/i.test(exp.period));
 
-              return (
-                <div key={exp.id || idx} className="relative space-y-2">
-                  {/* Timeline Radar Node */}
-                  <div className="absolute -left-[30px] sm:-left-[43px] top-4 sm:top-5 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] z-10">
-                    {exp.isCurrent ? (
-                      <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-                      </span>
-                    ) : (
-                      <span className="text-amber-500 dark:text-amber-400 font-black text-xs">✦</span>
-                    )}
-                  </div>
-
-                  {/* Year Tag Banner Above Card */}
-                  <div className="flex flex-wrap items-center gap-2 pb-0.5">
-                    <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md font-mono text-[11px] font-black uppercase tracking-wider border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] ${
-                        exp.isCurrent
-                          ? "bg-emerald-400 text-black dark:bg-emerald-400 dark:text-black"
-                          : "bg-amber-300 text-black dark:bg-amber-300 dark:text-black"
-                      }`}
-                    >
-                      {exp.isCurrent ? (
-                        <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
-                          <span>ACTIVE STATION &middot; {exp.period}</span>
-                        </>
+                return (
+                  <div key={exp.id || idx} className="relative space-y-2">
+                    {/* Timeline Radar Node */}
+                    <div className="absolute -left-[30px] sm:-left-[43px] top-4 sm:top-5 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] z-10">
+                      {isCurrentRole ? (
+                        <span className="relative flex h-2.5 w-2.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                        </span>
                       ) : (
-                        <>
-                          <Calendar className="w-3 h-3 text-black" />
-                          <span>MILESTONE &middot; {exp.period}</span>
-                        </>
+                        <span className="text-amber-500 dark:text-amber-400 font-black text-xs">✦</span>
                       )}
-                    </span>
-
-                    {exp.type && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-[10px] font-bold text-stone-700 dark:text-stone-300 uppercase">
-                        ✦ {exp.type}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Executive Dossier Card */}
-                  <div
-                    className={`group/expCard relative overflow-hidden rounded-[26px] bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 ${t.border} ${t.shadow} p-5 sm:p-7 space-y-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[9px_9px_0_#000] dark:hover:shadow-[9px_9px_0_#fff]`}
-                  >
-                    {/* Background Typographic Year Watermark */}
-                    <div
-                      className="absolute right-3 -bottom-4 text-7xl sm:text-8xl font-black font-mono tracking-tighter text-black/5 dark:text-white/5 select-none pointer-events-none uppercase"
-                      aria-hidden="true"
-                    >
-                      {watermarkYear}
                     </div>
 
-                    {/* Realistic Washi Tape pinned to top right */}
+                    {/* Year Tag Banner Above Card */}
+                    <div className="flex flex-wrap items-center gap-2 pb-0.5">
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md font-mono text-[11px] font-black uppercase tracking-wider border-2 border-black dark:border-white shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] ${
+                          isCurrentRole
+                            ? "bg-emerald-400 text-black dark:bg-emerald-400 dark:text-black"
+                            : "bg-amber-300 text-black dark:bg-amber-300 dark:text-black"
+                        }`}
+                      >
+                        {isCurrentRole ? (
+                          <>
+                            <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
+                            <span>ACTIVE STATION &middot; {exp.period}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Calendar className="w-3 h-3 text-black" />
+                            <span>MILESTONE &middot; {exp.period}</span>
+                          </>
+                        )}
+                      </span>
+
+                      {/* Current vs Past Marker Tag */}
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-md font-mono text-[10px] font-black uppercase border ${
+                          isCurrentRole
+                            ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30"
+                            : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700"
+                        }`}
+                      >
+                        {isCurrentRole ? "⚡ CURRENT MANDATE" : "✓ PAST JOURNEY"}
+                      </span>
+
+                      {exp.type && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-[10px] font-bold text-stone-700 dark:text-stone-300 uppercase">
+                          ✦ {exp.type}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Executive Dossier Card */}
                     <div
-                      className="absolute -top-1.5 right-8 sm:right-12 w-16 sm:w-20 h-3 bg-amber-300/80 dark:bg-amber-400/40 border border-black/25 dark:border-white/20 shadow-xs rotate-[2deg] rounded-xs pointer-events-none z-10"
-                      aria-hidden="true"
-                    />
+                      className={`group/expCard relative overflow-hidden rounded-[26px] bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 ${t.border} ${t.shadow} p-5 sm:p-7 space-y-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[9px_9px_0_#000] dark:hover:shadow-[9px_9px_0_#fff]`}
+                    >
+                      {/* Background Typographic Year Watermark */}
+                      <div
+                        className="absolute right-3 -bottom-4 text-7xl sm:text-8xl font-black font-mono tracking-tighter text-black/5 dark:text-white/5 select-none pointer-events-none uppercase"
+                        aria-hidden="true"
+                      >
+                        {watermarkYear}
+                      </div>
 
-                    {/* Top Bar: Role Title, Company & Location, Period */}
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b-2 border-dashed border-stone-200 dark:border-stone-800 relative z-10">
-                      <div className="space-y-1">
-                        <h3 className="font-['Space_Grotesk'] text-xl sm:text-2xl font-black uppercase text-black dark:text-white tracking-tight leading-tight">
-                          {exp.role}
-                        </h3>
+                      {/* Realistic Washi Tape pinned to top right */}
+                      <div
+                        className="absolute -top-1.5 right-8 sm:right-12 w-16 sm:w-20 h-3 bg-amber-300/80 dark:bg-amber-400/40 border border-black/25 dark:border-white/20 shadow-xs rotate-[2deg] rounded-xs pointer-events-none z-10"
+                        aria-hidden="true"
+                      />
 
-                        <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs text-stone-600 dark:text-stone-400">
+                      {/* Top Bar: Role Title, Company & Location, Period */}
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b-2 border-dashed border-stone-200 dark:border-stone-800 relative z-10">
+                        <div className="space-y-1">
+                          <h3 className="font-['Space_Grotesk'] text-xl sm:text-2xl font-black uppercase text-black dark:text-white tracking-tight leading-tight">
+                            {exp.role}
+                          </h3>
+
+                          <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs text-stone-600 dark:text-stone-400">
                             {/* Company Name with Live Link */}
                             <div className="flex items-center gap-1.5 font-black text-amber-600 dark:text-amber-400">
                               <Building2 className="w-3.5 h-3.5 shrink-0" />
@@ -1446,127 +1527,168 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                               )}
                             </div>
 
-                            {/* Location */}
+                            {/* Location (with optional custom color from admin panel) */}
                             {exp.location && (
-                              <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400">
+                              <div
+                                className="flex items-center gap-1 font-bold text-stone-500 dark:text-stone-400"
+                                style={personal?.locationBadgeColor ? { color: personal.locationBadgeColor } : undefined}
+                              >
                                 <span>•</span>
-                                <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
+                                <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" style={personal?.locationBadgeColor ? { color: personal.locationBadgeColor } : undefined} />
                                 <span>{exp.location}</span>
                               </div>
                             )}
                           </div>
                         </div>
 
-                      {/* Period Pill in top right */}
-                      <div className="self-start sm:self-center shrink-0">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-mono text-xs font-black text-black dark:text-white shadow-2xs">
-                          <Calendar className="w-3.5 h-3.5 text-stone-500" />
-                          <span>{exp.period}</span>
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Two-Column Bento Split: Left Narrative + Right Impact Box */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 pt-1 relative z-10">
-                      {/* Left: Role Scope & Description */}
-                      <div className="lg:col-span-7 space-y-2.5">
-                        <div className="font-mono text-[10px] font-bold text-stone-400 uppercase tracking-wider">
-                          [ROLE SCOPE &amp; MANDATE]
-                        </div>
-                        <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
-                          {exp.description}
-                        </p>
-                      </div>
-
-                      {/* Right: Key Deliverables & Impact Box */}
-                      <div className="lg:col-span-5 rounded-2xl bg-stone-100/90 dark:bg-stone-900/70 p-3.5 sm:p-4 border border-black/10 dark:border-white/10 space-y-2">
-                        <div className="font-mono text-[10.5px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                          <span>KEY DELIVERABLES &amp; IMPACT</span>
-                        </div>
-                        {exp.highlights && exp.highlights.length > 0 ? (
-                          <ul className="space-y-1.5">
-                            {exp.highlights.map((h, hIdx) => (
-                              <li
-                                key={hIdx}
-                                className="flex items-start gap-2 text-xs text-stone-800 dark:text-stone-200 leading-relaxed"
-                              >
-                                <span className="text-amber-500 font-black shrink-0 mt-0.5">✦</span>
-                                <span>{h}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-xs text-stone-500 italic">Core operational impact & milestones delivered.</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Bottom Skills / Domain Tag Strip */}
-                    {exp.skillsUsed && exp.skillsUsed.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-dashed border-stone-200 dark:border-stone-800 relative z-10">
-                        <span className="font-mono text-[10px] font-bold text-stone-400 uppercase mr-1">
-                          Domain:
-                        </span>
-                        {exp.skillsUsed.map((skill) => (
-                          <span
-                            key={skill}
-                            className="px-2.5 py-0.5 rounded-full border border-black/15 dark:border-white/15 bg-stone-100 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100 font-mono text-[11px] font-bold transition-transform hover:-translate-y-0.5 hover:scale-105 cursor-default"
-                          >
-                            ✦ {skill}
+                        {/* Period Pill in top right */}
+                        <div className="self-start sm:self-center shrink-0">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border font-mono text-xs font-black shadow-2xs ${
+                            isCurrentRole
+                              ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-400/50"
+                              : "bg-stone-100 dark:bg-stone-800 text-black dark:text-white border-stone-300 dark:border-stone-700"
+                          }`}>
+                            <Calendar className="w-3.5 h-3.5 text-stone-500" />
+                            <span>{exp.period}</span>
                           </span>
-                        ))}
+                        </div>
                       </div>
-                    )}
+
+                      {/* Two-Column Bento Split: Left Narrative + Right Impact Box */}
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 pt-1 relative z-10">
+                        {/* Left: Role Scope & Description */}
+                        <div className="lg:col-span-7 space-y-2.5">
+                          <div className="font-mono text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                            [ROLE SCOPE &amp; MANDATE]
+                          </div>
+                          <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
+                            {exp.description}
+                          </p>
+                        </div>
+
+                        {/* Right: Key Deliverables & Impact Box */}
+                        <div className="lg:col-span-5 rounded-2xl bg-stone-100/90 dark:bg-stone-900/70 p-3.5 sm:p-4 border border-black/10 dark:border-white/10 space-y-2">
+                          <div className="font-mono text-[10.5px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                            <span>KEY DELIVERABLES &amp; IMPACT</span>
+                          </div>
+                          {exp.highlights && exp.highlights.length > 0 ? (
+                            <ul className="space-y-1.5">
+                              {exp.highlights.map((h, hIdx) => (
+                                <li
+                                  key={hIdx}
+                                  className="flex items-start gap-2 text-xs text-stone-800 dark:text-stone-200 leading-relaxed"
+                                >
+                                  <span className="text-amber-500 font-black shrink-0 mt-0.5">✦</span>
+                                  <span>{h}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-xs text-stone-500 italic">Core operational impact & milestones delivered.</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Bottom Skills / Domain Tag Strip */}
+                      {exp.skillsUsed && exp.skillsUsed.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-dashed border-stone-200 dark:border-stone-800 relative z-10">
+                          <span className="font-mono text-[10px] font-bold text-stone-400 uppercase mr-1">
+                            Domain:
+                          </span>
+                          {exp.skillsUsed.map((skill) => (
+                            <span
+                              key={skill}
+                              className="px-2.5 py-0.5 rounded-full border border-black/15 dark:border-white/15 bg-stone-100 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100 font-mono text-[11px] font-bold transition-transform hover:-translate-y-0.5 hover:scale-105 cursor-default"
+                            >
+                              ✦ {skill}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
       )}
 
-      {/* ── TRAJECTORY MILESTONES (Conditional Show/Hide) ── */}
+      {/* ── TRAJECTORY MILESTONES (Connected Strategic Roadmap) ── */}
       {personal?.showDevelopmentTrajectory !== false && (
-        <div className="space-y-6 pt-4">
-          <div className="flex items-center justify-between pb-3 border-b-2 border-black/15 dark:border-white/10">
-            <div className="flex items-center gap-2">
-              <span className="sketch-stamp bg-emerald-600 text-white font-black">
-                DEVELOPMENT TRAJECTORY
-              </span>
-              <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
-                [ROADMAP]
-              </span>
+        <div className="space-y-6 pt-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-black/15 dark:border-white/10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="sketch-stamp bg-emerald-600 text-white font-black">
+                  DEVELOPMENT TRAJECTORY
+                </span>
+                <span className="font-mono text-xs font-bold text-stone-500 dark:text-stone-400">
+                  [MILESTONE ROADMAP]
+                </span>
+              </div>
+              <p className="text-xs font-mono text-stone-600 dark:text-stone-400">
+                Connected flight track from core fundamentals to applied systems &amp; modern AI architectures.
+              </p>
             </div>
             <TrajectoryArrowDoodle />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Connected Strategic Roadmap Bento Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             {timelineMilestones.map((m, idx) => {
               const theme = milestoneThemes[idx % milestoneThemes.length];
+              const phaseStatuses = [
+                { label: "COMPLETED ✦", bg: "bg-emerald-500 text-white border-emerald-600" },
+                { label: "ACTIVE EXECUTION 🟢", bg: "bg-amber-400 text-black border-black" },
+                { label: "NEXT HORIZON 🚀", bg: "bg-indigo-500 text-white border-indigo-600" },
+              ];
+              const status = phaseStatuses[idx % phaseStatuses.length];
+
               return (
                 <div
                   key={m.phaseNumber || idx}
-                  className="p-5 rounded-[28px] liquid-bento-card space-y-3 flex flex-col justify-between"
+                  className="relative p-6 rounded-[28px] bg-[#fffdfa] dark:bg-[#13141b] border-2 sm:border-3 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] space-y-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1"
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-black uppercase ${theme.badgeBg}`}>
+                  {/* Washi tape sticker */}
+                  <div
+                    className="absolute -top-1.5 left-8 w-16 h-3 bg-amber-300/80 dark:bg-amber-400/40 border border-black/20 shadow-xs rotate-[-2deg] rounded-xs pointer-events-none"
+                    aria-hidden="true"
+                  />
+
+                  <div className="space-y-3">
+                    {/* Header Row: Phase Tag & Status Pill */}
+                    <div className="flex items-center justify-between pt-1">
+                      <span className={`px-2.5 py-0.5 rounded-lg font-mono text-[10px] font-black uppercase ${theme.badgeBg} border border-black/20`}>
                         PHASE {m.phaseNumber}
                       </span>
+                      <span className={`px-2 py-0.5 rounded-full font-mono text-[9px] font-black uppercase border shadow-2xs ${status.bg}`}>
+                        {status.label}
+                      </span>
+                    </div>
+
+                    <div>
                       <span className={`font-mono text-xs font-bold ${theme.accentText}`}>
                         {m.period}
                       </span>
+                      <h3 className="font-['Space_Grotesk'] font-black text-lg uppercase tracking-tight text-black dark:text-white leading-snug">
+                        {m.title}
+                      </h3>
+                      <p className="text-xs font-mono font-bold text-stone-600 dark:text-stone-400 pt-0.5">
+                        {m.subtitle}
+                      </p>
                     </div>
-                    <h3 className="font-black text-base uppercase tracking-tight text-black dark:text-white">
-                      {m.title}
-                    </h3>
-                    <p className="text-xs font-mono font-bold text-stone-600 dark:text-stone-400">
-                      {m.subtitle}
-                    </p>
-                    <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed pt-1">
+
+                    <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed font-sans pt-1 border-t border-dashed border-stone-200 dark:border-stone-800">
                       {m.description}
                     </p>
+                  </div>
+
+                  {/* Step Connector Indicator */}
+                  <div className="pt-2 flex items-center justify-between font-mono text-[10px] font-black text-stone-400 uppercase">
+                    <span>STEP 0{idx + 1} OF 03</span>
+                    <span className="text-amber-500">✦ ✦ ✦</span>
                   </div>
                 </div>
               );

@@ -359,18 +359,32 @@ export function DailySpark({ isDark = false }: { isDark?: boolean }) {
             </span>
           </div>
 
-          {/* Persona Tag */}
-          <div
-            className="daily-spark-persona-pill"
-            style={{
-              backgroundColor: isDark ? todaySpark.bgDark : todaySpark.bgLight,
-              color: isDark ? todaySpark.borderDark : todaySpark.borderLight,
-              borderColor: isDark ? todaySpark.borderDark : "#000000",
-            }}
-          >
-            <span className="daily-spark-persona-spark" aria-hidden="true">✦</span>
-            <span className="daily-spark-persona-text">{activePersona}</span>
-          </div>
+          {/* Persona Tag (Supports Custom Persona Pill Color from Admin Panel) */}
+          {(() => {
+            const customPersonaColor = todayCustom?.personaColor || personal?.coverPersonaColor;
+            const personaBg = customPersonaColor
+              ? (isDark ? `${customPersonaColor}28` : `${customPersonaColor}15`)
+              : (isDark ? todaySpark.bgDark : todaySpark.bgLight);
+            const personaTextColor = customPersonaColor
+              ? (isDark ? (customPersonaColor === "#000000" ? "#ffffff" : customPersonaColor) : customPersonaColor)
+              : (isDark ? todaySpark.borderDark : todaySpark.borderLight);
+            const personaBorderColor = customPersonaColor || (isDark ? todaySpark.borderDark : "#000000");
+
+            return (
+              <div
+                className="daily-spark-persona-pill"
+                style={{
+                  backgroundColor: personaBg,
+                  color: personaTextColor,
+                  borderColor: personaBorderColor,
+                  boxShadow: customPersonaColor ? (isDark ? `2px 2px 0 ${customPersonaColor}60` : `2px 2px 0 #000`) : undefined,
+                }}
+              >
+                <span className="daily-spark-persona-spark" style={{ color: personaTextColor }} aria-hidden="true">✦</span>
+                <span className="daily-spark-persona-text">{activePersona}</span>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Main Quote Typography */}

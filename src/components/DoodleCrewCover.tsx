@@ -434,7 +434,7 @@ const ART: { [k: string]: Art } = {
 }
 
 /** Dynamic Doodles: Colourful in Light Mode, Crisp B&W in Dark Mode */
-const DoodleGraphic = ({ kind, isDark = false }: { kind: DoodleKind; isDark?: boolean }) => {
+export const DoodleGraphic = ({ kind, isDark = false }: { kind: DoodleKind; isDark?: boolean }) => {
   if (isDark) {
     switch (kind) {
       case "flame":
@@ -549,7 +549,7 @@ const DoodleGraphic = ({ kind, isDark = false }: { kind: DoodleKind; isDark?: bo
   }
 }
 
-const DoodleIcon = ({ kind, size = 18, isDark = false }: { kind: DoodleKind; size?: number; isDark?: boolean }) => (
+export const DoodleIcon = ({ kind, size = 18, isDark = false }: { kind: DoodleKind; size?: number; isDark?: boolean }) => (
   <svg viewBox="-16 -16 32 32" width={size} height={size} aria-hidden="true" className="shrink-0">
     <DoodleGraphic kind={kind} isDark={isDark} />
   </svg>
@@ -1350,8 +1350,8 @@ export function DoodleCrewCover({
               </h1>
             </div>
 
-            {/* Active Role Pill with Live Radar Beacon & Distinct Organization Tag */}
-            {(Boolean(portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role) || Boolean(portfolio?.personal?.aboutWorkPlace)) && (() => {
+            {/* Active Role Pill with Live Radar Beacon & Distinct Organization Tag (Hideable via Admin) */}
+            {portfolio?.personal?.showDesktopCurrentRole !== false && (Boolean(portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role) || Boolean(portfolio?.personal?.aboutWorkPlace)) && (() => {
               const rawRole = (portfolio?.personal?.aboutCurrentWork || portfolio?.personal?.role || "").trim();
               const workplace = (portfolio?.personal?.aboutWorkPlace || "").trim();
               
@@ -1360,16 +1360,29 @@ export function DoodleCrewCover({
                 : rawRole;
 
               const track = resolveRoleTrack(rawRole, workplace, portfolio?.personal?.aboutRoleType);
+              const customTrackColor = portfolio?.personal?.coverRoleTrackColor;
 
               return (
-                <div className="group/pill inline-flex items-center flex-wrap gap-2.5 py-1.5 px-3.5 rounded-xl bg-[#fffdf6] dark:bg-stone-900/90 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff]">
+                <div
+                  className="group/pill inline-flex items-center flex-wrap gap-2.5 py-1.5 px-3.5 rounded-xl bg-[#fffdf6] dark:bg-stone-900/90 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff]"
+                  style={customTrackColor ? { borderColor: customTrackColor } : undefined}
+                >
                   {/* Track Beacon + Icon + Track Label */}
                   <div className="flex items-center gap-1.5">
                     <span className="relative flex h-2.5 w-2.5">
-                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.beaconRing} opacity-75`} />
-                      <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${track.beaconCore} ring-2 ring-emerald-500/20`} />
+                      <span
+                        className={`animate-ping absolute inline-flex h-full w-full rounded-full ${customTrackColor ? "" : track.beaconRing} opacity-75`}
+                        style={customTrackColor ? { backgroundColor: customTrackColor } : undefined}
+                      />
+                      <span
+                        className={`relative inline-flex rounded-full h-2.5 w-2.5 ${customTrackColor ? "" : track.beaconCore} ring-2 ring-emerald-500/20`}
+                        style={customTrackColor ? { backgroundColor: customTrackColor } : undefined}
+                      />
                     </span>
-                    <span className={`font-mono text-[10px] font-black uppercase tracking-wider ${track.labelColor} flex items-center gap-1`}>
+                    <span
+                      className={`font-mono text-[10px] font-black uppercase tracking-wider ${customTrackColor ? "" : track.labelColor} flex items-center gap-1`}
+                      style={customTrackColor ? { color: customTrackColor } : undefined}
+                    >
                       {track.icon}
                       <span>{track.label}</span>
                     </span>
@@ -1384,8 +1397,16 @@ export function DoodleCrewCover({
 
                   {/* Organization Badge with @ connector */}
                   {Boolean(workplace) && (
-                    <div className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg ${track.workplaceBadgeBg} font-mono text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-2xs`}>
-                      <span className={`${track.workplaceAtColor} font-sans font-bold text-xs`}>@</span>
+                    <div
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg ${customTrackColor ? "text-stone-900 dark:text-stone-100" : track.workplaceBadgeBg} font-mono text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-2xs`}
+                      style={customTrackColor ? { backgroundColor: `${customTrackColor}22`, border: `1px solid ${customTrackColor}60` } : undefined}
+                    >
+                      <span
+                        className={`${customTrackColor ? "" : track.workplaceAtColor} font-sans font-bold text-xs`}
+                        style={customTrackColor ? { color: customTrackColor } : undefined}
+                      >
+                        @
+                      </span>
                       <span>{workplace}</span>
                     </div>
                   )}
