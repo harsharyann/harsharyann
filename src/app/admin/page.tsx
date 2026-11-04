@@ -5164,106 +5164,242 @@ export default function AdminPage() {
                   </div>
                 )}
 
-                {/* ── MOBILE COVER REALISTIC PHONE MOCKUP PREVIEW ── */}
+                {/* ── MOBILE COVER REALISTIC PHONE MOCKUP PREVIEW (MATCHES UPLOADED DESIGN 1:1) ── */}
                 {coverSubView === "mobile" && (
                   <div className="flex flex-col items-center">
-                    <div className="relative w-56 h-[440px] rounded-[36px] p-2 bg-stone-900 border-4 border-stone-800 shadow-2xl overflow-hidden flex flex-col select-none">
-                      {/* Phone Screen Container */}
-                      <div className="relative w-full h-full rounded-[26px] overflow-hidden bg-stone-950 flex flex-col justify-between">
-                        {/* Background Portrait Photo */}
-                        <img
-                          src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl)}
-                          alt="Cover Mobile Preview"
-                          className="absolute inset-0 w-full h-full object-cover"
-                          style={{
-                            objectPosition: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
-                            transform: `scale(${portfolio.personal.coverPhotoZoom ?? 1})`,
-                            transformOrigin: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
-                          }}
-                        />
+                    <div className="relative w-64 h-[510px] rounded-[40px] p-2.5 bg-stone-900 border-4 border-stone-800 shadow-2xl overflow-hidden flex flex-col select-none">
+                      {/* Phone Screen Container with Graph Paper Background */}
+                      <div
+                        className="relative w-full h-full rounded-[28px] overflow-hidden bg-[#fffdfa] flex flex-col justify-between"
+                        style={{
+                          backgroundImage: `
+                            linear-gradient(to right, rgba(0, 0, 0, 0.055) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(0, 0, 0, 0.055) 1px, transparent 1px)
+                          `,
+                          backgroundSize: "16px 16px",
+                        }}
+                      >
+                        {/* 1. Background Portrait Photo with Comic Doodles */}
+                        <div className="relative w-full h-[215px] shrink-0 overflow-hidden bg-stone-100">
+                          <img
+                            src={formatGoogleDriveImageUrl(portfolio.personal.coverPhotoUrl)}
+                            alt="Cover Mobile Preview"
+                            className="absolute inset-0 w-full h-full object-cover"
+                            style={{
+                              objectPosition: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                              transform: `scale(${portfolio.personal.coverPhotoZoom ?? 1})`,
+                              transformOrigin: `${portfolio.personal.coverPhotoPositionX ?? 50}% ${portfolio.personal.coverPhotoPositionY ?? 20}%`,
+                            }}
+                          />
 
-                        {/* Gradient vignettes */}
-                        <div className="absolute top-0 inset-x-0 h-14 bg-gradient-to-b from-black/70 to-transparent pointer-events-none" />
-                        {/* Frosted Glass Blur Transition at Bottom of Photo */}
-                        <div
-                          className="absolute bottom-0 inset-x-0 h-40 pointer-events-none backdrop-blur-md"
-                          style={{
-                            WebkitMaskImage: "linear-gradient(to top, black 25%, transparent 100%)",
-                            maskImage: "linear-gradient(to top, black 25%, transparent 100%)",
-                          }}
-                        />
-                        <div
-                          className="absolute bottom-0 inset-x-0 h-24 pointer-events-none backdrop-blur-xl bg-gradient-to-t from-black/40 via-black/15 to-transparent"
-                          style={{
-                            WebkitMaskImage: "linear-gradient(to top, black 35%, transparent 100%)",
-                            maskImage: "linear-gradient(to top, black 35%, transparent 100%)",
-                          }}
-                        />
+                          {/* Top Right Theme Pill: 🔴 DARK */}
+                          <div className="absolute top-2.5 right-2.5 z-20">
+                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-black border border-black font-mono font-black text-[7.5px] uppercase shadow-[1px_1px_0_#000]">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                              <span>DARK</span>
+                            </span>
+                          </div>
 
-                        {/* Dynamic Camera Notch at Top */}
-                        <div className="relative z-10 w-full px-4 pt-2 flex items-center justify-between">
-                          <span className="font-mono text-[7px] text-white/80">9:41</span>
-                          <div className="w-12 h-3 rounded-full bg-black border border-white/10" />
-                          <span className="font-mono text-[7px] text-emerald-400">5G</span>
+                          {/* Paper Plane Doodle with Loop Trail (Top-Left) */}
+                          <div className="absolute top-2 left-2 w-20 h-14 pointer-events-none z-15">
+                            <svg viewBox="0 0 110 70" fill="none" className="w-full h-full">
+                              <path
+                                d="M 6 52 C 16 62, 38 60, 42 40 C 46 18, 20 18, 26 34 C 32 48, 62 44, 82 22"
+                                stroke="#38bdf8"
+                                strokeWidth="2.4"
+                                strokeDasharray="4 4"
+                                fill="none"
+                              />
+                              <g transform="translate(82, 16) rotate(16)">
+                                <polygon points="0,0 22,8 5,12" fill="#ffffff" stroke="#000000" strokeWidth="1.8" />
+                                <polygon points="22,8 0,18 5,12" fill="#e0f2fe" stroke="#000000" strokeWidth="1.8" />
+                                <polygon points="5,12 11,20 12,13" fill="#93c5fd" stroke="#000000" strokeWidth="1.8" />
+                              </g>
+                            </svg>
+                          </div>
+
+                          {/* Pink Heart Doodle (Mid-Left) */}
+                          <div className="absolute top-[32%] left-3.5 w-4 h-4 pointer-events-none z-15 rotate-[-12deg]">
+                            <svg viewBox="0 0 24 24" fill="#f472b6" stroke="#000000" strokeWidth="2" className="w-full h-full">
+                              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                          </div>
+
+                          {/* Halftone Dotted Cluster */}
+                          <div className="absolute top-[26%] left-2 pointer-events-none z-10 opacity-60 grid grid-cols-3 gap-1">
+                            {Array.from({ length: 12 }).map((_, i) => (
+                              <span key={i} className="w-0.5 h-0.5 rounded-full bg-cyan-700" />
+                            ))}
+                          </div>
+
+                          {/* Cyan Zigzag Doodle (Right) */}
+                          <div className="absolute top-[28%] right-4 w-9 h-4 pointer-events-none z-15">
+                            <svg viewBox="0 0 46 18" fill="none" className="w-full h-full">
+                              <path
+                                d="M 3 9 L 9 3 L 16 11 L 23 3 L 30 11 L 37 3 L 43 9"
+                                stroke="#06b6d4"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
+
+                          {/* Mini Sparkles */}
+                          <span className="absolute top-[37%] right-6 pointer-events-none z-15 text-[#f97316] font-bold text-xs">✦</span>
+                          <span className="absolute top-[42%] right-10 pointer-events-none z-15 text-[#10b981] font-black text-[10px]">+</span>
+
+                          {/* Smooth Bottom Frosted Fade */}
+                          <div
+                            className="absolute bottom-0 inset-x-0 h-20 pointer-events-none backdrop-blur-md"
+                            style={{
+                              WebkitMaskImage: "linear-gradient(to top, black 25%, transparent 100%)",
+                              maskImage: "linear-gradient(to top, black 25%, transparent 100%)",
+                            }}
+                          />
+                          <div
+                            className="absolute bottom-0 inset-x-0 h-12 pointer-events-none bg-gradient-to-t from-[#fffdfa] via-[#fffdfa]/50 to-transparent"
+                            style={{
+                              WebkitMaskImage: "linear-gradient(to top, black 35%, transparent 100%)",
+                              maskImage: "linear-gradient(to top, black 35%, transparent 100%)",
+                            }}
+                          />
                         </div>
 
-                        {/* Bottom Phone Details & Sticker Note */}
-                        <div className="relative z-10 p-2.5 flex flex-col items-center text-center space-y-1.5">
-                          {/* Hero Name Heading */}
+                        {/* 2. Crossed Angled Ribbons */}
+                        <div className="relative w-full -mt-4 z-20 overflow-hidden pointer-events-none flex flex-col items-center">
+                          {/* Pink Ribbon */}
                           <div
-                            className="font-hero-heading text-lg text-white font-black uppercase tracking-wider leading-none select-none"
+                            className="w-[115%] py-0.5 bg-[#f472b6] border-y border-black shadow-[1.5px_1.5px_0_#000] overflow-hidden"
+                            style={{ transform: "rotate(-2.2deg)" }}
+                          >
+                            <div className="whitespace-nowrap font-mono text-[6.5px] font-black uppercase text-black tracking-widest px-1">
+                              {portfolio.personal.mobileTagline || "TEACHING MACHINES TO LEARN ✦ BUILDING SCIENTIFIC SOFTWARE ✦"}
+                            </div>
+                          </div>
+                          {/* Cyan Ribbon */}
+                          <div
+                            className="w-[115%] py-0.5 -mt-1 bg-[#2dd4bf] border-y border-black shadow-[1.5px_1.5px_0_#000] overflow-hidden"
+                            style={{ transform: "rotate(1.8deg)" }}
+                          >
+                            <div className="whitespace-nowrap font-mono text-[6px] font-black uppercase text-black tracking-widest px-1">
+                              FULL-STACK AI ✦ DEEP LEARNING ✦ DATA SYSTEMS ✦ CREATIVE CODE ✦
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 3. Hero Name: HARSH ARYAN with White Outline & Indigo Glow */}
+                        <div className="relative z-20 text-center my-0.5">
+                          <div
+                            className="font-hero-heading text-xl font-black uppercase tracking-wider leading-none select-none"
                             style={{
-                              textShadow: "1.5px 1.5px 0 #000, -1px -1px 0 #000, 2px 2px 0 #f59e0b",
+                              fontFamily: "'Amanojaku', 'Dela Gothic One', 'Syne', system-ui, sans-serif",
+                              color: "#1e1b4b",
+                              WebkitTextStroke: "1.5px #ffffff",
+                              textShadow: `
+                                -1.5px -1.5px 0 #ffffff,
+                                 1.5px -1.5px 0 #ffffff,
+                                -1.5px  1.5px 0 #ffffff,
+                                 1.5px  1.5px 0 #ffffff,
+                                 2px  2px 0 #6366f1
+                              `,
                             }}
                           >
                             {portfolio.personal.name || "HARSH ARYAN"}
                           </div>
+                        </div>
 
-                          {/* Sticker Note Mock */}
-                          <div className="w-full rounded-xl p-2 bg-[#fffef5] border border-black shadow-[2px_2px_0_#000] space-y-1 text-black">
-                            {/* Role Badge (Respects Show/Hide & Custom Color) */}
-                            {portfolio.personal.showMobileCurrentRole !== false && (
-                              <div
-                                className="py-0.5 px-2 rounded-md bg-emerald-500/10 border border-emerald-500/30 flex flex-col items-center"
-                                style={portfolio.personal.coverRoleTrackColor ? { borderColor: `${portfolio.personal.coverRoleTrackColor}60`, backgroundColor: `${portfolio.personal.coverRoleTrackColor}15` } : undefined}
-                              >
-                                <span
-                                  className="font-mono text-[7px] font-black uppercase text-emerald-800 flex items-center gap-1"
-                                  style={portfolio.personal.coverRoleTrackColor ? { color: portfolio.personal.coverRoleTrackColor } : undefined}
-                                >
-                                  <span
-                                    className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"
-                                    style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: portfolio.personal.coverRoleTrackColor } : undefined}
-                                  />
-                                  <span>{portfolio.personal.role || "Teaching Assistant"}</span>
+                        {/* 4. Bento Dossier Card Pinned with Striped Washi Tape */}
+                        <div className="relative z-20 px-3 w-full my-auto">
+                          {/* Striped Pastel Washi Tape */}
+                          <div
+                            className="w-16 h-2.5 border border-dashed border-black/30 shadow-xs mx-auto -mb-1 z-20 relative rounded-xs pointer-events-none"
+                            style={{
+                              transform: "rotate(-1.5deg)",
+                              background: "repeating-linear-gradient(45deg, #d8b4fe, #d8b4fe 6px, #fbcfe8 6px, #fbcfe8 12px)",
+                            }}
+                          />
+
+                          {/* Card Body */}
+                          <div className="w-full rounded-2xl p-2.5 bg-[#fcfbff] border-2 border-black shadow-[3px_3px_0_#6366f1] flex flex-col gap-1.5 text-black">
+                            {/* Row 1: Header */}
+                            <div className="flex items-center justify-between w-full">
+                              <span className="px-1.5 py-0.2 rounded-full bg-[#86efac] text-[#064e3b] border border-black font-mono text-[6.5px] font-black uppercase">
+                                NOW
+                              </span>
+                              <div className="flex items-center gap-1 font-mono text-[7px] font-black uppercase tracking-wider text-stone-900">
+                                <span>⚗️</span>
+                                <span>RESEARCH</span>
+                              </div>
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full bg-emerald-50 border border-emerald-400 font-mono text-[6.5px] font-black uppercase text-emerald-700">
+                                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                                <span>ACTIVE</span>
+                              </span>
+                            </div>
+
+                            {/* Row 2: Pills */}
+                            <div className="flex items-center justify-center gap-1.5 flex-wrap w-full">
+                              <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-[#bae6fd] text-[#0369a1] border border-black font-mono text-[7.5px] font-black shadow-[1px_1px_0_#000]">
+                                <span className="text-[6px]">✦</span>
+                                <span>{portfolio.personal.role || "Data Research"}</span>
+                              </div>
+                              <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-[#fbcfe8] text-[#be185d] border border-black font-mono text-[7.5px] font-black shadow-[1px_1px_0_#000]">
+                                <span className="text-[6px]">✦</span>
+                                <span>@ {portfolio.personal.aboutWorkPlace || "IIT Madras"}</span>
+                              </div>
+                            </div>
+
+                            {/* Row 3: Circular Social Icons + Curved Arrow */}
+                            <div className="flex items-center justify-between w-full pt-1 border-t border-dashed border-stone-300">
+                              <div className="flex items-center gap-1.5">
+                                <span className="w-6 h-6 rounded-full bg-[#e9d5ff] border border-black shadow-[1px_1px_0_#000] text-black text-[7px] font-black flex items-center justify-center">
+                                  GH
                                 </span>
-                                <span
-                                  className="font-mono text-[6.5px] font-extrabold uppercase text-amber-700"
-                                  style={portfolio.personal.coverRoleTrackColor ? { color: portfolio.personal.coverRoleTrackColor } : undefined}
-                                >
-                                  {portfolio.personal.aboutWorkPlace || "IIT Madras"}
+                                <span className="w-6 h-6 rounded-full bg-[#bae6fd] border border-black shadow-[1px_1px_0_#000] text-[#0284c7] text-[7px] font-black flex items-center justify-center">
+                                  in
+                                </span>
+                                <span className="w-6 h-6 rounded-full bg-[#fbcfe8] border border-black shadow-[1px_1px_0_#000] text-[#e11d48] text-[7px] font-black flex items-center justify-center">
+                                  ✉
                                 </span>
                               </div>
-                            )}
-
-                            {/* Tagline */}
-                            <p className="text-[7.5px] font-bold italic text-stone-700 line-clamp-2 leading-tight">
-                              &ldquo;{portfolio.personal.mobileTagline || "Teaching Machines To Learn • Building Scientific Software"}&rdquo;
-                            </p>
-
-                            {/* Social Icons */}
-                            <div className="flex items-center justify-center gap-2 pt-0.5 border-t border-dashed border-stone-300">
-                              <span className="w-4 h-4 rounded-full bg-black text-white text-[7px] flex items-center justify-center">GH</span>
-                              <span className="w-4 h-4 rounded-full bg-[#0077b5] text-white text-[7px] flex items-center justify-center">IN</span>
-                              <span className="w-4 h-4 rounded-full bg-[#f59e0b] text-white text-[7px] flex items-center justify-center">@</span>
+                              <div className="flex items-center gap-1">
+                                <svg width="22" height="12" viewBox="0 0 34 20" fill="none" className="rotate-[-6deg] text-black">
+                                  <path d="M30 4 C 18 2, 7 7, 5 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                                  <path d="M2 11 L 5 17 L 10 14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <div className="font-mono font-black text-[6px] uppercase tracking-wider leading-tight text-stone-900 text-left">
+                                  <span>LET&apos;S</span>
+                                  <br />
+                                  <span>CONNECT</span>
+                                </div>
+                              </div>
                             </div>
+                          </div>
+                        </div>
+
+                        {/* 5. CTA Area: CLICK HERE badge + Explore Portfolio Button */}
+                        <div className="relative z-20 px-3 pb-2.5 w-full flex flex-col items-center">
+                          <div className="w-full flex justify-end pr-2 -mb-1.5 z-20 pointer-events-none">
+                            <span className="px-1.5 py-0.2 rounded-full bg-[#86efac] text-black border border-black font-mono text-[6.5px] font-black uppercase shadow-[1px_1px_0_#000] rotate-[-2.5deg] flex items-center gap-0.5">
+                              <span>CLICK HERE</span>
+                              <span>↓</span>
+                            </span>
+                          </div>
+                          <div className="w-full py-1.5 px-2.5 rounded-full bg-gradient-to-r from-[#4338ca] via-[#4f46e5] to-[#6366f1] border border-black shadow-[2.5px_2.5px_0_#f43f5e] flex items-center justify-between text-white">
+                            <span className="font-mono text-[7.5px] font-black uppercase tracking-wider flex items-center gap-1 pl-1">
+                              <span className="text-amber-300">✦</span>
+                              <span>EXPLORE PORTFOLIO</span>
+                            </span>
+                            <span className="w-4 h-4 rounded-full bg-white text-black border border-black flex items-center justify-center font-black text-[8px]">
+                              →
+                            </span>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <span className="mt-2 text-[10px] font-mono text-stone-500">
-                      📱 Real-time smartphone preview
+                      📱 Real-time smartphone preview (1:1 with live cover)
                     </span>
                   </div>
                 )}
