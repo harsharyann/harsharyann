@@ -1358,8 +1358,8 @@ export function DoodleCrewCover({
                 ? rawRole.replace(new RegExp(`\\s*@\\s*${workplace}`, 'i'), '').trim()
                 : rawRole;
 
-              const track = resolveRoleTrack(rawRole, workplace, portfolio?.personal?.aboutRoleType);
               const customTrackColor = portfolio?.personal?.coverRoleTrackColor;
+              const track = resolveRoleTrack(rawRole, workplace, portfolio?.personal?.aboutRoleType, customTrackColor);
 
               return (
                 <div

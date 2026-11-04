@@ -998,11 +998,14 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                   ? rawRole.replace(new RegExp(`\\s*@\\s*${workplace}`, 'i'), '').trim()
                   : rawRole;
 
-                const track = resolveRoleTrack(rawRole, workplace, personal.aboutRoleType);
+                const track = resolveRoleTrack(rawRole, workplace, personal.aboutRoleType, personal.coverRoleTrackColor);
                 const tagText = (personal.aboutRoleTag || "").trim() || track.defaultTag;
 
                 return (
-                  <div className={`group/roleCard relative w-full overflow-hidden rounded-xl bg-gradient-to-br ${track.cardBg} p-2.5 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff]`}>
+                  <div
+                    className={`group/roleCard relative w-full overflow-hidden rounded-xl bg-gradient-to-br ${track.cardBg} p-2.5 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] dark:shadow-[3px_3px_0_#fff] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] dark:hover:shadow-[4px_4px_0_#fff]`}
+                    style={personal.coverRoleTrackColor ? { borderColor: personal.coverRoleTrackColor } : undefined}
+                  >
                     {/* Technical blueprint grid texture */}
                     <div 
                       className="absolute inset-0 opacity-[0.05] dark:opacity-[0.10] pointer-events-none"
@@ -1019,10 +1022,19 @@ export function AboutSection({ id = "about" }: { id?: string }) {
                     <div className="relative z-10 flex items-center justify-between gap-2 pb-1.5 border-b border-black/10 dark:border-white/10">
                       <div className="flex items-center gap-1.5">
                         <span className="relative flex h-2 w-2">
-                          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.beaconRing} opacity-75`} />
-                          <span className={`relative inline-flex rounded-full h-2 w-2 ${track.beaconCore} ring-2 ring-emerald-500/20`} />
+                          <span
+                            className={`animate-ping absolute inline-flex h-full w-full rounded-full ${personal.coverRoleTrackColor ? "" : track.beaconRing} opacity-75`}
+                            style={personal.coverRoleTrackColor ? { backgroundColor: personal.coverRoleTrackColor } : undefined}
+                          />
+                          <span
+                            className={`relative inline-flex rounded-full h-2 w-2 ${personal.coverRoleTrackColor ? "" : track.beaconCore} ring-2 ring-emerald-500/20`}
+                            style={personal.coverRoleTrackColor ? { backgroundColor: personal.coverRoleTrackColor } : undefined}
+                          />
                         </span>
-                        <span className={`font-mono text-[9.5px] font-black uppercase tracking-wider ${track.labelColor} flex items-center gap-1`}>
+                        <span
+                          className={`font-mono text-[9.5px] font-black uppercase tracking-wider ${personal.coverRoleTrackColor ? "" : track.labelColor} flex items-center gap-1`}
+                          style={personal.coverRoleTrackColor ? { color: personal.coverRoleTrackColor } : undefined}
+                        >
                           {track.icon}
                           <span>{track.label}</span>
                         </span>

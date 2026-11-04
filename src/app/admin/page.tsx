@@ -85,7 +85,7 @@ import {
   formatGoogleDriveThumbnailUrl,
   formatGoogleDriveViewUrl,
 } from "@/lib/googleDrive";
-import { resolveRoleTrack } from "@/lib/roleTrack";
+import { resolveRoleTrack, ROLE_TRACK_THEMES } from "@/lib/roleTrack";
 import { extractVibrantColor } from "@/lib/colorExtractor";
 import { compressImageFile } from "@/lib/imageCompressor";
 import { supabase } from "@/lib/supabase";
@@ -2568,31 +2568,48 @@ export default function AdminPage() {
                   <span className="text-[9.5px] font-mono text-stone-500 font-bold mb-1.5 uppercase">
                     Live Role Pill Preview:
                   </span>
-                  <div
-                    className="inline-flex items-center gap-2 py-1.5 px-3.5 rounded-full bg-white border-2 border-black shadow-[2px_2px_0_#000] transition-transform hover:scale-105"
-                    style={portfolio.personal.coverRoleTrackColor ? { borderColor: portfolio.personal.coverRoleTrackColor } : undefined}
-                  >
-                    <span
-                      className="w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse"
-                      style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: portfolio.personal.coverRoleTrackColor } : undefined}
-                    />
-                    <span
-                      className="font-mono text-[10.5px] font-black uppercase text-purple-700"
-                      style={portfolio.personal.coverRoleTrackColor ? { color: portfolio.personal.coverRoleTrackColor } : undefined}
-                    >
-                      FELLOWSHIP • APPOINTED
-                    </span>
-                    <span className="text-stone-300">|</span>
-                    <span className="font-['Space_Grotesk'] text-xs font-black uppercase text-black">
-                      {portfolio.personal.role || "NPTEL SCHOLAR"}
-                    </span>
-                    <span
-                      className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-mono text-[10px] font-black uppercase"
-                      style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: `${portfolio.personal.coverRoleTrackColor}20`, color: portfolio.personal.coverRoleTrackColor } : undefined}
-                    >
-                      @{portfolio.personal.aboutWorkPlace || "IIT MADRAS"}
-                    </span>
-                  </div>
+                  {(() => {
+                    const pTrack = resolveRoleTrack(
+                      portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Role",
+                      portfolio.personal.aboutWorkPlace || "",
+                      portfolio.personal.aboutRoleType,
+                      portfolio.personal.coverRoleTrackColor
+                    );
+                    return (
+                      <div
+                        className="inline-flex items-center gap-2 py-1.5 px-3.5 rounded-full bg-white border-2 border-black shadow-[2px_2px_0_#000] transition-transform hover:scale-105"
+                        style={portfolio.personal.coverRoleTrackColor ? { borderColor: portfolio.personal.coverRoleTrackColor } : undefined}
+                      >
+                        <span
+                          className={`w-2.5 h-2.5 rounded-full ${pTrack.beaconCore} animate-pulse`}
+                          style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: portfolio.personal.coverRoleTrackColor } : undefined}
+                        />
+                        <span
+                          className={`font-mono text-[10.5px] font-black uppercase ${pTrack.labelColor} flex items-center gap-1`}
+                          style={portfolio.personal.coverRoleTrackColor ? { color: portfolio.personal.coverRoleTrackColor } : undefined}
+                        >
+                          {pTrack.icon}
+                          <span>{pTrack.label}</span>
+                        </span>
+                        <span className="text-stone-300">|</span>
+                        <span className="font-['Space_Grotesk'] text-xs font-black uppercase text-black">
+                          {portfolio.personal.aboutCurrentWork || portfolio.personal.role || "NPTEL SCHOLAR"}
+                        </span>
+                        {portfolio.personal.aboutWorkPlace && (
+                          <span
+                            className="px-2 py-0.5 rounded-md font-mono text-[10px] font-black uppercase"
+                            style={
+                              portfolio.personal.coverRoleTrackColor
+                                ? { backgroundColor: `${portfolio.personal.coverRoleTrackColor}20`, color: portfolio.personal.coverRoleTrackColor }
+                                : undefined
+                            }
+                          >
+                            @{portfolio.personal.aboutWorkPlace}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Hide / Unhide Controls */}
@@ -5348,19 +5365,25 @@ export default function AdminPage() {
                           </div>
 
                           {/* Track / Nature Selector Pills */}
-                          <div>
-                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1.5 flex items-center justify-between">
-                              <span>Role Nature / Track:</span>
+                          <div className="space-y-2">
+                            <label className="block font-mono text-[11px] font-bold text-stone-700 flex items-center justify-between">
+                              <span className="flex items-center gap-1.5">
+                                <span>Role Nature / Track:</span>
+                                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                  Auto Syncs Icons &amp; Color
+                                </span>
+                              </span>
                               <span className="text-stone-500 font-normal text-[10px]">Changes style &amp; icons</span>
                             </label>
+
                             <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
                               {[
-                                { id: "auto", label: "Auto", icon: "🤖" },
-                                { id: "research", label: "Research", icon: "🔬" },
-                                { id: "internship", label: "Intern", icon: "💼" },
-                                { id: "job", label: "Tech Job", icon: "⚡" },
-                                { id: "academic", label: "TA / Acad", icon: "🎓" },
-                                { id: "fellowship", label: "Fellow", icon: "🏆" },
+                                { id: "auto", label: "Auto", icon: "🤖", color: "#10b981", badge: "Smart Auto" },
+                                { id: "research", label: "Research", icon: "🔬", color: "#06b6d4", badge: "Cyan Lab" },
+                                { id: "internship", label: "Intern", icon: "💼", color: "#f59e0b", badge: "Amber Tech" },
+                                { id: "job", label: "Tech Job", icon: "⚡", color: "#10b981", badge: "Emerald Pro" },
+                                { id: "academic", label: "TA / Acad", icon: "🎓", color: "#10b981", badge: "Emerald Edu" },
+                                { id: "fellowship", label: "Fellow", icon: "🏆", color: "#8b5cf6", badge: "Purple Scholar" },
                               ].map((track) => {
                                 const isSelected = (portfolio.personal.aboutRoleType || "auto") === track.id;
                                 return (
@@ -5368,28 +5391,170 @@ export default function AdminPage() {
                                     key={track.id}
                                     type="button"
                                     onClick={() => {
+                                      const chosenColor = track.id === "auto" ? "" : track.color;
                                       const nextPort = {
                                         ...portfolio,
                                         personal: {
                                           ...portfolio.personal,
                                           aboutRoleType: track.id,
+                                          coverRoleTrackColor: chosenColor,
                                         },
                                       };
                                       setPortfolio(nextPort);
                                       portfolioRef.current = nextPort;
-                                      saveInstantly(nextPort, `Role track set to ${track.label}!`);
+                                      saveInstantly(nextPort, `Role track set to ${track.label} & synced color (${track.color})!`);
                                     }}
-                                    className={`px-2 py-1.5 rounded-lg border font-mono text-[10px] font-bold flex flex-col items-center gap-0.5 cursor-pointer transition-all ${
+                                    className={`px-2 py-2 rounded-xl border-2 font-mono text-[10px] font-bold flex flex-col items-center gap-1 cursor-pointer transition-all ${
                                       isSelected
-                                        ? "bg-black text-white border-black shadow-[2px_2px_0_rgba(0,0,0,0.2)] scale-[1.02]"
-                                        : "bg-white text-stone-700 border-stone-300 hover:bg-stone-100"
+                                        ? "bg-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.25)] scale-[1.03]"
+                                        : "bg-white text-stone-700 border-stone-200 hover:border-stone-400 hover:bg-stone-50"
                                     }`}
+                                    style={isSelected ? { borderColor: track.color } : undefined}
                                   >
-                                    <span className="text-xs">{track.icon}</span>
-                                    <span>{track.label}</span>
+                                    <span className="text-sm" style={{ filter: isSelected ? "drop-shadow(0 0 4px rgba(255,255,255,0.4))" : undefined }}>
+                                      {track.icon}
+                                    </span>
+                                    <span className="leading-tight text-center">{track.label}</span>
+                                    <span
+                                      className="w-2 h-2 rounded-full border border-black/20"
+                                      style={{ backgroundColor: track.color }}
+                                      title={`Track signature color: ${track.color}`}
+                                    />
                                   </button>
                                 );
                               })}
+                            </div>
+
+                            {/* Active Color Palette & Custom Swatches for Role & Icons */}
+                            <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 space-y-2 mt-2">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span
+                                    className="w-3 h-3 rounded-full border border-black/30 animate-pulse"
+                                    style={{
+                                      backgroundColor:
+                                        portfolio.personal.coverRoleTrackColor ||
+                                        ROLE_TRACK_THEMES[(portfolio.personal.aboutRoleType as keyof typeof ROLE_TRACK_THEMES) || "job"]?.hex ||
+                                        "#10b981",
+                                    }}
+                                  />
+                                  <span className="font-mono text-[10.5px] font-bold text-stone-800">
+                                    Icon &amp; Badge Color:
+                                  </span>
+                                  <span
+                                    className="font-mono text-[10px] font-black px-1.5 py-0.5 rounded border border-black/15 uppercase"
+                                    style={{
+                                      color:
+                                        portfolio.personal.coverRoleTrackColor ||
+                                        ROLE_TRACK_THEMES[(portfolio.personal.aboutRoleType as keyof typeof ROLE_TRACK_THEMES) || "job"]?.hex ||
+                                        "#10b981",
+                                      backgroundColor: `${
+                                        portfolio.personal.coverRoleTrackColor ||
+                                        ROLE_TRACK_THEMES[(portfolio.personal.aboutRoleType as keyof typeof ROLE_TRACK_THEMES) || "job"]?.hex ||
+                                        "#10b981"
+                                      }18`,
+                                    }}
+                                  >
+                                    {portfolio.personal.coverRoleTrackColor || "Auto / Synced"}
+                                  </span>
+                                </div>
+
+                                {portfolio.personal.coverRoleTrackColor && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const currentTrack = (portfolio.personal.aboutRoleType || "auto") as keyof typeof ROLE_TRACK_THEMES;
+                                      const defaultThemeHex = ROLE_TRACK_THEMES[currentTrack]?.hex || "";
+                                      const nextPort = {
+                                        ...portfolio,
+                                        personal: {
+                                          ...portfolio.personal,
+                                          coverRoleTrackColor: defaultThemeHex,
+                                        },
+                                      };
+                                      setPortfolio(nextPort);
+                                      portfolioRef.current = nextPort;
+                                      saveInstantly(nextPort, "Reset icon color to track default!");
+                                    }}
+                                    className="text-[9.5px] font-mono font-bold text-stone-500 hover:text-rose-600 underline cursor-pointer"
+                                  >
+                                    Reset to Default
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-mono text-[9.5px] text-stone-400 mr-1">Quick Presets:</span>
+                                {[
+                                  { label: "Emerald (TA / Acad / Job)", color: "#10b981" },
+                                  { label: "Cyan (Research)", color: "#06b6d4" },
+                                  { label: "Amber (Intern)", color: "#f59e0b" },
+                                  { label: "Purple (Fellow)", color: "#8b5cf6" },
+                                  { label: "Rose (Lead)", color: "#f43f5e" },
+                                  { label: "Indigo (Engineer)", color: "#6366f1" },
+                                  { label: "Sky (Core)", color: "#0284c7" },
+                                ].map((preset) => {
+                                  const activeHex = (portfolio.personal.coverRoleTrackColor || "").toLowerCase();
+                                  const isCurrent = activeHex === preset.color.toLowerCase();
+                                  return (
+                                    <button
+                                      key={preset.color}
+                                      type="button"
+                                      onClick={() => {
+                                        const nextPort = {
+                                          ...portfolio,
+                                          personal: {
+                                            ...portfolio.personal,
+                                            coverRoleTrackColor: preset.color,
+                                          },
+                                        };
+                                        setPortfolio(nextPort);
+                                        portfolioRef.current = nextPort;
+                                        saveInstantly(nextPort, `Icon & Role color set to ${preset.label}!`);
+                                      }}
+                                      className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer relative ${
+                                        isCurrent ? "scale-115 border-black ring-2 ring-black/40 shadow-xs" : "border-white shadow-xs hover:scale-110"
+                                      }`}
+                                      style={{ backgroundColor: preset.color }}
+                                      title={preset.label}
+                                    >
+                                      {isCurrent && (
+                                        <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] font-black">
+                                          ✓
+                                        </span>
+                                      )}
+                                    </button>
+                                  );
+                                })}
+
+                                {/* Custom Color Input */}
+                                <div className="flex items-center gap-1 ml-auto">
+                                  <span className="font-mono text-[9.5px] text-stone-500 font-bold">Custom:</span>
+                                  <input
+                                    type="color"
+                                    value={
+                                      portfolio.personal.coverRoleTrackColor ||
+                                      ROLE_TRACK_THEMES[(portfolio.personal.aboutRoleType as keyof typeof ROLE_TRACK_THEMES) || "job"]?.hex ||
+                                      "#10b981"
+                                    }
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      const nextPort = {
+                                        ...portfolio,
+                                        personal: {
+                                          ...portfolio.personal,
+                                          coverRoleTrackColor: val,
+                                        },
+                                      };
+                                      setPortfolio(nextPort);
+                                      portfolioRef.current = nextPort;
+                                    }}
+                                    onBlur={() => saveInstantly(portfolioRef.current, "Custom role icon color saved!")}
+                                    className="w-7 h-7 rounded-md border border-stone-300 p-0.5 cursor-pointer bg-white"
+                                    title="Choose any custom hex color for role & icons"
+                                  />
+                                </div>
+                              </div>
                             </div>
                           </div>
 
@@ -5645,18 +5810,30 @@ export default function AdminPage() {
                             const displayRole = workplace && rawRole.toLowerCase().includes(`@ ${workplace.toLowerCase()}`)
                               ? rawRole.replace(new RegExp(`\\s*@\\s*${workplace}`, 'i'), '').trim()
                               : rawRole;
-                            const track = resolveRoleTrack(rawRole, workplace, portfolio.personal.aboutRoleType);
+                            const track = resolveRoleTrack(rawRole, workplace, portfolio.personal.aboutRoleType, portfolio.personal.coverRoleTrackColor);
                             const tagText = (portfolio.personal.aboutRoleTag || "").trim() || track.defaultTag;
 
                             return (
-                              <div className={`w-full rounded-lg bg-gradient-to-br ${track.cardBg} p-2 border border-black/20 shadow-xs relative overflow-hidden`}>
+                              <div
+                                className={`w-full rounded-lg bg-gradient-to-br ${track.cardBg} p-2 border border-black/20 shadow-xs relative overflow-hidden`}
+                                style={portfolio.personal.coverRoleTrackColor ? { borderColor: `${portfolio.personal.coverRoleTrackColor}80` } : undefined}
+                              >
                                 <div className="flex items-center justify-between gap-1 pb-1 border-b border-black/10">
                                   <div className="flex items-center gap-1.5">
                                     <span className="relative flex h-1.5 w-1.5">
-                                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.beaconRing} opacity-75`} />
-                                      <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${track.beaconCore}`} />
+                                      <span
+                                        className={`animate-ping absolute inline-flex h-full w-full rounded-full ${track.beaconRing} opacity-75`}
+                                        style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: portfolio.personal.coverRoleTrackColor } : undefined}
+                                      />
+                                      <span
+                                        className={`relative inline-flex rounded-full h-1.5 w-1.5 ${track.beaconCore}`}
+                                        style={portfolio.personal.coverRoleTrackColor ? { backgroundColor: portfolio.personal.coverRoleTrackColor } : undefined}
+                                      />
                                     </span>
-                                    <span className={`font-mono text-[8px] font-black uppercase tracking-wider ${track.labelColor} flex items-center gap-0.5`}>
+                                    <span
+                                      className={`font-mono text-[8px] font-black uppercase tracking-wider ${track.labelColor} flex items-center gap-1`}
+                                      style={portfolio.personal.coverRoleTrackColor ? { color: portfolio.personal.coverRoleTrackColor } : undefined}
+                                    >
                                       {track.icon}
                                       <span>{track.label}</span>
                                     </span>
