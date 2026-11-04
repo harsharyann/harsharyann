@@ -1744,10 +1744,10 @@ export default function AdminPage() {
   // ─── LOADING STATE ───
   if (isAuthenticated === null) {
     return (
-      <div className="min-h-screen bg-[#f7f3ea] dark:bg-[#0c0d14] flex flex-col items-center justify-center p-4">
-        <div className="p-8 rounded-2xl bg-white dark:bg-[#151620] border-2 border-black dark:border-white shadow-[6px_6px_0_#000] dark:shadow-[6px_6px_0_#fff] flex flex-col items-center space-y-4">
+      <div className="min-h-screen bg-[#f7f3ea] flex flex-col items-center justify-center p-4">
+        <div className="p-8 rounded-2xl bg-white border-2 border-black shadow-[6px_6px_0_#000] flex flex-col items-center space-y-4">
           <RefreshCw className="w-8 h-8 text-amber-500 animate-spin" />
-          <p className="font-mono text-xs uppercase tracking-wider text-stone-600 dark:text-stone-300 font-bold">
+          <p className="font-mono text-xs uppercase tracking-wider text-stone-600 font-bold">
             Checking Socius Session...
           </p>
         </div>
@@ -1755,13 +1755,13 @@ export default function AdminPage() {
     );
   }
 
-  // ─── LOGIN SCREEN (SOCIUS LOCKED VIEW - ULTRA CLEAN & MINIMAL) ───
+  // ─── LOGIN SCREEN (SOCIUS LOCKED VIEW - 100% LIGHT THEME) ───
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#f7f3ea] dark:bg-[#0c0d14] flex flex-col items-center justify-center p-4 sm:p-6 text-stone-900 dark:text-stone-100 font-sans selection:bg-amber-400 selection:text-black relative overflow-hidden">
+      <div className="min-h-screen bg-[#f7f3ea] flex flex-col items-center justify-center p-4 sm:p-6 text-stone-900 font-sans selection:bg-amber-400 selection:text-black relative overflow-hidden">
         {/* Subtle Sketchbook Grid Background */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.08] dark:opacity-[0.05]"
+          className="absolute inset-0 pointer-events-none opacity-[0.08]"
           style={{
             backgroundImage: "radial-gradient(currentColor 1.2px, transparent 1.2px)",
             backgroundSize: "20px 20px",
@@ -1769,8 +1769,8 @@ export default function AdminPage() {
         />
 
         {/* Ambient Blurred Glows */}
-        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-amber-400/10 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-cyan-400/10 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* ── CLEAN DOSSIER CARD CONTAINER ── */}
         <div className="relative w-full max-w-md">
@@ -1940,9 +1940,9 @@ export default function AdminPage() {
 
   const currentTabObj = navTabs.find((t) => t.id === activeTab) || navTabs[0];
 
-  // ─── AUTHENTICATED DASHBOARD (SOCIUS WITH MODERN LEFT SIDEBAR LAYOUT) ───
+  // ─── AUTHENTICATED DASHBOARD (100% LIGHT THEME STUDIO) ───
   return (
-    <div className="min-h-screen bg-[#f7f3ea] dark:bg-[#0c0d14] text-stone-900 dark:text-stone-100 selection:bg-amber-400 selection:text-black font-sans flex flex-col md:flex-row relative">
+    <div className="min-h-screen bg-[#faf7f2] text-stone-900 selection:bg-amber-400 selection:text-black font-sans flex flex-col md:flex-row relative">
       {/* ── Instant Save Toast Notification (Fatak Se Feedback) ── */}
       {isSaving && !toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-amber-400 text-black font-mono text-xs font-black uppercase tracking-wider shadow-[0_10px_30px_rgba(0,0,0,0.3)] border-2 border-black animate-in fade-in slide-in-from-bottom-3 duration-200">
@@ -1966,7 +1966,7 @@ export default function AdminPage() {
       )}
 
       {/* ── Mobile Top Header (Visible only on < md) ── */}
-      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white/95 dark:bg-[#141520]/95 backdrop-blur-xl border-b border-stone-200 dark:border-stone-800 shadow-xs">
+      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur-xl border-b border-stone-200 shadow-xs">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
@@ -2004,29 +2004,29 @@ export default function AdminPage() {
         />
       )}
 
-      {/* ── LEFT SIDEBAR (Ultra-Premium Studio Dark Layout) ── */}
+      {/* ── LEFT SIDEBAR (100% Studio Light Theme Layout) ── */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#0c0d14] text-stone-200 border-r border-white/[0.08] flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#FAF8F5] text-stone-900 border-r-2 border-black flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 ${
           isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
         }`}
       >
         {/* Sidebar Header: Brand & Live Indicator */}
-        <div className="p-4 sm:p-5 border-b border-white/[0.08] bg-white/[0.02]">
+        <div className="p-4 sm:p-5 border-b-2 border-stone-200 bg-white/90">
           <div className="flex items-center justify-between">
             <Link
               href="/"
               className="flex items-center gap-3 group cursor-pointer"
               title="Return to Live Portfolio"
             >
-              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-300 text-black border border-amber-300/60 shadow-[0_0_15px_rgba(245,158,11,0.25)] group-hover:scale-105 transition-transform overflow-hidden p-1 shrink-0">
+              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-amber-400 text-black border-2 border-black shadow-[2px_2px_0_#000] group-hover:scale-105 transition-transform overflow-hidden p-1 shrink-0">
                 <img src="/icon.svg" alt="Socius Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
-                <span className="font-['Space_Grotesk'] text-base font-black tracking-tight text-white group-hover:text-amber-400 transition-colors leading-none">
+                <span className="font-['Space_Grotesk'] text-base font-black tracking-tight text-stone-900 group-hover:text-amber-600 transition-colors leading-none">
                   SOCIUS STUDIO
                 </span>
-                <span className="font-mono text-[9px] text-emerald-400 flex items-center gap-1.5 mt-1 font-bold tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+                <span className="font-mono text-[9px] text-emerald-700 flex items-center gap-1.5 mt-1 font-bold tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_6px_#10b981]" />
                   <span>SUPABASE SYNCED</span>
                 </span>
               </div>
@@ -2034,7 +2034,7 @@ export default function AdminPage() {
 
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="md:hidden p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-white/10 cursor-pointer"
+              className="md:hidden p-1.5 rounded-lg text-stone-500 hover:text-black hover:bg-stone-100 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -2042,10 +2042,10 @@ export default function AdminPage() {
         </div>
 
         {/* Sidebar Nav Items (Grouped Vertical Menu) */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10">
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4 scrollbar-thin scrollbar-thumb-stone-300">
           {sidebarNavGroups.map((group) => (
             <div key={group.group} className="space-y-1">
-              <div className="px-3 pb-1 text-[9px] font-mono font-black uppercase tracking-widest text-stone-500">
+              <div className="px-3 pb-1 text-[9px] font-mono font-black uppercase tracking-widest text-stone-400">
                 {group.group}
               </div>
               {group.tabs.map((tab) => {
@@ -2060,28 +2060,34 @@ export default function AdminPage() {
                       }}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-xl font-mono text-xs transition-all cursor-pointer text-left group ${
                         isActive
-                          ? "bg-gradient-to-r from-amber-500/15 via-amber-500/[0.04] to-transparent text-amber-300 font-black border-l-2 border-amber-400 rounded-l-none pl-2.5 shadow-inner"
-                          : "text-stone-400 hover:text-white hover:bg-white/[0.05] font-semibold"
+                          ? "bg-amber-400 text-black font-black border-2 border-black shadow-[2px_2px_0_#000]"
+                          : "text-stone-700 hover:text-black hover:bg-white hover:border-stone-300 border border-transparent font-bold"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
                         <Icon
                           className={`w-4 h-4 transition-colors ${
-                            isActive ? "text-amber-400" : "text-stone-500 group-hover:text-stone-300"
+                            isActive ? "text-black" : "text-stone-500 group-hover:text-black"
                           }`}
                         />
                         <span className="truncate">{tab.label}</span>
                       </div>
                       {tab.id === "cover" ? (
-                        <span className="text-[9.5px] font-mono font-bold text-amber-400 bg-white/10 px-1.5 py-0.5 rounded-md">
+                        <span
+                          className={`text-[9.5px] font-mono font-bold px-1.5 py-0.5 rounded-md ${
+                            isActive
+                              ? "bg-black text-amber-300 font-black"
+                              : "bg-stone-200 text-stone-700"
+                          }`}
+                        >
                           {coverSubView === "desktop" ? "PC" : "Phone"}
                         </span>
                       ) : tab.count !== undefined ? (
                         <span
                           className={`text-[9.5px] px-1.5 py-0.2 rounded-full font-bold ${
                             isActive
-                              ? "bg-amber-400 text-black font-black"
-                              : "bg-white/10 text-stone-400 group-hover:bg-white/15"
+                              ? "bg-black text-white font-black"
+                              : "bg-stone-200 text-stone-700 group-hover:bg-stone-300"
                           }`}
                         >
                           {tab.count}
@@ -2091,14 +2097,14 @@ export default function AdminPage() {
 
                     {/* Cover Sub-Views Dropdown (Desktop vs Mobile) */}
                     {tab.id === "cover" && isActive && (
-                      <div className="ml-5 pl-2.5 border-l border-white/15 space-y-1 pt-1 pb-1">
+                      <div className="ml-5 pl-2.5 border-l-2 border-stone-300 space-y-1 pt-1 pb-1">
                         <button
                           type="button"
                           onClick={() => setCoverSubView("desktop")}
                           className={`w-full flex items-center gap-2 px-2.5 py-1 rounded-lg font-mono text-[10.5px] transition-all cursor-pointer text-left ${
                             coverSubView === "desktop"
-                              ? "bg-amber-400 text-black font-black"
-                              : "text-stone-400 hover:text-white hover:bg-white/5 font-semibold"
+                              ? "bg-black text-amber-300 font-black border border-black shadow-xs"
+                              : "text-stone-600 hover:text-black hover:bg-white font-semibold"
                           }`}
                         >
                           <span>💻</span>
@@ -2109,8 +2115,8 @@ export default function AdminPage() {
                           onClick={() => setCoverSubView("mobile")}
                           className={`w-full flex items-center gap-2 px-2.5 py-1 rounded-lg font-mono text-[10.5px] transition-all cursor-pointer text-left ${
                             coverSubView === "mobile"
-                              ? "bg-amber-400 text-black font-black"
-                              : "text-stone-400 hover:text-white hover:bg-white/5 font-semibold"
+                              ? "bg-black text-amber-300 font-black border border-black shadow-xs"
+                              : "text-stone-600 hover:text-black hover:bg-white font-semibold"
                           }`}
                         >
                           <span>📱</span>
@@ -2125,35 +2131,65 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {/* Sidebar Footer: Live Site Link & User Profile */}
-        <div className="p-3.5 border-t border-white/[0.08] bg-white/[0.02] space-y-2.5">
+        {/* Sidebar Footer: Live Site Link, Backup Tools, & User Profile */}
+        <div className="p-3.5 border-t-2 border-stone-200 bg-white/90 space-y-2.5">
           <Link
             href="/"
             target="_blank"
-            className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 font-mono text-xs font-bold text-stone-300 hover:text-white transition-all group cursor-pointer"
+            className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-stone-50 hover:bg-stone-100 border-2 border-black font-mono text-xs font-bold text-black shadow-[2px_2px_0_#000] active:translate-y-0.5 transition-all group cursor-pointer"
           >
             <span className="flex items-center gap-2">
-              <ExternalLink className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-stone-600 group-hover:text-amber-600" />
               <span>View Live Website</span>
             </span>
             <span className="text-[10px] text-stone-500 font-mono">↗</span>
           </Link>
 
-          <div className="flex items-center justify-between pt-0.5">
+          {/* Backup & Restore Tools in Footer */}
+          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-stone-200">
+            <button
+              type="button"
+              onClick={handleExportStore}
+              title="Download portfolio-store.json backup"
+              className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-stone-300 hover:border-black bg-white hover:bg-stone-100 font-mono text-[11px] font-bold text-stone-700 hover:text-black transition-all cursor-pointer"
+            >
+              <Download className="w-3 h-3" />
+              <span>Export</span>
+            </button>
+
+            <label
+              title="Import portfolio-store.json backup"
+              className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-stone-300 hover:border-black bg-white hover:bg-stone-100 font-mono text-[11px] font-bold text-stone-700 hover:text-black transition-all cursor-pointer"
+            >
+              <Upload className="w-3 h-3" />
+              <span>Import</span>
+              <input
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleImportStore(f);
+                }}
+              />
+            </label>
+          </div>
+
+          <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-amber-300 text-black flex items-center justify-center font-mono text-xs font-black shadow-xs">
+              <div className="w-8 h-8 rounded-full bg-amber-400 text-black border border-black flex items-center justify-center font-mono text-xs font-black shadow-xs">
                 HA
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-bold font-mono text-white leading-tight">Harsh Aryan</span>
-                <span className="text-[9.5px] font-mono text-emerald-400 font-semibold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Super Admin
+                <span className="text-xs font-bold font-mono text-stone-900 leading-tight">Harsh Aryan</span>
+                <span className="text-[9.5px] font-mono text-emerald-700 font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Super Admin
                 </span>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="p-2 rounded-xl text-stone-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-stone-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
@@ -2163,18 +2199,18 @@ export default function AdminPage() {
       </aside>
 
       {/* ── MAIN CONTENT WORKSPACE (Right Side on md: screens) ── */}
-      <div className="flex-1 md:ml-72 min-h-screen flex flex-col relative bg-[#faf7f2]/95 dark:bg-[#0e0f17]/95">
+      <div className="flex-1 md:ml-72 min-h-screen flex flex-col relative bg-[#faf7f2]/95">
         {/* Subtle Sketchbook Grid Background */}
         <div
-          className="fixed inset-0 md:left-72 pointer-events-none opacity-[0.06] dark:opacity-[0.04] z-0"
+          className="fixed inset-0 md:left-72 pointer-events-none opacity-[0.06] z-0"
           style={{
             backgroundImage: "radial-gradient(currentColor 1.2px, transparent 1.2px)",
             backgroundSize: "22px 22px",
           }}
         />
 
-        {/* Sticky Top Bar for Section Header & Save All */}
-        <header className="sticky top-0 z-30 bg-white/90 dark:bg-[#141520]/90 backdrop-blur-xl border-b-2 border-stone-200/90 dark:border-stone-800 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+        {/* Sticky Top Bar for Section Header & Save All (Clean: Only Save Button on Right) */}
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xl border-b-2 border-stone-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
           {/* Breadcrumb Left */}
           <div className="flex items-center gap-3">
             <button
@@ -2196,45 +2232,9 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* Actions Right */}
-          <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              target="_blank"
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white hover:bg-stone-50 font-mono text-xs font-bold text-stone-700 hover:text-black transition-all cursor-pointer"
-            >
-              <span>Preview</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
-
-            <button
-              type="button"
-              onClick={handleExportStore}
-              title="Download portfolio-store.json backup"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white hover:bg-stone-50 font-mono text-xs font-bold text-stone-700 hover:text-black transition-all cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Export</span>
-            </button>
-
-            <label
-              title="Import portfolio-store.json backup"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white hover:bg-stone-50 font-mono text-xs font-bold text-stone-700 hover:text-black transition-all cursor-pointer"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              <span>Import</span>
-              <input
-                type="file"
-                accept=".json,application/json"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) handleImportStore(f);
-                }}
-              />
-            </label>
-
-            <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono text-[11px] font-bold">
+          {/* Actions Right: ONLY Save Button (+ subtle sync indicator) */}
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono text-[11px] font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Supabase Cloud Active</span>
             </span>
@@ -2917,18 +2917,6 @@ export default function AdminPage() {
                   Har section ki primary heading, description subline aur narrative taglines yahan se live edit karein.
                 </p>
               </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => saveInstantly(portfolioRef.current, "All section sublines & headings saved!")}
-                  className="px-4 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs active:translate-y-0.5"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>Save All Sublines</span>
-                </button>
-              </div>
             </div>
 
             {/* Sub-nav quick filter bar */}
@@ -3084,19 +3072,23 @@ export default function AdminPage() {
                   {/* Right: Live Preview Card (5 cols) */}
                   <div className="lg:col-span-5 flex flex-col justify-center">
                     <div className="font-mono text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                      <Eye className="w-3 h-3 text-amber-500" />
+                      <Eye className="w-3 h-3 text-amber-600" />
                       <span>Live Hero Preview</span>
                     </div>
-                    <div className="p-4 rounded-2xl bg-stone-900 text-white border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
-                      <h4 className="font-['Space_Grotesk'] text-lg font-black tracking-tight text-white uppercase">
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] text-stone-900 border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
+                      <h4 className="font-['Space_Grotesk'] text-lg font-black tracking-tight text-black uppercase">
                         {portfolio.personal.desktopWordmark || portfolio.personal.name || "HARSH ARYAN"}
                       </h4>
-                      <p className="font-mono text-xs text-stone-300 leading-relaxed">
+                      <p className="font-mono text-xs text-stone-700 leading-relaxed">
                         {portfolio.personal.desktopHeadline || portfolio.personal.headline}
                       </p>
-                      <div className="pt-2 border-t border-stone-800 text-[11px] font-bold italic text-amber-300" style={{ fontFamily: "'Patrick Hand', cursive" }}>
-                        &ldquo;{portfolio.personal.mobileTagline}&rdquo;
-                      </div>
+                      {portfolio.personal.mobileTagline ? (
+                        <div className="pt-2 border-t border-stone-200">
+                          <span className="text-[11px] font-bold italic text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 inline-block" style={{ fontFamily: "'Patrick Hand', cursive" }}>
+                            &ldquo;{portfolio.personal.mobileTagline}&rdquo;
+                          </span>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -3194,14 +3186,14 @@ export default function AdminPage() {
                       <Eye className="w-3 h-3 text-emerald-500" />
                       <span>Live Website Header Preview</span>
                     </div>
-                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
-                      <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
+                      <h3 className="text-xl font-black uppercase text-black font-['Space_Grotesk'] leading-tight">
                         {portfolio.personal.aboutHeading || "Behind the Terminal"}
                       </h3>
                       <svg className="w-36 h-2 text-amber-500" viewBox="0 0 240 10" fill="none">
                         <path d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
                       </svg>
-                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                      <p className="text-xs font-mono text-stone-700 leading-relaxed">
                         {portfolio.personal.aboutSubtitle || "Curious mind blending machine learning fundamentals with expressive software architecture..."}
                       </p>
                     </div>
@@ -3275,14 +3267,14 @@ export default function AdminPage() {
                       <Eye className="w-3 h-3 text-purple-500" />
                       <span>Live Projects Header Preview</span>
                     </div>
-                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
-                      <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
+                      <h3 className="text-xl font-black uppercase text-black font-['Space_Grotesk'] leading-tight">
                         {portfolio.personal.projectsHeading || "Projects and Builds"}
                       </h3>
                       <svg className="w-36 h-2 text-purple-500" viewBox="0 0 240 10" fill="none">
                         <path d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
                       </svg>
-                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                      <p className="text-xs font-mono text-stone-700 leading-relaxed">
                         {portfolio.personal.projectsSubtitle || "End-to-end exploratory data analysis, foundational machine learning algorithms..."}
                       </p>
                     </div>
@@ -3398,21 +3390,21 @@ export default function AdminPage() {
                       <Eye className="w-3 h-3 text-amber-500" />
                       <span>Live Credentials Header Preview</span>
                     </div>
-                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-3">
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] border-2 border-black shadow-[3px_3px_0_#000] space-y-3">
                       <div>
-                        <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
+                        <h3 className="text-xl font-black uppercase text-black font-['Space_Grotesk'] leading-tight">
                           {portfolio.personal.certificatesHeading || "Certifications and Laurels"}
                         </h3>
                         <svg className="w-36 h-2 text-amber-500 my-1" viewBox="0 0 240 10" fill="none">
                           <path d="M 2 6 Q 40 1 80 6 Q 120 11 160 5 Q 200 1 238 6" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
                         </svg>
-                        <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                        <p className="text-xs font-mono text-stone-700 leading-relaxed">
                           {portfolio.personal.certificatesSubtitle || "Verified academic achievements, hackathon laurels, and institutional recognitions..."}
                         </p>
                       </div>
 
                       {/* Laurels Subsection Preview */}
-                      <div className="pt-2.5 border-t border-dashed border-stone-300 dark:border-stone-700 space-y-1">
+                      <div className="pt-2.5 border-t border-dashed border-stone-300 space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="sketch-stamp font-black text-[10px]">
                             {portfolio.personal.laurelsTitle || "LAURELS"}
@@ -3421,7 +3413,7 @@ export default function AdminPage() {
                             [HONORS &amp; ACCOLADES]
                           </span>
                         </div>
-                        <p className="text-[11px] font-mono text-stone-600 dark:text-stone-400">
+                        <p className="text-[11px] font-mono text-stone-600">
                           {portfolio.personal.laurelsSubtitle || "Academic accolades, hackathon triumphs, research publications..."}
                         </p>
                       </div>
@@ -3496,7 +3488,7 @@ export default function AdminPage() {
                       <Eye className="w-3 h-3 text-cyan-500" />
                       <span>Live Experience Header Preview</span>
                     </div>
-                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="sketch-stamp bg-amber-400 text-black font-black text-xs">
                           {portfolio.personal.experienceTitle || "WORK & LEADERSHIP"}
@@ -3505,7 +3497,7 @@ export default function AdminPage() {
                           [CHRONOLOGICAL TIMELINE]
                         </span>
                       </div>
-                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                      <p className="text-xs font-mono text-stone-700 leading-relaxed">
                         {portfolio.personal.experienceSubtitle || "A chronological flight track of engineering leadership, academic mentorship, and industry contributions."}
                       </p>
                     </div>
@@ -3601,11 +3593,11 @@ export default function AdminPage() {
                       <Eye className="w-3 h-3 text-rose-500" />
                       <span>Live Contact Header Preview</span>
                     </div>
-                    <div className="p-4 rounded-2xl bg-[#fffdfa] dark:bg-stone-900 border-2 border-black dark:border-white shadow-[3px_3px_0_#000] space-y-2">
-                      <h3 className="text-xl font-black uppercase text-black dark:text-white font-['Space_Grotesk'] leading-tight">
+                    <div className="p-4 rounded-2xl bg-[#fffdfa] border-2 border-black shadow-[3px_3px_0_#000] space-y-2">
+                      <h3 className="text-xl font-black uppercase text-black font-['Space_Grotesk'] leading-tight">
                         {portfolio.personal.contactTitle || "Send a Dispatch"}
                       </h3>
-                      <p className="text-xs font-mono text-stone-700 dark:text-stone-300 leading-relaxed">
+                      <p className="text-xs font-mono text-stone-700 leading-relaxed">
                         {portfolio.personal.contactSubtitle}
                       </p>
                       <div className="inline-block px-2 py-0.5 rounded bg-yellow-200 text-stone-900 font-mono text-[10px] font-bold">
