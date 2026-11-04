@@ -221,9 +221,30 @@ export interface PortfolioData {
     aboutRoleIcon?: string;
     aboutRoleCardStyle?: "paper" | "bordered" | "tinted" | string;
     mobileNowBadgeText?: string;
+    mobileNowBadgeBg?: string;
+    mobileNowBadgeTextColor?: string;
+    mobileWashiTapeColor?: string;
+    mobileWashiTapeStyle?: "striped" | "solid" | "dots" | "none" | string;
     mobileCenterTrackText?: string;
+    mobileCenterTrackIcon?: string;
+    mobileCenterTrackTextColor?: string;
+    mobileRolePillText?: string;
+    mobileRolePillIcon?: string;
+    mobileRolePillBg?: string;
+    mobileRolePillBorder?: string;
+    mobileRolePillTextColor?: string;
+    mobileWorkplacePillText?: string;
+    mobileWorkplacePillIcon?: string;
+    mobileWorkplacePillBg?: string;
+    mobileWorkplacePillBorder?: string;
+    mobileWorkplacePillTextColor?: string;
+    mobileCardBg?: string;
+    mobileCardBorder?: string;
+    mobileCardShadowColor?: string;
+    mobileSocialButtonStyle?: "stickers" | "white" | "dark" | string;
     mobileActiveStatusText?: string;
     mobileConnectNote?: string;
+    mobileConnectNoteColor?: string;
     mobileClickHereBadgeText?: string;
     mobileCtaButtonText?: string;
     aboutHighlightedWords?: string;
@@ -348,6 +369,30 @@ export const portfolioData: PortfolioData = {
     mobileBadge1: "TA IIT Madras",
     mobileBadge2: "AI & Data Science",
     mobileTagline: "Teaching Machines To Learn • Building Scientific Software",
+    mobileWashiTapeColor: "#facc15",
+    mobileWashiTapeStyle: "striped",
+    mobileNowBadgeText: "NOW",
+    mobileNowBadgeBg: "#f43f5e",
+    mobileNowBadgeTextColor: "#ffffff",
+    mobileCenterTrackText: "INTERNSHIP · ACTIVE",
+    mobileCenterTrackIcon: "🛸",
+    mobileCenterTrackTextColor: "#000000",
+    mobileRolePillText: "Data Science Intern",
+    mobileRolePillIcon: "✦",
+    mobileRolePillBg: "#fef08a",
+    mobileRolePillBorder: "#8b5cf6",
+    mobileRolePillTextColor: "#6d28d9",
+    mobileWorkplacePillText: "IIT Madras",
+    mobileWorkplacePillIcon: "✦",
+    mobileWorkplacePillBg: "#bae6fd",
+    mobileWorkplacePillBorder: "#8b5cf6",
+    mobileWorkplacePillTextColor: "#0369a1",
+    mobileSocialButtonStyle: "stickers",
+    mobileConnectNote: "LET'S CONNECT",
+    mobileConnectNoteColor: "#000000",
+    mobileCardBg: "#ffffff",
+    mobileCardBorder: "#000000",
+    mobileCardShadowColor: "#000000",
     showDesktopCurrentRole: true,
     showMobileCurrentRole: true,
     coverPersonaColor: "",

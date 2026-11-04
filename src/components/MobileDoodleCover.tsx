@@ -436,16 +436,29 @@ export function MobileDoodleCover() {
           </motion.h1>
         </div>
 
-        {/* ── BENTO ROLE CARD PINNED WITH PORTFOLIO AMBER WASHI TAPE ── */}
+        {/* ── BENTO ROLE CARD PINNED WITH JAPANESE WASHI TAPE ── */}
         <div className="relative w-full max-w-[340px] my-auto">
-          {/* Signature Amber Washi Tape */}
-          <div
-            className="w-24 h-4 bg-amber-300 dark:bg-amber-400/90 border border-dashed border-black/40 shadow-xs mx-auto -mb-2 z-20 relative rounded-xs pointer-events-none"
-            style={{ transform: "rotate(-1.5deg)" }}
-            aria-hidden="true"
-          />
+          {/* Signature Washi Tape (Realistic Semi-Transparent Striped / Solid Texture) */}
+          {portfolio?.personal?.mobileWashiTapeStyle !== "none" && (
+            <div
+              className="w-24 h-4.5 border border-dashed border-black/35 shadow-xs mx-auto -mb-2 z-20 relative rounded-[2px] pointer-events-none transition-all backdrop-blur-[1px]"
+              style={{
+                transform: "rotate(-1.5deg)",
+                backgroundColor: portfolio?.personal?.mobileWashiTapeColor || "#facc15",
+                backgroundImage:
+                  (portfolio?.personal?.mobileWashiTapeStyle || "striped") === "striped"
+                    ? "repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.38) 0, rgba(255, 255, 255, 0.38) 6px, transparent 6px, transparent 12px)"
+                    : (portfolio?.personal?.mobileWashiTapeStyle === "dots")
+                    ? "radial-gradient(rgba(0, 0, 0, 0.22) 1.5px, transparent 1.5px)"
+                    : undefined,
+                backgroundSize:
+                  portfolio?.personal?.mobileWashiTapeStyle === "dots" ? "6px 6px" : undefined,
+              }}
+              aria-hidden="true"
+            />
+          )}
 
-          {/* Bento Card Body (Neo-Brutalist White & Solid Black/White 3D Drop Shadow) */}
+          {/* Bento Card Body (Neo-Brutalist White & Solid 3D Drop Shadow) */}
           <div
             onClick={(e) => {
               e.stopPropagation();
@@ -454,49 +467,98 @@ export function MobileDoodleCover() {
                 closeCover();
               }, 220);
             }}
-            className="relative w-full rounded-[24px] p-3.5 sm:p-4 bg-white dark:bg-[#11131a] border-[2.5px] border-black dark:border-stone-600 shadow-[5px_5px_0_#000] dark:shadow-[5px_5px_0_#fff] text-stone-900 dark:text-stone-100 flex flex-col gap-3 cursor-pointer select-none transition-transform hover:scale-[1.01]"
+            className="relative w-full rounded-[24px] p-3.5 sm:p-4 border-[2.5px] flex flex-col gap-3 cursor-pointer select-none transition-all hover:scale-[1.01] active:scale-[0.99]"
+            style={{
+              backgroundColor: portfolio?.personal?.mobileCardBg || (isDark ? "#11131a" : "#ffffff"),
+              borderColor: portfolio?.personal?.mobileCardBorder || (isDark ? "#52525b" : "#000000"),
+              boxShadow: `5px 5px 0 ${
+                portfolio?.personal?.mobileCardShadowColor || (isDark ? "#ffffff" : "#000000")
+              }`,
+              color: isDark ? "#f4f4f5" : "#18181b",
+            }}
           >
             {/* Row 1: Header / Mandate row */}
             <div className="flex items-center justify-between w-full">
               {/* NOW Pill Badge */}
               <span
-                className="px-2.5 py-0.5 rounded-full text-black border-1.5 border-black font-mono text-[9px] font-black uppercase shadow-[1px_1px_0_#000]"
-                style={{ backgroundColor: clickHereBadgeBg || "#f59e0b" }}
+                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border-[1.5px] border-black font-mono text-[9px] font-black uppercase tracking-wider shadow-[1.5px_1.5px_0_#000]"
+                style={{
+                  backgroundColor:
+                    portfolio?.personal?.mobileNowBadgeBg || clickHereBadgeBg || "#f43f5e",
+                  color: portfolio?.personal?.mobileNowBadgeTextColor || "#ffffff",
+                }}
               >
-                {portfolio?.personal?.mobileNowBadgeText || "NOW"}
+                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse opacity-90" />
+                <span>{portfolio?.personal?.mobileNowBadgeText || "NOW"}</span>
               </span>
 
               {/* Center Track / Mandate */}
-              <div className="flex items-center gap-1.5 font-mono text-[10.5px] font-black uppercase tracking-wider text-stone-900 dark:text-white">
-                <span className="text-sm">{portfolio?.personal?.aboutRoleIcon || "⚗️"}</span>
-                <span>{trackLabel}</span>
+              <div
+                className="flex items-center gap-1.5 font-mono text-[10.5px] font-black uppercase tracking-wider text-stone-900 dark:text-white"
+                style={
+                  portfolio?.personal?.mobileCenterTrackTextColor
+                    ? { color: portfolio.personal.mobileCenterTrackTextColor }
+                    : undefined
+                }
+              >
+                <span className="text-sm drop-shadow-xs">
+                  {portfolio?.personal?.mobileCenterTrackIcon || portfolio?.personal?.aboutRoleIcon || "🛸"}
+                </span>
+                <span>
+                  {portfolio?.personal?.mobileCenterTrackText || trackLabel || "INTERNSHIP · ACTIVE"}
+                </span>
               </div>
             </div>
 
             {/* Row 2: Role & Workplace Capsule Pills */}
             <div className="flex items-center justify-center gap-2 flex-wrap w-full">
-              {/* Pill 1: Amber - Role */}
+              {/* Pill 1: Role Capsule */}
               <div
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border-2 border-black dark:border-amber-400/60 font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]"
-                style={customRoleColor ? { borderColor: customRoleColor, color: customRoleColor } : undefined}
+                className="flex items-center gap-1 px-3 py-1 rounded-full font-mono text-[10.5px] font-black border-2 transition-transform hover:-translate-y-0.5 active:translate-y-0.5 select-none"
+                style={{
+                  backgroundColor: portfolio?.personal?.mobileRolePillBg || "#fef08a",
+                  borderColor: portfolio?.personal?.mobileRolePillBorder || "#8b5cf6",
+                  color: portfolio?.personal?.mobileRolePillTextColor || "#6d28d9",
+                  boxShadow: `2px 2px 0 ${portfolio?.personal?.mobileRolePillBorder || "#8b5cf6"}`,
+                }}
               >
-                <span className="text-[9px] text-amber-600 dark:text-amber-400">✦</span>
-                <span>{displayRole}</span>
+                {(portfolio?.personal?.mobileRolePillIcon ?? "✦") && (
+                  <span className="text-[9.5px]">
+                    {portfolio?.personal?.mobileRolePillIcon ?? "✦"}
+                  </span>
+                )}
+                <span>
+                  {portfolio?.personal?.mobileRolePillText || displayRole || "Data Science Intern"}
+                </span>
               </div>
 
-              {/* Pill 2: Sky/Cyan - Workplace */}
+              {/* Pill 2: Workplace Capsule */}
               <div
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-sky-100 dark:bg-sky-950/80 text-sky-900 dark:text-sky-300 border-2 border-black dark:border-sky-400/60 font-mono text-[10.5px] font-black shadow-[2px_2px_0_#000]"
-                style={customRoleColor ? { borderColor: customRoleColor } : undefined}
+                className="flex items-center gap-1 px-3 py-1 rounded-full font-mono text-[10.5px] font-black border-2 transition-transform hover:-translate-y-0.5 active:translate-y-0.5 select-none"
+                style={{
+                  backgroundColor: portfolio?.personal?.mobileWorkplacePillBg || "#bae6fd",
+                  borderColor: portfolio?.personal?.mobileWorkplacePillBorder || "#8b5cf6",
+                  color: portfolio?.personal?.mobileWorkplacePillTextColor || "#0369a1",
+                  boxShadow: `2px 2px 0 ${
+                    portfolio?.personal?.mobileWorkplacePillBorder || "#8b5cf6"
+                  }`,
+                }}
               >
-                <span className="text-[9px] text-sky-600 dark:text-sky-400">✦</span>
-                <span>@ {workplace}</span>
+                {(portfolio?.personal?.mobileWorkplacePillIcon ?? "✦") && (
+                  <span className="text-[9.5px]">
+                    {portfolio?.personal?.mobileWorkplacePillIcon ?? "✦"}
+                  </span>
+                )}
+                <span>
+                  {portfolio?.personal?.mobileWorkplacePillText ||
+                    (workplace ? `@ ${workplace}` : "@ IIT Madras")}
+                </span>
               </div>
             </div>
 
             {/* Row 3: Circular Social Connect Buttons + Doodle Curved Arrow */}
             <div className="flex items-center justify-between w-full pt-1.5 border-t border-dashed border-stone-300 dark:border-stone-700">
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 {/* GitHub */}
                 <a
                   href={portfolio?.socialLinks?.github || "https://github.com/harsharyann"}
@@ -505,7 +567,11 @@ export function MobileDoodleCover() {
                   onClick={(e) => e.stopPropagation()}
                   aria-label="GitHub Profile"
                   title="GitHub"
-                  className="w-9 h-9 rounded-full bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center justify-center text-black dark:text-white hover:bg-amber-300 hover:text-black active:scale-95 transition-all cursor-pointer"
+                  className={`w-9 h-9 rounded-full border-2 border-black flex items-center justify-center transition-all cursor-pointer hover:-translate-y-0.5 hover:scale-105 active:scale-95 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] ${
+                    portfolio?.personal?.mobileSocialButtonStyle === "dark"
+                      ? "bg-stone-900 border-white text-white"
+                      : "bg-[#f8fafc] dark:bg-stone-800 text-black dark:text-white hover:bg-amber-300 hover:text-black"
+                  }`}
                 >
                   <GithubIcon className="w-4 h-4" />
                 </a>
@@ -518,7 +584,13 @@ export function MobileDoodleCover() {
                   onClick={(e) => e.stopPropagation()}
                   aria-label="LinkedIn Profile"
                   title="LinkedIn"
-                  className="w-9 h-9 rounded-full bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center justify-center text-[#0284c7] dark:text-sky-400 hover:bg-amber-300 hover:text-black active:scale-95 transition-all cursor-pointer"
+                  className={`w-9 h-9 rounded-full border-2 border-black flex items-center justify-center transition-all cursor-pointer hover:-translate-y-0.5 hover:scale-105 active:scale-95 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] ${
+                    portfolio?.personal?.mobileSocialButtonStyle === "dark"
+                      ? "bg-stone-900 border-white text-sky-400"
+                      : portfolio?.personal?.mobileSocialButtonStyle === "white"
+                      ? "bg-white dark:bg-stone-800 text-[#0284c7] hover:bg-amber-300 hover:text-black"
+                      : "bg-[#e0f2fe] dark:bg-sky-950/70 text-[#0284c7] dark:text-sky-300 hover:bg-sky-200"
+                  }`}
                 >
                   <LinkedinIcon className="w-4 h-4" />
                 </a>
@@ -529,7 +601,13 @@ export function MobileDoodleCover() {
                   onClick={(e) => e.stopPropagation()}
                   aria-label="Send Email"
                   title="Email"
-                  className="w-9 h-9 rounded-full bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-600 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] flex items-center justify-center text-rose-500 dark:text-rose-400 hover:bg-amber-300 hover:text-black active:scale-95 transition-all cursor-pointer"
+                  className={`w-9 h-9 rounded-full border-2 border-black flex items-center justify-center transition-all cursor-pointer hover:-translate-y-0.5 hover:scale-105 active:scale-95 shadow-[2px_2px_0_#000] dark:shadow-[2px_2px_0_#fff] ${
+                    portfolio?.personal?.mobileSocialButtonStyle === "dark"
+                      ? "bg-stone-900 border-white text-rose-400"
+                      : portfolio?.personal?.mobileSocialButtonStyle === "white"
+                      ? "bg-white dark:bg-stone-800 text-rose-500 hover:bg-amber-300 hover:text-black"
+                      : "bg-[#ffe4e6] dark:bg-rose-950/70 text-[#e11d48] dark:text-rose-300 hover:bg-rose-200"
+                  }`}
                 >
                   <Mail className="w-4 h-4" />
                 </a>
@@ -537,11 +615,35 @@ export function MobileDoodleCover() {
 
               {/* Doodle Curved Arrow & LET'S CONNECT text */}
               <div className="flex items-center gap-1.5 pr-1">
-                <svg width="34" height="20" viewBox="0 0 34 20" fill="none" className="rotate-[-6deg] text-black dark:text-white">
-                  <path d="M30 4 C 18 2, 7 7, 5 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  <path d="M2 11 L 5 17 L 10 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  width="34"
+                  height="20"
+                  viewBox="0 0 34 20"
+                  fill="none"
+                  className="rotate-[-6deg] text-black dark:text-white shrink-0"
+                >
+                  <path
+                    d="M30 4 C 18 2, 7 7, 5 16"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M2 11 L 5 17 L 10 14"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
-                <div className="font-mono font-black text-[8.5px] uppercase tracking-wider leading-tight text-stone-900 dark:text-stone-100 text-left">
+                <div
+                  className="font-mono font-black text-[8.5px] uppercase tracking-wider leading-tight text-stone-900 dark:text-stone-100 text-left"
+                  style={
+                    portfolio?.personal?.mobileConnectNoteColor
+                      ? { color: portfolio.personal.mobileConnectNoteColor }
+                      : undefined
+                  }
+                >
                   <span>{portfolio?.personal?.mobileConnectNote || "LET'S CONNECT"}</span>
                 </div>
               </div>

@@ -5330,73 +5330,674 @@ export default function AdminPage() {
                         </div>
                       </div>
 
-                      {/* 4. Mobile Bento Dossier Card Header & Mandate */}
-                      <div className="p-4 rounded-2xl bg-amber-50/70 border-2 border-amber-300/80 space-y-4">
-                        <div className="flex items-center justify-between pb-1.5 border-b border-amber-200">
+                      {/* 4. Bento Dossier Card Studio */}
+                      <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/70 border-2 border-amber-300/80 space-y-5">
+                        <div className="flex items-center justify-between pb-2 border-b border-amber-200">
                           <div className="flex items-center gap-2">
                             <Sparkles className="w-4 h-4 text-amber-600" />
                             <h4 className="font-mono text-xs font-black uppercase text-stone-900">
-                              Mobile Bento Dossier Card Header
+                              🎴 Mobile Bento Dossier Card Studio
                             </h4>
                           </div>
-                          <span className="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
-                            ✓ ACTIVE pill removed
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            100% Themeable &amp; Interactive
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          <div>
-                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                              Top Left Pill Badge:
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="NOW"
-                              value={portfolio.personal.mobileNowBadgeText ?? ""}
-                              onChange={(e) =>
+                        {/* 1-Click Aesthetic Presets */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-mono text-[11px] font-bold text-stone-700">
+                              ⚡ 1-Click Aesthetic Presets:
+                            </span>
+                            <span className="text-[10px] text-stone-500 font-mono">
+                              Click to instantly apply coordinated colorway
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                            {/* Preset 1: Vibrant Comic (Attached Screenshot Match) */}
+                            <button
+                              type="button"
+                              onClick={() => {
                                 setPortfolio((prev) => ({
                                   ...prev,
-                                  personal: { ...prev.personal, mobileNowBadgeText: e.target.value },
-                                }))
-                              }
-                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
-                            />
+                                  personal: {
+                                    ...prev.personal,
+                                    mobileWashiTapeColor: "#facc15",
+                                    mobileWashiTapeStyle: "striped",
+                                    mobileNowBadgeText: "NOW",
+                                    mobileNowBadgeBg: "#f43f5e",
+                                    mobileNowBadgeTextColor: "#ffffff",
+                                    mobileCenterTrackIcon: "🛸",
+                                    mobileCenterTrackText: "INTERNSHIP · ACTIVE",
+                                    mobileCenterTrackTextColor: "#000000",
+                                    mobileRolePillText: "Data Science Intern",
+                                    mobileRolePillIcon: "✦",
+                                    mobileRolePillBg: "#fef08a",
+                                    mobileRolePillBorder: "#8b5cf6",
+                                    mobileRolePillTextColor: "#6d28d9",
+                                    mobileWorkplacePillText: "IIT Madras",
+                                    mobileWorkplacePillIcon: "✦",
+                                    mobileWorkplacePillBg: "#bae6fd",
+                                    mobileWorkplacePillBorder: "#8b5cf6",
+                                    mobileWorkplacePillTextColor: "#0369a1",
+                                    mobileSocialButtonStyle: "stickers",
+                                    mobileConnectNote: "LET'S CONNECT",
+                                    mobileConnectNoteColor: "#000000",
+                                    mobileCardShadowColor: "#000000",
+                                  },
+                                }));
+                              }}
+                              className="px-2.5 py-2 rounded-xl border border-black/30 bg-white hover:bg-yellow-100 hover:border-black font-mono text-[10px] font-black flex flex-col items-center gap-1 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-1">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#facc15] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#f43f5e] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#8b5cf6] border border-black/30" />
+                              </div>
+                              <span>🎨 Comic Pastel</span>
+                            </button>
+
+                            {/* Preset 2: Portfolio Amber Neo */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    mobileWashiTapeColor: "#f59e0b",
+                                    mobileWashiTapeStyle: "striped",
+                                    mobileNowBadgeText: "NOW",
+                                    mobileNowBadgeBg: "#18181b",
+                                    mobileNowBadgeTextColor: "#f59e0b",
+                                    mobileCenterTrackIcon: "⚗️",
+                                    mobileCenterTrackText: "RESEARCH · ACTIVE",
+                                    mobileCenterTrackTextColor: "#18181b",
+                                    mobileRolePillText: "Teaching Assistant",
+                                    mobileRolePillIcon: "✦",
+                                    mobileRolePillBg: "#fef3c7",
+                                    mobileRolePillBorder: "#d97706",
+                                    mobileRolePillTextColor: "#78350f",
+                                    mobileWorkplacePillText: "IIT Madras",
+                                    mobileWorkplacePillIcon: "✦",
+                                    mobileWorkplacePillBg: "#f1f5f9",
+                                    mobileWorkplacePillBorder: "#0f172a",
+                                    mobileWorkplacePillTextColor: "#0f172a",
+                                    mobileSocialButtonStyle: "white",
+                                    mobileConnectNote: "LET'S CONNECT",
+                                    mobileConnectNoteColor: "#18181b",
+                                    mobileCardShadowColor: "#f59e0b",
+                                  },
+                                }));
+                              }}
+                              className="px-2.5 py-2 rounded-xl border border-black/30 bg-white hover:bg-amber-100 hover:border-black font-mono text-[10px] font-black flex flex-col items-center gap-1 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-1">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#18181b] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#fef3c7] border border-black/30" />
+                              </div>
+                              <span>🟡 Amber Neo</span>
+                            </button>
+
+                            {/* Preset 3: Cyber Matrix Mint */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    mobileWashiTapeColor: "#4ade80",
+                                    mobileWashiTapeStyle: "striped",
+                                    mobileNowBadgeText: "LIVE",
+                                    mobileNowBadgeBg: "#059669",
+                                    mobileNowBadgeTextColor: "#ffffff",
+                                    mobileCenterTrackIcon: "⚡",
+                                    mobileCenterTrackText: "AI & SYSTEMS · ACTIVE",
+                                    mobileCenterTrackTextColor: "#065f46",
+                                    mobileRolePillText: "ML Engineer",
+                                    mobileRolePillIcon: "✦",
+                                    mobileRolePillBg: "#d1fae5",
+                                    mobileRolePillBorder: "#059669",
+                                    mobileRolePillTextColor: "#065f46",
+                                    mobileWorkplacePillText: "IIT Madras",
+                                    mobileWorkplacePillIcon: "✦",
+                                    mobileWorkplacePillBg: "#ccfbf1",
+                                    mobileWorkplacePillBorder: "#0f766e",
+                                    mobileWorkplacePillTextColor: "#115e59",
+                                    mobileSocialButtonStyle: "stickers",
+                                    mobileConnectNote: "DISPATCH NOW",
+                                    mobileConnectNoteColor: "#065f46",
+                                    mobileCardShadowColor: "#059669",
+                                  },
+                                }));
+                              }}
+                              className="px-2.5 py-2 rounded-xl border border-black/30 bg-white hover:bg-emerald-100 hover:border-black font-mono text-[10px] font-black flex flex-col items-center gap-1 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-1">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#4ade80] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#059669] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#ccfbf1] border border-black/30" />
+                              </div>
+                              <span>🟢 Cyber Mint</span>
+                            </button>
+
+                            {/* Preset 4: Vaporwave Sunset */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    mobileWashiTapeColor: "#c084fc",
+                                    mobileWashiTapeStyle: "striped",
+                                    mobileNowBadgeText: "NOW",
+                                    mobileNowBadgeBg: "#d946ef",
+                                    mobileNowBadgeTextColor: "#ffffff",
+                                    mobileCenterTrackIcon: "🚀",
+                                    mobileCenterTrackText: "CREATIVE AI · ACTIVE",
+                                    mobileCenterTrackTextColor: "#831843",
+                                    mobileRolePillText: "Research Fellow",
+                                    mobileRolePillIcon: "✦",
+                                    mobileRolePillBg: "#fce7f3",
+                                    mobileRolePillBorder: "#ec4899",
+                                    mobileRolePillTextColor: "#9d174d",
+                                    mobileWorkplacePillText: "IIT Madras",
+                                    mobileWorkplacePillIcon: "✦",
+                                    mobileWorkplacePillBg: "#ede9fe",
+                                    mobileWorkplacePillBorder: "#8b5cf6",
+                                    mobileWorkplacePillTextColor: "#5b21b6",
+                                    mobileSocialButtonStyle: "stickers",
+                                    mobileConnectNote: "LET'S BUILD",
+                                    mobileConnectNoteColor: "#831843",
+                                    mobileCardShadowColor: "#8b5cf6",
+                                  },
+                                }));
+                              }}
+                              className="px-2.5 py-2 rounded-xl border border-black/30 bg-white hover:bg-fuchsia-100 hover:border-black font-mono text-[10px] font-black flex flex-col items-center gap-1 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-1">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#c084fc] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#d946ef] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#fce7f3] border border-black/30" />
+                              </div>
+                              <span>🟣 Vaporwave</span>
+                            </button>
+
+                            {/* Preset 5: Dark Neo-Brutalist */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPortfolio((prev) => ({
+                                  ...prev,
+                                  personal: {
+                                    ...prev.personal,
+                                    mobileWashiTapeColor: "#e4e4e7",
+                                    mobileWashiTapeStyle: "striped",
+                                    mobileNowBadgeText: "NOW",
+                                    mobileNowBadgeBg: "#27272a",
+                                    mobileNowBadgeTextColor: "#ffffff",
+                                    mobileCenterTrackIcon: "✦",
+                                    mobileCenterTrackText: "ENGINEERING · ACTIVE",
+                                    mobileCenterTrackTextColor: "#000000",
+                                    mobileRolePillText: "Teaching Assistant",
+                                    mobileRolePillIcon: "✦",
+                                    mobileRolePillBg: "#f4f4f5",
+                                    mobileRolePillBorder: "#000000",
+                                    mobileRolePillTextColor: "#000000",
+                                    mobileWorkplacePillText: "IIT Madras",
+                                    mobileWorkplacePillIcon: "✦",
+                                    mobileWorkplacePillBg: "#e2e8f0",
+                                    mobileWorkplacePillBorder: "#000000",
+                                    mobileWorkplacePillTextColor: "#000000",
+                                    mobileSocialButtonStyle: "white",
+                                    mobileConnectNote: "LET'S CONNECT",
+                                    mobileConnectNoteColor: "#000000",
+                                    mobileCardShadowColor: "#000000",
+                                  },
+                                }));
+                              }}
+                              className="px-2.5 py-2 rounded-xl border border-black/30 bg-white hover:bg-stone-200 hover:border-black font-mono text-[10px] font-black flex flex-col items-center gap-1 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-1">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#e4e4e7] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#27272a] border border-black/30" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#000000] border border-black/30" />
+                              </div>
+                              <span>🖤 Dark Brutalist</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Tape & Frame Section */}
+                        <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-3">
+                          <h5 className="font-mono text-[11px] font-black uppercase text-stone-900 flex items-center gap-1.5">
+                            <span>📌</span> Washi Tape &amp; Bento 3D Shadow
+                          </h5>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Washi Tape Color:
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="color"
+                                  value={portfolio.personal.mobileWashiTapeColor || "#facc15"}
+                                  onChange={(e) =>
+                                    setPortfolio((prev) => ({
+                                      ...prev,
+                                      personal: { ...prev.personal, mobileWashiTapeColor: e.target.value },
+                                    }))
+                                  }
+                                  className="w-8 h-8 rounded cursor-pointer border border-black p-0.5"
+                                />
+                                <span className="font-mono text-[10px] text-stone-600 font-bold">
+                                  {portfolio.personal.mobileWashiTapeColor || "#facc15"}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Tape Pattern Style:
+                              </label>
+                              <select
+                                value={portfolio.personal.mobileWashiTapeStyle || "striped"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileWashiTapeStyle: e.target.value },
+                                  }))
+                                }
+                                className="w-full px-2.5 py-1.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                              >
+                                <option value="striped">Striped Japanese Texture</option>
+                                <option value="solid">Solid Sticker</option>
+                                <option value="dots">Polka Dots Craft Tape</option>
+                                <option value="none">Hidden / None</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Card 3D Hard Shadow Color:
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="color"
+                                  value={portfolio.personal.mobileCardShadowColor || "#000000"}
+                                  onChange={(e) =>
+                                    setPortfolio((prev) => ({
+                                      ...prev,
+                                      personal: { ...prev.personal, mobileCardShadowColor: e.target.value },
+                                    }))
+                                  }
+                                  className="w-8 h-8 rounded cursor-pointer border border-black p-0.5"
+                                />
+                                <span className="font-mono text-[10px] text-stone-600 font-bold">
+                                  {portfolio.personal.mobileCardShadowColor || "#000000"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Top Row: NOW Pill & Center Track */}
+                        <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-3">
+                          <h5 className="font-mono text-[11px] font-black uppercase text-stone-900 flex items-center gap-1.5">
+                            <span>🛸</span> Top Row: NOW Indicator &amp; Mandate Track
+                          </h5>
+                          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                NOW Badge Text:
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="NOW"
+                                value={portfolio.personal.mobileNowBadgeText ?? ""}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileNowBadgeText: e.target.value },
+                                  }))
+                                }
+                                className="w-full px-2.5 py-1.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                NOW Badge Colors:
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <div className="flex flex-col items-center">
+                                  <input
+                                    type="color"
+                                    value={portfolio.personal.mobileNowBadgeBg || "#f43f5e"}
+                                    onChange={(e) =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileNowBadgeBg: e.target.value },
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded cursor-pointer border border-black p-0.5"
+                                    title="Background"
+                                  />
+                                  <span className="font-mono text-[8px] text-stone-500">bg</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                  <input
+                                    type="color"
+                                    value={portfolio.personal.mobileNowBadgeTextColor || "#ffffff"}
+                                    onChange={(e) =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileNowBadgeTextColor: e.target.value },
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded cursor-pointer border border-black p-0.5"
+                                    title="Text Color"
+                                  />
+                                  <span className="font-mono text-[8px] text-stone-500">text</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Center Icon / Emoji:
+                              </label>
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="text"
+                                  placeholder="🛸"
+                                  value={portfolio.personal.mobileCenterTrackIcon ?? ""}
+                                  onChange={(e) =>
+                                    setPortfolio((prev) => ({
+                                      ...prev,
+                                      personal: { ...prev.personal, mobileCenterTrackIcon: e.target.value },
+                                    }))
+                                  }
+                                  className="w-12 px-2 py-1.5 text-center rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                                />
+                                <div className="flex gap-1 flex-wrap">
+                                  {["🛸", "⚗️", "⚡", "✦", "🚀", "💻"].map((ico) => (
+                                    <button
+                                      key={ico}
+                                      type="button"
+                                      onClick={() =>
+                                        setPortfolio((prev) => ({
+                                          ...prev,
+                                          personal: { ...prev.personal, mobileCenterTrackIcon: ico },
+                                        }))
+                                      }
+                                      className="w-6 h-6 rounded-lg bg-stone-100 hover:bg-stone-200 border border-stone-300 text-xs flex items-center justify-center cursor-pointer"
+                                    >
+                                      {ico}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Center Mandate Text:
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="INTERNSHIP · ACTIVE"
+                                value={portfolio.personal.mobileCenterTrackText ?? ""}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileCenterTrackText: e.target.value },
+                                  }))
+                                }
+                                className="w-full px-2.5 py-1.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Middle Row: Two Capsule Pills (Role & Workplace) */}
+                        <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-3">
+                          <h5 className="font-mono text-[11px] font-black uppercase text-stone-900 flex items-center gap-1.5">
+                            <span>✦</span> Middle Row: Role &amp; Workplace Capsules
+                          </h5>
+
+                          {/* Pill 1: Role Capsule */}
+                          <div className="p-3 rounded-lg bg-amber-50/50 border border-amber-200/80 space-y-2">
+                            <span className="font-mono text-[10px] font-black uppercase text-amber-900">
+                              Capsule 1 (Role):
+                            </span>
+                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                              <div>
+                                <label className="block font-mono text-[10px] text-stone-600 mb-0.5">Role Text:</label>
+                                <input
+                                  type="text"
+                                  placeholder="Data Science Intern"
+                                  value={portfolio.personal.mobileRolePillText ?? ""}
+                                  onChange={(e) =>
+                                    setPortfolio((prev) => ({
+                                      ...prev,
+                                      personal: { ...prev.personal, mobileRolePillText: e.target.value },
+                                    }))
+                                  }
+                                  className="w-full px-2 py-1 rounded-lg bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block font-mono text-[10px] text-stone-600 mb-0.5">Pill Background:</label>
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type="color"
+                                    value={portfolio.personal.mobileRolePillBg || "#fef08a"}
+                                    onChange={(e) =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileRolePillBg: e.target.value },
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded cursor-pointer border border-black p-0.5"
+                                  />
+                                  <span className="font-mono text-[9.5px] text-stone-600 font-bold">
+                                    {portfolio.personal.mobileRolePillBg || "#fef08a"}
+                                  </span>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block font-mono text-[10px] text-stone-600 mb-0.5">Border Color:</label>
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type="color"
+                                    value={portfolio.personal.mobileRolePillBorder || "#8b5cf6"}
+                                    onChange={(e) =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileRolePillBorder: e.target.value },
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded cursor-pointer border border-black p-0.5"
+                                  />
+                                  <span className="font-mono text-[9.5px] text-stone-600 font-bold">
+                                    {portfolio.personal.mobileRolePillBorder || "#8b5cf6"}
+                                  </span>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block font-mono text-[10px] text-stone-600 mb-0.5">Text Color:</label>
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type="color"
+                                    value={portfolio.personal.mobileRolePillTextColor || "#6d28d9"}
+                                    onChange={(e) =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileRolePillTextColor: e.target.value },
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded cursor-pointer border border-black p-0.5"
+                                  />
+                                  <span className="font-mono text-[9.5px] text-stone-600 font-bold">
+                                    {portfolio.personal.mobileRolePillTextColor || "#6d28d9"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
 
-                          <div>
-                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                              Center Mandate / Track:
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="RESEARCH"
-                              value={portfolio.personal.mobileCenterTrackText ?? ""}
-                              onChange={(e) =>
-                                setPortfolio((prev) => ({
-                                  ...prev,
-                                  personal: { ...prev.personal, mobileCenterTrackText: e.target.value },
-                                }))
-                              }
-                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
-                            />
+                          {/* Pill 2: Workplace Capsule */}
+                          <div className="p-3 rounded-lg bg-sky-50/50 border border-sky-200/80 space-y-2">
+                            <span className="font-mono text-[10px] font-black uppercase text-sky-900">
+                              Capsule 2 (Workplace):
+                            </span>
+                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                              <div>
+                                <label className="block font-mono text-[10px] text-stone-600 mb-0.5">Workplace Text:</label>
+                                <input
+                                  type="text"
+                                  placeholder="IIT Madras"
+                                  value={portfolio.personal.mobileWorkplacePillText ?? ""}
+                                  onChange={(e) =>
+                                    setPortfolio((prev) => ({
+                                      ...prev,
+                                      personal: { ...prev.personal, mobileWorkplacePillText: e.target.value },
+                                    }))
+                                  }
+                                  className="w-full px-2 py-1 rounded-lg bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block font-mono text-[10px] text-stone-600 mb-0.5">Pill Background:</label>
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type="color"
+                                    value={portfolio.personal.mobileWorkplacePillBg || "#bae6fd"}
+                                    onChange={(e) =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileWorkplacePillBg: e.target.value },
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded cursor-pointer border border-black p-0.5"
+                                  />
+                                  <span className="font-mono text-[9.5px] text-stone-600 font-bold">
+                                    {portfolio.personal.mobileWorkplacePillBg || "#bae6fd"}
+                                  </span>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block font-mono text-[10px] text-stone-600 mb-0.5">Border Color:</label>
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type="color"
+                                    value={portfolio.personal.mobileWorkplacePillBorder || "#8b5cf6"}
+                                    onChange={(e) =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileWorkplacePillBorder: e.target.value },
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded cursor-pointer border border-black p-0.5"
+                                  />
+                                  <span className="font-mono text-[9.5px] text-stone-600 font-bold">
+                                    {portfolio.personal.mobileWorkplacePillBorder || "#8b5cf6"}
+                                  </span>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block font-mono text-[10px] text-stone-600 mb-0.5">Text Color:</label>
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type="color"
+                                    value={portfolio.personal.mobileWorkplacePillTextColor || "#0369a1"}
+                                    onChange={(e) =>
+                                      setPortfolio((prev) => ({
+                                        ...prev,
+                                        personal: { ...prev.personal, mobileWorkplacePillTextColor: e.target.value },
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded cursor-pointer border border-black p-0.5"
+                                  />
+                                  <span className="font-mono text-[9.5px] text-stone-600 font-bold">
+                                    {portfolio.personal.mobileWorkplacePillTextColor || "#0369a1"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
+                        </div>
 
-                          <div>
-                            <label className="block font-mono text-[11px] font-bold text-stone-700 mb-1">
-                              Arrow Note Text:
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="LET'S CONNECT"
-                              value={portfolio.personal.mobileConnectNote ?? ""}
-                              onChange={(e) =>
-                                setPortfolio((prev) => ({
-                                  ...prev,
-                                  personal: { ...prev.personal, mobileConnectNote: e.target.value },
-                                }))
-                              }
-                              className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
-                            />
+                        {/* Bottom Row: Social Connect & Doodle Arrow */}
+                        <div className="p-3.5 rounded-xl bg-white border border-amber-200 space-y-3">
+                          <h5 className="font-mono text-[11px] font-black uppercase text-stone-900 flex items-center gap-1.5">
+                            <span>⤷</span> Bottom Row: Social Connect Buttons &amp; Arrow Note
+                          </h5>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Social Buttons Style:
+                              </label>
+                              <select
+                                value={portfolio.personal.mobileSocialButtonStyle || "stickers"}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileSocialButtonStyle: e.target.value },
+                                  }))
+                                }
+                                className="w-full px-2.5 py-1.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                              >
+                                <option value="stickers">Pastel Stickers (GitHub, Sky LinkedIn, Rose Mail)</option>
+                                <option value="white">Classic 3D White Stickers</option>
+                                <option value="dark">Dark Brutalist Monochrome</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Arrow Note Text:
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="LET'S CONNECT"
+                                value={portfolio.personal.mobileConnectNote ?? ""}
+                                onChange={(e) =>
+                                  setPortfolio((prev) => ({
+                                    ...prev,
+                                    personal: { ...prev.personal, mobileConnectNote: e.target.value },
+                                  }))
+                                }
+                                className="w-full px-2.5 py-1.5 rounded-xl bg-stone-50 border border-stone-300 font-mono text-xs focus:border-black focus:outline-none"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block font-mono text-[10.5px] font-bold text-stone-700 mb-1">
+                                Arrow Note Color:
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="color"
+                                  value={portfolio.personal.mobileConnectNoteColor || "#000000"}
+                                  onChange={(e) =>
+                                    setPortfolio((prev) => ({
+                                      ...prev,
+                                      personal: { ...prev.personal, mobileConnectNoteColor: e.target.value },
+                                    }))
+                                  }
+                                  className="w-8 h-8 rounded cursor-pointer border border-black p-0.5"
+                                />
+                                <span className="font-mono text-[10px] text-stone-600 font-bold">
+                                  {portfolio.personal.mobileConnectNoteColor || "#000000"}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -5764,62 +6365,184 @@ export default function AdminPage() {
                           </div>
                         </div>
 
-                        {/* 4. Bento Dossier Card Pinned with Signature Amber Washi Tape */}
+                        {/* 4. Bento Dossier Card Pinned with Signature Washi Tape */}
                         <div className="relative z-20 px-3 w-full my-auto">
-                          {/* Amber Washi Tape */}
-                          <div
-                            className="w-16 h-2.5 bg-amber-300 border border-dashed border-black/40 shadow-xs mx-auto -mb-1 z-20 relative rounded-xs pointer-events-none"
-                            style={{ transform: "rotate(-1.5deg)" }}
-                          />
+                          {/* Washi Tape */}
+                          {portfolio.personal.mobileWashiTapeStyle !== "none" && (
+                            <div
+                              className="w-16 h-2.5 border border-dashed border-black/40 shadow-xs mx-auto -mb-1 z-20 relative rounded-xs pointer-events-none"
+                              style={{
+                                transform: "rotate(-1.5deg)",
+                                backgroundColor: portfolio.personal.mobileWashiTapeColor || "#facc15",
+                                backgroundImage:
+                                  (portfolio.personal.mobileWashiTapeStyle || "striped") === "striped"
+                                    ? "repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0.4) 4px, transparent 4px, transparent 8px)"
+                                    : undefined,
+                              }}
+                            />
+                          )}
 
-                          {/* Card Body (Neo-Brutalist White & Solid Black 3D Shadow) */}
-                          <div className="w-full rounded-2xl p-2.5 bg-white border-2 border-black shadow-[3.5px_3.5px_0_#000] flex flex-col gap-1.5 text-black">
+                          {/* Card Body */}
+                          <div
+                            className="w-full rounded-2xl p-2.5 border-2 flex flex-col gap-1.5"
+                            style={{
+                              backgroundColor: portfolio.personal.mobileCardBg || "#ffffff",
+                              borderColor: portfolio.personal.mobileCardBorder || "#000000",
+                              boxShadow: `3.5px 3.5px 0 ${
+                                portfolio.personal.mobileCardShadowColor || "#000000"
+                              }`,
+                            }}
+                          >
                             {/* Row 1: Header */}
                             <div className="flex items-center justify-between w-full">
                               <span
-                                className="px-1.5 py-0.2 rounded-full text-black border border-black font-mono text-[6.5px] font-black uppercase"
-                                style={{ backgroundColor: portfolio.personal.mobileClickHereBadgeBg || "#f59e0b" }}
+                                className="px-1.5 py-0.2 rounded-full border border-black font-mono text-[6.5px] font-black uppercase inline-flex items-center gap-0.5"
+                                style={{
+                                  backgroundColor:
+                                    portfolio.personal.mobileNowBadgeBg ||
+                                    portfolio.personal.mobileClickHereBadgeBg ||
+                                    "#f43f5e",
+                                  color: portfolio.personal.mobileNowBadgeTextColor || "#ffffff",
+                                }}
                               >
-                                {portfolio.personal.mobileNowBadgeText || "NOW"}
+                                <span className="w-1 h-1 rounded-full bg-current animate-pulse" />
+                                <span>{portfolio.personal.mobileNowBadgeText || "NOW"}</span>
                               </span>
-                              <div className="flex items-center gap-1 font-mono text-[7px] font-black uppercase tracking-wider text-stone-900">
-                                <span>{portfolio.personal.aboutRoleIcon || "⚗️"}</span>
-                                <span>{portfolio.personal.mobileCenterTrackText || "RESEARCH"}</span>
+                              <div
+                                className="flex items-center gap-1 font-mono text-[7px] font-black uppercase tracking-wider text-stone-900"
+                                style={
+                                  portfolio.personal.mobileCenterTrackTextColor
+                                    ? { color: portfolio.personal.mobileCenterTrackTextColor }
+                                    : undefined
+                                }
+                              >
+                                <span>
+                                  {portfolio.personal.mobileCenterTrackIcon ||
+                                    portfolio.personal.aboutRoleIcon ||
+                                    "🛸"}
+                                </span>
+                                <span>
+                                  {portfolio.personal.mobileCenterTrackText || "INTERNSHIP · ACTIVE"}
+                                </span>
                               </div>
                             </div>
 
-                            {/* Row 2: Pills (Amber & Sky) */}
-                            <div className="flex items-center justify-center gap-1.5 flex-wrap w-full">
-                              <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-black font-mono text-[7.5px] font-black shadow-[1px_1px_0_#000]">
-                                <span className="text-[6px] text-amber-600">✦</span>
-                                <span>{portfolio.personal.aboutCurrentWork || portfolio.personal.role || "Data Research"}</span>
+                            {/* Row 2: Pills */}
+                            <div className="flex items-center justify-center gap-1 flex-wrap w-full">
+                              <div
+                                className="flex items-center gap-0.5 px-2 py-0.5 rounded-full border font-mono text-[7px] font-black"
+                                style={{
+                                  backgroundColor: portfolio.personal.mobileRolePillBg || "#fef08a",
+                                  borderColor: portfolio.personal.mobileRolePillBorder || "#8b5cf6",
+                                  color: portfolio.personal.mobileRolePillTextColor || "#6d28d9",
+                                  boxShadow: `1px 1px 0 ${
+                                    portfolio.personal.mobileRolePillBorder || "#8b5cf6"
+                                  }`,
+                                }}
+                              >
+                                <span className="text-[6px]">
+                                  {portfolio.personal.mobileRolePillIcon ?? "✦"}
+                                </span>
+                                <span>
+                                  {portfolio.personal.mobileRolePillText ||
+                                    portfolio.personal.aboutCurrentWork ||
+                                    portfolio.personal.role ||
+                                    "Data Science Intern"}
+                                </span>
                               </div>
-                              <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-sky-100 text-sky-900 border border-black font-mono text-[7.5px] font-black shadow-[1px_1px_0_#000]">
-                                <span className="text-[6px] text-sky-600">✦</span>
-                                <span>@ {portfolio.personal.aboutWorkPlace || "IIT Madras"}</span>
+                              <div
+                                className="flex items-center gap-0.5 px-2 py-0.5 rounded-full border font-mono text-[7px] font-black"
+                                style={{
+                                  backgroundColor: portfolio.personal.mobileWorkplacePillBg || "#bae6fd",
+                                  borderColor:
+                                    portfolio.personal.mobileWorkplacePillBorder || "#8b5cf6",
+                                  color:
+                                    portfolio.personal.mobileWorkplacePillTextColor || "#0369a1",
+                                  boxShadow: `1px 1px 0 ${
+                                    portfolio.personal.mobileWorkplacePillBorder || "#8b5cf6"
+                                  }`,
+                                }}
+                              >
+                                <span className="text-[6px]">
+                                  {portfolio.personal.mobileWorkplacePillIcon ?? "✦"}
+                                </span>
+                                <span>
+                                  {portfolio.personal.mobileWorkplacePillText ||
+                                    (portfolio.personal.aboutWorkPlace
+                                      ? `@ ${portfolio.personal.aboutWorkPlace}`
+                                      : "@ IIT Madras")}
+                                </span>
                               </div>
                             </div>
 
                             {/* Row 3: Circular Social Icons + Curved Arrow */}
                             <div className="flex items-center justify-between w-full pt-1 border-t border-dashed border-stone-300">
-                              <div className="flex items-center gap-1.5">
-                                <span className="w-6 h-6 rounded-full bg-white border border-black shadow-[1px_1px_0_#000] text-black text-[7px] font-black flex items-center justify-center">
+                              <div className="flex items-center gap-1">
+                                <span
+                                  className={`w-5 h-5 rounded-full border border-black shadow-[1px_1px_0_#000] text-[6.5px] font-black flex items-center justify-center ${
+                                    portfolio.personal.mobileSocialButtonStyle === "dark"
+                                      ? "bg-stone-900 text-white border-white"
+                                      : "bg-[#f8fafc] text-black"
+                                  }`}
+                                >
                                   GH
                                 </span>
-                                <span className="w-6 h-6 rounded-full bg-white border border-black shadow-[1px_1px_0_#000] text-[#0284c7] text-[7px] font-black flex items-center justify-center">
+                                <span
+                                  className={`w-5 h-5 rounded-full border border-black shadow-[1px_1px_0_#000] text-[6.5px] font-black flex items-center justify-center ${
+                                    portfolio.personal.mobileSocialButtonStyle === "dark"
+                                      ? "bg-stone-900 text-sky-400 border-white"
+                                      : portfolio.personal.mobileSocialButtonStyle === "white"
+                                      ? "bg-white text-[#0284c7]"
+                                      : "bg-[#e0f2fe] text-[#0284c7]"
+                                  }`}
+                                >
                                   in
                                 </span>
-                                <span className="w-6 h-6 rounded-full bg-white border border-black shadow-[1px_1px_0_#000] text-rose-500 text-[7px] font-black flex items-center justify-center">
+                                <span
+                                  className={`w-5 h-5 rounded-full border border-black shadow-[1px_1px_0_#000] text-[6.5px] font-black flex items-center justify-center ${
+                                    portfolio.personal.mobileSocialButtonStyle === "dark"
+                                      ? "bg-stone-900 text-rose-400 border-white"
+                                      : portfolio.personal.mobileSocialButtonStyle === "white"
+                                      ? "bg-white text-rose-500"
+                                      : "bg-[#ffe4e6] text-[#e11d48]"
+                                  }`}
+                                >
                                   ✉
                                 </span>
                               </div>
                               <div className="flex items-center gap-1">
-                                <svg width="22" height="12" viewBox="0 0 34 20" fill="none" className="rotate-[-6deg] text-black">
-                                  <path d="M30 4 C 18 2, 7 7, 5 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-                                  <path d="M2 11 L 5 17 L 10 14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                <svg
+                                  width="20"
+                                  height="11"
+                                  viewBox="0 0 34 20"
+                                  fill="none"
+                                  className="rotate-[-6deg] text-black"
+                                >
+                                  <path
+                                    d="M30 4 C 18 2, 7 7, 5 16"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                  />
+                                  <path
+                                    d="M2 11 L 5 17 L 10 14"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
                                 </svg>
-                                <div className="font-mono font-black text-[6px] uppercase tracking-wider leading-tight text-stone-900 text-left">
-                                  <span>{portfolio.personal.mobileConnectNote || "LET'S CONNECT"}</span>
+                                <div
+                                  className="font-mono font-black text-[6px] uppercase tracking-wider leading-tight text-stone-900 text-left"
+                                  style={
+                                    portfolio.personal.mobileConnectNoteColor
+                                      ? { color: portfolio.personal.mobileConnectNoteColor }
+                                      : undefined
+                                  }
+                                >
+                                  <span>
+                                    {portfolio.personal.mobileConnectNote || "LET'S CONNECT"}
+                                  </span>
                                 </div>
                               </div>
                             </div>
