@@ -385,7 +385,7 @@ export default function AdminPage() {
       }
     }
   }, [initialData]);
-  type AdminTab = "sublines" | "cover" | "badges" | "about" | "experience" | "milestones" | "highlights" | "projects" | "certificates" | "skills" | "contact";
+  type AdminTab = "inquiries" | "sublines" | "cover" | "badges" | "about" | "experience" | "milestones" | "highlights" | "projects" | "certificates" | "skills" | "contact";
   const [activeTab, setActiveTab] = useState<AdminTab>("sublines");
   const [sublinesSectionFilter, setSublinesSectionFilter] = useState<"all" | "cover" | "about" | "projects" | "certificates" | "experience" | "contact">("all");
   const [expSkillsInputMap, setExpSkillsInputMap] = useState<Record<string, string>>({});
@@ -423,7 +423,9 @@ export default function AdminPage() {
   } | null>(null);
   const [aboutSubView, setAboutSubView] = useState<"all" | "identity" | "bio">("all");
   const [expStationFilter, setExpStationFilter] = useState<"all" | "current" | "past">("all");
-  const [contactSubTab, setContactSubTab] = useState<"all" | "copy" | "form" | "coordinates" | "footer" | "inquiries">("all");
+  const [contactSubTab, setContactSubTab] = useState<"all" | "coordinates" | "copy" | "form" | "footer">("all");
+  const [inquiriesSearchQuery, setInquiriesSearchQuery] = useState("");
+  const [inquiriesCategoryFilter, setInquiriesCategoryFilter] = useState("all");
   const [selectedThoughtDay, setSelectedThoughtDay] = useState<number>(0);
   const [todayWeekday, setTodayWeekday] = useState<number>(0);
   const [thoughtViewMode, setThoughtViewMode] = useState<"tabs" | "grid">("tabs");
@@ -1900,6 +1902,7 @@ export default function AdminPage() {
   };
 
   const navTabs = [
+    { id: "inquiries", label: "📬 Inquiries & Dispatches", title: "Incoming Inquiries & Dispatches", desc: "Live portfolio contact inbox — review messages, reply via email & manage visitor dispatches", icon: Send, count: messages.length, alert: messages.some((m) => !m.read) },
     { id: "sublines", label: "Headlines & Sublines", title: "Master Section Sublines & Headings", desc: "Hero tagline, about subline, projects & certificates subtitles with live preview", icon: Type },
     { id: "cover", label: "Cover Hero", title: "Cover Page Manager", desc: "Hero portrait, framing, wordmark, roles & cover buttons", icon: Sliders },
     { id: "badges", label: "⚡ Badges & Persona", title: "Role Badges & Persona Colors", desc: "Hide/unhide cover role badge & customize Persona and India colors", icon: Sparkles },
@@ -1910,7 +1913,7 @@ export default function AdminPage() {
     { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderCode, count: portfolio.projects?.length || 0 },
     { id: "certificates", label: "Certificates", title: "Credentials & Laurels", desc: "Verified credentials, verification links & categories", icon: Award, count: portfolio.certificates?.length || 0 },
     { id: "skills", label: "Skills Arsenal", title: "Technical Skills Arsenal", desc: "Category groupings, badges, proficiency & skill tags", icon: Code2, count: portfolio.skills?.length || 0 },
-    { id: "contact", label: "Inquiries & Dispatch", title: "Inquiries & Live Station", desc: "Location coordinates, local time, status & incoming contact dispatches", icon: Send, count: messages.filter((m) => !m.read).length || undefined, alert: messages.some((m) => !m.read) },
+    { id: "contact", label: "Contact & Station", title: "Contact Page & Station Coordinates", desc: "Location coordinates, live clock, inquiry form settings & footer", icon: MapPin },
   ];
 
   const currentTabObj = navTabs.find((t) => t.id === activeTab) || navTabs[0];
@@ -2208,6 +2211,31 @@ export default function AdminPage() {
               />
             </label>
 
+            {/* Quick Inquiries Button in Top Header */}
+            <button
+              type="button"
+              onClick={() => setActiveTab("inquiries")}
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer border ${
+                activeTab === "inquiries"
+                  ? "bg-black text-amber-300 border-black shadow-[2px_2px_0_#f59e0b]"
+                  : "bg-white hover:bg-stone-50 border-stone-300 text-stone-800 shadow-2xs"
+              }`}
+              title="View Incoming Inquiries & Dispatches"
+            >
+              <span className="relative flex h-2 w-2">
+                {messages.length > 0 && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                )}
+                <span
+                  className={`relative inline-flex rounded-full h-2 w-2 ${
+                    messages.length > 0 ? "bg-amber-500" : "bg-stone-400"
+                  }`}
+                />
+              </span>
+              <Send className="w-3.5 h-3.5 text-stone-600" />
+              <span>Inquiries ({messages.length})</span>
+            </button>
+
             <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono text-[11px] font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Supabase Cloud Active</span>
@@ -2226,6 +2254,262 @@ export default function AdminPage() {
 
         {/* Content Container */}
         <main className="flex-1 p-4 sm:p-7 max-w-6xl w-full mx-auto space-y-8">
+
+        {/* ── TAB: INCOMING INQUIRIES & DISPATCHES (DEDICATED TOP-LEVEL INBOX) ── */}
+        {activeTab === "inquiries" && (() => {
+          const filteredMessages = messages.filter((msg) => {
+            const q = inquiriesSearchQuery.toLowerCase().trim();
+            const matchSearch =
+              !q ||
+              (msg.name || "").toLowerCase().includes(q) ||
+              (msg.email || "").toLowerCase().includes(q) ||
+              (msg.message || "").toLowerCase().includes(q);
+            const matchCat =
+              inquiriesCategoryFilter === "all" ||
+              (msg.category || "").toLowerCase() === inquiriesCategoryFilter.toLowerCase();
+            return matchSearch && matchCat;
+          });
+
+          return (
+            <div className="space-y-6">
+              {/* Header intro & Quick Actions */}
+              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-mono text-[10px] font-black uppercase">
+                      Live Contact Inbox
+                    </span>
+                    <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      SUPABASE REALTIME SYNC
+                    </span>
+                  </div>
+                  <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
+                    <Send className="w-6 h-6 text-amber-500" />
+                    <span>Incoming Inquiries &amp; Dispatches</span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-black text-amber-300 font-mono text-xs font-black shadow-xs">
+                      {messages.length}
+                    </span>
+                  </h2>
+                  <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
+                    Inquiries submitted via your portfolio contact form. Directly reply via email or delete dispatches once addressed.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+                  {messages.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleClearAllMessages}
+                      className="px-3.5 py-2 rounded-xl border-2 border-rose-400 bg-rose-50 hover:bg-rose-100 text-rose-700 font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-[2px_2px_0_#f43f5e] active:translate-y-0.5"
+                      title="Clear all inquiries"
+                    >
+                      <Trash2 className="w-4 h-4 text-rose-600" />
+                      <span>Clear All Inquiries</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={fetchMessages}
+                    disabled={isLoadingMessages}
+                    className="px-4 py-2 rounded-xl border-2 border-black bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0_#000] active:translate-y-0.5 transition-all"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isLoadingMessages ? "animate-spin" : ""}`} />
+                    <span>{isLoadingMessages ? "Syncing..." : "Refresh Inbox"}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Inquiries Quick Stats Bar */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-4 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-lg">
+                    📬
+                  </div>
+                  <div>
+                    <div className="font-mono text-[10px] font-black uppercase text-stone-500">Total Dispatches</div>
+                    <div className="font-['Space_Grotesk'] text-2xl font-black text-stone-900">{messages.length}</div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-lg">
+                    ⚡
+                  </div>
+                  <div>
+                    <div className="font-mono text-[10px] font-black uppercase text-stone-500">Inbox Status</div>
+                    <div className="font-['Space_Grotesk'] text-lg font-black text-emerald-700">
+                      {messages.length === 0 ? "All Caught Up" : `${messages.length} Active Messages`}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000] flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-indigo-100 text-indigo-900 border border-indigo-300 text-lg">
+                    🌐
+                  </div>
+                  <div>
+                    <div className="font-mono text-[10px] font-black uppercase text-stone-500">Target Station</div>
+                    <div className="font-['Space_Grotesk'] text-sm font-black text-stone-800 truncate">
+                      {portfolio.personal.email || "harsharyan@outlook.com"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Filter & Search Bar */}
+              <div className="p-4 rounded-2xl bg-stone-100 border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={inquiriesSearchQuery}
+                    onChange={(e) => setInquiriesSearchQuery(e.target.value)}
+                    placeholder="Search by sender name, email, or message keyword..."
+                    className="w-full pl-9 pr-8 py-2 rounded-xl bg-white border border-stone-300 font-mono text-xs focus:border-black focus:outline-hidden"
+                  />
+                  <span className="absolute left-3 top-2.5 text-stone-400">🔍</span>
+                  {inquiriesSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setInquiriesSearchQuery("")}
+                      className="absolute right-3 top-2 text-xs font-mono text-stone-400 hover:text-black cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-mono text-[11px] font-bold text-stone-500 mr-1">Filter:</span>
+                  {[
+                    { id: "all", label: "All" },
+                    { id: "collaboration", label: "Collaboration" },
+                    { id: "mentorship", label: "Mentorship" },
+                    { id: "general", label: "General" },
+                  ].map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setInquiriesCategoryFilter(cat.id)}
+                      className={`px-3 py-1 rounded-lg font-mono text-[11px] font-bold cursor-pointer transition-all ${
+                        inquiriesCategoryFilter === cat.id
+                          ? "bg-black text-white shadow-xs font-black"
+                          : "bg-white text-stone-600 hover:text-black border border-stone-200"
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* List of Inquiries */}
+              {isLoadingMessages ? (
+                <div className="p-12 text-center bg-white rounded-3xl border-2 border-black shadow-[4px_4px_0_#000] text-stone-500 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                  <RefreshCw className="w-5 h-5 animate-spin text-amber-500" />
+                  <span>Loading inquiries from Supabase cloud...</span>
+                </div>
+              ) : filteredMessages.length === 0 ? (
+                <div className="p-12 text-center bg-white rounded-3xl border-2 border-black shadow-[4px_4px_0_#000] space-y-3">
+                  <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-100 border-2 border-black flex items-center justify-center text-xl shadow-[2px_2px_0_#000]">
+                    📬
+                  </div>
+                  <h4 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
+                    {inquiriesSearchQuery || inquiriesCategoryFilter !== "all"
+                      ? "No matching inquiries found"
+                      : "No Incoming Inquiries Yet"}
+                  </h4>
+                  <p className="font-mono text-xs text-stone-500 max-w-md mx-auto">
+                    {inquiriesSearchQuery || inquiriesCategoryFilter !== "all"
+                      ? "Try clearing your search query or switching filters to see all messages."
+                      : "Jab koi visitor ya recruiter portfolio ke contact form se message bhejega, wo instant notifications ke sath yahan display hoga."}
+                  </p>
+                  <div className="pt-2">
+                    <Link
+                      href="/contact"
+                      target="_blank"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-stone-900 hover:bg-black text-white font-mono text-xs font-bold border border-black shadow-xs"
+                    >
+                      <span>Test Contact Form on Site</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredMessages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className="p-6 rounded-3xl border-2 border-black bg-white shadow-[4px_4px_0_#000] space-y-4 transition-all hover:shadow-[6px_6px_0_#000]"
+                    >
+                      {/* Header */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-stone-100">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 border-2 border-black text-black font-['Space_Grotesk'] font-black flex items-center justify-center text-sm shadow-[2px_2px_0_#000]">
+                            {(msg.name || "U").slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-['Space_Grotesk'] text-base font-black text-stone-900">
+                                {msg.name}
+                              </span>
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-mono text-[10px] font-black uppercase">
+                                {msg.category || "General Inquiry"}
+                              </span>
+                            </div>
+                            <div className="text-xs font-mono font-bold text-indigo-700 flex items-center gap-1.5 mt-0.5">
+                              <Mail className="w-3 h-3 text-stone-400" />
+                              <a href={`mailto:${msg.email}`} className="hover:underline">
+                                {msg.email}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 self-end sm:self-auto flex-wrap">
+                          <span className="font-mono text-[10px] text-stone-400 bg-stone-50 border border-stone-200 px-2.5 py-1 rounded-lg">
+                            📅 {new Date(msg.timestamp).toLocaleString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+
+                          <a
+                            href={`mailto:${msg.email}?subject=Re: Portfolio Inquiry - ${encodeURIComponent(msg.category || "General")}&body=Hi ${encodeURIComponent(msg.name)},%0D%0A%0D%0AThank you for reaching out via my portfolio!%0D%0A%0D%0A`}
+                            className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-mono text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                            title="Send Direct Email Reply"
+                          >
+                            <Mail className="w-3.5 h-3.5" />
+                            <span>Reply via Email</span>
+                          </a>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteMessage(msg.id)}
+                            className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-mono text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                            title="Delete inquiry"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                            <span>Delete</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Message Body */}
+                      <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 font-mono text-xs sm:text-sm text-stone-800 whitespace-pre-wrap leading-relaxed shadow-inner">
+                        {msg.message}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* ── TAB: ROLE BADGES & PERSONA COLORS ── */}
         {activeTab === "badges" && (
@@ -8407,12 +8691,11 @@ export default function AdminPage() {
             {/* Quick Sub-Section Switcher Tabs */}
             <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-stone-100 border border-stone-200">
               {[
-                { id: "all", label: "✦ All Settings", count: "5" },
+                { id: "all", label: "✦ All Settings", count: "4" },
+                { id: "coordinates", label: "📍 Live Coordinates & Clock", count: "Station" },
                 { id: "copy", label: "📝 Header & Doodles", count: "Copy" },
                 { id: "form", label: "📮 Inquiry Form & Email", count: "Form" },
-                { id: "coordinates", label: "📍 Live Coordinates & Clock", count: "Station" },
                 { id: "footer", label: "🏛️ Site Footer", count: "Footer" },
-                { id: "inquiries", label: "📬 Inquiries Dispatch", count: messages.length.toString() },
               ].map((sub) => (
                 <button
                   key={sub.id}
@@ -8900,130 +9183,34 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* ── 4. CONTACT INQUIRIES DISPATCH (WITH DELETE & REPLY) ── */}
-            {(contactSubTab === "all" || contactSubTab === "inquiries") && (
-              <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200">
-                  <div className="flex items-center gap-2.5">
-                    <span className="p-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-sm">
-                      📬
+            {/* ── 4. QUICK SHORTCUT TO INCOMING INQUIRIES & DISPATCHES ── */}
+            <div className="p-6 rounded-3xl bg-gradient-to-r from-amber-50 via-white to-emerald-50 border-2 border-black shadow-[4px_4px_0_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <span className="p-2.5 rounded-2xl bg-amber-400 text-black border-2 border-black shadow-[2px_2px_0_#000] text-xl">
+                  📬
+                </span>
+                <div>
+                  <h4 className="font-['Space_Grotesk'] text-base font-black uppercase text-stone-900 flex items-center gap-2">
+                    <span>Incoming Inquiries &amp; Dispatches</span>
+                    <span className="px-2 py-0.5 rounded-full bg-black text-amber-300 font-mono text-xs font-black">
+                      {messages.length} Messages
                     </span>
-                    <div>
-                      <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900 flex items-center gap-2">
-                        <span>Incoming Inquiries &amp; Dispatches</span>
-                        <span className="px-2 py-0.5 rounded-full bg-black text-white font-mono text-xs font-bold">
-                          {messages.length}
-                        </span>
-                      </h3>
-                      <p className="font-mono text-xs text-stone-500">
-                        Inquiries submitted via your portfolio. Reply directly or delete manually once resolved.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {messages.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={handleClearAllMessages}
-                        className="px-3 py-1.5 rounded-xl border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-700 font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1 shadow-xs"
-                        title="Clear all inquiries"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        <span>Clear All</span>
-                      </button>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={fetchMessages}
-                      className="px-3.5 py-1.5 rounded-xl border border-stone-300 hover:border-black bg-white font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      <span>Refresh</span>
-                    </button>
-                  </div>
+                  </h4>
+                  <p className="font-mono text-xs text-stone-600">
+                    Portfolio contact form se submit hone wale sabhi live messages ab apne dedicated top-level Inbox tab mein hain.
+                  </p>
                 </div>
-
-                {isLoadingMessages ? (
-                  <div className="py-12 text-center text-stone-500 font-mono text-xs">
-                    Loading inquiries...
-                  </div>
-                ) : messages.length === 0 ? (
-                  <div className="py-12 text-center text-stone-500 font-mono text-xs bg-stone-50 rounded-2xl border-2 border-dashed border-stone-300 space-y-2">
-                    <p className="font-bold text-stone-700">No inquiries received yet.</p>
-                    <p className="text-stone-500">Test by submitting the contact form on your portfolio website!</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {messages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className="p-5 rounded-2xl border-2 border-black bg-stone-50/80 shadow-[3px_3px_0_#000] space-y-3 transition-all hover:bg-white"
-                      >
-                        {/* Header: Name, Category, Timestamp, Actions */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-stone-200">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-mono font-black text-sm text-stone-900">
-                              {msg.name}
-                            </span>
-                            <span className="px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-950 border border-amber-400 font-mono text-[10px] font-bold uppercase">
-                              {msg.category || "General Inquiry"}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-2 self-end sm:self-auto">
-                            <span className="font-mono text-[10px] text-stone-400">
-                              📅 {new Date(msg.timestamp).toLocaleString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
-
-                            {/* Reply Button */}
-                            <a
-                              href={`mailto:${msg.email}?subject=Re: Portfolio Inquiry - ${encodeURIComponent(msg.category || "General")}&body=Hi ${encodeURIComponent(msg.name)},%0D%0A%0D%0AThank you for reaching out!%0D%0A%0D%0A`}
-                              className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-mono text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
-                              title="Send Email Reply"
-                            >
-                              <Mail className="w-3.5 h-3.5" />
-                              <span>Reply</span>
-                            </a>
-
-                            {/* Delete Button */}
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteMessage(msg.id)}
-                              className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-mono text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-[1px_1px_0_#e11d48]"
-                              title="Delete inquiry manually"
-                            >
-                              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                              <span>Delete</span>
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Sender Email */}
-                        <div className="text-xs font-mono font-bold text-indigo-700 flex items-center gap-1.5">
-                          <span>✉️</span>
-                          <a href={`mailto:${msg.email}`} className="hover:underline">
-                            {msg.email}
-                          </a>
-                        </div>
-
-                        {/* Message Body */}
-                        <div className="p-3.5 rounded-xl bg-white border border-stone-200 font-mono text-xs text-stone-800 whitespace-pre-wrap leading-relaxed shadow-inner">
-                          {msg.message}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
-            )}
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("inquiries")}
+                className="px-4 py-2 rounded-xl bg-black hover:bg-stone-800 text-white font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5 shrink-0"
+              >
+                <span>Open Inquiries Inbox</span>
+                <Send className="w-3.5 h-3.5 text-amber-400" />
+              </button>
+            </div>
 
             {/* ── 5. SITE FOOTER & SOCIUS EASTER EGG MANAGER ── */}
             {(contactSubTab === "all" || contactSubTab === "footer") && (
