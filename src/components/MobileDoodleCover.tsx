@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Mail, Clock, Award } from "lucide-react";
+import { Mail, Award } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
 import { formatGoogleDriveImageUrl } from "@/lib/googleDrive";
@@ -37,28 +37,6 @@ export function MobileDoodleCover() {
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [hasMoved, setHasMoved] = useState<boolean>(false);
   const ignoreNextClickRef = useRef(false);
-
-  // Live IST Time Clock
-  const [currentTimeStr, setCurrentTimeStr] = useState<string>("");
-  useEffect(() => {
-    const updateTime = () => {
-      try {
-        const now = new Date();
-        const ist = new Intl.DateTimeFormat("en-IN", {
-          timeZone: "Asia/Kolkata",
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        }).format(now);
-        setCurrentTimeStr(ist);
-      } catch {
-        setCurrentTimeStr("12:00 PM");
-      }
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Tap Ripple Animation State
   interface RippleEffect {
@@ -229,40 +207,33 @@ export function MobileDoodleCover() {
           />
         </motion.div>
 
-        {/* Cinematic Vignettes: Subtle Top + Deep Velvet Fade at Bottom */}
-        <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none z-10" />
-        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#07080c] via-[#07080c]/85 to-transparent pointer-events-none z-10" />
+        {/* Subtle Top Vignette for Contrast */}
+        <div className="absolute top-0 inset-x-0 h-20 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
 
-        {/* ── CAMERA HUD OVERLAYS (Cinematic 35mm Vibe) ── */}
-        <div className="absolute top-3.5 inset-x-4 z-20 flex items-center justify-between pointer-events-none">
-          {/* Film Stamp Pill */}
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white font-mono text-[9px] font-black uppercase tracking-wider shadow-lg">
-            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            <span>RAW · 24FPS</span>
-            <span className="text-stone-400">|</span>
-            <span className="text-amber-400">35MM</span>
-          </div>
+        {/* ── CINEMATIC FROSTED BLUR TRANSITION AT BOTTOM OF PHOTO (Replaces harsh pitch black gradient) ── */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-40 sm:h-48 pointer-events-none z-10 backdrop-blur-md"
+          style={{
+            WebkitMaskImage: "linear-gradient(to top, black 25%, transparent 100%)",
+            maskImage: "linear-gradient(to top, black 25%, transparent 100%)",
+          }}
+        />
+        <div
+          className="absolute bottom-0 inset-x-0 h-24 sm:h-28 pointer-events-none z-10 backdrop-blur-xl bg-gradient-to-t from-[#07080c]/50 via-[#07080c]/15 to-transparent"
+          style={{
+            WebkitMaskImage: "linear-gradient(to top, black 35%, transparent 100%)",
+            maskImage: "linear-gradient(to top, black 35%, transparent 100%)",
+          }}
+        />
 
-          {/* Live India Clock & Theme Toggle */}
-          <div className="flex items-center gap-2 pointer-events-auto">
-            {currentTimeStr && (
-              <div
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-mono text-[9px] font-black border border-white/20 bg-black/60 backdrop-blur-md text-stone-200 shadow-lg"
-                style={customLocationColor ? { borderColor: customLocationColor, color: customLocationColor } : undefined}
-              >
-                <Clock className="w-2.5 h-2.5 text-amber-400 shrink-0" />
-                <span>IST 🇮🇳 {currentTimeStr}</span>
-              </div>
-            )}
-
-            <div
-              onClick={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              onTouchEnd={(e) => e.stopPropagation()}
-              className="scale-90"
-            >
-              <ThemeToggle />
-            </div>
+        {/* ── TOP HEADER CONTROLS (Theme Switcher: LIGHT // DARK) ── */}
+        <div className="absolute top-3.5 right-4 z-20 flex items-center pointer-events-auto">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+          >
+            <ThemeToggle />
           </div>
         </div>
 

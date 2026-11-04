@@ -4938,7 +4938,21 @@ export default function AdminPage() {
 
                         {/* Gradient vignettes */}
                         <div className="absolute top-0 inset-x-0 h-14 bg-gradient-to-b from-black/70 to-transparent pointer-events-none" />
-                        <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-black via-black/85 to-transparent pointer-events-none" />
+                        {/* Frosted Glass Blur Transition at Bottom of Photo */}
+                        <div
+                          className="absolute bottom-0 inset-x-0 h-40 pointer-events-none backdrop-blur-md"
+                          style={{
+                            WebkitMaskImage: "linear-gradient(to top, black 25%, transparent 100%)",
+                            maskImage: "linear-gradient(to top, black 25%, transparent 100%)",
+                          }}
+                        />
+                        <div
+                          className="absolute bottom-0 inset-x-0 h-24 pointer-events-none backdrop-blur-xl bg-gradient-to-t from-black/40 via-black/15 to-transparent"
+                          style={{
+                            WebkitMaskImage: "linear-gradient(to top, black 35%, transparent 100%)",
+                            maskImage: "linear-gradient(to top, black 35%, transparent 100%)",
+                          }}
+                        />
 
                         {/* Dynamic Camera Notch at Top */}
                         <div className="relative z-10 w-full px-4 pt-2 flex items-center justify-between">
