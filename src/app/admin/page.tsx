@@ -1901,20 +1901,42 @@ export default function AdminPage() {
     }));
   };
 
-  const navTabs = [
-    { id: "inquiries", label: "📬 Inquiries & Dispatches", title: "Incoming Inquiries & Dispatches", desc: "Live portfolio contact inbox — review messages, reply via email & manage visitor dispatches", icon: Send, count: messages.length, alert: messages.some((m) => !m.read) },
-    { id: "sublines", label: "Headlines & Sublines", title: "Master Section Sublines & Headings", desc: "Hero tagline, about subline, projects & certificates subtitles with live preview", icon: Type },
-    { id: "cover", label: "Cover Hero", title: "Cover Page Manager", desc: "Hero portrait, framing, wordmark, roles & cover buttons", icon: Sliders },
-    { id: "badges", label: "⚡ Badges & Persona", title: "Role Badges & Persona Colors", desc: "Hide/unhide cover role badge & customize Persona and India colors", icon: Sparkles },
-    { id: "about", label: "Profile & Bio", title: "Profile & Bio Identity", desc: "Architectural photo mount, statement, bio highlighter, resume & socials", icon: User },
-    { id: "experience", label: "Work & Leadership", title: "Work & Leadership Station", desc: "Current roles, past milestones, deliverables & impact", icon: Briefcase, count: portfolio.experiences?.length || 0 },
-    { id: "milestones", label: "Development Trajectory", title: "Development Trajectory & Milestones", desc: "Phase 01, Phase 02 & Phase 03 roadmap milestones and strategic timeline", icon: Rocket, count: portfolio.milestones?.length || 0 },
-    { id: "highlights", label: "Benchmarks & Metrics", title: "Key Benchmarks & Impact Stats", desc: "Key numerical achievements, counters, and impact capsules", icon: Trophy, count: portfolio.quickStats?.length || 0 },
-    { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderCode, count: portfolio.projects?.length || 0 },
-    { id: "certificates", label: "Certificates", title: "Credentials & Laurels", desc: "Verified credentials, verification links & categories", icon: Award, count: portfolio.certificates?.length || 0 },
-    { id: "skills", label: "Skills Arsenal", title: "Technical Skills Arsenal", desc: "Category groupings, badges, proficiency & skill tags", icon: Code2, count: portfolio.skills?.length || 0 },
-    { id: "contact", label: "Contact & Station", title: "Contact Page & Station Coordinates", desc: "Location coordinates, live clock, inquiry form settings & footer", icon: MapPin },
+  const sidebarNavGroups = [
+    {
+      group: "COMMUNICATIONS",
+      tabs: [
+        { id: "inquiries", label: "Inquiries & Dispatches", title: "Incoming Inquiries & Dispatches", desc: "Live portfolio contact inbox", icon: Send, count: messages.length, alert: messages.some((m) => !m.read) },
+      ],
+    },
+    {
+      group: "HERO & BRANDING",
+      tabs: [
+        { id: "sublines", label: "Headlines & Sublines", title: "Master Section Sublines & Headings", desc: "Hero tagline, section subtitles & headings", icon: Type },
+        { id: "cover", label: "Cover Hero Page", title: "Cover Page Manager", desc: "Hero portrait, framing, wordmark & cover buttons", icon: Sliders },
+        { id: "badges", label: "Badges & Persona", title: "Role Badges & Persona Colors", desc: "Cover role pill visibility & custom colors", icon: Sparkles },
+      ],
+    },
+    {
+      group: "IDENTITY & CAREER",
+      tabs: [
+        { id: "about", label: "Profile & Bio Plaque", title: "Profile & Bio Identity", desc: "Photo mount, statement, bio highlighter & resume", icon: User },
+        { id: "experience", label: "Work & Leadership", title: "Work & Leadership Station", desc: "Current roles, past milestones & impact", icon: Briefcase, count: portfolio.experiences?.length || 0 },
+        { id: "milestones", label: "Development Trajectory", title: "Development Trajectory & Milestones", desc: "Phase 01, Phase 02 & Phase 03 roadmap", icon: Rocket, count: portfolio.milestones?.length || 0 },
+        { id: "highlights", label: "Benchmarks & Metrics", title: "Key Benchmarks & Impact Stats", desc: "Key numerical achievements & impact capsules", icon: Trophy, count: portfolio.quickStats?.length || 0 },
+      ],
+    },
+    {
+      group: "PORTFOLIO ASSETS",
+      tabs: [
+        { id: "projects", label: "Projects Lab", title: "Technical Projects Manager", desc: "Filter tags, live links, github repositories & tech stacks", icon: FolderCode, count: portfolio.projects?.length || 0 },
+        { id: "certificates", label: "Certificates & Laurels", title: "Credentials & Laurels", desc: "Verified credentials, verification links & categories", icon: Award, count: portfolio.certificates?.length || 0 },
+        { id: "skills", label: "Skills Arsenal", title: "Technical Skills Arsenal", desc: "Category groupings, badges, proficiency & skill tags", icon: Code2, count: portfolio.skills?.length || 0 },
+        { id: "contact", label: "Contact & Station Setup", title: "Contact Page & Station Coordinates", desc: "Location coordinates, live clock & inquiry form settings", icon: MapPin },
+      ],
+    },
   ];
+
+  const navTabs = sidebarNavGroups.flatMap((g) => g.tabs);
 
   const currentTabObj = navTabs.find((t) => t.id === activeTab) || navTabs[0];
 
@@ -1982,29 +2004,29 @@ export default function AdminPage() {
         />
       )}
 
-      {/* ── LEFT SIDEBAR (Desktop Fixed, Mobile Slide-Over) ── */}
+      {/* ── LEFT SIDEBAR (Ultra-Premium Studio Dark Layout) ── */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white/95 dark:bg-[#141520]/95 backdrop-blur-xl border-r-2 border-stone-200/90 dark:border-stone-800/90 flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#0c0d14] text-stone-200 border-r border-white/[0.08] flex flex-col justify-between transition-transform duration-200 ease-in-out md:translate-x-0 ${
           isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
         }`}
       >
         {/* Sidebar Header: Brand & Live Indicator */}
-        <div className="p-5 border-b border-stone-100">
+        <div className="p-4 sm:p-5 border-b border-white/[0.08] bg-white/[0.02]">
           <div className="flex items-center justify-between">
             <Link
               href="/"
               className="flex items-center gap-3 group cursor-pointer"
               title="Return to Live Portfolio"
             >
-              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-300 text-black border-2 border-black shadow-[2px_2px_0_#000] group-hover:scale-105 transition-transform overflow-hidden p-1 shrink-0">
+              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-300 text-black border border-amber-300/60 shadow-[0_0_15px_rgba(245,158,11,0.25)] group-hover:scale-105 transition-transform overflow-hidden p-1 shrink-0">
                 <img src="/icon.svg" alt="Socius Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
-                <span className="font-['Space_Grotesk'] text-lg font-black uppercase tracking-tight text-stone-900 group-hover:text-amber-600 transition-colors leading-none">
-                  Socius Studio
+                <span className="font-['Space_Grotesk'] text-base font-black tracking-tight text-white group-hover:text-amber-400 transition-colors leading-none">
+                  SOCIUS STUDIO
                 </span>
-                <span className="font-mono text-[9px] text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 mt-1 font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-mono text-[9px] text-emerald-400 flex items-center gap-1.5 mt-1 font-bold tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
                   <span>SUPABASE SYNCED</span>
                 </span>
               </div>
@@ -2012,125 +2034,126 @@ export default function AdminPage() {
 
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="md:hidden p-1.5 rounded-lg text-stone-400 hover:text-black hover:bg-stone-100 cursor-pointer"
+              className="md:hidden p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-white/10 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Sidebar Nav Items (Vertical Menu) */}
-        <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-1.5">
-          <div className="px-3 pb-2 text-[10px] font-mono font-black uppercase tracking-widest text-stone-400">
-            Workspace Tabs
-          </div>
-          {navTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <React.Fragment key={tab.id}>
-                <button
-                  onClick={() => {
-                    setActiveTab(tab.id as AdminTab);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-mono text-xs transition-all cursor-pointer text-left group ${
-                    isActive
-                      ? "bg-stone-900 text-white font-black shadow-[3px_3px_0_#f59e0b] border border-stone-800"
-                      : "text-stone-700 hover:text-black hover:bg-stone-100 font-bold"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon
-                      className={`w-4 h-4 transition-colors ${
-                        isActive ? "text-amber-400" : "text-stone-500 group-hover:text-black"
-                      }`}
-                    />
-                    <span>{tab.label}</span>
-                  </div>
-                  {tab.id === "cover" ? (
-                    <span className="text-[10px] font-mono font-bold text-amber-400 bg-stone-800 px-2 py-0.5 rounded-md">
-                      {coverSubView === "desktop" ? "💻 PC" : "📱 Phone"}
-                    </span>
-                  ) : tab.count !== undefined ? (
-                    <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+        {/* Sidebar Nav Items (Grouped Vertical Menu) */}
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10">
+          {sidebarNavGroups.map((group) => (
+            <div key={group.group} className="space-y-1">
+              <div className="px-3 pb-1 text-[9px] font-mono font-black uppercase tracking-widest text-stone-500">
+                {group.group}
+              </div>
+              {group.tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <React.Fragment key={tab.id}>
+                    <button
+                      onClick={() => {
+                        setActiveTab(tab.id as AdminTab);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl font-mono text-xs transition-all cursor-pointer text-left group ${
                         isActive
-                          ? "bg-amber-400 text-black"
-                          : "bg-stone-200 text-stone-700 group-hover:bg-stone-300"
+                          ? "bg-gradient-to-r from-amber-500/15 via-amber-500/[0.04] to-transparent text-amber-300 font-black border-l-2 border-amber-400 rounded-l-none pl-2.5 shadow-inner"
+                          : "text-stone-400 hover:text-white hover:bg-white/[0.05] font-semibold"
                       }`}
                     >
-                      {tab.count}
-                    </span>
-                  ) : null}
-                </button>
+                      <div className="flex items-center gap-2.5">
+                        <Icon
+                          className={`w-4 h-4 transition-colors ${
+                            isActive ? "text-amber-400" : "text-stone-500 group-hover:text-stone-300"
+                          }`}
+                        />
+                        <span className="truncate">{tab.label}</span>
+                      </div>
+                      {tab.id === "cover" ? (
+                        <span className="text-[9.5px] font-mono font-bold text-amber-400 bg-white/10 px-1.5 py-0.5 rounded-md">
+                          {coverSubView === "desktop" ? "PC" : "Phone"}
+                        </span>
+                      ) : tab.count !== undefined ? (
+                        <span
+                          className={`text-[9.5px] px-1.5 py-0.2 rounded-full font-bold ${
+                            isActive
+                              ? "bg-amber-400 text-black font-black"
+                              : "bg-white/10 text-stone-400 group-hover:bg-white/15"
+                          }`}
+                        >
+                          {tab.count}
+                        </span>
+                      ) : null}
+                    </button>
 
-                {/* Cover Sub-Views Dropdown (Desktop vs Mobile) */}
-                {tab.id === "cover" && isActive && (
-                  <div className="ml-5 pl-2.5 border-l-2 border-stone-200 space-y-1 pt-1 pb-1">
-                    <button
-                      type="button"
-                      onClick={() => setCoverSubView("desktop")}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg font-mono text-[11px] transition-all cursor-pointer text-left ${
-                        coverSubView === "desktop"
-                          ? "bg-amber-400 text-black shadow-xs font-black"
-                          : "text-stone-600 hover:text-black hover:bg-stone-100 font-bold"
-                      }`}
-                    >
-                      <span>💻</span>
-                      <span>Desktop View</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCoverSubView("mobile")}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg font-mono text-[11px] transition-all cursor-pointer text-left ${
-                        coverSubView === "mobile"
-                          ? "bg-amber-400 text-black shadow-xs font-black"
-                          : "text-stone-600 hover:text-black hover:bg-stone-100 font-bold"
-                      }`}
-                    >
-                      <span>📱</span>
-                      <span>Mobile View</span>
-                    </button>
-                  </div>
-                )}
-              </React.Fragment>
-            );
-          })}
+                    {/* Cover Sub-Views Dropdown (Desktop vs Mobile) */}
+                    {tab.id === "cover" && isActive && (
+                      <div className="ml-5 pl-2.5 border-l border-white/15 space-y-1 pt-1 pb-1">
+                        <button
+                          type="button"
+                          onClick={() => setCoverSubView("desktop")}
+                          className={`w-full flex items-center gap-2 px-2.5 py-1 rounded-lg font-mono text-[10.5px] transition-all cursor-pointer text-left ${
+                            coverSubView === "desktop"
+                              ? "bg-amber-400 text-black font-black"
+                              : "text-stone-400 hover:text-white hover:bg-white/5 font-semibold"
+                          }`}
+                        >
+                          <span>💻</span>
+                          <span>Desktop View</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCoverSubView("mobile")}
+                          className={`w-full flex items-center gap-2 px-2.5 py-1 rounded-lg font-mono text-[10.5px] transition-all cursor-pointer text-left ${
+                            coverSubView === "mobile"
+                              ? "bg-amber-400 text-black font-black"
+                              : "text-stone-400 hover:text-white hover:bg-white/5 font-semibold"
+                          }`}
+                        >
+                          <span>📱</span>
+                          <span>Mobile View</span>
+                        </button>
+                      </div>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          ))}
         </div>
 
         {/* Sidebar Footer: Live Site Link & User Profile */}
-        <div className="p-4 border-t border-stone-200 bg-stone-50/80 space-y-3">
+        <div className="p-3.5 border-t border-white/[0.08] bg-white/[0.02] space-y-2.5">
           <Link
             href="/"
             target="_blank"
-            className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-white border border-stone-200 hover:border-black font-mono text-xs font-bold text-stone-700 hover:text-black transition-all shadow-xs group cursor-pointer"
+            className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 font-mono text-xs font-bold text-stone-300 hover:text-white transition-all group cursor-pointer"
           >
             <span className="flex items-center gap-2">
-              <ExternalLink className="w-3.5 h-3.5 text-stone-500 group-hover:text-amber-600" />
+              <ExternalLink className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-400" />
               <span>View Live Website</span>
             </span>
-            <span className="text-[10px] text-stone-400 font-mono">↗</span>
+            <span className="text-[10px] text-stone-500 font-mono">↗</span>
           </Link>
 
-          <div className="flex items-center justify-between pt-1">
+          <div className="flex items-center justify-between pt-0.5">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-stone-900 text-amber-300 flex items-center justify-center font-mono text-xs font-black border border-stone-800 shadow-2xs">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-amber-300 text-black flex items-center justify-center font-mono text-xs font-black shadow-xs">
                 HA
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-bold font-mono text-stone-900 leading-tight">Harsh Aryan</span>
-                <span className="text-[9.5px] font-mono text-emerald-600 font-semibold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Super Admin
-                </span>
-                <span className="text-[9px] font-mono text-stone-400 flex items-center gap-1 mt-0.5" title="Auto-locks after 20 minutes of inactivity">
-                  <Clock className="w-2.5 h-2.5 text-amber-500" /> Auto-Lock: 20m
+                <span className="text-xs font-bold font-mono text-white leading-tight">Harsh Aryan</span>
+                <span className="text-[9.5px] font-mono text-emerald-400 font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Super Admin
                 </span>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="p-2 rounded-xl text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-stone-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
@@ -2211,31 +2234,6 @@ export default function AdminPage() {
               />
             </label>
 
-            {/* Quick Inquiries Button in Top Header */}
-            <button
-              type="button"
-              onClick={() => setActiveTab("inquiries")}
-              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer border ${
-                activeTab === "inquiries"
-                  ? "bg-black text-amber-300 border-black shadow-[2px_2px_0_#f59e0b]"
-                  : "bg-white hover:bg-stone-50 border-stone-300 text-stone-800 shadow-2xs"
-              }`}
-              title="View Incoming Inquiries & Dispatches"
-            >
-              <span className="relative flex h-2 w-2">
-                {messages.length > 0 && (
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                )}
-                <span
-                  className={`relative inline-flex rounded-full h-2 w-2 ${
-                    messages.length > 0 ? "bg-amber-500" : "bg-stone-400"
-                  }`}
-                />
-              </span>
-              <Send className="w-3.5 h-3.5 text-stone-600" />
-              <span>Inquiries ({messages.length})</span>
-            </button>
-
             <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono text-[11px] font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Supabase Cloud Active</span>
@@ -2272,40 +2270,32 @@ export default function AdminPage() {
 
           return (
             <div className="space-y-6">
-              {/* Header intro & Quick Actions */}
-              <div className="p-6 sm:p-7 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-mono text-[10px] font-black uppercase">
-                      Live Contact Inbox
-                    </span>
-                    <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      SUPABASE REALTIME SYNC
-                    </span>
+              {/* Quick Actions Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0_#000]">
+                <div className="flex items-center gap-2">
+                  <span className="p-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-sm">
+                    📬
+                  </span>
+                  <div>
+                    <h3 className="font-['Space_Grotesk'] text-base font-black uppercase text-stone-900 flex items-center gap-2">
+                      <span>Inbox Messages</span>
+                      <span className="px-2 py-0.5 rounded-full bg-black text-amber-300 font-mono text-xs font-black">
+                        {messages.length}
+                      </span>
+                    </h3>
                   </div>
-                  <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                    <Send className="w-6 h-6 text-amber-500" />
-                    <span>Incoming Inquiries &amp; Dispatches</span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-black text-amber-300 font-mono text-xs font-black shadow-xs">
-                      {messages.length}
-                    </span>
-                  </h2>
-                  <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
-                    Inquiries submitted via your portfolio contact form. Directly reply via email or delete dispatches once addressed.
-                  </p>
                 </div>
 
-                <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+                <div className="flex items-center gap-2">
                   {messages.length > 0 && (
                     <button
                       type="button"
                       onClick={handleClearAllMessages}
-                      className="px-3.5 py-2 rounded-xl border-2 border-rose-400 bg-rose-50 hover:bg-rose-100 text-rose-700 font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-[2px_2px_0_#f43f5e] active:translate-y-0.5"
+                      className="px-3 py-1.5 rounded-xl border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-700 font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-1 shadow-xs"
                       title="Clear all inquiries"
                     >
-                      <Trash2 className="w-4 h-4 text-rose-600" />
-                      <span>Clear All Inquiries</span>
+                      <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                      <span>Clear All</span>
                     </button>
                   )}
 
@@ -2313,10 +2303,10 @@ export default function AdminPage() {
                     type="button"
                     onClick={fetchMessages}
                     disabled={isLoadingMessages}
-                    className="px-4 py-2 rounded-xl border-2 border-black bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0_#000] active:translate-y-0.5 transition-all"
+                    className="px-3.5 py-1.5 rounded-xl border-2 border-black bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0_#000] active:translate-y-0.5 transition-all"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isLoadingMessages ? "animate-spin" : ""}`} />
-                    <span>{isLoadingMessages ? "Syncing..." : "Refresh Inbox"}</span>
+                    <span>{isLoadingMessages ? "Syncing..." : "Refresh"}</span>
                   </button>
                 </div>
               </div>
@@ -5050,40 +5040,7 @@ export default function AdminPage() {
 
         {/* ── TAB: ABOUT & DOSSIER MANAGER ── */}
         {activeTab === "about" && (
-          <div className="space-y-8">
-            {/* Header intro & Save CTA */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-mono text-[10px] font-black uppercase">
-                    Live Section #01
-                  </span>
-                  <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    SYNCED WITH ABOUT SECTION
-                  </span>
-                </div>
-                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                  <User className="w-6 h-6 text-amber-500" />
-                  <span>Profile, Bio &amp; Dossier (All-in-One)</span>
-                </h2>
-                <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
-                  Framed Exhibition Photo, Identity Plaque, Statement &amp; Bio with <strong>Multi-Color Highlighter</strong>, Key Benchmarks, aur <strong>Trajectory Milestones</strong> ko live preview ke sath ek hi jagah manage karein.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={handleSaveAll}
-                  disabled={isSaving}
-                  className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>{isSaving ? "Saving..." : "Save Profile & Bio"}</span>
-                </button>
-              </div>
-            </div>
+          <div className="space-y-6">
 
             {/* Quick Sub-Section Switcher Tabs */}
             <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-stone-100 border border-stone-200">
@@ -6321,94 +6278,38 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* Bottom Final Save Button for Profile */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Profile & Bio Changes"}</span>
-              </button>
-            </div>
+
           </div>
         )}
 
         {/* ── TAB: WORK & LEADERSHIP (EXPERIENCE STATION) ── */}
         {activeTab === "experience" && (
           <div className="space-y-6">
-            {/* Header intro & Save CTA */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-900 border border-sky-300 font-mono text-[10px] font-black uppercase">
-                    Work &amp; Leadership
-                  </span>
-                  {portfolio.personal.showExperienceSection === false ? (
-                    <span className="font-mono text-[10px] text-rose-600 font-bold">● HIDDEN FROM SITE</span>
-                  ) : (
-                    <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      LIVE ON SITE
-                    </span>
-                  )}
-                </div>
-                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                  <Briefcase className="w-6 h-6 text-sky-500" />
-                  <span>Work &amp; Leadership Station ({portfolio.experiences?.length || 0})</span>
-                </h2>
-                <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
-                  Teaching roles, mentorship, research assistantships &amp; industry contributions ko Current vs Past structure ke sath manage karein.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
-                <button
-                  type="button"
-                  onClick={handleAddExperience}
-                  className="px-4 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Role / Mandate</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleSaveAll}
-                  disabled={isSaving}
-                  className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>{isSaving ? "Saving..." : "Save Work Station"}</span>
-                </button>
-              </div>
-            </div>
 
             {/* ── 4. PROFESSIONAL EXPERIENCE CATALOG ── */}
             
               <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-stone-200 gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="p-2 rounded-xl bg-sky-100 text-sky-900 border border-sky-300 text-sm">
-                      💼
-                    </span>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-['Space_Grotesk'] text-lg font-black uppercase text-stone-900">
-                          4. Professional Experience & Roles
-                        </h3>
-                        {portfolio.personal.showExperienceSection === false && (
-                          <span className="px-2 py-0.5 rounded-md bg-red-100 text-red-800 border border-red-300 font-mono text-[10px] font-black uppercase">
-                            Section Hidden
-                          </span>
-                        )}
-                      </div>
-                      <p className="font-mono text-xs text-stone-500">
-                        Manage teaching roles, internships, research assistantships & industry experience
-                      </p>
-                    </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-mono text-xs font-black uppercase text-stone-500 mr-1">Filter Roles:</span>
+                    {[
+                      { id: "all", label: `✦ All (${(portfolio.experiences || []).length})` },
+                      { id: "current", label: `🟢 Current (${(portfolio.experiences || []).filter(e => e.isCurrent || (e.period || "").toLowerCase().includes("present")).length})` },
+                      { id: "past", label: `🏆 Past (${(portfolio.experiences || []).filter(e => !e.isCurrent && !(e.period || "").toLowerCase().includes("present")).length})` },
+                    ].map((f) => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setExpStationFilter(f.id as any)}
+                        className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold cursor-pointer transition-all ${
+                          expStationFilter === f.id
+                            ? "bg-black text-white shadow-xs font-black"
+                            : "text-stone-600 hover:text-black bg-stone-100 hover:bg-stone-200"
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
@@ -6441,8 +6342,8 @@ export default function AdminPage() {
                       }`}
                       title={
                         portfolio.personal.showExperienceSection === false
-                          ? "Click to display Experience section on the main page"
-                          : "Click to hide Experience section from the main page"
+                          ? "Click to display Experience section on main page"
+                          : "Click to hide Experience section from main page"
                       }
                     >
                       {portfolio.personal.showExperienceSection === false ? (
@@ -6455,7 +6356,7 @@ export default function AdminPage() {
                           <Eye className="w-3.5 h-3.5 text-emerald-600" />
                           <span className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
-                            Section Visible
+                            Live on Site
                           </span>
                         </>
                       )}
@@ -6464,10 +6365,10 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={handleAddExperience}
-                      className="px-3 py-1.5 rounded-xl bg-black text-white font-mono text-xs font-bold hover:bg-stone-800 transition-colors flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0_#000]"
+                      className="px-3.5 py-1.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs active:translate-y-0.5"
                     >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Experience</span>
+                      <Plus className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Add Role / Mandate</span>
                     </button>
                   </div>
                 </div>
@@ -6832,18 +6733,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-            {/* Bottom Final Save Button for Experience */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Work & Leadership Changes"}</span>
-              </button>
-            </div>
+
           </div>
         )}
 
@@ -6851,52 +6741,6 @@ export default function AdminPage() {
         {/* ── TAB: DEVELOPMENT TRAJECTORY (ROADMAP MILESTONES) ── */}
         {activeTab === "milestones" && (
           <div className="space-y-6">
-            {/* Header intro & Save CTA */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-mono text-[10px] font-black uppercase">
-                    Roadmap &amp; Milestones
-                  </span>
-                  {portfolio.personal.showDevelopmentTrajectory === false ? (
-                    <span className="font-mono text-[10px] text-rose-600 font-bold">● HIDDEN FROM SITE</span>
-                  ) : (
-                    <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      LIVE ON SITE
-                    </span>
-                  )}
-                </div>
-                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                  <Rocket className="w-6 h-6 text-emerald-500" />
-                  <span>Development Trajectory ({portfolio.milestones?.length || 0} Phases)</span>
-                </h2>
-                <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
-                  Strategic roadmap tracking Phase 01 completed foundations, Phase 02 active execution, and Phase 03 next horizon milestones.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
-                <button
-                  type="button"
-                  onClick={handleAddMilestone}
-                  className="px-4 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Roadmap Phase</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleSaveAll}
-                  disabled={isSaving}
-                  className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>{isSaving ? "Saving..." : "Save Trajectory"}</span>
-                </button>
-              </div>
-            </div>
 
             {/* ── 5. DEVELOPMENT TRAJECTORY (ROADMAP MILESTONES) ── */}
             
@@ -7161,18 +7005,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-            {/* Bottom Final Save Button for Milestones */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Trajectory Milestones"}</span>
-              </button>
-            </div>
+
           </div>
         )}
 
@@ -7180,48 +7013,6 @@ export default function AdminPage() {
         {/* ── TAB: KEY BENCHMARKS (QUICK STATS CAPSULES) ── */}
         {activeTab === "highlights" && (
           <div className="space-y-6">
-            {/* Header intro & Save CTA */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-900 border border-cyan-300 font-mono text-[10px] font-black uppercase">
-                    Impact Metrics
-                  </span>
-                  <span className="font-mono text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    SYNCED WITH ABOUT SECTION
-                  </span>
-                </div>
-                <h2 className="font-['Space_Grotesk'] text-2xl font-black uppercase text-stone-900 flex items-center gap-2">
-                  <Trophy className="w-6 h-6 text-amber-500" />
-                  <span>Key Benchmarks &amp; Impact Stats ({(portfolio.quickStats || []).length} Counters)</span>
-                </h2>
-                <p className="font-mono text-xs text-stone-500 mt-1 max-w-2xl">
-                  About section me Statement aur Bio ke theek neeche render hone wale 4 slim benchmark capsules.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
-                <button
-                  type="button"
-                  onClick={handleAddQuickStat}
-                  className="px-4 py-2.5 rounded-xl bg-black text-white hover:bg-stone-800 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm active:translate-y-0.5"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Stat Capsule</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleSaveAll}
-                  disabled={isSaving}
-                  className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0_#000] cursor-pointer flex items-center gap-1.5 active:translate-y-0.5"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>{isSaving ? "Saving..." : "Save Benchmarks"}</span>
-                </button>
-              </div>
-            </div>
 
             {/* ── 3. KEY BENCHMARKS (QUICK STATS CAPSULES) ── */}
             
@@ -7513,18 +7304,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-            {/* Bottom Final Save Button for Benchmarks */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSaving}
-                className="px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_#000] cursor-pointer flex items-center gap-2 active:translate-y-0.5"
-              >
-                <Save className="w-4 h-4" />
-                <span>{isSaving ? "Saving..." : "Save Benchmarks"}</span>
-              </button>
-            </div>
+
           </div>
         )}
 
